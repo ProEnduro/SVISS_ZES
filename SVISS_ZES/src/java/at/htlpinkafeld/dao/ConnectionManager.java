@@ -19,32 +19,41 @@ import javax.sql.DataSource;
  */
 public class ConnectionManager {
 
-    private static final String DATASOURCE = "jdbc/testdb";
+    private static final String DATASOURCE = "jdbc/zes_sviss";
 
     private static ConnectionManager conM = null;
     private DataSource ds;
     private User_DAO userDAO;
 
     private ConnectionManager() throws SQLException {
-        userDAO=new User_JDBCDAO();
-        Context ctx;
         try {
+            Context ctx;
             ctx = new javax.naming.InitialContext();
-            DataSource ds = (DataSource) ctx.lookup("java:comp/env/" + DATASOURCE);
+            ds = (DataSource) ctx.lookup("java:comp/env/" + DATASOURCE);
         } catch (NamingException ex) {
             Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
-    public static synchronized ConnectionManager getInstance() throws SQLException {
+    protected static synchronized ConnectionManager getInstance() throws SQLException {
         if (conM == null) {
             conM = new ConnectionManager();
         }
         return conM;
     }
 
-    protected Connection getConnection() throws SQLException {
-        return ds.getConnection();
+    protected Connection getConnection() {
+        Connection retVal = null;
+        try {
+            retVal = ds.getConnection();
+        } catch (SQLException ex) {
+            Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return retVal;
+    }
+
+    public static User_DAO getUserDAO() {
+        return new User_JDBCDAO();
     }
 }

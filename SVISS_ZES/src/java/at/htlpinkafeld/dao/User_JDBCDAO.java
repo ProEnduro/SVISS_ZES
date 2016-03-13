@@ -21,10 +21,10 @@ import java.util.logging.Logger;
  *
  * @author Martin Six
  */
-public class User_JDBCDAO implements User_DAO {
+public class User_JDBCDAO extends User_DAO {
 
     private final static String GET_ALLUSER_STATEMENT = "SELECT * FROM user";
-    private SimpleDateFormat sdf = new SimpleDateFormat("DD.mm.YYYY");
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     public List<User> getUserList() {
@@ -36,7 +36,7 @@ public class User_JDBCDAO implements User_DAO {
                 ResultSet rs = stmt.executeQuery(GET_ALLUSER_STATEMENT)) {
 
             while (rs.next()) {
-                userList.add(new User(rs.getInt("PersNr"), rs.getInt("JobID"), rs.getInt("AccessLevelID"), rs.getString("PersName"), rs.getInt("VacationLeft"), rs.getInt("OvertimeLeft"), rs.getString("Username"), rs.getString("E-Mail"), sdf.parse(rs.getString("Hiredate")), rs.getString("Password")));
+                userList.add(new User(rs.getInt(PERSNR), rs.getInt(ACCESSLEVELID), rs.getString(PERSNAME), rs.getInt(VACATIONLEFT), rs.getInt(OVERTIMELEFT), rs.getString(USERNAME), rs.getString(EMAIL), sdf.parse(rs.getString(HIREDATE)), rs.getString(PASSWORD), rs.getDouble(WEEKTIME)));
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -51,8 +51,9 @@ public class User_JDBCDAO implements User_DAO {
     public void insertUser(User u) {
         try (Connection con = ConnectionManager.getInstance().getConnection();
                 Statement stmt = con.createStatement();) {
-            stmt.executeUpdate("insert into user(PersNr, JobID, AccessLevelID,PersName,VacationLeft,OvertimeLeft,Username,EMail,Hiredate,Password) values(" + u.getPersnr() + ", " + u.getJobId() + ", " + u.getAccessLevelId()
-                    + ", " + u.getPersName() + ", " + u.getVacationLeft() + ", " + u.getOverTimeLeft() + ", " + u.getUsername() + ", " + u.getEmail() + ", " + u.getHiredate() + ", " + u.getPass() + ");");
+            stmt.executeUpdate("insert into user(" + PERSNR + ", " + ACCESSLEVELID + "," + PERSNAME + "," + VACATIONLEFT + "," + OVERTIMELEFT + "," + USERNAME + "," + EMAIL + "," + HIREDATE + "," + PASSWORD + "," + WEEKTIME + ") values(" + u.getPersnr() + ", " + u.getAccessLevelId()
+                    + ", " + u.getPersName() + ", " + u.getVacationLeft() + ", " + u.getOverTimeLeft() + ", " + u.getUsername() + ", " + u.getEmail() + ", " + u.getHiredate() + ", " + u.getPass() + ", " + u.getWeekTime() + ");"
+            );
         } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -62,8 +63,8 @@ public class User_JDBCDAO implements User_DAO {
     public void updateUser(User u) {
         try (Connection con = ConnectionManager.getInstance().getConnection();
                 Statement stmt = con.createStatement();) {
-            stmt.executeUpdate("update user set PersNr=" + u.getPersnr() + ",  JobID=" + u.getJobId() + ",  AccessLevelID=" + u.getAccessLevelId() + ", PersName= " + u.getPersName() + ",  VacationLeft=" + u.getVacationLeft()
-                    + ",  OvertimeLeft=" + u.getOverTimeLeft() + ",  Username=" + u.getUsername() + ", EMail= " + u.getEmail() + ",  Hiredate=" + u.getHiredate() + ",  Password=" + u.getPass() + " where persnr=" + u.getPersnr() + ";");
+            stmt.executeUpdate("update user set " + ACCESSLEVELID + "=" + u.getAccessLevelId() + ", " + PERSNAME + "= " + u.getPersName() + ",  " + VACATIONLEFT + "=" + u.getVacationLeft()
+                    + ",  " + OVERTIMELEFT + "=" + u.getOverTimeLeft() + ",  " + USERNAME + "=" + u.getUsername() + ", " + EMAIL + "= " + u.getEmail() + ",  " + HIREDATE + "=" + u.getHiredate() + ",  " + PASSWORD + "=" + u.getPass() + ",  " + WEEKTIME + "=" + u.getWeekTime() + " where " + PERSNR + "=" + u.getPersnr() + ";");
         } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -87,7 +88,7 @@ public class User_JDBCDAO implements User_DAO {
                 ResultSet rs = stmt.executeQuery(GET_ALLUSER_STATEMENT)) {
 
             if (rs.next()) {
-                u = new User(rs.getInt("PersNr"), rs.getInt("JobID"), rs.getInt("AccessLevelID"), rs.getString("PersName"), rs.getInt("VacationLeft"), rs.getInt("OvertimeLeft"), rs.getString("Username"), rs.getString("E-Mail"), sdf.parse(rs.getString("Hiredate")), rs.getString("Password"));
+                u = new User(rs.getInt(PERSNR), rs.getInt(ACCESSLEVELID), rs.getString(PERSNAME), rs.getInt(VACATIONLEFT), rs.getInt(OVERTIMELEFT), rs.getString(USERNAME), rs.getString(EMAIL), sdf.parse(rs.getString(HIREDATE)), rs.getString(PASSWORD), rs.getDouble(WEEKTIME));
             }
 
         } catch (SQLException ex) {

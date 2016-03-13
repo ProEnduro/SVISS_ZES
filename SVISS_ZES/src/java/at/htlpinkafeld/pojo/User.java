@@ -14,7 +14,6 @@ import java.util.Date;
 public class User {
 
     private int persnr;
-    private int jobId;
     private int accessLevelId;
     private String PersName;
     private int vacationLeft;
@@ -23,10 +22,10 @@ public class User {
     private String email;
     private Date hiredate;
     private String pass;
+    private Double weekTime;
 
-    public User(int persnr, int jobId, int accessLevelId, String PersName, int vacationLeft, int overTimeLeft, String username, String email, Date hiredate, String pass) {
+    public User(int persnr, int accessLevelId, String PersName, int vacationLeft, int overTimeLeft, String username, String email, Date hiredate, String pass, Double weekTime) {
         this.persnr = persnr;
-        this.jobId = jobId;
         this.accessLevelId = accessLevelId;
         this.PersName = PersName;
         this.vacationLeft = vacationLeft;
@@ -35,9 +34,10 @@ public class User {
         this.email = email;
         this.hiredate = hiredate;
         this.pass = pass;
+        this.weekTime = weekTime;
     }
 
-    public User(int persnr, int accessLevelId, String PersName, String username, String email, Date hiredate, String pass) {
+    public User(int persnr, int accessLevelId, String PersName, String username, String email, Date hiredate, String pass, Double weekTime) {
         this.persnr = persnr;
         this.accessLevelId = accessLevelId;
         this.PersName = PersName;
@@ -45,6 +45,7 @@ public class User {
         this.email = email;
         this.hiredate = hiredate;
         this.pass = pass;
+        this.weekTime = weekTime;
     }
 
     public int getPersnr() {
@@ -53,14 +54,6 @@ public class User {
 
     public void setPersnr(int persnr) {
         this.persnr = persnr;
-    }
-
-    public int getJobId() {
-        return jobId;
-    }
-
-    public void setJobId(int jobId) {
-        this.jobId = jobId;
     }
 
     public int getAccessLevelId() {
@@ -126,7 +119,17 @@ public class User {
     public void setPass(String pass) {
         this.pass = pass;
     }
-    
-    
 
+    public Double getWeekTime() {
+        return weekTime;
+    }
+
+    public void setWeekTime(Double weekTime) {
+        this.weekTime = weekTime;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" + "persnr=" + persnr + ", accessLevelId=" + accessLevelId + ", PersName=" + PersName + ", vacationLeft=" + vacationLeft + ", overTimeLeft=" + overTimeLeft + ", username=" + username + ", email=" + email + ", hiredate=" + hiredate + ", pass=" + pass + ", weekTime=" + weekTime + '}';
+    }
 }

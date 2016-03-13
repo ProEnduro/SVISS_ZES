@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context antiJARLocking="true" path="/SVISS_ZES">
 
-    <Resource name="jdbc/testdb" auth="Container" type="javax.sql.DataSource"
+    <Resource name="jdbc/zes_sviss" auth="Container" type="javax.sql.DataSource"
               maxActive="50" maxIdle="30" maxWait="10000"
-              username="admin" password="admin" 
-              driverClassName="org.sqlite.JDBC"
-              url="jdbc:sqlite:C:\Users\User\Documents\4BHIF\SYP\PREU\Projekt\GitHub\SVISS_ZES.git\trunk\SVISS_ZES\TestDB.db;shutdown=true"/>
+              username="root" password="admin" 
+              driverClassName="com.mysql.jdbc.Driver"
+              url="jdbc:mysql://localhost:3306/zes_sviss?zeroDateTimeBehavior=convertToNull"/>
 </Context>
