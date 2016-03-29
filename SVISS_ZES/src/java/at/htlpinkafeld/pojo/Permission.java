@@ -11,8 +11,8 @@ package at.htlpinkafeld.pojo;
  */
 public class Permission {
 
-    private final int permID;
-    private final String permName;
+    private int permID;
+    private String permName;
 
     public Permission(int permID, String permName) {
         this.permID = permID;
@@ -23,8 +23,16 @@ public class Permission {
         return permID;
     }
 
+    public void setPermID(int permID) {
+        this.permID = permID;
+    }
+
     public String getPermName() {
         return permName;
+    }
+
+    public void setPermName(String permName) {
+        this.permName = permName;
     }
 
     @Override

@@ -12,10 +12,11 @@ import java.util.Map;
  * @author Martin Six
  */
 public class AccessLevel {
-    private final int accessLevelID;
-    private final String accessLevelName;
+
+    private int accessLevelID;
+    private String accessLevelName;
     //the Integer is the id of the Permission
-    private final Map<Integer, Permission> permissions;
+    private Map<Integer, Permission> permissions;
 
     public AccessLevel(int accessLevelID, String accessLevelName, Map<Integer, Permission> permissions) {
         this.accessLevelID = accessLevelID;
@@ -27,12 +28,24 @@ public class AccessLevel {
         return accessLevelID;
     }
 
+    public void setAccessLevelID(int accessLevelID) {
+        this.accessLevelID = accessLevelID;
+    }
+
     public String getAccessLevelName() {
         return accessLevelName;
     }
 
+    public void setAccessLevelName(String accessLevelName) {
+        this.accessLevelName = accessLevelName;
+    }
+
     public Map<Integer, Permission> getPermissions() {
         return permissions;
+    }
+
+    public void setPermissions(Map<Integer, Permission> permissions) {
+        this.permissions = permissions;
     }
 
     @Override
@@ -64,6 +77,5 @@ public class AccessLevel {
         }
         return true;
     }
-    
-    
+
 }

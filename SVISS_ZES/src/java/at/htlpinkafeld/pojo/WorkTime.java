@@ -13,6 +13,7 @@ import java.util.Objects;
  * @author Martin Six
  */
 public class WorkTime {
+
     private int timeID;
     private User user;
     private Date startTime;
@@ -40,6 +41,10 @@ public class WorkTime {
 
     public int getTimeID() {
         return timeID;
+    }
+
+    public void setTimeID(int timeID) {
+        this.timeID = timeID;
     }
 
     public User getUser() {
@@ -118,6 +123,5 @@ public class WorkTime {
         }
         return true;
     }
-    
-    
+
 }

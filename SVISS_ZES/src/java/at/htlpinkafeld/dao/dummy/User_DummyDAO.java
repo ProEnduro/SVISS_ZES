@@ -29,7 +29,7 @@ public class User_DummyDAO extends Base_DummyDAO<User> implements User_DAO {
     @Override
     public User getUser(int persnr) {
         for (User u : super.getList()) {
-            if (u.getPersNr() == persnr) {
+            if (u.getUserNr() == persnr) {
                 return u;
             }
         }

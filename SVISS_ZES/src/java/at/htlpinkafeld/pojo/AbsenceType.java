@@ -10,8 +10,9 @@ package at.htlpinkafeld.pojo;
  * @author Martin Six
  */
 public class AbsenceType {
-    private final int absenceID;
-    private final String absenceName;
+
+    private int absenceID;
+    private String absenceName;
 
     public AbsenceType(int absenceID, String absenceName) {
         this.absenceID = absenceID;
@@ -22,8 +23,16 @@ public class AbsenceType {
         return absenceID;
     }
 
+    public void setAbsenceID(int absenceID) {
+        this.absenceID = absenceID;
+    }
+
     public String getAbsenceName() {
         return absenceName;
+    }
+
+    public void setAbsenceName(String absenceName) {
+        this.absenceName = absenceName;
     }
 
     @Override
@@ -55,6 +64,5 @@ public class AbsenceType {
         }
         return true;
     }
-    
-    
+
 }

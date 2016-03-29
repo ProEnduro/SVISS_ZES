@@ -13,9 +13,9 @@ import java.util.Objects;
  * @author Martin Six
  */
 public class Absence {
-    private final int absenceID;
-    private final User user;
-    private final AbsenceType absenceType;
+    private int absenceID;
+    private User user;
+    private AbsenceType absenceType;
     private Date startTime;
     private Date endTime;
     private boolean acknowledged;
@@ -42,12 +42,24 @@ public class Absence {
         return absenceID;
     }
 
+    public void setAbsenceID(int absenceID) {
+        this.absenceID = absenceID;
+    }
+
     public User getUser() {
         return user;
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public AbsenceType getAbsenceType() {
         return absenceType;
+    }
+
+    public void setAbsenceType(AbsenceType absenceType) {
+        this.absenceType = absenceType;
     }
 
     public Date getStartTime() {

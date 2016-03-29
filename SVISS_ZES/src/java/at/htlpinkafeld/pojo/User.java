@@ -13,7 +13,7 @@ import java.util.Date;
  */
 public class User {
 
-    private final int persNr;
+    private int userNr;
     private AccessLevel accessLevel;
     private String PersName;
     private int vacationLeft;
@@ -24,8 +24,8 @@ public class User {
     private String pass;
     private Double weekTime;
 
-    public User(int persnr, AccessLevel accessLevel, String PersName, int vacationLeft, int overTimeLeft, String username, String email, Date hiredate, String pass, Double weekTime) {
-        this.persNr = persnr;
+    public User(int userNr, AccessLevel accessLevel, String PersName, int vacationLeft, int overTimeLeft, String username, String email, Date hiredate, String pass, Double weekTime) {
+        this.userNr = userNr;
         this.accessLevel = accessLevel;
         this.PersName = PersName;
         this.vacationLeft = vacationLeft;
@@ -37,8 +37,8 @@ public class User {
         this.weekTime = weekTime;
     }
 
-    public User(int persnr, AccessLevel accessLevel, String PersName, String username, String email, Date hiredate, String pass, Double weekTime) {
-        this.persNr = persnr;
+    public User(int userNr, AccessLevel accessLevel, String PersName, String username, String email, Date hiredate, String pass, Double weekTime) {
+        this.userNr = userNr;
         this.accessLevel = accessLevel;
         this.PersName = PersName;
         this.username = username;
@@ -48,8 +48,15 @@ public class User {
         this.weekTime = weekTime;
     }
 
-    public int getPersNr() {
-        return persNr;
+    public User() {
+    }
+
+    public int getUserNr() {
+        return userNr;
+    }
+
+    public void setUserNr(int userNr) {
+        this.userNr = userNr;
     }
 
     public AccessLevel getAccessLevel() {
@@ -126,13 +133,13 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" + "persnr=" + persNr + ", accessLevelId=" + accessLevel + ", PersName=" + PersName + ", vacationLeft=" + vacationLeft + ", overTimeLeft=" + overTimeLeft + ", username=" + username + ", email=" + email + ", hiredate=" + hiredate + ", pass=" + pass + ", weekTime=" + weekTime + '}';
+        return "User{" + "persnr=" + userNr + ", accessLevelId=" + accessLevel + ", PersName=" + PersName + ", vacationLeft=" + vacationLeft + ", overTimeLeft=" + overTimeLeft + ", username=" + username + ", email=" + email + ", hiredate=" + hiredate + ", pass=" + pass + ", weekTime=" + weekTime + '}';
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 47 * hash + this.persNr;
+        hash = 47 * hash + this.userNr;
         return hash;
     }
 
@@ -148,10 +155,10 @@ public class User {
             return false;
         }
         final User other = (User) obj;
-        if (this.persNr != other.persNr) {
+        if (this.userNr != other.userNr) {
             return false;
         }
         return true;
     }
-    
+
 }

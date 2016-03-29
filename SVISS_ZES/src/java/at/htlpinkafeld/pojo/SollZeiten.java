@@ -15,8 +15,8 @@ import java.util.Objects;
  */
 public class SollZeiten {
 
-    private final DayOfWeek day;
-    private final User user;
+    private DayOfWeek day;
+    private User user;
     private LocalTime sollStartTime;
     private LocalTime sollEndTime;
 
@@ -31,8 +31,16 @@ public class SollZeiten {
         return day;
     }
 
+    public void setDay(DayOfWeek day) {
+        this.day = day;
+    }
+
     public User getUser() {
         return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public LocalTime getSollStartTime() {
