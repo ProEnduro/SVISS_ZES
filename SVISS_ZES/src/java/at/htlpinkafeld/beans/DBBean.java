@@ -18,7 +18,7 @@ public class DBBean {
     List<User> userL;
 
     public DBBean() {
-        userL = ConnectionManager.getUserDAO().getUserList();
+        userL = ConnectionManager.getUserDAO().getList();
     }
 
     public List<User> getUserL() {

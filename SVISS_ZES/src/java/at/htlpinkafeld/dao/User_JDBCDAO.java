@@ -21,26 +21,37 @@ import java.util.logging.Logger;
  *
  * @author Martin Six
  */
-public class User_JDBCDAO extends User_DAO {
+public class User_JDBCDAO implements User_DAO {
 
-    private final static String GET_ALLUSER_STATEMENT = "SELECT * FROM user";
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    private static final String TABLE_NAME = "User";
+    private static final String USERNR_COL = "USERNR";
+    private static final String ACCESSLEVELID_COL = "ACCESSLEVELID";
+    private static final String PERSNAME_COL = "USERNAME";
+    private static final String VACATIONLEFT_COL = "VACATIONLEFT";
+    private static final String OVERTIMELEFT_COL = "OVERTIMELEFT";
+    private static final String USERNAME_COL = "USERNAME";
+    private static final String EMAIL_COL = "EMAIL";
+    private static final String HIREDATE_COL = "HIREDATE";
+    private static final String PASSWORD_COL = "PASSWORD";
+    private static final String WEEKTIME_COL = "WEEKTIME";
+
+    private final static String GET_ALLUSER_STATEMENT = "SELECT * FROM " + TABLE_NAME;
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
-    public List<User> getUserList() {
+    public List<User> getList() {
         List<User> userList = new ArrayList<>();
 
-        //use try-with-resources for best practice
         try (Connection con = ConnectionManager.getInstance().getConnection();
                 Statement stmt = con.createStatement();
                 ResultSet rs = stmt.executeQuery(GET_ALLUSER_STATEMENT)) {
 
+            AccessLevel_DAO al_DAO = new AccessLevel_JDBCDAO();
             while (rs.next()) {
-                userList.add(new User(rs.getInt(PERSNR), rs.getInt(ACCESSLEVELID), rs.getString(PERSNAME), rs.getInt(VACATIONLEFT), rs.getInt(OVERTIMELEFT), rs.getString(USERNAME), rs.getString(EMAIL), sdf.parse(rs.getString(HIREDATE)), rs.getString(PASSWORD), rs.getDouble(WEEKTIME)));
+                userList.add(new User(rs.getInt(USERNR_COL), al_DAO.getAccessLevelByID(rs.getInt(ACCESSLEVELID_COL)), rs.getString(PERSNAME_COL), rs.getInt(VACATIONLEFT_COL), rs.getInt(OVERTIMELEFT_COL), rs.getString(USERNAME_COL),
+                        rs.getString(EMAIL_COL), sdf.parse(rs.getString(HIREDATE_COL)), rs.getString(PASSWORD_COL), rs.getDouble(WEEKTIME_COL)));
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        } catch (ParseException ex) {
+        } catch (SQLException | ParseException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -48,11 +59,12 @@ public class User_JDBCDAO extends User_DAO {
     }
 
     @Override
-    public void insertUser(User u) {
+    public void insert(User u) {
         try (Connection con = ConnectionManager.getInstance().getConnection();
                 Statement stmt = con.createStatement();) {
-            stmt.executeUpdate("insert into user(" + PERSNR + ", " + ACCESSLEVELID + "," + PERSNAME + "," + VACATIONLEFT + "," + OVERTIMELEFT + "," + USERNAME + "," + EMAIL + "," + HIREDATE + "," + PASSWORD + "," + WEEKTIME + ") values(" + u.getPersnr() + ", " + u.getAccessLevelId()
-                    + ", " + u.getPersName() + ", " + u.getVacationLeft() + ", " + u.getOverTimeLeft() + ", " + u.getUsername() + ", " + u.getEmail() + ", " + u.getHiredate() + ", " + u.getPass() + ", " + u.getWeekTime() + ");"
+            stmt.executeUpdate("insert into " + TABLE_NAME + "(" + USERNR_COL + ", " + ACCESSLEVELID_COL + "," + PERSNAME_COL + "," + VACATIONLEFT_COL + "," + OVERTIMELEFT_COL + "," + USERNAME_COL + ","
+                    + EMAIL_COL + "," + HIREDATE_COL + "," + PASSWORD_COL + "," + WEEKTIME_COL + ") values(" + u.getPersNr() + ", " + u.getAccessLevel().getAccessLevelID() + ", " + u.getPersName() + ", " + u.getVacationLeft() + ", "
+                    + u.getOverTimeLeft() + ", " + u.getUsername() + ", " + u.getEmail() + ", " + u.getHiredate() + ", " + u.getPass() + ", " + u.getWeekTime() + ");"
             );
         } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -60,35 +72,37 @@ public class User_JDBCDAO extends User_DAO {
     }
 
     @Override
-    public void updateUser(User u) {
+    public void update(User u) {
         try (Connection con = ConnectionManager.getInstance().getConnection();
                 Statement stmt = con.createStatement();) {
-            stmt.executeUpdate("update user set " + ACCESSLEVELID + "=" + u.getAccessLevelId() + ", " + PERSNAME + "= " + u.getPersName() + ",  " + VACATIONLEFT + "=" + u.getVacationLeft()
-                    + ",  " + OVERTIMELEFT + "=" + u.getOverTimeLeft() + ",  " + USERNAME + "=" + u.getUsername() + ", " + EMAIL + "= " + u.getEmail() + ",  " + HIREDATE + "=" + u.getHiredate() + ",  " + PASSWORD + "=" + u.getPass() + ",  " + WEEKTIME + "=" + u.getWeekTime() + " where " + PERSNR + "=" + u.getPersnr() + ";");
+            stmt.executeUpdate("update " + TABLE_NAME + " set " + ACCESSLEVELID_COL + "=" + u.getAccessLevel().getAccessLevelID() + ", " + PERSNAME_COL + "= " + u.getPersName() + ",  " + VACATIONLEFT_COL + "=" + u.getVacationLeft()
+                    + ",  " + OVERTIMELEFT_COL + "=" + u.getOverTimeLeft() + ",  " + USERNAME_COL + "=" + u.getUsername() + ", " + EMAIL_COL + "= " + u.getEmail() + ",  " + HIREDATE_COL + "=" + u.getHiredate() + ",  "
+                    + PASSWORD_COL + "=" + u.getPass() + ",  " + WEEKTIME_COL + "=" + u.getWeekTime() + " where " + USERNR_COL + "=" + u.getPersNr() + ";");
         } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
-    public void deleteUser(int persnr) {
+    public void delete(User u) {
         try (Connection con = ConnectionManager.getInstance().getConnection();
                 Statement stmt = con.createStatement();) {
-            stmt.executeUpdate("delete from  user  where persnr=" + persnr + ";");
+            stmt.executeUpdate("delete from  " + TABLE_NAME + "  where persnr=" + u.getPersNr() + ";");
         } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
-    public User getUser(int persnr) {
+    public User getUser(int usernr) {
         User u = null;
         try (Connection con = ConnectionManager.getInstance().getConnection();
                 Statement stmt = con.createStatement();
-                ResultSet rs = stmt.executeQuery(GET_ALLUSER_STATEMENT)) {
+                ResultSet rs = stmt.executeQuery(GET_ALLUSER_STATEMENT + "WHERE " + USERNAME_COL + " = " + usernr)) {
 
+            AccessLevel_DAO al_DAO = new AccessLevel_JDBCDAO();
             if (rs.next()) {
-                u = new User(rs.getInt(PERSNR), rs.getInt(ACCESSLEVELID), rs.getString(PERSNAME), rs.getInt(VACATIONLEFT), rs.getInt(OVERTIMELEFT), rs.getString(USERNAME), rs.getString(EMAIL), sdf.parse(rs.getString(HIREDATE)), rs.getString(PASSWORD), rs.getDouble(WEEKTIME));
+                u = new User(rs.getInt(USERNR_COL), al_DAO.getAccessLevelByID(rs.getInt(ACCESSLEVELID_COL)), rs.getString(PERSNAME_COL), rs.getInt(VACATIONLEFT_COL), rs.getInt(OVERTIMELEFT_COL), rs.getString(USERNAME_COL), rs.getString(EMAIL_COL), sdf.parse(rs.getString(HIREDATE_COL)), rs.getString(PASSWORD_COL), rs.getDouble(WEEKTIME_COL));
             }
 
         } catch (SQLException ex) {

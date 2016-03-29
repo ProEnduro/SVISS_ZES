@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.dao;
 
+import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.User;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  *
  * @author Martin Six
  */
-public interface User_DAO extends Base_DAO<User>{
+public interface Absence_DAO extends Base_DAO<Absence> {
 
-    public abstract User getUser(int userNr);
+    public abstract List<Absence> getAbsenceByUser(User u);
 }

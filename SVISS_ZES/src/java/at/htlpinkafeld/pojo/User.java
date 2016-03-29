@@ -13,8 +13,8 @@ import java.util.Date;
  */
 public class User {
 
-    private int persnr;
-    private int accessLevelId;
+    private final int persNr;
+    private AccessLevel accessLevel;
     private String PersName;
     private int vacationLeft;
     private int overTimeLeft;
@@ -24,9 +24,9 @@ public class User {
     private String pass;
     private Double weekTime;
 
-    public User(int persnr, int accessLevelId, String PersName, int vacationLeft, int overTimeLeft, String username, String email, Date hiredate, String pass, Double weekTime) {
-        this.persnr = persnr;
-        this.accessLevelId = accessLevelId;
+    public User(int persnr, AccessLevel accessLevel, String PersName, int vacationLeft, int overTimeLeft, String username, String email, Date hiredate, String pass, Double weekTime) {
+        this.persNr = persnr;
+        this.accessLevel = accessLevel;
         this.PersName = PersName;
         this.vacationLeft = vacationLeft;
         this.overTimeLeft = overTimeLeft;
@@ -37,9 +37,9 @@ public class User {
         this.weekTime = weekTime;
     }
 
-    public User(int persnr, int accessLevelId, String PersName, String username, String email, Date hiredate, String pass, Double weekTime) {
-        this.persnr = persnr;
-        this.accessLevelId = accessLevelId;
+    public User(int persnr, AccessLevel accessLevel, String PersName, String username, String email, Date hiredate, String pass, Double weekTime) {
+        this.persNr = persnr;
+        this.accessLevel = accessLevel;
         this.PersName = PersName;
         this.username = username;
         this.email = email;
@@ -48,20 +48,16 @@ public class User {
         this.weekTime = weekTime;
     }
 
-    public int getPersnr() {
-        return persnr;
+    public int getPersNr() {
+        return persNr;
     }
 
-    public void setPersnr(int persnr) {
-        this.persnr = persnr;
+    public AccessLevel getAccessLevel() {
+        return accessLevel;
     }
 
-    public int getAccessLevelId() {
-        return accessLevelId;
-    }
-
-    public void setAccessLevelId(int accessLevelId) {
-        this.accessLevelId = accessLevelId;
+    public void setAccessLevel(AccessLevel accessLevel) {
+        this.accessLevel = accessLevel;
     }
 
     public String getPersName() {
@@ -130,6 +126,32 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" + "persnr=" + persnr + ", accessLevelId=" + accessLevelId + ", PersName=" + PersName + ", vacationLeft=" + vacationLeft + ", overTimeLeft=" + overTimeLeft + ", username=" + username + ", email=" + email + ", hiredate=" + hiredate + ", pass=" + pass + ", weekTime=" + weekTime + '}';
+        return "User{" + "persnr=" + persNr + ", accessLevelId=" + accessLevel + ", PersName=" + PersName + ", vacationLeft=" + vacationLeft + ", overTimeLeft=" + overTimeLeft + ", username=" + username + ", email=" + email + ", hiredate=" + hiredate + ", pass=" + pass + ", weekTime=" + weekTime + '}';
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 47 * hash + this.persNr;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final User other = (User) obj;
+        if (this.persNr != other.persNr) {
+            return false;
+        }
+        return true;
+    }
+    
 }

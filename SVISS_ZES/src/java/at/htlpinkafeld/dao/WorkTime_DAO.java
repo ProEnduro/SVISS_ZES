@@ -6,13 +6,14 @@
 package at.htlpinkafeld.dao;
 
 import at.htlpinkafeld.pojo.User;
+import at.htlpinkafeld.pojo.WorkTime;
 import java.util.List;
 
 /**
  *
  * @author Martin Six
  */
-public interface User_DAO extends Base_DAO<User>{
+public interface WorkTime_DAO extends Base_DAO<WorkTime> {
 
-    public abstract User getUser(int userNr);
+    public abstract List<WorkTime> getWorkTimesByUser(User u);
 }

@@ -5,14 +5,13 @@
  */
 package at.htlpinkafeld.dao;
 
-import at.htlpinkafeld.pojo.User;
-import java.util.List;
+import at.htlpinkafeld.pojo.AccessLevel;
 
 /**
  *
  * @author Martin Six
  */
-public interface User_DAO extends Base_DAO<User>{
+public interface AccessLevel_DAO extends Base_DAO<AccessLevel> {
 
-    public abstract User getUser(int userNr);
+    public abstract AccessLevel getAccessLevelByID(int accessLevelId);
 }

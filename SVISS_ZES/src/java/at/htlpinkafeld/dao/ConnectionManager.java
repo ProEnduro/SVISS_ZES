@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.dao;
 
+import at.htlpinkafeld.dao.dummy.User_DummyDAO;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -23,7 +24,6 @@ public class ConnectionManager {
 
     private static ConnectionManager conM = null;
     private DataSource ds;
-    private User_DAO userDAO;
 
     private ConnectionManager() throws SQLException {
         try {
@@ -54,6 +54,6 @@ public class ConnectionManager {
     }
 
     public static User_DAO getUserDAO() {
-        return new User_JDBCDAO();
+        return new User_DummyDAO();
     }
 }
