@@ -10,6 +10,7 @@ import at.htlpinkafeld.dao.dummy.Absence_DummyDAO;
 import at.htlpinkafeld.dao.dummy.AccessLevel_DummyDAO;
 import at.htlpinkafeld.dao.dummy.Permission_DummyDAO;
 import at.htlpinkafeld.dao.dummy.SollZeiten_DummyDAO;
+import at.htlpinkafeld.dao.dummy.User_DummyDAO;
 import at.htlpinkafeld.dao.dummy.WorkTime_DummyDAO;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -59,7 +60,7 @@ public class ConnectionManager {
     }
 
     public static User_DAO getUserDAO() {
-        return new User_JDBCDAO();
+        return new User_DummyDAO();
     }
     
     public static Permission_DAO getPermissionDAO(){
