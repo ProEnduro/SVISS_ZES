@@ -12,9 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -130,6 +128,11 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
     }
 
     @Override
+    public User getUserByUsername(String username) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
     protected Map<String, Object> entityToMap(User entity) {
         Map<String, Object> resMap = new HashMap<>();
 
@@ -148,24 +151,26 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
     }
 
     @Override
-    protected void resultSetToEntity(ResultSet rs, User entity) {
+    protected User getEntityFromResultSet(ResultSet rs) {
+        User u = new User();
         try {
-            entity.setUserNr(rs.getInt(USERNR_COL));
+            u.setUserNr(rs.getInt(USERNR_COL));
             //AccessLevel_DAO alDAO = new AccessLevel_JDBCDAO();
-            //entity.setAccessLevel(alDAO.getAccessLevelByID(rs.getInt(ACCESSLEVELID_COL)));
-            entity.setPersName(rs.getString(PERSNAME_COL));
-            entity.setVacationLeft(rs.getInt(VACATIONLEFT_COL));
-            entity.setOverTimeLeft(rs.getInt(OVERTIMELEFT_COL));
-            entity.setUsername(rs.getString(USERNAME_COL));
-            entity.setEmail(rs.getString(EMAIL_COL));
-            entity.setHiredate(sdf.parse(rs.getString(HIREDATE_COL)));
-            entity.setPass(rs.getString(PASSWORD_COL));
-            entity.setWeekTime(rs.getDouble(WEEKTIME_COL));
+            //u.setAccessLevel(alDAO.getAccessLevelByID(rs.getInt(ACCESSLEVELID_COL)));
+            u.setPersName(rs.getString(PERSNAME_COL));
+            u.setVacationLeft(rs.getInt(VACATIONLEFT_COL));
+            u.setOverTimeLeft(rs.getInt(OVERTIMELEFT_COL));
+            u.setUsername(rs.getString(USERNAME_COL));
+            u.setEmail(rs.getString(EMAIL_COL));
+            u.setHiredate(sdf.parse(rs.getString(HIREDATE_COL)));
+            u.setPass(rs.getString(PASSWORD_COL));
+            u.setWeekTime(rs.getDouble(WEEKTIME_COL));
 
         } catch (SQLException | ParseException ex) {
             Logger.getLogger(Base_JDBCDAO.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
+        return u;
     }
 
     @Override
@@ -175,11 +180,6 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
         } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    @Override
-    protected User createEntity() {
-        return new User();
     }
 
 }

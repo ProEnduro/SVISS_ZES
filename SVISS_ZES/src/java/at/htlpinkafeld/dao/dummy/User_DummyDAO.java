@@ -36,4 +36,14 @@ public class User_DummyDAO extends Base_DummyDAO<User> implements User_DAO {
         return null;
     }
 
+    @Override
+    public User getUserByUsername(String username) {
+        for (User u : super.getList()) {
+            if (u.getUsername().contentEquals(username)) {
+                return u;
+            }
+        }
+        return null;
+    }
+
 }

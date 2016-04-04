@@ -39,17 +39,31 @@ public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
 
         SQL_SELECTALL_STATEMENT = "SELECT * FROM " + TABLE_NAME;
 
-        SQL_INSERT_STATEMENT = "INSERT (";
-        for (String col : ALL_COLUMNS) {
-            SQL_INSERT_STATEMENT += col + ", ";
-        }
-        SQL_INSERT_STATEMENT = SQL_INSERT_STATEMENT.substring(0, SQL_INSERT_STATEMENT.length() - 1) + ") VALUES (";
-        for (int i = ALL_COLUMNS.length; i > 0; i--) {
-            SQL_INSERT_STATEMENT += "?, ";
-        }
-        SQL_INSERT_STATEMENT = SQL_INSERT_STATEMENT.substring(0, SQL_INSERT_STATEMENT.length() - 1) + ");";
+        SQL_INSERT_STATEMENT = createInsertStatement();
 
-        SQL_UPDATE_STATEMENT = "UPDATE " + TABLE_NAME + " SET ";
+        SQL_UPDATE_STATEMENT = createUpdateStatement();
+
+        SQL_DELETE_STATEMENT = createDeleteStatement();
+    }
+
+    //Used to dynamically create a sql-insert-Statement
+    //usable for all Tables except n-m Relation Tables
+    private String createInsertStatement() {
+        String sql_statement = "INSERT (";
+        for (String col : ALL_COLUMNS) {
+            sql_statement += col + ", ";
+        }
+        sql_statement = sql_statement.substring(0, sql_statement.length() - 1) + ") VALUES (";
+        for (int i = ALL_COLUMNS.length; i > 0; i--) {
+            sql_statement += "?, ";
+        }
+        sql_statement = sql_statement.substring(0, sql_statement.length() - 1) + ");";
+        return sql_statement;
+    }
+
+    //Used to dynamically create a sql-update-Statement
+    private String createUpdateStatement() {
+        String sql_statement = "UPDATE " + TABLE_NAME + " SET ";
         for (String col : ALL_COLUMNS) {
             boolean colIsPK = false;
             for (String pk : PRIMARY_KEY) {
@@ -58,20 +72,28 @@ public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
                 }
             }
             if (!colIsPK) {
-                SQL_UPDATE_STATEMENT += col + " = ?, ";
+                sql_statement += col + " = ?, ";
             }
         }
-        SQL_UPDATE_STATEMENT = SQL_UPDATE_STATEMENT.substring(0, SQL_UPDATE_STATEMENT.length() - 1) + " WHERE ";
+        sql_statement = sql_statement.substring(0, sql_statement.length() - 1) + " WHERE ";
         for (String pk : PRIMARY_KEY) {
-            SQL_UPDATE_STATEMENT += pk + "= ? AND ";
+            sql_statement += pk + "= ? AND ";
         }
-        SQL_UPDATE_STATEMENT = SQL_UPDATE_STATEMENT.substring(0, SQL_UPDATE_STATEMENT.length() - 4) + ";";
+        sql_statement = sql_statement.substring(0, sql_statement.length() - 4) + ";";
 
-        SQL_DELETE_STATEMENT = "DELETE FROM " + TABLE_NAME + " WHERE ";
+        return sql_statement;
+    }
+
+    //Used to dynamically create a sql-update-Statement
+    //usable for all Tables except n-m Relation Tables
+    private String createDeleteStatement() {
+        String sql_statement = "DELETE FROM " + TABLE_NAME + " WHERE ";
         for (String pk : PRIMARY_KEY) {
-            SQL_DELETE_STATEMENT += pk + "= ? AND ";
+            sql_statement += pk + "= ? AND ";
         }
-        SQL_DELETE_STATEMENT = SQL_DELETE_STATEMENT.substring(0, SQL_DELETE_STATEMENT.length() - 4) + ";";
+        sql_statement = sql_statement.substring(0, sql_statement.length() - 4) + ";";
+
+        return sql_statement;
     }
 
     @Override
@@ -83,9 +105,7 @@ public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
                 ResultSet rs = stmt.executeQuery(SQL_SELECTALL_STATEMENT)) {
 
             while (rs.next()) {
-                T entity = createEntity();
-                resultSetToEntity(rs, entity);
-                entityList.add(entity);
+                entityList.add(getEntityFromResultSet(rs));
 
             }
         } catch (SQLException ex) {
@@ -170,9 +190,7 @@ public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
 
     protected abstract Map<String, Object> entityToMap(T entity);
 
-    protected abstract void resultSetToEntity(ResultSet rs, T entity);
+    protected abstract T getEntityFromResultSet(ResultSet rs);
 
     protected abstract void updateEntityWithAutoKeys(ResultSet rs, T entity);
-
-    protected abstract T createEntity();
 }

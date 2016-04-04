@@ -17,5 +17,19 @@ public class AbsenceType_DummyDAO extends Base_DummyDAO<AbsenceType> implements 
 
     public AbsenceType_DummyDAO() {
         super(new LinkedList<>());
+        super.insert(new AbsenceType(1, "medical leave"));
+        super.insert(new AbsenceType(2, "holiday"));
+        super.insert(new AbsenceType(3, "time compensation"));
+        super.insert(new AbsenceType(4, "business-related absence"));
+    }
+
+    @Override
+    public AbsenceType getAbsenceTypeByID(int absenceTypeId) {
+        for (AbsenceType at : super.getList()) {
+            if (at.getAbsenceID() == absenceTypeId) {
+                return at;
+            }
+        }
+        return null;
     }
 }

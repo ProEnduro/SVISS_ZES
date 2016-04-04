@@ -10,7 +10,6 @@ import at.htlpinkafeld.dao.dummy.Absence_DummyDAO;
 import at.htlpinkafeld.dao.dummy.AccessLevel_DummyDAO;
 import at.htlpinkafeld.dao.dummy.Permission_DummyDAO;
 import at.htlpinkafeld.dao.dummy.SollZeiten_DummyDAO;
-import at.htlpinkafeld.dao.dummy.User_DummyDAO;
 import at.htlpinkafeld.dao.dummy.WorkTime_DummyDAO;
 import java.sql.Connection;
 import java.sql.SQLException;

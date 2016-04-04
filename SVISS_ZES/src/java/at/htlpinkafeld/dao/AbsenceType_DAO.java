@@ -11,5 +11,7 @@ import at.htlpinkafeld.pojo.AbsenceType;
  *
  * @author Martin Six
  */
-public interface  AbsenceType_DAO extends Base_DAO<AbsenceType> {
+public interface AbsenceType_DAO extends Base_DAO<AbsenceType> {
+
+    public abstract AbsenceType getAbsenceTypeByID(int accessLevelId);
 }
