@@ -6,25 +6,48 @@
       xmlns:p="http://primefaces.org/ui"  
       >
 
+    <!--style="border-style: hidden; position: absolute; top: 38%; left: 30%-->
     <h:head>
         <title>Facelet Title</title>
+        <style>
+            .outerpanelgrid tbody tr, .outerpanelgrid tbody td{  
+                border: none; border-style: hidden;
+              //  background-color: #F8E0E0;
+            }
+            
+            .outerScreen{                 
+                //background-image: url("C:/Users/darkn/Documents/NetBeansProjects/ZES/trunk/SVISS_ZES/rand.jpg");
+                background-image: url("/SVISS_ZES/fgg.gif");
+                background-size: 31%;
+                //background-color: #F8E0E0;
+                background-repeat: no-repeat;
+                //background-color: #E3F6CE;
+                //
+            }
+            /*
+            body{
+                background-image: url("/SVISS_ZES/resources/images/imag.jpg/rand.jpg");            
+            }*/
+        </style>
     </h:head>
-    <h:body>
+    <h:body styleClass="outerScreen">
         <h:form>
             <f:view>
                 
-                <p:panelGrid id="pGrid" columns="2" style="background-color: blueviolet">
+                <p:panelGrid id="pGrid" columns="2" styleClass="outerpanelgrid" style=" border-style: hidden; position: absolute; top: 38%; left: 30%">
                     
                     <p:outputLabel id="outUser" value="Benutzername: "/>
                     <p:inputText id="inUser" value=""/>
                     
                     <p:outputLabel id="outPassword" value="Passwort: "/>
                     <p:password id="inPassword" value=""/>
+                    
+                    <p:commandButton style=" background-color: #A9E2F3; border-style: hidden" id="login" value="Login" action="submit"/>
+                    <br/>
+                    <p:commandButton style="background-color: red; border-style: hidden" id="forgotPassword" value="Passwort vergessen?" action="nope"/>
                 </p:panelGrid>
                  
-                <p:commandButton id="login" value="LogIn" action="submit"/>
-                <br/>
-                <p:commandButton id="forgotPassword" value="Passwort vergessen?" action="nope"/>
+                
                 
             </f:view>
         </h:form>
