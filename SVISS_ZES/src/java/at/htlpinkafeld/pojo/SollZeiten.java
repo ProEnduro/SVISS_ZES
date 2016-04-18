@@ -7,6 +7,8 @@ package at.htlpinkafeld.pojo;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.time.format.TextStyle;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -25,6 +27,36 @@ public class SollZeiten {
         this.user = user;
         this.sollStartTime = sollStartTime;
         this.sollEndTime = sollEndTime;
+    }
+
+    public static DayOfWeek getDayOfWeekFromDBShort(String s) {
+        if (s == null) {
+            return null;
+        }
+        switch (s.toUpperCase()) {
+            case "MON":
+                return DayOfWeek.MONDAY;
+            case "TUE":
+                return DayOfWeek.TUESDAY;
+            case "WED":
+                return DayOfWeek.WEDNESDAY;
+            case "THU":
+                return DayOfWeek.THURSDAY;
+            case "FRI":
+                return DayOfWeek.FRIDAY;
+            case "SAT":
+                return DayOfWeek.SATURDAY;
+            case "SUN":
+                return DayOfWeek.SUNDAY;
+        }
+        return null;
+    }
+
+    public static String getDBShortFromDayOfWeek(DayOfWeek dow) {
+        if (dow != null) {
+            return dow.getDisplayName(TextStyle.SHORT_STANDALONE, Locale.ENGLISH);
+        }
+        return null;
     }
 
     public DayOfWeek getDay() {

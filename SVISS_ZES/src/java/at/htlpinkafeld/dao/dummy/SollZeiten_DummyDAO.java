@@ -5,8 +5,8 @@
  */
 package at.htlpinkafeld.dao.dummy;
 
-import at.htlpinkafeld.dao.SollZeiten_DAO;
-import at.htlpinkafeld.dao.User_DAO;
+import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
+import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.pojo.SollZeiten;
 import at.htlpinkafeld.pojo.User;
 import java.time.DayOfWeek;

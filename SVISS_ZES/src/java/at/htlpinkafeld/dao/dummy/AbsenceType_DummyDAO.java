@@ -5,7 +5,7 @@
  */
 package at.htlpinkafeld.dao.dummy;
 
-import at.htlpinkafeld.dao.AbsenceType_DAO;
+import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
 import at.htlpinkafeld.pojo.AbsenceType;
 import java.util.LinkedList;
 

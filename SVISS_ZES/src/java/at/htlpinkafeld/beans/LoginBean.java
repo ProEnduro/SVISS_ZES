@@ -5,9 +5,8 @@
  */
 package at.htlpinkafeld.beans;
 
-import at.htlpinkafeld.dao.ConnectionManager;
-import at.htlpinkafeld.dao.User_DAO;
-import at.htlpinkafeld.dao.User_JDBCDAO;
+import at.htlpinkafeld.dao.DAOFactory;
+import at.htlpinkafeld.dao.interf.User_DAO;
 
 /**
  *
@@ -44,7 +43,7 @@ public class LoginBean {
         System.out.println(user);
         System.out.println(pw);
         
-        User_DAO user_dao = ConnectionManager.getUserDAO();
+        User_DAO user_dao = DAOFactory.getUserDAO();
 //        
 //        
         System.out.println(user_dao.getUserByUsername(user));

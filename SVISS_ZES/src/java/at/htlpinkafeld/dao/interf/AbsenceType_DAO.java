@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htlpinkafeld.dao;
+package at.htlpinkafeld.dao.interf;
 
-import at.htlpinkafeld.pojo.AccessLevel;
+import at.htlpinkafeld.pojo.AbsenceType;
 
 /**
  *
  * @author Martin Six
  */
-public interface AccessLevel_DAO extends Base_DAO<AccessLevel> {
+public interface AbsenceType_DAO extends Base_DAO<AbsenceType> {
 
-    public abstract AccessLevel getAccessLevelByID(int accessLevelId);
+    public abstract AbsenceType getAbsenceTypeByID(int absenceTypeID);
 }

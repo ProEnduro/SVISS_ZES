@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.dao;
 
+import at.htlpinkafeld.dao.interf.Base_DAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,7 +22,7 @@ import java.util.logging.Logger;
  * @author Martin Six
  * @param <T>
  */
-public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
+abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
 
     private final String TABLE_NAME;
     private final String[] PRIMARY_KEY;
@@ -32,7 +33,7 @@ public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
     private static String SQL_UPDATE_STATEMENT;
     private static String SQL_DELETE_STATEMENT;
 
-    public Base_JDBCDAO(String tableName, String[] primary_key, String[] columns) {
+    public Base_JDBCDAO(String tableName, String[] columns, String... primary_key) {
         TABLE_NAME = tableName;
         PRIMARY_KEY = primary_key;
         ALL_COLUMNS = columns;
@@ -49,7 +50,7 @@ public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
     //Used to dynamically create a sql-insert-Statement
     //usable for all Tables except n-m Relation Tables
     private String createInsertStatement() {
-        String sql_statement = "INSERT (";
+        String sql_statement = "INSERT INTO " + TABLE_NAME + " (";
         for (String col : ALL_COLUMNS) {
             sql_statement += col + ", ";
         }

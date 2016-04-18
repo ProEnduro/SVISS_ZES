@@ -3,17 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htlpinkafeld.dao;
+package at.htlpinkafeld.dao.interf;
 
-import at.htlpinkafeld.pojo.SollZeiten;
-import at.htlpinkafeld.pojo.User;
 import java.util.List;
 
 /**
  *
  * @author Martin Six
  */
-public interface SollZeiten_DAO extends Base_DAO<SollZeiten> {
+public interface Base_DAO<T> {
+    
+    public abstract List<T> getList();
 
-    public abstract List<SollZeiten> getSollZeitenByUser(User u);
+    public abstract void insert(T o);
+
+    public abstract void update(T o);
+
+    public abstract void delete(T o);
 }

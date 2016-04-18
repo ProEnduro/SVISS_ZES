@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.pojo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,10 +16,9 @@ public class AccessLevel {
 
     private int accessLevelID;
     private String accessLevelName;
-    //the Integer is the id of the Permission
-    private Map<Integer, Permission> permissions;
+    private List<Permission> permissions;
 
-    public AccessLevel(int accessLevelID, String accessLevelName, Map<Integer, Permission> permissions) {
+    public AccessLevel(int accessLevelID, String accessLevelName, List<Permission> permissions) {
         this.accessLevelID = accessLevelID;
         this.accessLevelName = accessLevelName;
         this.permissions = permissions;
@@ -40,11 +40,11 @@ public class AccessLevel {
         this.accessLevelName = accessLevelName;
     }
 
-    public Map<Integer, Permission> getPermissions() {
+    public List<Permission> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(Map<Integer, Permission> permissions) {
+    public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
     }
 

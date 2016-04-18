@@ -3,14 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htlpinkafeld.dao;
+package at.htlpinkafeld.dao.interf;
 
-import at.htlpinkafeld.pojo.Permission;
+import at.htlpinkafeld.pojo.AccessLevel;
 
 /**
  *
  * @author Martin Six
  */
-public interface Permission_DAO extends Base_DAO<Permission>{
-    
+public interface AccessLevel_DAO extends Base_DAO<AccessLevel> {
+
+    public abstract AccessLevel getAccessLevelByID(int accessLevelId);
 }

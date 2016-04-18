@@ -5,7 +5,7 @@
  */
 package at.htlpinkafeld.dao.dummy;
 
-import at.htlpinkafeld.dao.Base_DAO;
+import at.htlpinkafeld.dao.interf.Base_DAO;
 import java.util.List;
 
 /**

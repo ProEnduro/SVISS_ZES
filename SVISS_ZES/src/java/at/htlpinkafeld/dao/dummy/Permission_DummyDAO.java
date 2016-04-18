@@ -5,9 +5,10 @@
  */
 package at.htlpinkafeld.dao.dummy;
 
-import at.htlpinkafeld.dao.Permission_DAO;
+import at.htlpinkafeld.dao.interf.Permission_DAO;
 import at.htlpinkafeld.pojo.Permission;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -18,6 +19,13 @@ public class Permission_DummyDAO extends Base_DummyDAO<Permission> implements Pe
     public Permission_DummyDAO() {
         super(new LinkedList<>());
 
+    }
+
+    @Override
+    public List<Permission> getPermissionsByAccessLevelID(int id) {
+        List<Permission> permissions;
+
+        return null;
     }
 
 }

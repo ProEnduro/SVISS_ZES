@@ -5,8 +5,8 @@
  */
 package at.htlpinkafeld.dao.dummy;
 
-import at.htlpinkafeld.dao.User_DAO;
-import at.htlpinkafeld.dao.WorkTime_DAO;
+import at.htlpinkafeld.dao.interf.User_DAO;
+import at.htlpinkafeld.dao.interf.WorkTime_DAO;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
 import java.util.ArrayList;

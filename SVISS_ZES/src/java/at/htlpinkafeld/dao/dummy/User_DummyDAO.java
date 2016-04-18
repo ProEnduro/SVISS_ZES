@@ -5,8 +5,8 @@
  */
 package at.htlpinkafeld.dao.dummy;
 
-import at.htlpinkafeld.dao.AccessLevel_DAO;
-import at.htlpinkafeld.dao.User_DAO;
+import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
+import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.pojo.User;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;

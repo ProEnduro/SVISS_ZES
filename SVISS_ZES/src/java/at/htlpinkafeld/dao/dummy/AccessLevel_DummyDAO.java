@@ -5,12 +5,12 @@
  */
 package at.htlpinkafeld.dao.dummy;
 
-import at.htlpinkafeld.dao.AccessLevel_DAO;
+import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
 import at.htlpinkafeld.pojo.AccessLevel;
 import at.htlpinkafeld.pojo.Permission;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.List;
 
 /**
  *
@@ -20,11 +20,11 @@ public class AccessLevel_DummyDAO extends Base_DummyDAO<AccessLevel> implements 
 
     public AccessLevel_DummyDAO() {
         super(new LinkedList<>());
-        Map<Integer, Permission> permMap = new HashMap<>();
-        super.insert(new AccessLevel(3, "Reader", permMap));
-        super.insert(new AccessLevel(4, "User", permMap));
-        super.insert(new AccessLevel(2, "Approver", permMap));
-        super.insert(new AccessLevel(1, "Admin", permMap));
+        List<Permission> permList = new ArrayList<>();
+        super.insert(new AccessLevel(3, "Reader", permList));
+        super.insert(new AccessLevel(4, "User", permList));
+        super.insert(new AccessLevel(2, "Approver", permList));
+        super.insert(new AccessLevel(1, "Admin", permList));
     }
 
     @Override

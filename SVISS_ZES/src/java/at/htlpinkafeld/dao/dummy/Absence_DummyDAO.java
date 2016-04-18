@@ -5,9 +5,9 @@
  */
 package at.htlpinkafeld.dao.dummy;
 
-import at.htlpinkafeld.dao.AbsenceType_DAO;
-import at.htlpinkafeld.dao.Absence_DAO;
-import at.htlpinkafeld.dao.User_DAO;
+import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
+import at.htlpinkafeld.dao.interf.Absence_DAO;
+import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.User;
 import java.util.ArrayList;
