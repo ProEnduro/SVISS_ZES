@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htlpinkafeld.dao;
+package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
 import at.htlpinkafeld.pojo.AbsenceType;
@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  *
  * @author Martin Six
  */
-class AbsenceType_JDBCDAO extends Base_JDBCDAO<AbsenceType> implements AbsenceType_DAO {
+public class AbsenceType_JDBCDAO extends Base_JDBCDAO<AbsenceType> implements AbsenceType_DAO {
     
     public static final String ABSENCETYPEID_COL = "AbsenceTypeID";
     public static final String ABSENCETYPENAME_COL = "AbsenceTypeName";
@@ -29,7 +29,7 @@ class AbsenceType_JDBCDAO extends Base_JDBCDAO<AbsenceType> implements AbsenceTy
     public static final String PRIMARY_KEY = ABSENCETYPEID_COL;
     public static final String[] ALL_COLUMNS = {ABSENCETYPEID_COL, ABSENCETYPENAME_COL};
     
-    public AbsenceType_JDBCDAO() {
+    protected AbsenceType_JDBCDAO() {
         super(TABLE_NAME, ALL_COLUMNS, PRIMARY_KEY);
     }
     

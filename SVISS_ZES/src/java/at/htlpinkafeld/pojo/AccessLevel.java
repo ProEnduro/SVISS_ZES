@@ -18,6 +18,12 @@ public class AccessLevel {
     private String accessLevelName;
     private List<Permission> permissions;
 
+    public AccessLevel(AccessLevel al){
+        this.accessLevelID = al.accessLevelID;
+        this.accessLevelName = al.accessLevelName;
+        this.permissions = al.permissions;
+    }
+    
     public AccessLevel(int accessLevelID, String accessLevelName, List<Permission> permissions) {
         this.accessLevelID = accessLevelID;
         this.accessLevelName = accessLevelName;
@@ -46,6 +52,10 @@ public class AccessLevel {
 
     public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
+    }
+
+    public boolean containsPermission(Permission p) {
+        return permissions.contains(p);
     }
 
     @Override

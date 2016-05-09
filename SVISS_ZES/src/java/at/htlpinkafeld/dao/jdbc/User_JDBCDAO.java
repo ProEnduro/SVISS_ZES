@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htlpinkafeld.dao;
+package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  *
  * @author Martin Six
  */
-class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
+public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
 
     public static final String USERNR_COL = "USERNR";
     public static final String ACCESSLEVELID_COL = "ACCESSLEVELID";
@@ -43,7 +43,7 @@ class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-    public User_JDBCDAO() {
+    protected User_JDBCDAO() {
         super(TABLE_NAME, ALL_COLUMNS, PRIMARY_KEY);
     }
 

@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class WorkTime_DummyDAO extends Base_DummyDAO<WorkTime> implements WorkTime_DAO {
 
-    public WorkTime_DummyDAO() {
+    protected WorkTime_DummyDAO() {
         super(new ArrayList<>());
         User_DAO uDAO = new User_DummyDAO();
         super.insert(new WorkTime(1, uDAO.getUser(1), new GregorianCalendar(2016, 3, 14, 8, 0).getTime(), new GregorianCalendar(2016, 3, 14, 16, 30).getTime(), 30, "Start Test", "End Test"));
@@ -32,10 +32,15 @@ public class WorkTime_DummyDAO extends Base_DummyDAO<WorkTime> implements WorkTi
         List<WorkTime> wtList = new LinkedList<>();
         for (WorkTime wt : super.getList()) {
             if (wt.getUser().equals(u)) {
-                wtList.add(wt);
+                wtList.add(clone(wt));
             }
         }
         return wtList;
+    }
+
+    @Override
+    protected WorkTime clone(WorkTime entity) {
+        return new WorkTime(entity);
     }
 
 }

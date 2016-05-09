@@ -5,7 +5,7 @@
  */
 package at.htlpinkafeld.beans;
 
-import at.htlpinkafeld.dao.DAOFactory;
+import at.htlpinkafeld.dao.interf.DAOFactory;
 import at.htlpinkafeld.pojo.User;
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class DBBean {
     List<User> userL;
 
     public DBBean() {
-        userL = DAOFactory.getUserDAO().getList();
+        userL = DAOFactory.getDAOFactory().getUserDAO().getList();
     }
 
     public List<User> getUserL() {

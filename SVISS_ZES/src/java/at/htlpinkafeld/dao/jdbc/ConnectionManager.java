@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htlpinkafeld.dao;
+package at.htlpinkafeld.dao.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -17,14 +17,14 @@ import javax.sql.DataSource;
  *
  * @author Martin Six
  */
-class ConnectionManager {
+public class ConnectionManager {
 
     private static final String DATASOURCE = "jdbc/zes_sviss";
 
     private static ConnectionManager conM = null;
     private DataSource ds;
 
-    private ConnectionManager() throws SQLException {
+    protected ConnectionManager() throws SQLException {
         try {
             Context ctx;
             ctx = new javax.naming.InitialContext();

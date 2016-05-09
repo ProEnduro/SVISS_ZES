@@ -13,12 +13,22 @@ import java.util.Objects;
  * @author Martin Six
  */
 public class Absence {
+
     private int absenceID;
     private User user;
     private AbsenceType absenceType;
     private Date startTime;
     private Date endTime;
     private boolean acknowledged;
+
+    public Absence(Absence a) {
+        this.absenceID = a.absenceID;
+        this.user = a.user;
+        this.absenceType = a.absenceType;
+        this.startTime = a.startTime;
+        this.endTime = a.endTime;
+        this.acknowledged = a.acknowledged;
+    }
 
     public Absence(int absenceID, User user, AbsenceType absenceType, Date startTime, Date endTime, boolean acknowledged) {
         this.absenceID = absenceID;
@@ -35,7 +45,7 @@ public class Absence {
         this.absenceType = absenceType;
         this.startTime = startTime;
         this.endTime = endTime;
-        acknowledged=false;
+        acknowledged = false;
     }
 
     public int getAbsenceID() {
@@ -119,5 +129,5 @@ public class Absence {
         }
         return true;
     }
-    
+
 }

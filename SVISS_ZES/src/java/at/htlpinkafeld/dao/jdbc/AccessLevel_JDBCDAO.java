@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htlpinkafeld.dao;
+package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
 import at.htlpinkafeld.dao.interf.Permission_DAO;
@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  *
  * @author Martin Six
  */
-class AccessLevel_JDBCDAO extends Base_JDBCDAO<AccessLevel> implements AccessLevel_DAO {
+public class AccessLevel_JDBCDAO extends Base_JDBCDAO<AccessLevel> implements AccessLevel_DAO {
 
     public static final String ACCESSLEVELID_COL = "AccessLevelID";
     public static final String ACCESSLEVELNAME_COL = "AccessLevelName";
@@ -33,7 +33,7 @@ class AccessLevel_JDBCDAO extends Base_JDBCDAO<AccessLevel> implements AccessLev
     public static final String PRIMARY_KEY = ACCESSLEVELID_COL;
     public static final String[] ALL_COLUMNS = {ACCESSLEVELID_COL, ACCESSLEVELNAME_COL};
 
-    public AccessLevel_JDBCDAO() {
+    protected AccessLevel_JDBCDAO() {
         super(TABLE_NAME, ALL_COLUMNS, PRIMARY_KEY);
     }
 

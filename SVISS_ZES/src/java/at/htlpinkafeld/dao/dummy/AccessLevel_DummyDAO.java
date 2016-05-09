@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class AccessLevel_DummyDAO extends Base_DummyDAO<AccessLevel> implements AccessLevel_DAO {
 
-    public AccessLevel_DummyDAO() {
+    protected AccessLevel_DummyDAO() {
         super(new LinkedList<>());
         List<Permission> permList = new ArrayList<>();
         super.insert(new AccessLevel(3, "Reader", permList));
@@ -31,10 +31,15 @@ public class AccessLevel_DummyDAO extends Base_DummyDAO<AccessLevel> implements 
     public AccessLevel getAccessLevelByID(int accessLevelId) {
         for (AccessLevel al : super.getList()) {
             if (al.getAccessLevelID() == accessLevelId) {
-                return al;
+                return clone(al);
             }
         }
         return null;
+    }
+
+    @Override
+    protected AccessLevel clone(AccessLevel entity) {
+        return new AccessLevel(entity);
     }
 
 }

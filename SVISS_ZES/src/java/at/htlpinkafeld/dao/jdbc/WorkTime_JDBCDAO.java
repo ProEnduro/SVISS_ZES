@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htlpinkafeld.dao;
+package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.WorkTime_DAO;
 import at.htlpinkafeld.pojo.User;
@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  *
  * @author Martin Six
  */
-class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime_DAO {
+public class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime_DAO {
 
     public static final String TIMEID_COL = "TimeID";
     public static final String USERNR_COL = User_JDBCDAO.USERNR_COL;
@@ -37,7 +37,7 @@ class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime_DAO {
     public static final String[] PRIMARY_KEY = {TIMEID_COL, USERNR_COL};
     public static final String[] ALL_COLUMNS = {TIMEID_COL, USERNR_COL, STARTTIME_COL, ENDTIME_COL, BREAKTIME_COL, STARTCOMMENT_COL, ENDCOMMENT_COL};
 
-    public WorkTime_JDBCDAO() {
+    protected WorkTime_JDBCDAO() {
         super(TABLE_NAME, ALL_COLUMNS, PRIMARY_KEY);
     }
 

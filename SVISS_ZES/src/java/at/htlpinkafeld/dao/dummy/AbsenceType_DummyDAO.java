@@ -15,7 +15,7 @@ import java.util.LinkedList;
  */
 public class AbsenceType_DummyDAO extends Base_DummyDAO<AbsenceType> implements AbsenceType_DAO {
 
-    public AbsenceType_DummyDAO() {
+    protected AbsenceType_DummyDAO() {
         super(new LinkedList<>());
         super.insert(new AbsenceType(1, "medical leave"));
         super.insert(new AbsenceType(2, "holiday"));
@@ -27,9 +27,14 @@ public class AbsenceType_DummyDAO extends Base_DummyDAO<AbsenceType> implements 
     public AbsenceType getAbsenceTypeByID(int absenceTypeId) {
         for (AbsenceType at : super.getList()) {
             if (at.getAbsenceID() == absenceTypeId) {
-                return at;
+                return clone(at);
             }
         }
         return null;
+    }
+
+    @Override
+    protected AbsenceType clone(AbsenceType entity) {
+        return new AbsenceType(entity);
     }
 }

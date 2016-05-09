@@ -3,10 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htlpinkafeld.dao;
+package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.Absence_DAO;
-import at.htlpinkafeld.dao.AbsenceType_JDBCDAO;
 import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.User;
 import java.sql.Connection;
@@ -24,7 +23,7 @@ import java.util.logging.Logger;
  *
  * @author Martin Six
  */
-class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DAO {
+public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DAO {
 
     public static final String ABSENCEID_COL = "AbsenceID";
     public static final String USERNR_COL = User_JDBCDAO.USERNR_COL;
@@ -37,7 +36,7 @@ class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DAO {
     public static final String[] PRIMARY_KEY = {ABSENCEID_COL, USERNR_COL};
     public static final String[] ALL_COLUMNS = {ABSENCEID_COL, USERNR_COL, ABSENCETYPEID_COL, STARTTIME_COL, ENDTIME_COL, ACKNOWLEDGED_COL};
 
-    public Absence_JDBCDAO() {
+    protected Absence_JDBCDAO() {
         super(TABLE_NAME, ALL_COLUMNS, PRIMARY_KEY);
     }
 

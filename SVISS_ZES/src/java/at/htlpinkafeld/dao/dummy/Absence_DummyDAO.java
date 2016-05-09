@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class Absence_DummyDAO extends Base_DummyDAO<Absence> implements Absence_DAO {
 
-    public Absence_DummyDAO() {
+    protected Absence_DummyDAO() {
         super(new ArrayList<>());
         User_DAO uDAO = new User_DummyDAO();
         AbsenceType_DAO aDAO = new AbsenceType_DummyDAO();
@@ -34,10 +34,15 @@ public class Absence_DummyDAO extends Base_DummyDAO<Absence> implements Absence_
         List<Absence> aList = new LinkedList<>();
         for (Absence a : super.getList()) {
             if (a.getUser().equals(u)) {
-                aList.add(a);
+                aList.add(clone(a));
             }
         }
         return aList;
+    }
+
+    @Override
+    protected Absence clone(Absence entity) {
+        return new Absence(entity);
     }
 
 }

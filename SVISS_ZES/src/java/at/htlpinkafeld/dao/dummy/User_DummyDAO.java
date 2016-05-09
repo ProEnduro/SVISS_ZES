@@ -17,7 +17,7 @@ import java.util.GregorianCalendar;
  */
 public class User_DummyDAO extends Base_DummyDAO<User> implements User_DAO {
 
-    public User_DummyDAO() {
+    protected User_DummyDAO() {
         super(new ArrayList<>());
         AccessLevel_DAO al_DAO = new AccessLevel_DummyDAO();
         super.insert(new User(1, al_DAO.getAccessLevelByID(1), "AdminUser", "admin", "admin@test.at", new GregorianCalendar(2016, 3, 7).getTime(), "admin", 38.5));
@@ -30,7 +30,7 @@ public class User_DummyDAO extends Base_DummyDAO<User> implements User_DAO {
     public User getUser(int persnr) {
         for (User u : super.getList()) {
             if (u.getUserNr() == persnr) {
-                return u;
+                return clone(u);
             }
         }
         return null;
@@ -40,10 +40,15 @@ public class User_DummyDAO extends Base_DummyDAO<User> implements User_DAO {
     public User getUserByUsername(String username) {
         for (User u : super.getList()) {
             if (u.getUsername().contentEquals(username)) {
-                return u;
+                return clone(u);
             }
         }
         return null;
+    }
+
+    @Override
+    protected User clone(User entity) {
+        return new User(entity);
     }
 
 }

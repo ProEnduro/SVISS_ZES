@@ -23,6 +23,16 @@ public class WorkTime {
     private String startComment;
     private String endComment;
 
+    public WorkTime(WorkTime wt) {
+        this.timeID = wt.timeID;
+        this.user = wt.user;
+        this.startTime = wt.startTime;
+        this.endTime = wt.endTime;
+        this.breakTime = wt.breakTime;
+        this.startComment = wt.startComment;
+        this.endComment = wt.endComment;
+    }
+
     public WorkTime(int timeID, User user, Date startTime, Date endTime, int breakTime, String startComment, String endComment) {
         this.timeID = timeID;
         this.user = user;
@@ -40,7 +50,7 @@ public class WorkTime {
     }
 
     public WorkTime() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
     }
 
     public int getTimeID() {

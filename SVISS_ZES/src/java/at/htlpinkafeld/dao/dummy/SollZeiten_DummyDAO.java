@@ -19,10 +19,9 @@ import java.util.List;
  *
  * @author Martin Six
  */
-public class SollZeiten_DummyDAO extends Base_DummyDAO<SollZeiten>implements SollZeiten_DAO {
+public class SollZeiten_DummyDAO extends Base_DummyDAO<SollZeiten> implements SollZeiten_DAO {
 
-
-    public SollZeiten_DummyDAO() {
+    protected SollZeiten_DummyDAO() {
         super(new ArrayList<>());
         User_DAO uDAO = new User_DummyDAO();
         for (int i = 1; i < 5; i++) {
@@ -41,10 +40,15 @@ public class SollZeiten_DummyDAO extends Base_DummyDAO<SollZeiten>implements Sol
         List<SollZeiten> szList = new LinkedList<>();
         for (SollZeiten sz : super.getList()) {
             if (sz.getUser().equals(u)) {
-                szList.add(sz);
+                szList.add(clone(sz));
             }
         }
         return szList;
+    }
+
+    @Override
+    protected SollZeiten clone(SollZeiten entity) {
+        return new SollZeiten(entity);
     }
 
 }

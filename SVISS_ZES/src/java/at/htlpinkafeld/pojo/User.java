@@ -24,6 +24,19 @@ public class User {
     private String pass;
     private Double weekTime;
 
+    public User(User u) {
+        this.userNr = u.userNr;
+        this.accessLevel = u.accessLevel;
+        this.PersName = u.PersName;
+        this.vacationLeft = u.vacationLeft;
+        this.overTimeLeft = u.overTimeLeft;
+        this.username = u.username;
+        this.email = u.email;
+        this.hiredate = u.hiredate;
+        this.pass = u.pass;
+        this.weekTime = u.weekTime;
+    }
+
     public User(int userNr, AccessLevel accessLevel, String PersName, int vacationLeft, int overTimeLeft, String username, String email, Date hiredate, String pass, Double weekTime) {
         this.userNr = userNr;
         this.accessLevel = accessLevel;

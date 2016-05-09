@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htlpinkafeld.dao;
+package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.Permission_DAO;
 import at.htlpinkafeld.pojo.Permission;
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  *
  * @author Martin Six
  */
-class Permission_JDBCDAO extends Base_JDBCDAO<Permission> implements Permission_DAO {
+public class Permission_JDBCDAO extends Base_JDBCDAO<Permission> implements Permission_DAO {
 
     protected static final String PERMISSIONID_COL = "PERMISSIONID";
     protected static final String PERMISSIONNAME_COL = "PERMISSIONNAME";
@@ -32,7 +32,7 @@ class Permission_JDBCDAO extends Base_JDBCDAO<Permission> implements Permission_
     protected static final String PRIMARY_KEY = PERMISSIONID_COL;
     protected static final String[] ALL_COLUMNS = {PERMISSIONID_COL, PERMISSIONNAME_COL};
 
-    public Permission_JDBCDAO() {
+    protected Permission_JDBCDAO() {
         super(TABLE_NAME, ALL_COLUMNS, PRIMARY_KEY);
     }
 

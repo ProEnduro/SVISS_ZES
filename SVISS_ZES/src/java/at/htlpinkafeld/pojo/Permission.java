@@ -14,6 +14,11 @@ public class Permission {
     private int permID;
     private String permName;
 
+    public Permission(Permission p) {
+        this.permID = p.permID;
+        this.permName = p.permName;
+    }
+
     public Permission(int permID, String permName) {
         this.permID = permID;
         this.permName = permName;

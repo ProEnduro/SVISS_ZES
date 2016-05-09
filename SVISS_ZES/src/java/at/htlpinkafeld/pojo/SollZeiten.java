@@ -22,6 +22,13 @@ public class SollZeiten {
     private LocalTime sollStartTime;
     private LocalTime sollEndTime;
 
+    public SollZeiten(SollZeiten sz) {
+        this.day = sz.day;
+        this.user = sz.user;
+        this.sollStartTime = sz.sollStartTime;
+        this.sollEndTime = sz.sollEndTime;
+    }
+
     public SollZeiten(DayOfWeek day, User user, LocalTime sollStartTime, LocalTime sollEndTime) {
         this.day = day;
         this.user = user;

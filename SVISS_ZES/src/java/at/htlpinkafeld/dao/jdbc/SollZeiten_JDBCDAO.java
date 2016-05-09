@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htlpinkafeld.dao;
+package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
 import at.htlpinkafeld.pojo.SollZeiten;
@@ -24,7 +24,7 @@ import java.util.logging.Logger;
  *
  * @author Martin Six
  */
-class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeiten> implements SollZeiten_DAO {
+public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeiten> implements SollZeiten_DAO {
 
     public static final String DAYID_COL = "DayID";
     public static final String USERNR_COL = User_JDBCDAO.USERNR_COL;
@@ -35,7 +35,7 @@ class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeiten> implements SollZeiten_
     public static final String[] PRIMARY_KEY = {DAYID_COL, USERNR_COL};
     public static final String[] ALL_COLUMNS = {DAYID_COL, USERNR_COL, SOLLSTARTTIME_COL, SOLLENDTIME_COL};
 
-    public SollZeiten_JDBCDAO() {
+    protected SollZeiten_JDBCDAO() {
         super(TABLE_NAME, ALL_COLUMNS, PRIMARY_KEY);
     }
 

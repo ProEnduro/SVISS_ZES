@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htlpinkafeld.dao;
+package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.Base_DAO;
 import java.sql.Connection;
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  * @author Martin Six
  * @param <T>
  */
-abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
+public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
 
     private final String TABLE_NAME;
     private final String[] PRIMARY_KEY;
@@ -33,7 +33,7 @@ abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
     private static String SQL_UPDATE_STATEMENT;
     private static String SQL_DELETE_STATEMENT;
 
-    public Base_JDBCDAO(String tableName, String[] columns, String... primary_key) {
+    protected Base_JDBCDAO(String tableName, String[] columns, String... primary_key) {
         TABLE_NAME = tableName;
         PRIMARY_KEY = primary_key;
         ALL_COLUMNS = columns;
