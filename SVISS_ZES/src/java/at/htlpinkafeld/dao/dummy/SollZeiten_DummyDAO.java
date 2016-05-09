@@ -25,14 +25,14 @@ public class SollZeiten_DummyDAO extends Base_DummyDAO<SollZeiten> implements So
         super(new ArrayList<>());
         User_DAO uDAO = new User_DummyDAO();
         for (int i = 1; i < 5; i++) {
-            super.insert(new SollZeiten(DayOfWeek.of(i), uDAO.getUser(1), LocalTime.parse("8:0:0"), LocalTime.parse("16:30:0")));
+            super.insert(new SollZeiten(DayOfWeek.of(i), uDAO.getUser(1), LocalTime.parse("08:00:00"), LocalTime.parse("16:30:00")));
         }
-        super.insert(new SollZeiten(DayOfWeek.FRIDAY, uDAO.getUser(1), LocalTime.parse("8:0:0"), LocalTime.parse("12:0:0")));
+        super.insert(new SollZeiten(DayOfWeek.FRIDAY, uDAO.getUser(1), LocalTime.parse("08:00:00"), LocalTime.parse("12:00:00")));
 
         for (int i = 1; i < 5; i++) {
-            super.insert(new SollZeiten(DayOfWeek.of(i), uDAO.getUser(2), LocalTime.parse("8:0:0"), LocalTime.parse("16:30:0")));
+            super.insert(new SollZeiten(DayOfWeek.of(i), uDAO.getUser(2), LocalTime.parse("08:00:00"), LocalTime.parse("16:30:00")));
         }
-        super.insert(new SollZeiten(DayOfWeek.FRIDAY, uDAO.getUser(2), LocalTime.parse("8:0:0"), LocalTime.parse("12:0:0")));
+        super.insert(new SollZeiten(DayOfWeek.FRIDAY, uDAO.getUser(2), LocalTime.parse("08:00:00"), LocalTime.parse("12:00:00")));
     }
 
     @Override
