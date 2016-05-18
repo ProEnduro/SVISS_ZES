@@ -14,11 +14,21 @@ public class AbsenceType {
     private int absenceID;
     private String absenceName;
 
-    public AbsenceType(AbsenceType at){
+    public AbsenceType() {
+        absenceID = -1;
+    }
+
+    public AbsenceType(AbsenceType at) {
         this.absenceID = at.absenceID;
         this.absenceName = at.absenceName;
     }
-    
+
+    public AbsenceType(String absenceName) {
+        this();
+        this.absenceName = absenceName;
+    }
+
+    @Deprecated
     public AbsenceType(int absenceID, String absenceName) {
         this.absenceID = absenceID;
         this.absenceName = absenceName;

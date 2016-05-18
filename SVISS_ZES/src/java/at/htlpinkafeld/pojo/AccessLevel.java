@@ -18,14 +18,25 @@ public class AccessLevel {
     private String accessLevelName;
     private List<Permission> permissions;
 
-    public AccessLevel(AccessLevel al){
+    public AccessLevel() {
+        accessLevelID = -1;
+    }
+
+    public AccessLevel(AccessLevel al) {
         this.accessLevelID = al.accessLevelID;
         this.accessLevelName = al.accessLevelName;
         this.permissions = al.permissions;
     }
-    
+
+    @Deprecated
     public AccessLevel(int accessLevelID, String accessLevelName, List<Permission> permissions) {
         this.accessLevelID = accessLevelID;
+        this.accessLevelName = accessLevelName;
+        this.permissions = permissions;
+    }
+
+    public AccessLevel(String accessLevelName, List<Permission> permissions) {
+        this();
         this.accessLevelName = accessLevelName;
         this.permissions = permissions;
     }

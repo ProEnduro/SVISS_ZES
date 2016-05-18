@@ -85,7 +85,7 @@ public class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime
                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + u.getUserNr())) {
 
             while (rs.next()) {
-                workTimes.add(new WorkTime(rs.getInt(TIMEID_COL), u , rs.getDate(STARTTIME_COL), rs.getDate(ENDTIME_COL), rs.getInt(BREAKTIME_COL), rs.getString(STARTCOMMENT_COL), rs.getString(ENDCOMMENT_COL)));
+                workTimes.add(new WorkTime(rs.getInt(TIMEID_COL), u, rs.getDate(STARTTIME_COL), rs.getDate(ENDTIME_COL), rs.getInt(BREAKTIME_COL), rs.getString(STARTCOMMENT_COL), rs.getString(ENDCOMMENT_COL)));
             }
 
         } catch (SQLException ex) {

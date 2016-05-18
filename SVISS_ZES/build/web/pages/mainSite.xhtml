@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+        <h:form>
+            <h:panelGrid columns="#{masterBean.columns}" width="100%">
+                <h:commandButton value="Ist-Zeiten" action="first.xhtml?faces-redirect=true" style="width:100%" rendered="#{masterBean.firstEnabled()}"/>        
+                <h:commandButton value="Benutzerverwaltung" action="second.xhtml?faces-redirect=true" style="width:100%" rendered="#{masterBean.secondEnabled()}"/> 
+                <h:commandButton value="Logout" action="#{masterBean.logout}" style="width:100%"/> 
+            </h:panelGrid>
+
+
+            <ui:insert name="content">
+                Content
+            </ui:insert>
+
+
+
+        </h:form>
+
+    </h:body>
+</html>

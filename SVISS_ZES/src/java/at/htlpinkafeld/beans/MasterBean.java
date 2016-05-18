@@ -44,8 +44,7 @@ public class MasterBean {
         } else {
             permissionlist.add("first");
         }
-        
-        
+
         permissionlist.add("Logout");
         columns = permissionlist.size();
     }
@@ -87,9 +86,9 @@ public class MasterBean {
     }
 
     public void setPage(String page) {
-        
+
         System.out.println(page);
-        
+
         switch (page) {
             case "first":
                 this.page = "first.xhtml";
@@ -98,17 +97,15 @@ public class MasterBean {
                 this.page = "/WEB-INF/pages/second.xhtml";
                 break;
         }
-        
+
         System.out.println(this.page);
     }
-    
-    public Object logout(){
+
+    public Object logout() {
         this.user = null;
         this.page = null;
-        
+
         return "failure";
     }
-    
-    
-    
+
 }

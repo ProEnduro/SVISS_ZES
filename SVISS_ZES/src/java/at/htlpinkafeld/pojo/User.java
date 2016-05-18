@@ -24,8 +24,12 @@ public class User {
     private String pass;
     private Double weekTime;
 
+    public User() {
+        userNr = -1;
+    }
+
     public User(User u) {
-        this.userNr = u.userNr;
+        this();
         this.accessLevel = u.accessLevel;
         this.PersName = u.PersName;
         this.vacationLeft = u.vacationLeft;
@@ -37,6 +41,7 @@ public class User {
         this.weekTime = u.weekTime;
     }
 
+    @Deprecated
     public User(int userNr, AccessLevel accessLevel, String PersName, int vacationLeft, int overTimeLeft, String username, String email, Date hiredate, String pass, Double weekTime) {
         this.userNr = userNr;
         this.accessLevel = accessLevel;
@@ -50,7 +55,20 @@ public class User {
         this.weekTime = weekTime;
     }
 
-    public User(int userNr, AccessLevel accessLevel, String PersName, String username, String email, Date hiredate, String pass, Double weekTime) {
+    public User(AccessLevel accessLevel, String PersName, int vacationLeft, int overTimeLeft, String username, String email, Date hiredate, String pass, Double weekTime) {
+        this();
+        this.accessLevel = accessLevel;
+        this.PersName = PersName;
+        this.vacationLeft = vacationLeft;
+        this.overTimeLeft = overTimeLeft;
+        this.username = username;
+        this.email = email;
+        this.hiredate = hiredate;
+        this.pass = pass;
+        this.weekTime = weekTime;
+    }
+
+    public User(AccessLevel accessLevel, String PersName, String username, String email, Date hiredate, String pass, Double weekTime) {
         this.userNr = userNr;
         this.accessLevel = accessLevel;
         this.PersName = PersName;
@@ -59,9 +77,6 @@ public class User {
         this.hiredate = hiredate;
         this.pass = pass;
         this.weekTime = weekTime;
-    }
-
-    public User() {
     }
 
     public int getUserNr() {

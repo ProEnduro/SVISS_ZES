@@ -12,7 +12,7 @@ import java.util.List;
  * @author Martin Six
  */
 public interface Base_DAO<T> {
-    
+
     public abstract List<T> getList();
 
     public abstract void insert(T o);

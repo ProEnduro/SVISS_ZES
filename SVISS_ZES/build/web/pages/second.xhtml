@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<ui:composition template="/pages/mainSite.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+
+    <ui:define name="content">
+        <h:form>       
+            <p:dataTable id="usertable" var="user" value="#{benutzerverwaltungsBean.userList}">
+
+                <p:column headerText="Username">
+                    <h:outputText value="#{user.username}"/>
+                </p:column>
+
+                <p:column headerText="Name">
+                    <h:outputText value="#{user.persName}"/>
+                </p:column>
+
+                <p:column headerText="Berechtigungsstufe">
+                    <h:outputText value="#{user.accessLevel.accessLevelName}"/>
+                </p:column>
+
+                <p:column headerText="E-Mail-Adresse">
+                    <h:outputText value="#{user.email}"/>
+                </p:column>
+
+                <p:column headerText="Passwort">
+                    <h:outputText value="#{user.pass}"/>
+                </p:column>
+
+                <p:column headerText="Passwort ändern">
+                    <p:commandButton value="Ändern" actionListener="#{benutzerverwaltungsBean.setUP}" onclick="PF('dlg1').show();">
+                        <f:attribute name="val" value="#{user}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+            <p:commandButton value="New User" action="#{benutzerverwaltungsBean.newUserSite}"/>
+
+
+
+            <p:dialog header="Basic Dialog" widgetVar="dlg1" minHeight="40">
+                <p:inputText value="#{benutzerverwaltungsBean.newPassword}"/>
+                <p:commandButton value="OK" actionListener="#{benutzerverwaltungsBean.changePassword}" onclick="PF('dlg1').hide();" update="usertable"/>
+                <p:commandButton value="Abbruch" onclick="PF('dlg1').hide();"/>
+            </p:dialog>
+
+        </h:form>
+
+    </ui:define>
+
+
+</ui:composition>

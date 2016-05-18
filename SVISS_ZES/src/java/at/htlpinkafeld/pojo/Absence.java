@@ -21,6 +21,10 @@ public class Absence {
     private Date endTime;
     private boolean acknowledged;
 
+    public Absence() {
+        absenceID = -1;
+    }
+
     public Absence(Absence a) {
         this.absenceID = a.absenceID;
         this.user = a.user;
@@ -30,6 +34,7 @@ public class Absence {
         this.acknowledged = a.acknowledged;
     }
 
+    @Deprecated
     public Absence(int absenceID, User user, AbsenceType absenceType, Date startTime, Date endTime, boolean acknowledged) {
         this.absenceID = absenceID;
         this.user = user;
@@ -39,8 +44,17 @@ public class Absence {
         this.acknowledged = acknowledged;
     }
 
-    public Absence(int absenceID, User user, AbsenceType absenceType, Date startTime, Date endTime) {
-        this.absenceID = absenceID;
+    public Absence(User user, AbsenceType absenceType, Date startTime, Date endTime, boolean acknowledged) {
+        this();
+        this.user = user;
+        this.absenceType = absenceType;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.acknowledged = acknowledged;
+    }
+
+    public Absence(User user, AbsenceType absenceType, Date startTime, Date endTime) {
+        this();
         this.user = user;
         this.absenceType = absenceType;
         this.startTime = startTime;

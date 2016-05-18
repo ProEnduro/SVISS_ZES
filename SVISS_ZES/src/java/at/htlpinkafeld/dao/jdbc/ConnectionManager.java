@@ -27,6 +27,7 @@ public class ConnectionManager {
     protected ConnectionManager() throws SQLException {
         try {
             Context ctx;
+
             ctx = new javax.naming.InitialContext();
             ds = (DataSource) ctx.lookup("java:comp/env/" + DATASOURCE);
         } catch (NamingException ex) {

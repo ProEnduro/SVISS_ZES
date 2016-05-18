@@ -8,21 +8,19 @@
 
     <!--style="border-style: hidden; position: absolute; top: 38%; left: 30%-->
     <h:head>
-        <title>Facelet Title</title>
+        <title>SVISS_Login</title>
+        <link rel="shortcut icon" type="image/x-icon" href="#{resource['images/faviconSV.ico']}"/>
         <style>
             .outerpanelgrid tbody tr, .outerpanelgrid tbody td{  
-                border: none; border-style: hidden;
-              //  background-color: #F8E0E0;
+                border: none; border-style: hidden;                //  background-color: #F8E0E0;
             }
-            
+
             .outerScreen{                 
-                //background-image: url("C:/Users/darkn/Documents/NetBeansProjects/ZES/trunk/SVISS_ZES/rand.jpg");
-                background-image: url("/SVISS_ZES/fgg.gif");
-                background-size: 31%;
-                //background-color: #F8E0E0;
+                background-image: url(#{resource["images/sviss_log_in.png"]});     /* image in the resource folger */
+                background-size: 30%;
+                background-position: center;
+                background-position-y: 30px;
                 background-repeat: no-repeat;
-                //background-color: #E3F6CE;
-                //
             }
             /*
             body{
@@ -33,22 +31,24 @@
     <h:body styleClass="outerScreen">
         <h:form>
             <f:view>
-                
+
                 <p:panelGrid id="pGrid" columns="2" styleClass="outerpanelgrid" style=" border-style: hidden; position: absolute; top: 38%; left: 30%">
-                    
+
                     <p:outputLabel id="outUser" value="Benutzername: "/>
-                    <p:inputText id="inUser" value="#{loginBean.user}"/>
-                    
+                    <p:inputText id="inUser" value="#{loginBean.userString}"/>
+
                     <p:outputLabel id="outPassword" value="Passwort: "/>
                     <p:password id="inPassword" value="#{loginBean.pw}"/>
-                    
-                    <p:commandButton style=" background-color: #A9E2F3; border-style: hidden" id="login" value="Login" action="#{loginBean.login}"/>
-                    <br/>
+
+                    <p:commandButton style=" background-color: #A9E2F3; border-style: hidden" id="login" value="Login" action="#{loginBean.login}" />
+
+                    <p:messages autoUpdate="true"/>
                     <p:commandButton style="background-color: red; border-style: hidden" id="forgotPassword" value="Passwort vergessen?" action="nope"/>
+
                 </p:panelGrid>
-                 
-                
-                
+
+
+
             </f:view>
         </h:form>
     </h:body>

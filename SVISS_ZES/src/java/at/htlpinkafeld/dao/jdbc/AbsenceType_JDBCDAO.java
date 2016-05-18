@@ -21,28 +21,28 @@ import java.util.logging.Logger;
  * @author Martin Six
  */
 public class AbsenceType_JDBCDAO extends Base_JDBCDAO<AbsenceType> implements AbsenceType_DAO {
-    
+
     public static final String ABSENCETYPEID_COL = "AbsenceTypeID";
     public static final String ABSENCETYPENAME_COL = "AbsenceTypeName";
-    
+
     public static final String TABLE_NAME = "AbsenceType";
     public static final String PRIMARY_KEY = ABSENCETYPEID_COL;
     public static final String[] ALL_COLUMNS = {ABSENCETYPEID_COL, ABSENCETYPENAME_COL};
-    
+
     protected AbsenceType_JDBCDAO() {
         super(TABLE_NAME, ALL_COLUMNS, PRIMARY_KEY);
     }
-    
+
     @Override
     protected Map<String, Object> entityToMap(AbsenceType entity) {
         Map<String, Object> resMap = new HashMap<>();
-        
+
         resMap.put(ABSENCETYPEID_COL, entity.getAbsenceID());
         resMap.put(ABSENCETYPENAME_COL, entity.getAbsenceName());
-        
+
         return resMap;
     }
-    
+
     @Override
     protected AbsenceType getEntityFromResultSet(ResultSet rs) {
         try {
@@ -52,7 +52,7 @@ public class AbsenceType_JDBCDAO extends Base_JDBCDAO<AbsenceType> implements Ab
         }
         return null;
     }
-    
+
     @Override
     protected void updateEntityWithAutoKeys(ResultSet rs, AbsenceType entity) {
         try {
@@ -61,7 +61,7 @@ public class AbsenceType_JDBCDAO extends Base_JDBCDAO<AbsenceType> implements Ab
             Logger.getLogger(AbsenceType_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     @Override
     public AbsenceType getAbsenceTypeByID(int absenceTypeID) {
         AbsenceType at = null;
@@ -76,8 +76,8 @@ public class AbsenceType_JDBCDAO extends Base_JDBCDAO<AbsenceType> implements Ab
         } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return at;
     }
-    
+
 }

@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -125,7 +126,11 @@ public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
             Map<String, Object> entityMap = entityToMap(o);
             int i = 1;
             for (String col : ALL_COLUMNS) {
-                stmt.setObject(i, entityMap.get(col));
+                if (entityMap.get(col).toString().contentEquals("-1")) {
+                    stmt.setNull(i, Types.INTEGER);
+                } else {
+                    stmt.setObject(i, entityMap.get(col));
+                }
                 i++;
             }
 

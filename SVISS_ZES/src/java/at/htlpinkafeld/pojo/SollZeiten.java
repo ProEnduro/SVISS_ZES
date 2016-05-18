@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.pojo;
 
+import com.sun.security.auth.SolarisNumericGroupPrincipal;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.TextStyle;

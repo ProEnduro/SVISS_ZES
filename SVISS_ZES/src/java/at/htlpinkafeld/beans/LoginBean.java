@@ -5,7 +5,6 @@
  */
 package at.htlpinkafeld.beans;
 
-
 import at.htlpinkafeld.pojo.User;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -26,7 +25,6 @@ public class LoginBean {
      * Creates a new instance of LoginBean
      */
     public LoginBean() {
-        
     }
 
     public String getUserString() {
@@ -51,6 +49,7 @@ public class LoginBean {
         System.out.println(pw);
 
         User_DAO user_dao = DAOFactory.getDAOFactory().getUserDAO();
+
         User u = user_dao.getUserByUsername(userString);
 
         this.user = u;
@@ -65,22 +64,21 @@ public class LoginBean {
 
             this.pw = "";
             this.user = null;
-            this.userString= "";
-            
+            this.userString = "";
+
             System.out.println("success!");
 
             return "success";
         }
-        
+
         FacesContext context = FacesContext.getCurrentInstance();
         context.addMessage(null, new FacesMessage("Invalid Password!"));
-        
+
         return "failure";
     }
 
     public User getUser() {
         return this.user;
     }
-
 
 }

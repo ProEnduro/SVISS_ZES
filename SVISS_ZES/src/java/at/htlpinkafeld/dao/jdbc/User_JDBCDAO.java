@@ -71,7 +71,7 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
         User u = null;
         try (Connection con = ConnectionManager.getInstance().getConnection();
                 Statement stmt = con.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNAME_COL + " = " + username)) {
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNAME_COL + " = '" + username + "'")) {
 
             AccessLevel_DAO al_DAO = new AccessLevel_JDBCDAO();
             if (rs.next()) {

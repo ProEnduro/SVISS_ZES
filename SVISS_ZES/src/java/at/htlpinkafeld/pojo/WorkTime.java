@@ -23,6 +23,10 @@ public class WorkTime {
     private String startComment;
     private String endComment;
 
+    public WorkTime() {
+        timeID = -1;
+    }
+
     public WorkTime(WorkTime wt) {
         this.timeID = wt.timeID;
         this.user = wt.user;
@@ -33,6 +37,7 @@ public class WorkTime {
         this.endComment = wt.endComment;
     }
 
+    @Deprecated
     public WorkTime(int timeID, User user, Date startTime, Date endTime, int breakTime, String startComment, String endComment) {
         this.timeID = timeID;
         this.user = user;
@@ -43,14 +48,20 @@ public class WorkTime {
         this.endComment = endComment;
     }
 
-    public WorkTime(int timeID, User user, Date startTime) {
-        this.timeID = timeID;
+    public WorkTime(User user, Date startTime, Date endTime, int breakTime, String startComment, String endComment) {
+        this();
         this.user = user;
         this.startTime = startTime;
+        this.endTime = endTime;
+        this.breakTime = breakTime;
+        this.startComment = startComment;
+        this.endComment = endComment;
     }
 
-    public WorkTime() {
-
+    public WorkTime(User user, Date startTime) {
+        this();
+        this.user = user;
+        this.startTime = startTime;
     }
 
     public int getTimeID() {

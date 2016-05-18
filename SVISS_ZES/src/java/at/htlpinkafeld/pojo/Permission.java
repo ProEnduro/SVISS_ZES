@@ -14,13 +14,23 @@ public class Permission {
     private int permID;
     private String permName;
 
+    public Permission() {
+        permID = -1;
+    }
+
     public Permission(Permission p) {
         this.permID = p.permID;
         this.permName = p.permName;
     }
 
+    @Deprecated
     public Permission(int permID, String permName) {
         this.permID = permID;
+        this.permName = permName;
+    }
+
+    public Permission(String permName) {
+        this();
         this.permName = permName;
     }
 
