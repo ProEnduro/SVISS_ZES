@@ -5,7 +5,7 @@
  */
 package at.htlpinkafeld.service;
 
-import at.htlpinkafeld.dao.interf.DAOFactory;
+import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.pojo.User;
 import java.util.List;

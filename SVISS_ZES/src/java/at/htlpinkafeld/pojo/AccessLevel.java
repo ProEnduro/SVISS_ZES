@@ -16,7 +16,7 @@ public class AccessLevel {
 
     private int accessLevelID;
     private String accessLevelName;
-    private List<Permission> permissions;
+    private List<String> permissions;
 
     public AccessLevel() {
         accessLevelID = -1;
@@ -29,13 +29,13 @@ public class AccessLevel {
     }
 
     @Deprecated
-    public AccessLevel(int accessLevelID, String accessLevelName, List<Permission> permissions) {
+    public AccessLevel(int accessLevelID, String accessLevelName, List<String> permissions) {
         this.accessLevelID = accessLevelID;
         this.accessLevelName = accessLevelName;
         this.permissions = permissions;
     }
 
-    public AccessLevel(String accessLevelName, List<Permission> permissions) {
+    public AccessLevel(String accessLevelName, List<String> permissions) {
         this();
         this.accessLevelName = accessLevelName;
         this.permissions = permissions;
@@ -57,15 +57,15 @@ public class AccessLevel {
         this.accessLevelName = accessLevelName;
     }
 
-    public List<Permission> getPermissions() {
+    public List<String> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(List<Permission> permissions) {
+    public void setPermissions(List<String> permissions) {
         this.permissions = permissions;
     }
 
-    public boolean containsPermission(Permission p) {
+    public boolean containsPermission(String p) {
         return permissions.contains(p);
     }
 

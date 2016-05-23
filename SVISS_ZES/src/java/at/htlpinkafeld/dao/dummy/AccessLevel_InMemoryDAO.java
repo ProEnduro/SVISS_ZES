@@ -7,8 +7,6 @@ package at.htlpinkafeld.dao.dummy;
 
 import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
 import at.htlpinkafeld.pojo.AccessLevel;
-import at.htlpinkafeld.pojo.Permission;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,14 +14,27 @@ import java.util.List;
  *
  * @author Martin Six
  */
-public class AccessLevel_DummyDAO extends Base_DummyDAO<AccessLevel> implements AccessLevel_DAO {
+public class AccessLevel_InMemoryDAO extends Base_InMemoryDAO<AccessLevel> implements AccessLevel_DAO {
 
-    protected AccessLevel_DummyDAO() {
+    protected AccessLevel_InMemoryDAO() {
         super(new LinkedList<>());
-        List<Permission> permList = new ArrayList<>();
+        List<String> permList = new LinkedList<>();
+        permList.add("VIEW_CALENDAR");
         super.insert(new AccessLevel(3, "Reader", permList));
+        
+        permList = new LinkedList<>();
+        permList.add("INPUT_TIME");
         super.insert(new AccessLevel(4, "User", permList));
+        
+        permList = new LinkedList<>();
+        permList.add("USER");
+        permList.add("VIEW_USERS");
+        permList.add("READER");
         super.insert(new AccessLevel(2, "Approver", permList));
+        
+        permList = new LinkedList<>();
+        permList.add("APPROVER");
+        permList.add("EDIT_USERS");
         super.insert(new AccessLevel(1, "Admin", permList));
     }
 
@@ -40,6 +51,11 @@ public class AccessLevel_DummyDAO extends Base_DummyDAO<AccessLevel> implements 
     @Override
     protected AccessLevel clone(AccessLevel entity) {
         return new AccessLevel(entity);
+    }
+
+    @Override
+    protected void setID(AccessLevel entity, int id) {
+        entity.setAccessLevelID(id);
     }
 
 }

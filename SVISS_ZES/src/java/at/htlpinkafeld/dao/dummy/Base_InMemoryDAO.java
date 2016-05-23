@@ -14,11 +14,12 @@ import java.util.List;
  * @author Martin Six
  * @param <T>
  */
-public abstract class Base_DummyDAO<T> implements Base_DAO<T> {
+public abstract class Base_InMemoryDAO<T> implements Base_DAO<T> {
 
     private final List<T> oList;
+    private int ID = 1;
 
-    protected Base_DummyDAO(List<T> oList) {
+    protected Base_InMemoryDAO(List<T> oList) {
         this.oList = oList;
     }
 
@@ -28,11 +29,12 @@ public abstract class Base_DummyDAO<T> implements Base_DAO<T> {
         for (T entity : oList) {
             retList.add(clone(entity));
         }
-        return oList;
+        return retList;
     }
 
     @Override
     public void insert(T o) {
+        setID(o, ID++);
         oList.add(clone(o));
     }
 
@@ -47,4 +49,6 @@ public abstract class Base_DummyDAO<T> implements Base_DAO<T> {
     }
 
     protected abstract T clone(T entity);
+
+    protected abstract void setID(T entity, int id);
 }

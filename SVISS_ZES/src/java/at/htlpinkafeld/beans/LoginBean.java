@@ -8,7 +8,7 @@ package at.htlpinkafeld.beans;
 import at.htlpinkafeld.pojo.User;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import at.htlpinkafeld.dao.interf.DAOFactory;
+import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.User_DAO;
 
 /**

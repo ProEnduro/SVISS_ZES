@@ -2,15 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/Users/User/Documents/4BHIF/SYP/PREU/Projekt/GitHub/SVISS_ZES.git/trunk/SVISS_ZES/src/java/at/htlpinkafeld/service/IstZeitService.java</file>
-            <file>file:/C:/Users/User/Documents/4BHIF/SYP/PREU/Projekt/GitHub/SVISS_ZES.git/trunk/SVISS_ZES/src/java/at/htlpinkafeld/beans/BenutzerverwaltungBean.java</file>
-            <file>file:/C:/Users/User/Documents/4BHIF/SYP/PREU/Projekt/GitHub/SVISS_ZES.git/trunk/SVISS_ZES/web/index.xhtml</file>
-            <file>file:/C:/Users/User/Documents/4BHIF/SYP/PREU/Projekt/GitHub/SVISS_ZES.git/trunk/SVISS_ZES/web/pages/second.xhtml</file>
-            <file>file:/C:/Users/User/Documents/4BHIF/SYP/PREU/Projekt/GitHub/SVISS_ZES.git/trunk/SVISS_ZES/web/pages/first.xhtml</file>
-            <file>file:/C:/Users/User/Documents/4BHIF/SYP/PREU/Projekt/GitHub/SVISS_ZES.git/trunk/SVISS_ZES/src/java/at/htlpinkafeld/dao/interf/DAOFactory.java</file>
-            <file>file:/C:/Users/User/Documents/4BHIF/SYP/PREU/Projekt/GitHub/SVISS_ZES.git/trunk/SVISS_ZES/src/java/at/htlpinkafeld/beans/LoginBean.java</file>
-            <file>file:/C:/Users/User/Documents/4BHIF/SYP/PREU/Projekt/GitHub/SVISS_ZES.git/trunk/SVISS_ZES/src/java/at/htlpinkafeld/beans/IstZeitBean.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

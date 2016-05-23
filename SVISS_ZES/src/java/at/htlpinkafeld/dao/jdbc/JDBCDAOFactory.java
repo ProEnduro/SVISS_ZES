@@ -5,11 +5,10 @@
  */
 package at.htlpinkafeld.dao.jdbc;
 
-import at.htlpinkafeld.dao.interf.DAOFactory;
+import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
 import at.htlpinkafeld.dao.interf.Absence_DAO;
 import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
-import at.htlpinkafeld.dao.interf.Permission_DAO;
 import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.dao.interf.WorkTime_DAO;
@@ -21,7 +20,6 @@ import at.htlpinkafeld.dao.interf.WorkTime_DAO;
 public class JDBCDAOFactory extends DAOFactory {
 
     private final User_DAO user_DAO;
-    private final Permission_DAO permission_DAO;
     private final AccessLevel_DAO accessLevel_DAO;
     private final WorkTime_DAO workTime_DAO;
     private final SollZeiten_DAO sollZeiten_DAO;
@@ -30,7 +28,6 @@ public class JDBCDAOFactory extends DAOFactory {
 
     public JDBCDAOFactory() {
         user_DAO = new User_JDBCDAO();
-        permission_DAO = new Permission_JDBCDAO();
         accessLevel_DAO = new AccessLevel_JDBCDAO();
         workTime_DAO = new WorkTime_JDBCDAO();
         sollZeiten_DAO = new SollZeiten_JDBCDAO();
@@ -41,11 +38,6 @@ public class JDBCDAOFactory extends DAOFactory {
     @Override
     public synchronized User_DAO getUserDAO() {
         return user_DAO;
-    }
-
-    @Override
-    public synchronized Permission_DAO getPermissionDAO() {
-        return permission_DAO;
     }
 
     @Override

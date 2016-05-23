@@ -19,12 +19,12 @@ import java.util.List;
  *
  * @author Martin Six
  */
-public class Absence_DummyDAO extends Base_DummyDAO<Absence> implements Absence_DAO {
+public class Absence_InMemoryDAO extends Base_InMemoryDAO<Absence> implements Absence_DAO {
 
-    protected Absence_DummyDAO() {
+    protected Absence_InMemoryDAO() {
         super(new ArrayList<>());
-        User_DAO uDAO = new User_DummyDAO();
-        AbsenceType_DAO aDAO = new AbsenceType_DummyDAO();
+        User_DAO uDAO = new User_InMemoryDAO();
+        AbsenceType_DAO aDAO = new AbsenceType_InMemoryDAO();
         super.insert(new Absence(1, uDAO.getUser(1), aDAO.getAbsenceTypeByID(1), new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime(), true));
         super.insert(new Absence(1, uDAO.getUser(2), aDAO.getAbsenceTypeByID(3), new GregorianCalendar(2016, 4, 4, 14, 0).getTime(), new GregorianCalendar(2016, 4, 4, 18, 0).getTime(), false));
     }
@@ -43,6 +43,11 @@ public class Absence_DummyDAO extends Base_DummyDAO<Absence> implements Absence_
     @Override
     protected Absence clone(Absence entity) {
         return new Absence(entity);
+    }
+
+    @Override
+    protected void setID(Absence entity, int id) {
+        entity.setAbsenceID(id);
     }
 
 }

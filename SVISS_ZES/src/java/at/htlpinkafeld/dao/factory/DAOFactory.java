@@ -3,9 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htlpinkafeld.dao.interf;
+package at.htlpinkafeld.dao.factory;
 
-import at.htlpinkafeld.dao.dummy.DummyDAOFactory;
+import at.htlpinkafeld.dao.dummy.InMemoryDAOFactory;
+import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
+import at.htlpinkafeld.dao.interf.Absence_DAO;
+import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
+import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
+import at.htlpinkafeld.dao.interf.User_DAO;
+import at.htlpinkafeld.dao.interf.WorkTime_DAO;
 import at.htlpinkafeld.dao.jdbc.JDBCDAOFactory;
 
 /**
@@ -28,7 +34,7 @@ public abstract class DAOFactory {
                     daof = new JDBCDAOFactory();
                     break;
                 case DUMMY_DAO:
-                    daof = new DummyDAOFactory();
+                    daof = new InMemoryDAOFactory();
                     break;
                 default:
                     daof = null;
@@ -38,8 +44,6 @@ public abstract class DAOFactory {
     }
 
     public abstract User_DAO getUserDAO();
-
-    public abstract Permission_DAO getPermissionDAO();
 
     public abstract AccessLevel_DAO getAccessLevelDAO();
 

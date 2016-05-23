@@ -23,6 +23,7 @@ public class User {
     private Date hiredate;
     private String pass;
     private Double weekTime;
+    private boolean disabled = false;
 
     public User() {
         userNr = -1;
@@ -42,7 +43,7 @@ public class User {
     }
 
     @Deprecated
-    public User(int userNr, AccessLevel accessLevel, String PersName, int vacationLeft, int overTimeLeft, String username, String email, Date hiredate, String pass, Double weekTime) {
+    public User(int userNr, AccessLevel accessLevel, String PersName, int vacationLeft, int overTimeLeft, String username, String email, Date hiredate, String pass, Double weekTime, boolean disabled) {
         this.userNr = userNr;
         this.accessLevel = accessLevel;
         this.PersName = PersName;
@@ -53,6 +54,7 @@ public class User {
         this.hiredate = hiredate;
         this.pass = pass;
         this.weekTime = weekTime;
+        this.disabled = disabled;
     }
 
     public User(AccessLevel accessLevel, String PersName, int vacationLeft, int overTimeLeft, String username, String email, Date hiredate, String pass, Double weekTime) {
@@ -69,7 +71,7 @@ public class User {
     }
 
     public User(AccessLevel accessLevel, String PersName, String username, String email, Date hiredate, String pass, Double weekTime) {
-        this.userNr = userNr;
+        this();
         this.accessLevel = accessLevel;
         this.PersName = PersName;
         this.username = username;
@@ -159,9 +161,17 @@ public class User {
         this.weekTime = weekTime;
     }
 
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
     @Override
     public String toString() {
-        return "User{" + "persnr=" + userNr + ", accessLevelId=" + accessLevel + ", PersName=" + PersName + ", vacationLeft=" + vacationLeft + ", overTimeLeft=" + overTimeLeft + ", username=" + username + ", email=" + email + ", hiredate=" + hiredate + ", pass=" + pass + ", weekTime=" + weekTime + '}';
+        return "User{" + "userNr=" + userNr + ", accessLevel=" + accessLevel + ", PersName=" + PersName + ", vacationLeft=" + vacationLeft + ", overTimeLeft=" + overTimeLeft + ", username=" + username + ", email=" + email + ", hiredate=" + hiredate + ", pass=" + pass + ", weekTime=" + weekTime + ", disabled=" + disabled + '}';
     }
 
     @Override

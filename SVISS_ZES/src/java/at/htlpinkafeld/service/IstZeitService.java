@@ -5,7 +5,7 @@
  */
 package at.htlpinkafeld.service;
 
-import at.htlpinkafeld.dao.interf.DAOFactory;
+import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.WorkTime_DAO;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;

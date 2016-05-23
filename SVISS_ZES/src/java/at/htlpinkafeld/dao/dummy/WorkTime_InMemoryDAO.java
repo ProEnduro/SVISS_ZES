@@ -18,11 +18,11 @@ import java.util.List;
  *
  * @author Martin Six
  */
-public class WorkTime_DummyDAO extends Base_DummyDAO<WorkTime> implements WorkTime_DAO {
+public class WorkTime_InMemoryDAO extends Base_InMemoryDAO<WorkTime> implements WorkTime_DAO {
 
-    protected WorkTime_DummyDAO() {
+    protected WorkTime_InMemoryDAO() {
         super(new ArrayList<>());
-        User_DAO uDAO = new User_DummyDAO();
+        User_DAO uDAO = new User_InMemoryDAO();
         super.insert(new WorkTime(1, uDAO.getUser(1), new GregorianCalendar(2016, 3, 14, 8, 0).getTime(), new GregorianCalendar(2016, 3, 14, 16, 30).getTime(), 30, "Start Test", "End Test"));
         super.insert(new WorkTime(2, uDAO.getUser(2), new GregorianCalendar(2016, 3, 14, 9, 0).getTime(), new GregorianCalendar(2016, 3, 14, 16, 0).getTime(), 30, "Start Later Test", "End Early Test"));
     }
@@ -41,6 +41,11 @@ public class WorkTime_DummyDAO extends Base_DummyDAO<WorkTime> implements WorkTi
     @Override
     protected WorkTime clone(WorkTime entity) {
         return new WorkTime(entity);
+    }
+
+    @Override
+    protected void setID(WorkTime entity, int id) {
+        entity.setTimeID(id);
     }
 
 }

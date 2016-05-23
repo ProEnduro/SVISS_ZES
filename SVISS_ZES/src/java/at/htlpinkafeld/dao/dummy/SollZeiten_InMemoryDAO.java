@@ -19,11 +19,11 @@ import java.util.List;
  *
  * @author Martin Six
  */
-public class SollZeiten_DummyDAO extends Base_DummyDAO<SollZeiten> implements SollZeiten_DAO {
+public class SollZeiten_InMemoryDAO extends Base_InMemoryDAO<SollZeiten> implements SollZeiten_DAO {
 
-    protected SollZeiten_DummyDAO() {
+    protected SollZeiten_InMemoryDAO() {
         super(new ArrayList<>());
-        User_DAO uDAO = new User_DummyDAO();
+        User_DAO uDAO = new User_InMemoryDAO();
         for (int i = 1; i < 5; i++) {
             super.insert(new SollZeiten(DayOfWeek.of(i), uDAO.getUser(1), LocalTime.parse("08:00:00"), LocalTime.parse("16:30:00")));
         }
@@ -49,6 +49,11 @@ public class SollZeiten_DummyDAO extends Base_DummyDAO<SollZeiten> implements So
     @Override
     protected SollZeiten clone(SollZeiten entity) {
         return new SollZeiten(entity);
+    }
+
+    @Override
+    protected void setID(SollZeiten entity, int id) {
+        throw new UnsupportedOperationException("Not supported."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

@@ -5,7 +5,7 @@
  */
 package at.htlpinkafeld.beans;
 
-import at.htlpinkafeld.dao.interf.DAOFactory;
+import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.pojo.AccessLevel;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
