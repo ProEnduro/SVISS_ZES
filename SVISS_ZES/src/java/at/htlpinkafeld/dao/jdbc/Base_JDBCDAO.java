@@ -6,7 +6,7 @@
 package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.Base_DAO;
-import java.sql.Connection;
+import at.htlpinkafeld.dao.util.WrappedConnection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,23 +29,32 @@ public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
     private final String[] PRIMARY_KEY;
     private final String[] ALL_COLUMNS;
 
-    private static String SQL_SELECTALL_STATEMENT;
-    private static String SQL_INSERT_STATEMENT;
-    private static String SQL_UPDATE_STATEMENT;
-    private static String SQL_DELETE_STATEMENT;
+    private final String SQL_SELECTALL_STATEMENT;
+    private final String SQL_INSERT_STATEMENT;
+    private final String SQL_UPDATE_STATEMENT;
+    private final String SQL_DELETE_STATEMENT;
+    protected final String SQL_ORDER_BY_LINE;
 
     protected Base_JDBCDAO(String tableName, String[] columns, String... primary_key) {
         TABLE_NAME = tableName;
         PRIMARY_KEY = primary_key;
         ALL_COLUMNS = columns;
 
-        SQL_SELECTALL_STATEMENT = "SELECT * FROM " + TABLE_NAME;
+        SQL_ORDER_BY_LINE = createOrderByLine();
+
+        SQL_SELECTALL_STATEMENT = createSelectAllStatement();
 
         SQL_INSERT_STATEMENT = createInsertStatement();
 
         SQL_UPDATE_STATEMENT = createUpdateStatement();
 
         SQL_DELETE_STATEMENT = createDeleteStatement();
+
+    }
+
+    private String createSelectAllStatement() {
+        String sql_statement = "SELECT * FROM " + TABLE_NAME + " " + SQL_ORDER_BY_LINE;
+        return sql_statement;
     }
 
     //Used to dynamically create a sql-insert-Statement
@@ -55,11 +64,11 @@ public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
         for (String col : ALL_COLUMNS) {
             sql_statement += col + ", ";
         }
-        sql_statement = sql_statement.substring(0, sql_statement.length() - 1) + ") VALUES (";
+        sql_statement = sql_statement.substring(0, sql_statement.length() - 2) + ") VALUES (";
         for (int i = ALL_COLUMNS.length; i > 0; i--) {
             sql_statement += "?, ";
         }
-        sql_statement = sql_statement.substring(0, sql_statement.length() - 1) + ");";
+        sql_statement = sql_statement.substring(0, sql_statement.length() - 2) + ")";
         return sql_statement;
     }
 
@@ -77,11 +86,11 @@ public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
                 sql_statement += col + " = ?, ";
             }
         }
-        sql_statement = sql_statement.substring(0, sql_statement.length() - 1) + " WHERE ";
+        sql_statement = sql_statement.substring(0, sql_statement.length() - 2) + " WHERE ";
         for (String pk : PRIMARY_KEY) {
             sql_statement += pk + "= ? AND ";
         }
-        sql_statement = sql_statement.substring(0, sql_statement.length() - 4) + ";";
+        sql_statement = sql_statement.substring(0, sql_statement.length() - 4);
 
         return sql_statement;
     }
@@ -93,17 +102,27 @@ public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
         for (String pk : PRIMARY_KEY) {
             sql_statement += pk + "= ? AND ";
         }
-        sql_statement = sql_statement.substring(0, sql_statement.length() - 4) + ";";
+        sql_statement = sql_statement.substring(0, sql_statement.length() - 4);
 
         return sql_statement;
+    }
+
+    //Used to dynamically create the order by clause for selects
+    //Sorts in the order of the PRIMARY_KEY array
+    private String createOrderByLine() {
+        String sql_statement = "ORDER BY ";
+        for (String pk : PRIMARY_KEY) {
+            sql_statement += pk + ", ";
+        }
+        return sql_statement.substring(0, sql_statement.length() - 2);
     }
 
     @Override
     public List<T> getList() {
         List<T> entityList = new ArrayList<>();
 
-        try (Connection con = ConnectionManager.getInstance().getConnection();
-                Statement stmt = con.createStatement();
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
                 ResultSet rs = stmt.executeQuery(SQL_SELECTALL_STATEMENT)) {
 
             while (rs.next()) {
@@ -120,8 +139,8 @@ public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
     @Override
     public void insert(T o) {
 
-        try (Connection con = ConnectionManager.getInstance().getConnection();
-                PreparedStatement stmt = con.prepareStatement(SQL_INSERT_STATEMENT, Statement.RETURN_GENERATED_KEYS)) {
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                PreparedStatement stmt = con.getConn().prepareStatement(SQL_INSERT_STATEMENT, Statement.RETURN_GENERATED_KEYS)) {
 
             Map<String, Object> entityMap = entityToMap(o);
             int i = 1;
@@ -137,15 +156,14 @@ public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
             stmt.executeUpdate();
             updateEntityWithAutoKeys(stmt.getGeneratedKeys(), o);
         } catch (SQLException ex) {
-            Logger.getLogger(User_JDBCDAO.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
     public void update(T o) {
-        try (Connection con = ConnectionManager.getInstance().getConnection();
-                PreparedStatement stmt = con.prepareStatement(SQL_UPDATE_STATEMENT);) {
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                PreparedStatement stmt = con.getConn().prepareStatement(SQL_UPDATE_STATEMENT);) {
 
             Map<String, Object> entityMap = entityToMap(o);
             int i = 1;
@@ -169,15 +187,14 @@ public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
             stmt.executeUpdate();
 
         } catch (SQLException ex) {
-            Logger.getLogger(User_JDBCDAO.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
     public void delete(T o) {
-        try (Connection con = ConnectionManager.getInstance().getConnection();
-                PreparedStatement stmt = con.prepareStatement(SQL_DELETE_STATEMENT);) {
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                PreparedStatement stmt = con.getConn().prepareStatement(SQL_DELETE_STATEMENT);) {
 
             Map<String, Object> entityMap = entityToMap(o);
             int i = 1;
@@ -189,8 +206,7 @@ public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
             stmt.executeUpdate();
 
         } catch (SQLException ex) {
-            Logger.getLogger(User_JDBCDAO.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

@@ -6,8 +6,8 @@
 package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
+import at.htlpinkafeld.dao.util.WrappedConnection;
 import at.htlpinkafeld.pojo.AbsenceType;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -37,7 +37,7 @@ public class AbsenceType_JDBCDAO extends Base_JDBCDAO<AbsenceType> implements Ab
     protected Map<String, Object> entityToMap(AbsenceType entity) {
         Map<String, Object> resMap = new HashMap<>();
 
-        resMap.put(ABSENCETYPEID_COL, entity.getAbsenceID());
+        resMap.put(ABSENCETYPEID_COL, entity.getAbsenceTypeID());
         resMap.put(ABSENCETYPENAME_COL, entity.getAbsenceName());
 
         return resMap;
@@ -56,7 +56,8 @@ public class AbsenceType_JDBCDAO extends Base_JDBCDAO<AbsenceType> implements Ab
     @Override
     protected void updateEntityWithAutoKeys(ResultSet rs, AbsenceType entity) {
         try {
-            entity.setAbsenceID(rs.getInt(ABSENCETYPEID_COL));
+            rs.next();
+            entity.setAbsenceTypeID(rs.getInt(1));
         } catch (SQLException ex) {
             Logger.getLogger(AbsenceType_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -65,9 +66,9 @@ public class AbsenceType_JDBCDAO extends Base_JDBCDAO<AbsenceType> implements Ab
     @Override
     public AbsenceType getAbsenceTypeByID(int absenceTypeID) {
         AbsenceType at = null;
-        try (Connection con = ConnectionManager.getInstance().getConnection();
-                Statement stmt = con.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ABSENCETYPEID_COL + " = " + absenceTypeID)) {
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ABSENCETYPEID_COL + " = " + absenceTypeID + " " + SQL_ORDER_BY_LINE)) {
 
             if (rs.next()) {
                 at = new AbsenceType(rs.getInt(ABSENCETYPEID_COL), rs.getString(ABSENCETYPENAME_COL));

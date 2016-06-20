@@ -9,6 +9,7 @@ import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
 import at.htlpinkafeld.dao.interf.Absence_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.pojo.Absence;
+import at.htlpinkafeld.pojo.AbsenceType;
 import at.htlpinkafeld.pojo.User;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -41,13 +42,36 @@ public class Absence_InMemoryDAO extends Base_InMemoryDAO<Absence> implements Ab
     }
 
     @Override
-    protected Absence clone(Absence entity) {
+    public List<Absence> getAbsenceByAbsenceType(AbsenceType at) {
+        List<Absence> aList = new LinkedList<>();
+        for (Absence a : super.getList()) {
+            if (a.getAbsenceType().equals(at)) {
+                aList.add(clone(a));
+            }
+        }
+        return aList;
+    }
+
+    @Override
+    public List<Absence> getAbsenceByAbsenceTypeAndUser(AbsenceType at, User u) {
+        List<Absence> aList = new LinkedList<>();
+        for (Absence a : super.getList()) {
+            if (a.getAbsenceType().equals(at) && a.getUser().equals(u)) {
+                aList.add(clone(a));
+            }
+        }
+        return aList;
+    }
+
+    @Override
+    protected Absence clone(Absence entity
+    ) {
         return new Absence(entity);
     }
 
     @Override
-    protected void setID(Absence entity, int id) {
+    protected void setID(Absence entity, int id
+    ) {
         entity.setAbsenceID(id);
     }
-
 }

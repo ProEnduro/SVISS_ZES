@@ -13,6 +13,7 @@ import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.dao.interf.WorkTime_DAO;
 import at.htlpinkafeld.dao.jdbc.JDBCDAOFactory;
+import at.htlpinkafeld.dao.util.InvalidDAOFactoryTypeException;
 
 /**
  *
@@ -20,8 +21,8 @@ import at.htlpinkafeld.dao.jdbc.JDBCDAOFactory;
  */
 public abstract class DAOFactory {
 
-    private static final int JDBCDAO = 0;
-    private static final int DUMMY_DAO = 1;
+    public static final int JDBCDAO = 0;
+    public static final int DUMMY_DAO = 1;
     private static int daoType;
 
     private static DAOFactory daof;
@@ -41,6 +42,26 @@ public abstract class DAOFactory {
             }
         }
         return daof;
+    }
+
+    /**
+     * Set and recreate DAOFactory only constants JDBCDAO and DUMMY_DAO should be used
+     * @param daoType
+     * @throws InvalidDAOFactoryTypeException
+     */
+    public static synchronized void setDAOFactoryType(int daoType) throws InvalidDAOFactoryTypeException {
+        if (daoType == JDBCDAO || daoType == DUMMY_DAO) {
+            DAOFactory.daoType = daoType;
+            switch (daoType) {
+                case JDBCDAO:
+                    daof = new JDBCDAOFactory();
+                    break;
+                case DUMMY_DAO:
+                    daof = new InMemoryDAOFactory();
+            }
+        } else {
+            throw new InvalidDAOFactoryTypeException();
+        }
     }
 
     public abstract User_DAO getUserDAO();

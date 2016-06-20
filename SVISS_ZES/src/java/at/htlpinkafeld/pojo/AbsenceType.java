@@ -11,15 +11,15 @@ package at.htlpinkafeld.pojo;
  */
 public class AbsenceType {
 
-    private int absenceID;
+    private int absenceTypeID;
     private String absenceName;
 
     public AbsenceType() {
-        absenceID = -1;
+        absenceTypeID = -1;
     }
 
     public AbsenceType(AbsenceType at) {
-        this.absenceID = at.absenceID;
+        this.absenceTypeID = at.absenceTypeID;
         this.absenceName = at.absenceName;
     }
 
@@ -30,16 +30,16 @@ public class AbsenceType {
 
     @Deprecated
     public AbsenceType(int absenceID, String absenceName) {
-        this.absenceID = absenceID;
+        this.absenceTypeID = absenceID;
         this.absenceName = absenceName;
     }
 
-    public int getAbsenceID() {
-        return absenceID;
+    public int getAbsenceTypeID() {
+        return absenceTypeID;
     }
 
-    public void setAbsenceID(int absenceID) {
-        this.absenceID = absenceID;
+    public void setAbsenceTypeID(int absenceTypeID) {
+        this.absenceTypeID = absenceTypeID;
     }
 
     public String getAbsenceName() {
@@ -52,13 +52,13 @@ public class AbsenceType {
 
     @Override
     public String toString() {
-        return "AbsenceType{" + "absenceID=" + absenceID + ", absenceName=" + absenceName + '}';
+        return "AbsenceType{" + "absenceTypeID=" + absenceTypeID + ", absenceName=" + absenceName + '}';
     }
 
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 11 * hash + this.absenceID;
+        hash = 11 * hash + this.absenceTypeID;
         return hash;
     }
 
@@ -74,7 +74,7 @@ public class AbsenceType {
             return false;
         }
         final AbsenceType other = (AbsenceType) obj;
-        if (this.absenceID != other.absenceID) {
+        if (this.absenceTypeID != other.absenceTypeID) {
             return false;
         }
         return true;

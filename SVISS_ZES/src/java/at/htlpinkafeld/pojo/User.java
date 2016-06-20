@@ -23,14 +23,14 @@ public class User {
     private Date hiredate;
     private String pass;
     private Double weekTime;
-    private boolean disabled;
+    private boolean disabled = false;
 
     public User() {
         userNr = -1;
     }
 
     public User(User u) {
-        this.userNr = u.userNr;
+        this.userNr=u.userNr;
         this.accessLevel = u.accessLevel;
         this.PersName = u.PersName;
         this.vacationLeft = u.vacationLeft;
@@ -40,7 +40,7 @@ public class User {
         this.hiredate = u.hiredate;
         this.pass = u.pass;
         this.weekTime = u.weekTime;
-        disabled = u.disabled;
+        this.disabled = u.disabled;
     }
 
     @Deprecated
@@ -198,14 +198,6 @@ public class User {
             return false;
         }
         return true;
-    }
-
-    public String getDisabledString() {
-        if (disabled == true) {
-            return "enable User";
-        } else {
-            return "disable User";
-        }
     }
 
 }

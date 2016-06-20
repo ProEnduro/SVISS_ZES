@@ -34,6 +34,16 @@ public class Absence {
         this.acknowledged = a.acknowledged;
     }
 
+    /**
+     *  Constructor using all Attributes. It is deprecated because it disables automatic id distribution.
+     * @param absenceID
+     * @param user
+     * @param absenceType
+     * @param startTime
+     * @param endTime
+     * @param acknowledged
+     * @deprecated
+     */
     @Deprecated
     public Absence(int absenceID, User user, AbsenceType absenceType, Date startTime, Date endTime, boolean acknowledged) {
         this.absenceID = absenceID;

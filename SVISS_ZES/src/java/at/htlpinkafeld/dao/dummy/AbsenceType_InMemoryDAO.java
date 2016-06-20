@@ -26,7 +26,7 @@ public class AbsenceType_InMemoryDAO extends Base_InMemoryDAO<AbsenceType> imple
     @Override
     public AbsenceType getAbsenceTypeByID(int absenceTypeId) {
         for (AbsenceType at : super.getList()) {
-            if (at.getAbsenceID() == absenceTypeId) {
+            if (at.getAbsenceTypeID() == absenceTypeId) {
                 return clone(at);
             }
         }
@@ -40,6 +40,6 @@ public class AbsenceType_InMemoryDAO extends Base_InMemoryDAO<AbsenceType> imple
 
     @Override
     protected void setID(AbsenceType entity, int id) {
-        entity.setAbsenceID(id);
+        entity.setAbsenceTypeID(id);
     }
 }

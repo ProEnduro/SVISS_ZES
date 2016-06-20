@@ -5,7 +5,8 @@
  */
 package at.htlpinkafeld.dao.jdbc;
 
-import java.sql.Connection;
+import at.htlpinkafeld.dao.util.WrappedConnection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,15 +25,32 @@ public class ConnectionManager {
     private static ConnectionManager conM = null;
     private DataSource ds;
 
+    private static boolean test = false;
+    private WrappedConnection testConnection = null;
+
     protected ConnectionManager() throws SQLException {
         try {
-            Context ctx;
+            if (!test) {
+                Context ctx;
 
-            ctx = new javax.naming.InitialContext();
-            ds = (DataSource) ctx.lookup("java:comp/env/" + DATASOURCE);
+                ctx = new javax.naming.InitialContext();
+                ds = (DataSource) ctx.lookup("java:comp/env/" + DATASOURCE);
+            } else {
+                testConnection = new WrappedConnection(DriverManager.getConnection("jdbc:mysql://localhost:3306/" + "zes_sviss?useSSL=false", "root", "admin"), false);
+                testConnection.getConn().setAutoCommit(false);
+            }
         } catch (NamingException ex) {
             Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    /**
+     * Only to be used for testing purposes
+     *
+     * @param testing
+     */
+    protected static synchronized void setDebugInstance(boolean testing) {
+        test = testing;
     }
 
     protected static synchronized ConnectionManager getInstance() throws SQLException {
@@ -42,10 +60,14 @@ public class ConnectionManager {
         return conM;
     }
 
-    protected Connection getConnection() {
-        Connection retVal = null;
+    protected WrappedConnection getWrappedConnection() {
+        WrappedConnection retVal = null;
         try {
-            retVal = ds.getConnection();
+            if (test) {
+                retVal = testConnection;
+            } else {
+                retVal = new WrappedConnection(ds.getConnection(), true);
+            }
         } catch (SQLException ex) {
             Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
         }

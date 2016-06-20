@@ -53,7 +53,6 @@ public class SollZeiten_InMemoryDAO extends Base_InMemoryDAO<SollZeiten> impleme
 
     @Override
     protected void setID(SollZeiten entity, int id) {
-
     }
 
 }

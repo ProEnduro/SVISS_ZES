@@ -6,8 +6,8 @@
 package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
+import at.htlpinkafeld.dao.util.WrappedConnection;
 import at.htlpinkafeld.pojo.AccessLevel;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -39,9 +39,9 @@ public class AccessLevel_JDBCDAO extends Base_JDBCDAO<AccessLevel> implements Ac
     @Override
     public AccessLevel getAccessLevelByID(int accessLevelId) {
         AccessLevel al = null;
-        try (Connection con = ConnectionManager.getInstance().getConnection();
-                Statement stmt = con.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ACCESSLEVELID_COL + " = " + accessLevelId)) {
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ACCESSLEVELID_COL + " = " + accessLevelId + " " + SQL_ORDER_BY_LINE)) {
 
             if (rs.next()) {
                 al = new AccessLevel(rs.getInt(ACCESSLEVELID_COL), rs.getString(ACCESSLEVELNAME_COL), new LinkedList<>(Arrays.asList(rs.getString(PERMISSIONS_COL).split(";"))));
@@ -81,10 +81,10 @@ public class AccessLevel_JDBCDAO extends Base_JDBCDAO<AccessLevel> implements Ac
     }
 
     @Override
-    protected void updateEntityWithAutoKeys(ResultSet rs, AccessLevel entity
-    ) {
+    protected void updateEntityWithAutoKeys(ResultSet rs, AccessLevel entity) {
         try {
-            entity.setAccessLevelID(rs.getInt(ACCESSLEVELID_COL));
+            rs.next();
+            entity.setAccessLevelID(rs.getInt(1));
         } catch (SQLException ex) {
             Logger.getLogger(AccessLevel_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }

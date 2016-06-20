@@ -7,8 +7,8 @@ package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
+import at.htlpinkafeld.dao.util.WrappedConnection;
 import at.htlpinkafeld.pojo.User;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -24,10 +24,10 @@ import java.util.logging.Logger;
  * @author Martin Six
  */
 public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
-    
+
     public static final String USERNR_COL = "USERNR";
     public static final String ACCESSLEVELID_COL = "ACCESSLEVELID";
-    public static final String PERSNAME_COL = "USERNAME";
+    public static final String PERSNAME_COL = "PERSNAME";
     public static final String VACATIONLEFT_COL = "VACATIONLEFT";
     public static final String OVERTIMELEFT_COL = "OVERTIMELEFT";
     public static final String USERNAME_COL = "USERNAME";
@@ -36,60 +36,60 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
     public static final String PASSWORD_COL = "PASSWORD";
     public static final String WEEKTIME_COL = "WEEKTIME";
     public static final String DISABLED_COL = "DISABLED";
-    
+
     public static final String TABLE_NAME = "User";
     public static final String PRIMARY_KEY = USERNR_COL;
     public static final String[] ALL_COLUMNS = {USERNR_COL, ACCESSLEVELID_COL, PERSNAME_COL, VACATIONLEFT_COL, OVERTIMELEFT_COL, USERNAME_COL, EMAIL_COL,
         HIREDATE_COL, PASSWORD_COL, WEEKTIME_COL, DISABLED_COL};
-    
+
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    
+
     protected User_JDBCDAO() {
         super(TABLE_NAME, ALL_COLUMNS, PRIMARY_KEY);
     }
-    
+
     @Override
     public User getUser(int usernr) {
         User u = null;
-        try (Connection con = ConnectionManager.getInstance().getConnection();
-                Statement stmt = con.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + usernr)) {
-            
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + usernr + " " + SQL_ORDER_BY_LINE)) {
+
             AccessLevel_DAO al_DAO = new AccessLevel_JDBCDAO();
             if (rs.next()) {
                 u = new User(rs.getInt(USERNR_COL), al_DAO.getAccessLevelByID(rs.getInt(ACCESSLEVELID_COL)), rs.getString(PERSNAME_COL), rs.getInt(VACATIONLEFT_COL), rs.getInt(OVERTIMELEFT_COL), rs.getString(USERNAME_COL), rs.getString(EMAIL_COL), sdf.parse(rs.getString(HIREDATE_COL)), rs.getString(PASSWORD_COL), rs.getDouble(WEEKTIME_COL), rs.getBoolean(DISABLED_COL));
-                
+
             }
-            
+
         } catch (SQLException | ParseException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return u;
     }
-    
+
     @Override
     public User getUserByUsername(String username) {
         User u = null;
-        try (Connection con = ConnectionManager.getInstance().getConnection();
-                Statement stmt = con.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNAME_COL + " = '" + username + "'")) {
-            
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNAME_COL + " = '" + username + "' " + SQL_ORDER_BY_LINE)) {
+
             AccessLevel_DAO al_DAO = new AccessLevel_JDBCDAO();
             if (rs.next()) {
                 u = new User(rs.getInt(USERNR_COL), al_DAO.getAccessLevelByID(rs.getInt(ACCESSLEVELID_COL)), rs.getString(PERSNAME_COL), rs.getInt(VACATIONLEFT_COL), rs.getInt(OVERTIMELEFT_COL), rs.getString(USERNAME_COL), rs.getString(EMAIL_COL), sdf.parse(rs.getString(HIREDATE_COL)), rs.getString(PASSWORD_COL), rs.getDouble(WEEKTIME_COL), rs.getBoolean(DISABLED_COL));
-                
+
             }
-            
+
         } catch (SQLException | ParseException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return u;
     }
-    
+
     @Override
     protected Map<String, Object> entityToMap(User entity) {
         Map<String, Object> resMap = new HashMap<>();
-        
+
         resMap.put(USERNR_COL, entity.getUserNr());
         resMap.put(ACCESSLEVELID_COL, entity.getAccessLevel().getAccessLevelID());
         resMap.put(PERSNAME_COL, entity.getPersName());
@@ -101,10 +101,10 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
         resMap.put(PASSWORD_COL, entity.getPass());
         resMap.put(WEEKTIME_COL, entity.getWeekTime());
         resMap.put(DISABLED_COL, entity.isDisabled());
-        
+
         return resMap;
     }
-    
+
     @Override
     protected User getEntityFromResultSet(ResultSet rs) {
         User u = new User();
@@ -121,20 +121,21 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
             u.setPass(rs.getString(PASSWORD_COL));
             u.setWeekTime(rs.getDouble(WEEKTIME_COL));
             u.setDisabled(rs.getBoolean(DISABLED_COL));
-            
+
         } catch (SQLException | ParseException ex) {
             Logger.getLogger(Base_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return u;
     }
-    
+
     @Override
     protected void updateEntityWithAutoKeys(ResultSet rs, User entity) {
         try {
-            entity.setUserNr(rs.getInt(USERNR_COL));
+            rs.next();
+            entity.setUserNr(rs.getInt(1));
         } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
 }

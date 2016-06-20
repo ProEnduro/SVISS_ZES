@@ -5,7 +5,6 @@
  */
 package at.htlpinkafeld.pojo;
 
-import com.sun.security.auth.SolarisNumericGroupPrincipal;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
@@ -25,7 +24,7 @@ public class SollZeiten {
 
     public SollZeiten(SollZeiten sz) {
         this.day = sz.day;
-        this.user = sz.user;
+        this.user = new User(sz.user);
         this.sollStartTime = sz.sollStartTime;
         this.sollEndTime = sz.sollEndTime;
     }

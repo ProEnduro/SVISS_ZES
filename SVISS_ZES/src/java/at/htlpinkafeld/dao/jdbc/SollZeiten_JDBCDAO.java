@@ -6,13 +6,12 @@
 package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
+import at.htlpinkafeld.dao.util.WrappedConnection;
 import at.htlpinkafeld.pojo.SollZeiten;
 import at.htlpinkafeld.pojo.User;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.DayOfWeek;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,7 +31,7 @@ public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeiten> implements Soll
     public static final String SOLLENDTIME_COL = "SollEndTime";
 
     public static final String TABLE_NAME = "SollZeiten";
-    public static final String[] PRIMARY_KEY = {DAYID_COL, USERNR_COL};
+    public static final String[] PRIMARY_KEY = {USERNR_COL, DAYID_COL};
     public static final String[] ALL_COLUMNS = {DAYID_COL, USERNR_COL, SOLLSTARTTIME_COL, SOLLENDTIME_COL};
 
     protected SollZeiten_JDBCDAO() {
@@ -63,23 +62,24 @@ public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeiten> implements Soll
 
     @Override
     protected void updateEntityWithAutoKeys(ResultSet rs, SollZeiten entity) {
-        try {
-            entity.setDay(DayOfWeek.valueOf(rs.getString(DAYID_COL)));
-        } catch (SQLException ex) {
-            Logger.getLogger(SollZeiten_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//        rs.next();
+//            entity.setDay(DayOfWeek.valueOf(rs.getString(1)));
+//        } catch (SQLException ex) {
+//            Logger.getLogger(SollZeiten_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
     @Override
     public List<SollZeiten> getSollZeitenByUser(User u) {
         List<SollZeiten> sollZeiten = new LinkedList<>();
 
-        try (Connection con = ConnectionManager.getInstance().getConnection();
-                Statement stmt = con.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + u.getUserNr())) {
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + u.getUserNr() + " " + SQL_ORDER_BY_LINE)) {
 
             while (rs.next()) {
-                sollZeiten.add(new SollZeiten(DayOfWeek.valueOf(rs.getString(DAYID_COL)), u, rs.getTime(SOLLSTARTTIME_COL).toLocalTime(), rs.getTime(SOLLENDTIME_COL).toLocalTime()));
+                sollZeiten.add(new SollZeiten(SollZeiten.getDayOfWeekFromDBShort(rs.getString(DAYID_COL)), u, rs.getTime(SOLLSTARTTIME_COL).toLocalTime(), rs.getTime(SOLLENDTIME_COL).toLocalTime()));
             }
 
         } catch (SQLException ex) {

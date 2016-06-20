@@ -6,9 +6,9 @@
 package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.WorkTime_DAO;
+import at.htlpinkafeld.dao.util.WrappedConnection;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -34,7 +34,7 @@ public class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime
     public static final String ENDCOMMENT_COL = "EndComment";
 
     public static final String TABLE_NAME = "WorkTime";
-    public static final String[] PRIMARY_KEY = {TIMEID_COL, USERNR_COL};
+    public static final String[] PRIMARY_KEY = {USERNR_COL, TIMEID_COL};
     public static final String[] ALL_COLUMNS = {TIMEID_COL, USERNR_COL, STARTTIME_COL, ENDTIME_COL, BREAKTIME_COL, STARTCOMMENT_COL, ENDCOMMENT_COL};
 
     protected WorkTime_JDBCDAO() {
@@ -70,7 +70,8 @@ public class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime
     @Override
     protected void updateEntityWithAutoKeys(ResultSet rs, WorkTime entity) {
         try {
-            entity.setTimeID(rs.getInt(TIMEID_COL));
+            rs.next();
+            entity.setTimeID(rs.getInt(1));
         } catch (SQLException ex) {
             Logger.getLogger(WorkTime_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -80,9 +81,9 @@ public class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime
     public List<WorkTime> getWorkTimesByUser(User u) {
         List<WorkTime> workTimes = new ArrayList<>();
 
-        try (Connection con = ConnectionManager.getInstance().getConnection();
-                Statement stmt = con.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + u.getUserNr())) {
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + u.getUserNr() + " " + SQL_ORDER_BY_LINE)) {
 
             while (rs.next()) {
                 workTimes.add(new WorkTime(rs.getInt(TIMEID_COL), u, rs.getDate(STARTTIME_COL), rs.getDate(ENDTIME_COL), rs.getInt(BREAKTIME_COL), rs.getString(STARTCOMMENT_COL), rs.getString(ENDCOMMENT_COL)));

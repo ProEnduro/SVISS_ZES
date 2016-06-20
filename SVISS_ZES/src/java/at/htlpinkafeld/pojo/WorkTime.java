@@ -121,6 +121,11 @@ public class WorkTime {
     }
 
     @Override
+    public String toString() {
+        return "WorkTime{" + "timeID=" + timeID + ", user=" + user + ", startTime=" + startTime + ", endTime=" + endTime + ", breakTime=" + breakTime + ", startComment=" + startComment + ", endComment=" + endComment + '}';
+    }
+
+    @Override
     public int hashCode() {
         int hash = 5;
         hash = 47 * hash + this.timeID;
@@ -148,12 +153,5 @@ public class WorkTime {
         }
         return true;
     }
-
-    @Override
-    public String toString() {
-        return "WorkTime{" + "timeID=" + timeID + ", user=" + user + ", startTime=" + startTime + ", endTime=" + endTime + ", breakTime=" + breakTime + ", startComment=" + startComment + ", endComment=" + endComment + '}';
-    }
-    
-    
 
 }
