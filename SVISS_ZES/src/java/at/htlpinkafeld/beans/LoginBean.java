@@ -56,7 +56,12 @@ public class LoginBean {
 
         System.out.println(u);
 
-        if (user != null && user.getPass().equals(this.pw)) {
+        if(user.isDisabled() == true){
+            FacesContext context = FacesContext.getCurrentInstance();
+            context.addMessage(null, new FacesMessage("User is disabled!"));
+        }
+        
+        if (user != null && user.getPass().equals(this.pw) && user.isDisabled() == false) {
 
             FacesContext context = FacesContext.getCurrentInstance();
             MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
@@ -70,9 +75,12 @@ public class LoginBean {
 
             return "success";
         }
+        
 
-        FacesContext context = FacesContext.getCurrentInstance();
-        context.addMessage(null, new FacesMessage("Invalid Password!"));
+        if (user == null || (user.getPass().equals(this.pw)) == false) {
+            FacesContext context = FacesContext.getCurrentInstance();
+            context.addMessage(null, new FacesMessage("Invalid Password!"));
+        }
 
         return "failure";
     }

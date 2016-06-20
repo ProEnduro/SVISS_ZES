@@ -8,6 +8,7 @@ package at.htlpinkafeld.beans;
 import at.htlpinkafeld.service.IstZeitService;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import javax.faces.context.FacesContext;
 
@@ -16,6 +17,8 @@ import javax.faces.context.FacesContext;
  * @author ÐarkHell2
  */
 public class IstZeitBean {
+    
+    
 
     private Date startTime;
     private Date endTime;

@@ -149,4 +149,11 @@ public class WorkTime {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "WorkTime{" + "timeID=" + timeID + ", user=" + user + ", startTime=" + startTime + ", endTime=" + endTime + ", breakTime=" + breakTime + ", startComment=" + startComment + ", endComment=" + endComment + '}';
+    }
+    
+    
+
 }

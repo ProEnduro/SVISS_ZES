@@ -135,4 +135,10 @@ public class BenutzerverwaltungBean {
         BenutzerverwaltungService.updateUser(change);
     }
 
+    public void update(ActionEvent e){
+        User u = (User)e.getComponent().getAttributes().get("user1");
+        u.setDisabled(!u.isDisabled());
+        BenutzerverwaltungService.updateUser(u);
+    }
+    
 }

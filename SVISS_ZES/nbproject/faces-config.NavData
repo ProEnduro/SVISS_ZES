@@ -3,8 +3,8 @@
     <Scope Scope="Faces Configuration Only"/>
     <Scope Scope="Project">
         <Node id="pages/mainSite.xhtml" x="900" y="150" zoom="true"/>
-        <Node id="pages/second.xhtml" x="631" y="460" zoom="true"/>
         <Node id="index.xhtml" x="150" y="150" zoom="true"/>
+        <Node id="pages/second.xhtml" x="631" y="460" zoom="true"/>
         <Node id="welcomePrimefaces.xhtml" x="353" y="161" zoom="true"/>
         <Node id="*" x="150" y="300" zoom="true"/>
         <Node id="pages/newUser.xhtml" x="150" y="450" zoom="true"/>
