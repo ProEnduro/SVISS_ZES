@@ -5,16 +5,14 @@
  */
 package at.htlpinkafeld.dao.jdbc;
 
+import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
+import at.htlpinkafeld.dao.util.InvalidDAOFactoryTypeException;
 import at.htlpinkafeld.pojo.AbsenceType;
-import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -28,8 +26,9 @@ public class AbsenceType_JDBCDAOTest {
 
     AbsenceType_DAO absenceType_DAO;
 
-    public AbsenceType_JDBCDAOTest() {
+    public AbsenceType_JDBCDAOTest() throws InvalidDAOFactoryTypeException {
         absenceType_DAO = JDBCDAOFactory.getDAOFactory().getAbsenceTypeDAO();
+        ConnectionManager.setDebugInstance(true);
     }
 
     @BeforeClass
@@ -37,7 +36,7 @@ public class AbsenceType_JDBCDAOTest {
 // rcarver - setup the jndi context and the datasource
         try {
             // Create initial context
-            System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
+            /*System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
                     "org.apache.naming.java.javaURLContextFactory");
             System.setProperty(Context.URL_PKG_PREFIXES,
                     "org.apache.naming");
@@ -54,8 +53,9 @@ public class AbsenceType_JDBCDAOTest {
             ds.setUser("root");
             ds.setPassword("admin");
 
-            ic.bind("java:/comp/env/jdbc/zes_sviss", ds);
-        } catch (NamingException ex) {
+            ic.bind("java:/comp/env/jdbc/zes_sviss", ds);*/
+
+        } catch (Exception ex) {
             Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -63,7 +63,7 @@ public class AbsenceType_JDBCDAOTest {
     @After
     public void tearDown() {
         try {
-            ConnectionManager.getInstance().getConnection().rollback();
+            ConnectionManager.getInstance().getWrappedConnection().getConn().rollback();
         } catch (SQLException ex) {
             Logger.getLogger(AbsenceType_JDBCDAOTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -71,9 +71,11 @@ public class AbsenceType_JDBCDAOTest {
 
     /**
      * Test of getList method, of class Base_JDBCDAO.
+     *
+     * @throws java.sql.SQLException
      */
     @Test
-    public void testInsertAndGetList() {
+    public void testInsertAndGetList() throws SQLException {
         List<AbsenceType> expResult = absenceType_DAO.getList();
         AbsenceType at = new AbsenceType("TestAbsence");
         expResult.add(at);
@@ -96,13 +98,16 @@ public class AbsenceType_JDBCDAOTest {
     }
 
     /**
-     * Test of delete method, of class Base_JDBCDAO.
+     * Test of insert and delete method, of class Base_JDBCDAO.
      */
     @Test
-    public void testDelete() {
-        AbsenceType at = absenceType_DAO.getList().get(0);
-        absenceType_DAO.delete(at);
+    public void testInsertAndDelete() {
+        AbsenceType at = new AbsenceType("TestAbsence");
+        absenceType_DAO.insert(at);
         List<AbsenceType> result = absenceType_DAO.getList();
+        assertTrue(result.contains(at));
+        absenceType_DAO.delete(at);
+        result = absenceType_DAO.getList();
         assertFalse(result.contains(at));
     }
 }
