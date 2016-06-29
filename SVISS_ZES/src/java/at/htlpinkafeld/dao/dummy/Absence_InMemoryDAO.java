@@ -26,8 +26,8 @@ public class Absence_InMemoryDAO extends Base_InMemoryDAO<Absence> implements Ab
         super(new ArrayList<>());
         User_DAO uDAO = new User_InMemoryDAO();
         AbsenceType_DAO aDAO = new AbsenceType_InMemoryDAO();
-        super.insert(new Absence(1, uDAO.getUser(1), aDAO.getAbsenceTypeByID(1), new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime(), true));
-        super.insert(new Absence(1, uDAO.getUser(2), aDAO.getAbsenceTypeByID(3), new GregorianCalendar(2016, 4, 4, 14, 0).getTime(), new GregorianCalendar(2016, 4, 4, 18, 0).getTime(), false));
+        super.insert(new Absence(1, uDAO.getUser(1), aDAO.getAbsenceTypeByID(1), new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime(), "Cold", true));
+        super.insert(new Absence(uDAO.getUser(2), aDAO.getAbsenceTypeByID(3), new GregorianCalendar(2016, 4, 4, 14, 0).getTime(), new GregorianCalendar(2016, 4, 4, 18, 0).getTime()));
     }
 
     @Override

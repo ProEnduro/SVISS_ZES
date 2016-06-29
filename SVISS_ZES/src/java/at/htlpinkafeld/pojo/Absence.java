@@ -19,6 +19,7 @@ public class Absence {
     private AbsenceType absenceType;
     private Date startTime;
     private Date endTime;
+    private String reason;
     private boolean acknowledged;
 
     public Absence() {
@@ -31,11 +32,14 @@ public class Absence {
         this.absenceType = a.absenceType;
         this.startTime = a.startTime;
         this.endTime = a.endTime;
+        this.reason = a.reason;
         this.acknowledged = a.acknowledged;
     }
 
     /**
-     *  Constructor using all Attributes. It is deprecated because it disables automatic id distribution.
+     * Constructor using all Attributes. It is deprecated because it disables
+     * automatic id distribution.
+     *
      * @param absenceID
      * @param user
      * @param absenceType
@@ -45,21 +49,23 @@ public class Absence {
      * @deprecated
      */
     @Deprecated
-    public Absence(int absenceID, User user, AbsenceType absenceType, Date startTime, Date endTime, boolean acknowledged) {
+    public Absence(int absenceID, User user, AbsenceType absenceType, Date startTime, Date endTime, String reason, boolean acknowledged) {
         this.absenceID = absenceID;
         this.user = user;
         this.absenceType = absenceType;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.reason = reason;
         this.acknowledged = acknowledged;
     }
 
-    public Absence(User user, AbsenceType absenceType, Date startTime, Date endTime, boolean acknowledged) {
+    public Absence(User user, AbsenceType absenceType, Date startTime, Date endTime, String reason) {
         this();
         this.user = user;
         this.absenceType = absenceType;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.reason = reason;
         this.acknowledged = acknowledged;
     }
 
@@ -69,6 +75,7 @@ public class Absence {
         this.absenceType = absenceType;
         this.startTime = startTime;
         this.endTime = endTime;
+        reason = absenceType.getAbsenceName();
         acknowledged = false;
     }
 
@@ -112,6 +119,14 @@ public class Absence {
         this.endTime = endTime;
     }
 
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
     public boolean isAcknowledged() {
         return acknowledged;
     }
@@ -122,7 +137,7 @@ public class Absence {
 
     @Override
     public String toString() {
-        return "Absence{" + "absenceID=" + absenceID + ", user=" + user + ", absenceType=" + absenceType + ", startTime=" + startTime + ", endTime=" + endTime + ", acknowledged=" + acknowledged + '}';
+        return "Absence{" + "absenceID=" + absenceID + ", user=" + user + ", absenceType=" + absenceType + ", startTime=" + startTime + ", endTime=" + endTime + ", reason=" + reason + ", acknowledged=" + acknowledged + '}';
     }
 
     @Override
