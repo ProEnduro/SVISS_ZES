@@ -18,13 +18,11 @@ public class AccessLevel_InMemoryDAO extends Base_InMemoryDAO<AccessLevel> imple
 
     protected AccessLevel_InMemoryDAO() {
         super(new LinkedList<>());
-        List<String> permList = new LinkedList<>();
-        permList.add("VIEW_CALENDAR");
-        super.insert(new AccessLevel(3, "Reader", permList));
 
-        permList = new LinkedList<>();
-        permList.add("INPUT_TIME");
-        super.insert(new AccessLevel(4, "User", permList));
+        List<String> permList = new LinkedList<>();
+        permList.add("APPROVER");
+        permList.add("EDIT_USERS");
+        super.insert(new AccessLevel(1, "Admin", permList));
 
         permList = new LinkedList<>();
         permList.add("USER");
@@ -33,9 +31,12 @@ public class AccessLevel_InMemoryDAO extends Base_InMemoryDAO<AccessLevel> imple
         super.insert(new AccessLevel(2, "Approver", permList));
 
         permList = new LinkedList<>();
-        permList.add("APPROVER");
-        permList.add("EDIT_USERS");
-        super.insert(new AccessLevel(1, "Admin", permList));
+        permList.add("VIEW_CALENDAR");
+        super.insert(new AccessLevel(3, "Reader", permList));
+
+        permList = new LinkedList<>();
+        permList.add("INPUT_TIME");
+        super.insert(new AccessLevel(4, "User", permList));
     }
 
     @Override

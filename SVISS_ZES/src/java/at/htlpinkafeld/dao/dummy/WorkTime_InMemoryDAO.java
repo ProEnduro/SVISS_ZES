@@ -23,8 +23,8 @@ public class WorkTime_InMemoryDAO extends Base_InMemoryDAO<WorkTime> implements 
     protected WorkTime_InMemoryDAO() {
         super(new ArrayList<>());
         User_DAO uDAO = new User_InMemoryDAO();
-        super.insert(new WorkTime(1, uDAO.getUser(1), new GregorianCalendar(2016, 3, 14, 8, 0).getTime(), new GregorianCalendar(2016, 3, 14, 16, 30).getTime(), 30, "Start Test", "End Test"));
-        super.insert(new WorkTime(2, uDAO.getUser(2), new GregorianCalendar(2016, 3, 14, 9, 0).getTime(), new GregorianCalendar(2016, 3, 14, 16, 0).getTime(), 30, "Start Later Test", "End Early Test"));
+        super.insert(new WorkTime( uDAO.getUser(1), new GregorianCalendar(2016, 3, 14, 8, 0).getTime(), new GregorianCalendar(2016, 3, 14, 16, 30).getTime(), 30, "Start Test", "End Test"));
+        super.insert(new WorkTime(uDAO.getUser(2), new GregorianCalendar(2016, 3, 14, 9, 0).getTime(), new GregorianCalendar(2016, 3, 14, 16, 0).getTime(), 30, "Start Later Test", "End Early Test"));
     }
 
     @Override
