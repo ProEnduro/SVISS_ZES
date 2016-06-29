@@ -41,10 +41,16 @@ and open the template in the editor.
                         <f:attribute name="val" value="#{user}" />
                     </p:commandButton>
                 </p:column>
+
+                <p:column headerText="disable">
+                    <p:commandButton value="#{user.getDisabledString()}" actionListener="#{benutzerverwaltungsBean.update}">
+                        <f:attribute name="user1" value="#{user}" />
+                    </p:commandButton>
+                </p:column>
             </p:dataTable>
 
-            <p:commandButton value="New User" action="#{benutzerverwaltungsBean.newUserSite}"/>
 
+            <p:commandButton value="New User" action="#{benutzerverwaltungsBean.newUserSite}"/>
 
 
             <p:dialog header="Basic Dialog" widgetVar="dlg1" minHeight="40">
@@ -53,8 +59,75 @@ and open the template in the editor.
                 <p:commandButton value="Abbruch" onclick="PF('dlg1').hide();"/>
             </p:dialog>
 
-        </h:form>
+            <p:growl id="messages" showDetail="true" />
 
+            <p:schedule id="schedule" value="#{scheduleView.eventModel}" widgetVar="myschedule" timeZone="GMT+2">
+
+                <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
+                <p:ajax event="eventSelect" listener="#{scheduleView.onEventSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
+                <p:ajax event="eventMove" listener="#{scheduleView.onEventMove}" update="messages" />
+                <p:ajax event="eventResize" listener="#{scheduleView.onEventResize}" update="messages" />
+
+            </p:schedule>
+
+            <style type="text/css">
+                .value {
+                    width: 1000px;
+                }
+                .ui-state-highlight {
+                    background: yellow !important;
+                }
+                .fc-event-inner{
+                    background-color: red;
+                    border-color: red;
+                    color: white;
+                }
+                .istzeit .fc-event-inner{
+                    background-color: lightblue;
+                    color: black;
+                }
+                .urlaub .fc-event-inner{
+                    background-color: violet;
+                    color: white;
+                }
+                .zeitausgleich .fc-event-inner{
+                    background-color: black;
+                    color: white;
+                }
+                .krankenstand .fc-event-inner{
+                    background-color: greenyellow;
+                    color: white;
+                }
+            </style>
+
+            <p:dialog widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip">
+                <h:panelGrid id="eventDetails" columns="2">
+                    <p:outputLabel for="title" value="Titles:" />
+                    <p:inputText id="title" value="#{scheduleView.event.title}" required="true" />
+
+                    <p:outputLabel for="from" value="From:" />
+                    <p:calendar id="from" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
+
+                    <p:outputLabel for="to" value="To:" />
+                    <p:calendar id="to" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
+
+                    <p:outputLabel for="allDay" value="All Day:" />
+                    <h:selectBooleanCheckbox id="allDay" value="#{scheduleView.event.allDay}" />
+
+                    <p:commandButton type="reset" value="Reset" />
+                    <p:commandButton id="addButton" value="Save" actionListener="#{scheduleView.addEvent}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" />
+
+                    <p:selectOneRadio id="type" value="#{scheduleView.type}">
+                        <f:selectItems value="#{scheduleView.types}"/>
+                        <p:ajax update="messages" listener="#{scheduleView.radioAjax}"/>
+                    </p:selectOneRadio>
+                </h:panelGrid>
+            </p:dialog>    
+
+
+
+
+        </h:form>
     </ui:define>
 
 
