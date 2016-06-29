@@ -31,6 +31,12 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
     
+     <managed-bean>
+        <managed-bean-name>scheduleView</managed-bean-name>
+        <managed-bean-class>at.htlpinkafeld.beans.ScheduleView</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    
     <navigation-rule>
         <from-view-id>/*</from-view-id>
         <navigation-case>

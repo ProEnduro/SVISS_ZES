@@ -36,4 +36,25 @@ public class IstZeitService {
         System.out.println("ende: " + test.getEndTime());
 
     }
+
+    public static List<WorkTime> getWorktimeByUser(User u) {
+        workDAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
+        return workDAO.getWorkTimesByUser(u);
+    }
+
+    public static List<WorkTime> getAllWorkTime() {
+        workDAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
+        return workDAO.getList();
+    }
+
+
+    public static void update(WorkTime o) {
+        workDAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
+        workDAO.update(o);
+    }
+
+    public static void delete(WorkTime o) {
+        workDAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
+        workDAO.delete(o);
+    }
 }
