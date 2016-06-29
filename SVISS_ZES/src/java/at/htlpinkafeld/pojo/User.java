@@ -199,5 +199,13 @@ public class User {
         }
         return true;
     }
+    
+    public String getDisabledString(){
+        if(this.isDisabled()){
+            return "disabled!";
+        }else{
+            return "enabled";
+        }
+    }
 
 }

@@ -5,6 +5,9 @@
  */
 package at.htlpinkafeld.beans;
 
+import at.htlpinkafeld.dao.factory.DAOFactory;
+import at.htlpinkafeld.pojo.Absence;
+import at.htlpinkafeld.pojo.AbsenceType;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
 import at.htlpinkafeld.service.IstZeitService;
@@ -29,8 +32,8 @@ import org.primefaces.model.ScheduleModel;
 
 public class ScheduleView implements Serializable {
 
-    String type;
-    List<String> types;
+    int type;
+    List<AbsenceType> types;
     User currentUser;
 
     private ScheduleModel eventModel;
@@ -59,23 +62,20 @@ public class ScheduleView implements Serializable {
             }
         };
 
-        types = new ArrayList<>();
+        types = DAOFactory.getDAOFactory().getAbsenceTypeDAO().getList();
+        types.add((new AbsenceType(-1, "istzeit")));
 
-        types.add("Ist-Zeit");
-        types.add("Urlaub");
-        types.add("Zeitausgleich");
-        types.add("Krankenstand");
-        
         FacesContext context = FacesContext.getCurrentInstance();
         MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
         currentUser = masterBean.getUser();
-        
-        List<WorkTime> worklist = IstZeitService.getWorktimeByUser(currentUser);
-        
-        for(WorkTime w: worklist){
-            eventModel.addEvent(new DefaultScheduleEvent(w.getStartComment(), w.getStartTime(), w.getEndTime()));
+
+        List<WorkTime> worklist = DAOFactory.getDAOFactory().getWorkTimeDAO().getWorkTimesByUser(currentUser);
+
+        for (WorkTime w : worklist) {
+            System.out.println(w);
+            eventModel.addEvent(new DefaultScheduleEvent("test 1", w.getStartTime(), w.getEndTime(), "istzeit"));
         }
-        
+
     }
 
     public Date getRandomDate(Date base) {
@@ -191,36 +191,45 @@ public class ScheduleView implements Serializable {
             DefaultScheduleEvent e = (DefaultScheduleEvent) event;
 
             System.out.println(type);
-            
+
             switch (this.type) {
-                case "Ist-Zeit":
+
+                case -1:
                     e.setStyleClass("istzeit");
+                    IstZeitService.addIstTime(currentUser, e.getStartDate(), e.getEndDate());
                     break;
-                case "Urlaub":
-                     e.setStyleClass("urlaub");
+                case 1:
+                    e.setStyleClass(types.get(type - 1).getAbsenceName().replace(" ", "_"));
+                    DAOFactory.getDAOFactory().getAbsenceDAO().insert(new Absence(this.currentUser, types.get(type - 1), e.getStartDate(), e.getEndDate()));
                     break;
-                case "Zeitausgleich":
-                     e.setStyleClass("zeitausgleich");
+                case 2:
+                    e.setStyleClass(types.get(type - 1).getAbsenceName().replace(" ", "_"));
+                    DAOFactory.getDAOFactory().getAbsenceDAO().insert(new Absence(this.currentUser, types.get(type - 1), e.getStartDate(), e.getEndDate()));
                     break;
-                case "Krankenstand":
-                     e.setStyleClass("krankenstand");
+                case 3:
+                    e.setStyleClass(types.get(type - 1).getAbsenceName().replace(" ", "_"));
+                    DAOFactory.getDAOFactory().getAbsenceDAO().insert(new Absence(this.currentUser, types.get(type - 1), e.getStartDate(), e.getEndDate()));
                     break;
+//                case 4:
+//                    e.setStyleClass(types.get(type - 1).getAbsenceName().replace(" ", "_"));
+//                    DAOFactory.getDAOFactory().getAbsenceDAO().insert(new Absence(this.currentUser, types.get(type - 1), e.getStartDate(), e.getEndDate()));
+//                    break;
                 default:
             }
 
             System.out.println(e.getStartDate());
             System.out.println(e.getEndDate());
             eventModel.addEvent(e);
-            IstZeitService.addIstTime(currentUser, e.getStartDate(),e.getEndDate());
+//            IstZeitService.addIstTime(currentUser, e.getStartDate(),e.getEndDate());
         } else {
             eventModel.updateEvent(event);
         }
-        
-        for(WorkTime w: IstZeitService.getAllWorkTime()){
-            System.out.println(w);
-        }
 
+//        for(WorkTime w: IstZeitService.getAllWorkTime()){
+//            System.out.println(w);
+//        }
         event = new DefaultScheduleEvent();
+
     }
 
     public void onEventSelect(SelectEvent selectEvent) {
@@ -247,24 +256,24 @@ public class ScheduleView implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, message);
     }
 
-    public String getType() {
+    public int getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(int type) {
         this.type = type;
     }
 
-    public List<String> getTypes() {
+    public List<AbsenceType> getTypes() {
         return types;
     }
 
-    public void setTypes(List<String> types) {
+    public void setTypes(List<AbsenceType> types) {
         this.types = types;
     }
 
-    public void radioAjax(){
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(type));
+    public void radioAjax() {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(types.get(type - 1).getAbsenceName()));
     }
-    
+
 }
