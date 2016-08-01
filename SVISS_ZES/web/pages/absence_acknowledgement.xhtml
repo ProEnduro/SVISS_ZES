@@ -15,16 +15,15 @@ and open the template in the editor.
 
         <ui:define name="content">
 
-            <h1 align="center">Ist-Zeiten</h1>
-
             <p:growl id="messages" showDetail="true" />
-
-            <p:schedule id="schedule" value="#{scheduleView.eventModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" columnFormat="month:'ddd', week:'dd/MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
+            
+            <p:schedule id="schedule" value="#{scheduleView.acknowlegementModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" columnFormat="month:'ddd', week:'dd/MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
 
                 <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
-                <p:ajax event="eventSelect" listener="#{scheduleView.onEventSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
+                <p:ajax event="eventSelect" listener="#{scheduleView.onAbsenceSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
                 <p:ajax event="eventMove" listener="#{scheduleView.onEventMove}" update="messages" />
                 <p:ajax event="eventResize" listener="#{scheduleView.onEventResize}" update="messages" />
+
 
             </p:schedule>
 
@@ -34,8 +33,8 @@ and open the template in the editor.
                     week: 'Woche',
                     day: 'Tag',
                     firstDay: 1,
-                    monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember' ],
-                    monthNamesShort: ['Jan', 'Feb', 'Mrz', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez' ],
+                    monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                    monthNamesShort: ['Jan', 'Feb', 'Mrz', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
                     dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
                     dayNamesShort: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
                     dayNamesMin: ['S', 'M', 'D', 'M ', 'D', 'F ', 'S'],
@@ -101,19 +100,26 @@ and open the template in the editor.
             <p:dialog widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip">
                 <h:panelGrid id="eventDetails" columns="2">
                     <p:outputLabel for="title" value="Titles:" />
-                    <p:inputText id="title" value="#{scheduleView.event.title}" />
+                    <p:inputText id="title" value="#{scheduleView.absenceEvent.title}" />
 
                     <p:outputLabel for="from" value="From:" />
-                    <p:calendar id="from" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
+                    <p:calendar id="from" value="#{scheduleView.absenceEvent.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
 
                     <p:outputLabel for="to" value="To:" />
-                    <p:calendar id="to" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
+                    <p:calendar id="to" value="#{scheduleView.absenceEvent.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
 
                     <p:outputLabel for="allDay" value="All Day:" />
-                    <h:selectBooleanCheckbox id="allDay" value="#{scheduleView.event.allDay}" />
+                    <h:selectBooleanCheckbox id="allDay" value="#{scheduleView.absenceEvent.allDay}" />
 
                     <p:commandButton type="reset" value="Reset" />
-                    <p:commandButton id="addButton" value="Save" actionListener="#{scheduleView.addIstZeitEvent}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" />
+                    <p:commandButton id="addButton" value="Save" actionListener="#{scheduleView.addEvent}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" />
+
+                    <p:selectOneRadio id="type" value="#{scheduleView.type}">
+                        <f:selectItems var="t" itemLabel="#{t.absenceName}" value="#{scheduleView.types}" itemValue="#{t.absenceTypeID}"/>
+                        <!--  <p:ajax update="messages" listener="#{scheduleView.radioAjax}"/> -->
+                    </p:selectOneRadio>
+                    
+                    <p:commandButton id="acknowledgeButton" value="Acknowledge" actionListener="#{scheduleView.setAcknowledged}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();"/>
                 </h:panelGrid>
             </p:dialog> 
 
@@ -122,3 +128,4 @@ and open the template in the editor.
     </ui:composition>
 
 </html>
+
