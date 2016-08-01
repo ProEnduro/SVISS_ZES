@@ -10,6 +10,7 @@ import at.htlpinkafeld.dao.util.DAODML_Observable_Impl;
 /**
  *
  * @author Martin Six
+ * @param <T>
  */
 public abstract class Base_DAO_Observable<T> extends DAODML_Observable_Impl implements Base_DAO<T> {
 

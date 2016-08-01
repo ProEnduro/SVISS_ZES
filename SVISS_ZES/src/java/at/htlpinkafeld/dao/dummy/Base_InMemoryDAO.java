@@ -5,9 +5,8 @@
  */
 package at.htlpinkafeld.dao.dummy;
 
-import at.htlpinkafeld.dao.interf.Base_DAO;
 import at.htlpinkafeld.dao.interf.Base_DAO_Observable;
-import at.htlpinkafeld.dao.util.DAODML_Observable_Impl;
+import at.htlpinkafeld.dao.util.DAOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +36,9 @@ public abstract class Base_InMemoryDAO<T> extends Base_DAO_Observable<T> {
     @Override
     public void insert(T o) {
         setID(o, ID++);
+        if (oList.contains(o)) {
+            throw new DAOException("Duplicate value on index");
+        }
         oList.add(clone(o));
         notifyObservers();
     }

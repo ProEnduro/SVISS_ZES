@@ -5,9 +5,8 @@
  */
 package at.htlpinkafeld.dao.jdbc;
 
-import at.htlpinkafeld.dao.interf.Base_DAO;
 import at.htlpinkafeld.dao.interf.Base_DAO_Observable;
-import at.htlpinkafeld.dao.util.DAODML_Observable_Impl;
+import at.htlpinkafeld.dao.util.DAOException;
 import at.htlpinkafeld.dao.util.WrappedConnection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,7 +16,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -121,7 +119,7 @@ public abstract class Base_JDBCDAO<T> extends Base_DAO_Observable<T> {
     }
 
     @Override
-    public List<T> getList() {
+    public List<T> getList() throws DAOException {
         List<T> entityList = new ArrayList<>();
 
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
@@ -140,7 +138,7 @@ public abstract class Base_JDBCDAO<T> extends Base_DAO_Observable<T> {
     }
 
     @Override
-    public void insert(T o) {
+    public void insert(T o) throws DAOException {
 
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                 PreparedStatement stmt = con.getConn().prepareStatement(SQL_INSERT_STATEMENT, Statement.RETURN_GENERATED_KEYS)) {
@@ -162,6 +160,7 @@ public abstract class Base_JDBCDAO<T> extends Base_DAO_Observable<T> {
             notifyObservers();
         } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DAOException(ex);
         }
     }
 
@@ -194,6 +193,7 @@ public abstract class Base_JDBCDAO<T> extends Base_DAO_Observable<T> {
             notifyObservers();
         } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DAOException(ex);
         }
     }
 
@@ -214,6 +214,7 @@ public abstract class Base_JDBCDAO<T> extends Base_DAO_Observable<T> {
             notifyObservers();
         } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DAOException(ex);
         }
     }
 
