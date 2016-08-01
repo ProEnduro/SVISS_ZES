@@ -45,6 +45,7 @@ public class Absence {
      * @param absenceType
      * @param startTime
      * @param endTime
+     * @param reason
      * @param acknowledged
      * @deprecated
      */
@@ -66,7 +67,7 @@ public class Absence {
         this.startTime = startTime;
         this.endTime = endTime;
         this.reason = reason;
-        this.acknowledged = acknowledged;
+        this.acknowledged = false;
     }
 
     public Absence(User user, AbsenceType absenceType, Date startTime, Date endTime) {

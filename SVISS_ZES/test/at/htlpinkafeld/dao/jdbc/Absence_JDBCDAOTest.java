@@ -90,7 +90,7 @@ public class Absence_JDBCDAOTest {
         Absence absence = new Absence(u, at, new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime(), "Pest");
         absence_DAO.insert(absence);
         expResult.add(absence);
-        List result = absence_DAO.getAbsenceByUser(u);
+        List<Absence>  result= absence_DAO.getAbsenceByAbsenceTypeAndUser(at, u);
         assertArrayEquals(expResult.toArray(), result.toArray());
     }
 

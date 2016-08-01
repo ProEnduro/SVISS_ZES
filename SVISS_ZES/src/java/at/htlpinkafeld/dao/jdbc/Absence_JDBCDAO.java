@@ -121,7 +121,7 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
 
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                 Statement stmt = con.getConn().createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ABSENCEID_COL + " = " + at.getAbsenceTypeID() + " AND " + USERNR_COL + " = " + u.getUserNr() + " " + SQL_ORDER_BY_LINE)) {
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ABSENCETYPEID_COL + " = " + at.getAbsenceTypeID() + " AND " + USERNR_COL + " = " + u.getUserNr())) {
 
             while (rs.next()) {
                 absences.add(new Absence(rs.getInt(ABSENCEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), new AbsenceType_JDBCDAO().getAbsenceTypeByID(rs.getInt(ABSENCETYPEID_COL)), rs.getDate(STARTTIME_COL), rs.getDate(ENDTIME_COL), rs.getString(REASON_COL), rs.getBoolean(ACKNOWLEDGED_COL)));
