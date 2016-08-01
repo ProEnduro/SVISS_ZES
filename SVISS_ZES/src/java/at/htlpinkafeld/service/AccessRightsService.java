@@ -7,6 +7,7 @@ package at.htlpinkafeld.service;
 
 import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
+import at.htlpinkafeld.dao.util.DAODML_Observer;
 import at.htlpinkafeld.pojo.AccessLevel;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.Observer;
  *
  * @author Martin Six
  */
-public class AccessRightsService implements Observer {
+public class AccessRightsService implements DAODML_Observer {
 
     private static final List<String> PERMISSIONS;
     private static final AccessLevel_DAO ALDAO;
@@ -39,9 +40,9 @@ public class AccessRightsService implements Observer {
         AccessGroups = ALDAO.getList();
     }
 
-    /**
-     * This function has to be called when the AccessLevel table was changed
-     */
+    private AccessRightsService() {
+    }
+
     public static void reloadAccessGroups() {
         AccessGroups = ALDAO.getList();
     }
@@ -67,7 +68,7 @@ public class AccessRightsService implements Observer {
     }
 
     @Override
-    public void update(Observable o, Object arg) {
+    public void notifyObserver() {
         reloadAccessGroups();
     }
 

@@ -6,6 +6,8 @@
 package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.Base_DAO;
+import at.htlpinkafeld.dao.interf.Base_DAO_Observable;
+import at.htlpinkafeld.dao.util.DAODML_Observable_Impl;
 import at.htlpinkafeld.dao.util.WrappedConnection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,7 +26,7 @@ import java.util.logging.Logger;
  * @author Martin Six
  * @param <T>
  */
-public abstract class Base_JDBCDAO<T> extends Observable implements Base_DAO<T> {
+public abstract class Base_JDBCDAO<T> extends Base_DAO_Observable<T> {
 
     private final String TABLE_NAME;
     private final String[] PRIMARY_KEY;

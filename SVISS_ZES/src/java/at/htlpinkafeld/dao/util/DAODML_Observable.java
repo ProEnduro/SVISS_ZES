@@ -5,18 +5,16 @@
  */
 package at.htlpinkafeld.dao.util;
 
-import java.util.Observer;
-
 /**
  *
- * @author Martin Six
- * Used in Base_DAO.java so that a Observer can be registered via interfaces
+ * @author Martin Six Used in Base_DAO.java so that a Observer can be registered
+ * via interfaces
  */
-public interface ObservableDAO {
+public interface DAODML_Observable {
 
-    public void addObserver(Observer o);
+    public void addObserver(DAODML_Observer o);
 
-    public void deleteObserver(Observer o);
+    public void deleteObserver(DAODML_Observer o);
 
     public void notifyObservers();
 }

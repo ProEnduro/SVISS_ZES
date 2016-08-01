@@ -6,16 +6,17 @@
 package at.htlpinkafeld.dao.dummy;
 
 import at.htlpinkafeld.dao.interf.Base_DAO;
+import at.htlpinkafeld.dao.interf.Base_DAO_Observable;
+import at.htlpinkafeld.dao.util.DAODML_Observable_Impl;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 
 /**
  *
  * @author Martin Six
  * @param <T>
  */
-public abstract class Base_InMemoryDAO<T> extends Observable implements Base_DAO<T> {
+public abstract class Base_InMemoryDAO<T> extends Base_DAO_Observable<T> {
 
     private final List<T> oList;
     private int ID = 1;
