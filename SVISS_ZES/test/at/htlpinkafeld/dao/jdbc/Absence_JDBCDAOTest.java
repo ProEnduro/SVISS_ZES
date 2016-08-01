@@ -90,7 +90,7 @@ public class Absence_JDBCDAOTest {
         Absence absence = new Absence(u, at, new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime(), "Pest");
         absence_DAO.insert(absence);
         expResult.add(absence);
-        List<Absence>  result= absence_DAO.getAbsencesByAbsenceTypeAndUser(at, u);
+        List<Absence> result = absence_DAO.getAbsencesByAbsenceTypeAndUser(at, u);
         assertArrayEquals(expResult.toArray(), result.toArray());
     }
 
@@ -131,6 +131,39 @@ public class Absence_JDBCDAOTest {
         absence_DAO.delete(absence);
         result = absence_DAO.getList();
         assertFalse(result.contains(absence));
+    }
+
+    /**
+     * Test of getAbsencesByAcknowledgment method, of class Absence_JDBCDAO.
+     */
+    @Test
+    public void testGetAbsencesByAcknowledgment() {
+        User u = DAOFactory.getDAOFactory().getUserDAO().getUser(1);
+        Absence absence = new Absence(u, absenceType_DAO.getAbsenceTypeByID(1), new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime(), "Pest");
+        absence_DAO.insert(absence);
+        List<Absence> result = absence_DAO.getAbsencesByAcknowledgment(false);
+        assertTrue(result.contains(absence));
+        absence.setAcknowledged(true);
+        absence_DAO.update(absence);
+        result = absence_DAO.getAbsencesByAcknowledgment(true);
+        assertTrue(result.contains(absence));
+    }
+
+    /**
+     * Test of getAbsencesByUserAndAcknowledgment method, of class
+     * Absence_JDBCDAO.
+     */
+    @Test
+    public void testGetAbsencesByUserAndAcknowledgment() {
+        User u = DAOFactory.getDAOFactory().getUserDAO().getUser(1);
+        Absence absence = new Absence(u, absenceType_DAO.getAbsenceTypeByID(1), new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime(), "Pest");
+        absence_DAO.insert(absence);
+        List<Absence> result = absence_DAO.getAbsencesByUserAndAcknowledgment(u, false);
+        assertTrue(result.contains(absence));
+        absence.setAcknowledged(true);
+        absence_DAO.update(absence);
+        result = absence_DAO.getAbsencesByUserAndAcknowledgment(u, true);
+        assertTrue(result.contains(absence));
     }
 
 }
