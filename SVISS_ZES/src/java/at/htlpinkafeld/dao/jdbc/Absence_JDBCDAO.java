@@ -78,7 +78,7 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
     }
 
     @Override
-    public List<Absence> getAbsenceByUser(User u) {
+    public List<Absence> getAbsencesByUser(User u) {
         List<Absence> absences = new ArrayList<>();
 
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
@@ -97,7 +97,7 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
     }
 
     @Override
-    public List<Absence> getAbsenceByAbsenceType(AbsenceType at) {
+    public List<Absence> getAbsencesByAbsenceType(AbsenceType at) {
         List<Absence> absences = new ArrayList<>();
 
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
@@ -116,12 +116,50 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
     }
 
     @Override
-    public List<Absence> getAbsenceByAbsenceTypeAndUser(AbsenceType at, User u) {
+    public List<Absence> getAbsencesByAbsenceTypeAndUser(AbsenceType at, User u) {
         List<Absence> absences = new ArrayList<>();
 
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                 Statement stmt = con.getConn().createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ABSENCETYPEID_COL + " = " + at.getAbsenceTypeID() + " AND " + USERNR_COL + " = " + u.getUserNr())) {
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ABSENCETYPEID_COL + " = " + at.getAbsenceTypeID() + " AND " + USERNR_COL + " = " + u.getUserNr() + " " + SQL_ORDER_BY_LINE)) {
+
+            while (rs.next()) {
+                absences.add(new Absence(rs.getInt(ABSENCEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), new AbsenceType_JDBCDAO().getAbsenceTypeByID(rs.getInt(ABSENCETYPEID_COL)), rs.getDate(STARTTIME_COL), rs.getDate(ENDTIME_COL), rs.getString(REASON_COL), rs.getBoolean(ACKNOWLEDGED_COL)));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return absences;
+    }
+
+    @Override
+    public List<Absence> getAbsencesByAcknowledgment(boolean acknowledged) {
+        List<Absence> absences = new ArrayList<>();
+
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ACKNOWLEDGED_COL + " = " + acknowledged + " " + SQL_ORDER_BY_LINE)) {
+
+            while (rs.next()) {
+                absences.add(new Absence(rs.getInt(ABSENCEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), new AbsenceType_JDBCDAO().getAbsenceTypeByID(rs.getInt(ABSENCETYPEID_COL)), rs.getDate(STARTTIME_COL), rs.getDate(ENDTIME_COL), rs.getString(REASON_COL), rs.getBoolean(ACKNOWLEDGED_COL)));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return absences;
+    }
+
+    @Override
+    public List<Absence> getAbsencesByUserAndAcknowledgment(User u, boolean acknowledged) {
+        List<Absence> absences = new ArrayList<>();
+
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + u.getUserNr() + " AND " + ACKNOWLEDGED_COL + " = " + acknowledged + " " + SQL_ORDER_BY_LINE)) {
 
             while (rs.next()) {
                 absences.add(new Absence(rs.getInt(ABSENCEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), new AbsenceType_JDBCDAO().getAbsenceTypeByID(rs.getInt(ABSENCETYPEID_COL)), rs.getDate(STARTTIME_COL), rs.getDate(ENDTIME_COL), rs.getString(REASON_COL), rs.getBoolean(ACKNOWLEDGED_COL)));

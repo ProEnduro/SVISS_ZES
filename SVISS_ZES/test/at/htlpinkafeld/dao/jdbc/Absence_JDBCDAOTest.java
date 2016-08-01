@@ -69,11 +69,11 @@ public class Absence_JDBCDAOTest {
     @Test
     public void testInsertAndGetByUser() throws SQLException {
         User u = DAOFactory.getDAOFactory().getUserDAO().getUser(1);
-        List<Absence> expResult = absence_DAO.getAbsenceByUser(u);
+        List<Absence> expResult = absence_DAO.getAbsencesByUser(u);
         Absence absence = new Absence(u, absenceType_DAO.getAbsenceTypeByID(1), new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime(), "Pest");
         absence_DAO.insert(absence);
         expResult.add(absence);
-        List result = absence_DAO.getAbsenceByUser(u);
+        List result = absence_DAO.getAbsencesByUser(u);
         assertArrayEquals(expResult.toArray(), result.toArray());
     }
 
@@ -86,11 +86,11 @@ public class Absence_JDBCDAOTest {
     public void testInsertAndGetByAbsenceTypeAndUser() throws SQLException {
         User u = DAOFactory.getDAOFactory().getUserDAO().getUser(1);
         AbsenceType at = absenceType_DAO.getAbsenceTypeByID(1);
-        List<Absence> expResult = absence_DAO.getAbsenceByAbsenceTypeAndUser(at, u);
+        List<Absence> expResult = absence_DAO.getAbsencesByAbsenceTypeAndUser(at, u);
         Absence absence = new Absence(u, at, new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime(), "Pest");
         absence_DAO.insert(absence);
         expResult.add(absence);
-        List<Absence>  result= absence_DAO.getAbsenceByAbsenceTypeAndUser(at, u);
+        List<Absence>  result= absence_DAO.getAbsencesByAbsenceTypeAndUser(at, u);
         assertArrayEquals(expResult.toArray(), result.toArray());
     }
 
@@ -103,7 +103,7 @@ public class Absence_JDBCDAOTest {
         AbsenceType at = absenceType_DAO.getAbsenceTypeByID(3);
         Absence absence = new Absence(u, at, new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime());
         absence_DAO.insert(absence);
-        List<Absence> resultList = absence_DAO.getAbsenceByAbsenceType(at);
+        List<Absence> resultList = absence_DAO.getAbsencesByAbsenceType(at);
         Absence result = resultList.get(resultList.indexOf(absence));
 
         absence.setAcknowledged(true);
@@ -112,7 +112,7 @@ public class Absence_JDBCDAOTest {
         assertNotEquals(absence.getEndTime(), result.getEndTime());
 
         absence_DAO.update(absence);
-        resultList = absence_DAO.getAbsenceByAbsenceType(at);
+        resultList = absence_DAO.getAbsencesByAbsenceType(at);
         result = resultList.get(resultList.indexOf(absence));
         assertEquals(absence.isAcknowledged(), result.isAcknowledged());
         assertEquals(absence.getEndTime(), result.getEndTime());

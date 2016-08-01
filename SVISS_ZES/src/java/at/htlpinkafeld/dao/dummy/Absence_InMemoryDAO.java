@@ -31,7 +31,7 @@ public class Absence_InMemoryDAO extends Base_InMemoryDAO<Absence> implements Ab
     }
 
     @Override
-    public List<Absence> getAbsenceByUser(User u) {
+    public List<Absence> getAbsencesByUser(User u) {
         List<Absence> aList = new LinkedList<>();
         for (Absence a : super.getList()) {
             if (a.getUser().equals(u)) {
@@ -42,7 +42,7 @@ public class Absence_InMemoryDAO extends Base_InMemoryDAO<Absence> implements Ab
     }
 
     @Override
-    public List<Absence> getAbsenceByAbsenceType(AbsenceType at) {
+    public List<Absence> getAbsencesByAbsenceType(AbsenceType at) {
         List<Absence> aList = new LinkedList<>();
         for (Absence a : super.getList()) {
             if (a.getAbsenceType().equals(at)) {
@@ -53,10 +53,32 @@ public class Absence_InMemoryDAO extends Base_InMemoryDAO<Absence> implements Ab
     }
 
     @Override
-    public List<Absence> getAbsenceByAbsenceTypeAndUser(AbsenceType at, User u) {
+    public List<Absence> getAbsencesByAbsenceTypeAndUser(AbsenceType at, User u) {
         List<Absence> aList = new LinkedList<>();
         for (Absence a : super.getList()) {
             if (a.getAbsenceType().equals(at) && a.getUser().equals(u)) {
+                aList.add(clone(a));
+            }
+        }
+        return aList;
+    }
+
+    @Override
+    public List<Absence> getAbsencesByAcknowledgment(boolean acknowledged) {
+        List<Absence> aList = new LinkedList<>();
+        for (Absence a : super.getList()) {
+            if (a.isAcknowledged() == acknowledged) {
+                aList.add(clone(a));
+            }
+        }
+        return aList;
+    }
+
+    @Override
+    public List<Absence> getAbsencesByUserAndAcknowledgment(User u, boolean acknowledged) {
+        List<Absence> aList = new LinkedList<>();
+        for (Absence a : super.getList()) {
+            if (a.isAcknowledged() == acknowledged && a.getUser().equals(u)) {
                 aList.add(clone(a));
             }
         }

@@ -16,9 +16,13 @@ import java.util.List;
  */
 public interface Absence_DAO extends Base_DAO<Absence> {
 
-    public abstract List<Absence> getAbsenceByUser(User u);
+    public abstract List<Absence> getAbsencesByUser(User u);
 
-    public abstract List<Absence> getAbsenceByAbsenceType(AbsenceType at);
+    public abstract List<Absence> getAbsencesByAbsenceType(AbsenceType at);
 
-    public abstract List<Absence> getAbsenceByAbsenceTypeAndUser(AbsenceType at, User u);
+    public abstract List<Absence> getAbsencesByAbsenceTypeAndUser(AbsenceType at, User u);
+
+    public abstract List<Absence> getAbsencesByAcknowledgment(boolean acknowledged);
+
+    public abstract List<Absence> getAbsencesByUserAndAcknowledgment(User u, boolean acknowledged);
 }
