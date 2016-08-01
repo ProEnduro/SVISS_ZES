@@ -27,8 +27,8 @@ public class AbsenceType_JDBCDAOTest {
     AbsenceType_DAO absenceType_DAO;
 
     public AbsenceType_JDBCDAOTest() throws InvalidDAOFactoryTypeException {
-        absenceType_DAO = JDBCDAOFactory.getDAOFactory().getAbsenceTypeDAO();
         ConnectionManager.setDebugInstance(true);
+        absenceType_DAO = DAOFactory.getDAOFactory().getAbsenceTypeDAO();
     }
 
     @BeforeClass

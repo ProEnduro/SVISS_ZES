@@ -53,7 +53,7 @@ public class Absence_JDBCDAOTest {
     public void testInsertAndGetList() throws SQLException {
         List<Absence> expResult = absence_DAO.getList();
         User u = DAOFactory.getDAOFactory().getUserDAO().getUser(1);
-        Absence absence = new Absence(u, absenceType_DAO.getAbsenceTypeByID(1), new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime(), true);
+        Absence absence = new Absence(u, absenceType_DAO.getAbsenceTypeByID(1), new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime(), "Pest");
         absence_DAO.insert(absence);
         expResult.add(absence);
         List<Absence> result = absence_DAO.getList();
@@ -70,7 +70,7 @@ public class Absence_JDBCDAOTest {
     public void testInsertAndGetByUser() throws SQLException {
         User u = DAOFactory.getDAOFactory().getUserDAO().getUser(1);
         List<Absence> expResult = absence_DAO.getAbsenceByUser(u);
-        Absence absence = new Absence(u, absenceType_DAO.getAbsenceTypeByID(1), new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime(), true);
+        Absence absence = new Absence(u, absenceType_DAO.getAbsenceTypeByID(1), new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime(), "Pest");
         absence_DAO.insert(absence);
         expResult.add(absence);
         List result = absence_DAO.getAbsenceByUser(u);
@@ -87,7 +87,7 @@ public class Absence_JDBCDAOTest {
         User u = DAOFactory.getDAOFactory().getUserDAO().getUser(1);
         AbsenceType at = absenceType_DAO.getAbsenceTypeByID(1);
         List<Absence> expResult = absence_DAO.getAbsenceByAbsenceTypeAndUser(at, u);
-        Absence absence = new Absence(u, at, new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime(), true);
+        Absence absence = new Absence(u, at, new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime(), "Pest");
         absence_DAO.insert(absence);
         expResult.add(absence);
         List result = absence_DAO.getAbsenceByUser(u);
@@ -124,7 +124,7 @@ public class Absence_JDBCDAOTest {
     @Test
     public void testInsertAndDelete() {
         User u = DAOFactory.getDAOFactory().getUserDAO().getUser(1);
-        Absence absence = new Absence(u, absenceType_DAO.getAbsenceTypeByID(1), new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime(), true);
+        Absence absence = new Absence(u, absenceType_DAO.getAbsenceTypeByID(1), new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime(), "Pest");
         absence_DAO.insert(absence);
         List<Absence> result = absence_DAO.getList();
         assertTrue(result.contains(absence));
