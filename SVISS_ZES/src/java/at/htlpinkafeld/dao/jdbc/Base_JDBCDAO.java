@@ -15,6 +15,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
  * @author Martin Six
  * @param <T>
  */
-public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
+public abstract class Base_JDBCDAO<T> extends Observable implements Base_DAO<T> {
 
     private final String TABLE_NAME;
     private final String[] PRIMARY_KEY;
@@ -155,6 +156,8 @@ public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
 
             stmt.executeUpdate();
             updateEntityWithAutoKeys(stmt.getGeneratedKeys(), o);
+
+            notifyObservers();
         } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -186,6 +189,7 @@ public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
             }
             stmt.executeUpdate();
 
+            notifyObservers();
         } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -205,6 +209,7 @@ public abstract class Base_JDBCDAO<T> implements Base_DAO<T> {
 
             stmt.executeUpdate();
 
+            notifyObservers();
         } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }

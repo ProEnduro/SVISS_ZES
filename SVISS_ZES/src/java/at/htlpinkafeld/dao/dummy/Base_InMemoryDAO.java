@@ -8,13 +8,14 @@ package at.htlpinkafeld.dao.dummy;
 import at.htlpinkafeld.dao.interf.Base_DAO;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 
 /**
  *
  * @author Martin Six
  * @param <T>
  */
-public abstract class Base_InMemoryDAO<T> implements Base_DAO<T> {
+public abstract class Base_InMemoryDAO<T> extends Observable implements Base_DAO<T> {
 
     private final List<T> oList;
     private int ID = 1;
@@ -36,16 +37,19 @@ public abstract class Base_InMemoryDAO<T> implements Base_DAO<T> {
     public void insert(T o) {
         setID(o, ID++);
         oList.add(clone(o));
+        notifyObservers();
     }
 
     @Override
     public void update(T o) {
         oList.set(oList.indexOf(o), clone(o));
+        notifyObservers();
     }
 
     @Override
     public void delete(T o) {
         oList.remove(o);
+        notifyObservers();
     }
 
     protected abstract T clone(T entity);

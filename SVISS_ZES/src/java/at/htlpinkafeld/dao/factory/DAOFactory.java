@@ -45,7 +45,9 @@ public abstract class DAOFactory {
     }
 
     /**
-     * Set and recreate DAOFactory only constants JDBCDAO and DUMMY_DAO should be used
+     * Set and recreate DAOFactory only constants JDBCDAO and DUMMY_DAO should
+     * be used
+     *
      * @param daoType
      * @throws InvalidDAOFactoryTypeException
      */

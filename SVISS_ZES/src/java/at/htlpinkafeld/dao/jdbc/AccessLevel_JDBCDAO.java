@@ -89,5 +89,4 @@ public class AccessLevel_JDBCDAO extends Base_JDBCDAO<AccessLevel> implements Ac
             Logger.getLogger(AccessLevel_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
 }

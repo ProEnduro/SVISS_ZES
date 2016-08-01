@@ -5,13 +5,15 @@
  */
 package at.htlpinkafeld.dao.interf;
 
+import at.htlpinkafeld.dao.util.ObservableDAO;
 import java.util.List;
 
 /**
  *
  * @author Martin Six
+ * @param <T>
  */
-public interface Base_DAO<T> {
+public interface Base_DAO<T> extends ObservableDAO {
 
     public abstract List<T> getList();
 

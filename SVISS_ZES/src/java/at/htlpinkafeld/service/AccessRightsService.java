@@ -10,15 +10,18 @@ import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
 import at.htlpinkafeld.pojo.AccessLevel;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  *
  * @author Martin Six
  */
-public class AccessRightsService {
+public class AccessRightsService implements Observer {
 
     private static final List<String> PERMISSIONS;
     private static final AccessLevel_DAO ALDAO;
+    private static final AccessRightsService ARS;
 
     private static List<AccessLevel> AccessGroups;
 
@@ -30,6 +33,9 @@ public class AccessRightsService {
         PERMISSIONS.add("INPUT_TIME");
 
         ALDAO = DAOFactory.getDAOFactory().getAccessLevelDAO();
+        ARS = new AccessRightsService();
+        ALDAO.addObserver(ARS);
+
         AccessGroups = ALDAO.getList();
     }
 
@@ -58,6 +64,11 @@ public class AccessRightsService {
             }
         }
         return null;
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        reloadAccessGroups();
     }
 
 }
