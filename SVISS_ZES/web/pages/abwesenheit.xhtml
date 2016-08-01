@@ -4,61 +4,16 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
-<ui:composition template="/pages/mainSite.xhtml"
-                xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
-
-
-    <ui:define name="content">
-        <h:form>       
-            <p:dataTable id="usertable" var="user" value="#{benutzerverwaltungsBean.userList}">
-
-                <p:column headerText="Username">
-                    <h:outputText value="#{user.username}"/>
-                </p:column>
-
-                <p:column headerText="Name">
-                    <h:outputText value="#{user.persName}"/>
-                </p:column>
-
-                <p:column headerText="Berechtigungsstufe">
-                    <h:outputText value="#{user.accessLevel.accessLevelName}"/>
-                </p:column>
-
-                <p:column headerText="E-Mail-Adresse">
-                    <h:outputText value="#{user.email}"/>
-                </p:column>
-
-                <p:column headerText="Passwort">
-                    <h:outputText value="#{user.pass}"/>
-                </p:column>
-
-                <p:column headerText="Passwort ändern">
-                    <p:commandButton value="Ändern" actionListener="#{benutzerverwaltungsBean.setUP}" onclick="PF('dlg1').show();">
-                        <f:attribute name="val" value="#{user}" />
-                    </p:commandButton>
-                </p:column>
-
-                <p:column headerText="disable">
-                    <p:commandButton value="#{user.getDisabledString()}" actionListener="#{benutzerverwaltungsBean.update}">
-                        <f:attribute name="user1" value="#{user}" />
-                    </p:commandButton>
-                </p:column>
-            </p:dataTable>
-
-
-            <p:commandButton value="New User" action="#{benutzerverwaltungsBean.newUserSite}"/>
-
-
-            <p:dialog header="Basic Dialog" widgetVar="dlg1" minHeight="40">
-                <p:inputText value="#{benutzerverwaltungsBean.newPassword}"/>
-                <p:commandButton value="OK" actionListener="#{benutzerverwaltungsBean.changePassword}" onclick="PF('dlg1').hide();" update="usertable"/>
-                <p:commandButton value="Abbruch" onclick="PF('dlg1').hide();"/>
-            </p:dialog>
-
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <ui:composition template="/pages/mainSite.xhtml"
+                    xmlns="http://www.w3.org/1999/xhtml"
+                    xmlns:ui="http://java.sun.com/jsf/facelets">
+        
+        <ui:define name="content">
             <p:growl id="messages" showDetail="true" />
 
             <p:schedule id="schedule" value="#{scheduleView.eventModel}" widgetVar="myschedule" timeZone="GMT+2">
@@ -103,7 +58,7 @@ and open the template in the editor.
             <p:dialog widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip">
                 <h:panelGrid id="eventDetails" columns="2">
                     <p:outputLabel for="title" value="Titles:" />
-                    <p:inputText id="title" value="#{scheduleView.event.title}" required="true" />
+                    <p:inputText id="title" value="#{scheduleView.event.title}" />
 
                     <p:outputLabel for="from" value="From:" />
                     <p:calendar id="from" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
@@ -119,16 +74,12 @@ and open the template in the editor.
 
                     <p:selectOneRadio id="type" value="#{scheduleView.type}">
                         <f:selectItems var="t" itemLabel="#{t.absenceName}" value="#{scheduleView.types}" itemValue="#{t.absenceTypeID}"/>
-                        <p:ajax update="messages" listener="#{scheduleView.radioAjax}"/>
+                        <!--  <p:ajax update="messages" listener="#{scheduleView.radioAjax}"/> -->
                     </p:selectOneRadio>
                 </h:panelGrid>
-            </p:dialog>    
+            </p:dialog> 
+        </ui:define>
 
+    </ui:composition>
 
-
-
-        </h:form>
-    </ui:define>
-
-
-</ui:composition>
+</html>

@@ -14,8 +14,10 @@ and open the template in the editor.
     <h:body>
         <h:form>
             <h:panelGrid columns="#{masterBean.columns}" width="100%">
-                <h:commandButton value="Ist-Zeiten" action="first.xhtml?faces-redirect=true" style="width:100%" rendered="#{masterBean.firstEnabled()}"/>        
-                <h:commandButton value="Benutzerverwaltung" action="second.xhtml?faces-redirect=true" style="width:100%" rendered="#{masterBean.secondEnabled()}"/> 
+                <h:commandButton value="Ist-Zeiten" action="istzeit.xhtml?faces-redirect=true" style="width:100%" rendered="#{masterBean.firstEnabled()}"/>  
+                <h:commandButton value="Abwesenheiten eintragen" action="abwesenheit.xhtml?faces-redirect=true" style="width:100%"/>
+                <h:commandButton value="Benutzerverwaltung" action="benutzerverwaltung.xhtml?faces-redirect=true" style="width:100%" rendered="#{masterBean.secondEnabled()}"/>
+                
                 <h:commandButton value="Logout" action="#{masterBean.logout}" style="width:100%"/> 
             </h:panelGrid>
 

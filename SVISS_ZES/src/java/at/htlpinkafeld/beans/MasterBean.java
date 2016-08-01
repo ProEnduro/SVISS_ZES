@@ -46,6 +46,7 @@ public class MasterBean {
         }
 
         permissionlist.add("Logout");
+        permissionlist.add("Abwesenheit_eintragen");
         columns = permissionlist.size();
     }
 

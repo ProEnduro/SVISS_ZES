@@ -32,7 +32,9 @@ import org.primefaces.model.ScheduleModel;
 
 public class ScheduleView implements Serializable {
 
-    int type;
+    public static int istzeit = 1;
+    
+    int type = istzeit;
     List<AbsenceType> types;
     User currentUser;
 
@@ -63,7 +65,6 @@ public class ScheduleView implements Serializable {
         };
 
         types = DAOFactory.getDAOFactory().getAbsenceTypeDAO().getList();
-        types.add((new AbsenceType(-1, "istzeit")));
 
         FacesContext context = FacesContext.getCurrentInstance();
         MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
@@ -108,76 +109,6 @@ public class ScheduleView implements Serializable {
         return calendar;
     }
 
-    private Date previousDay8Pm() {
-        Calendar t = (Calendar) today().clone();
-        t.set(Calendar.AM_PM, Calendar.PM);
-        t.set(Calendar.DATE, t.get(Calendar.DATE) - 1);
-        t.set(Calendar.HOUR, 8);
-
-        return t.getTime();
-    }
-
-    private Date previousDay11Pm() {
-        Calendar t = (Calendar) today().clone();
-        t.set(Calendar.AM_PM, Calendar.PM);
-        t.set(Calendar.DATE, t.get(Calendar.DATE) - 1);
-        t.set(Calendar.HOUR, 11);
-
-        return t.getTime();
-    }
-
-    private Date today1Pm() {
-        Calendar t = (Calendar) today().clone();
-        t.set(Calendar.AM_PM, Calendar.PM);
-        t.set(Calendar.HOUR, 1);
-
-        return t.getTime();
-    }
-
-    private Date theDayAfter3Pm() {
-        Calendar t = (Calendar) today().clone();
-        t.set(Calendar.DATE, t.get(Calendar.DATE) + 2);
-        t.set(Calendar.AM_PM, Calendar.PM);
-        t.set(Calendar.HOUR, 3);
-
-        return t.getTime();
-    }
-
-    private Date today6Pm() {
-        Calendar t = (Calendar) today().clone();
-        t.set(Calendar.AM_PM, Calendar.PM);
-        t.set(Calendar.HOUR, 6);
-
-        return t.getTime();
-    }
-
-    private Date nextDay9Am() {
-        Calendar t = (Calendar) today().clone();
-        t.set(Calendar.AM_PM, Calendar.AM);
-        t.set(Calendar.DATE, t.get(Calendar.DATE) + 1);
-        t.set(Calendar.HOUR, 9);
-
-        return t.getTime();
-    }
-
-    private Date nextDay11Am() {
-        Calendar t = (Calendar) today().clone();
-        t.set(Calendar.AM_PM, Calendar.AM);
-        t.set(Calendar.DATE, t.get(Calendar.DATE) + 1);
-        t.set(Calendar.HOUR, 11);
-
-        return t.getTime();
-    }
-
-    private Date fourDaysLater3pm() {
-        Calendar t = (Calendar) today().clone();
-        t.set(Calendar.AM_PM, Calendar.PM);
-        t.set(Calendar.DATE, t.get(Calendar.DATE) + 4);
-        t.set(Calendar.HOUR, 3);
-
-        return t.getTime();
-    }
-
     public ScheduleEvent getEvent() {
         return event;
     }
@@ -193,11 +124,6 @@ public class ScheduleView implements Serializable {
             System.out.println(type);
 
             switch (this.type) {
-
-                case -1:
-                    e.setStyleClass("istzeit");
-                    IstZeitService.addIstTime(currentUser, e.getStartDate(), e.getEndDate());
-                    break;
                 case 1:
                     e.setStyleClass(types.get(type - 1).getAbsenceName().replace(" ", "_"));
                     DAOFactory.getDAOFactory().getAbsenceDAO().insert(new Absence(this.currentUser, types.get(type - 1), e.getStartDate(), e.getEndDate()));
@@ -214,7 +140,6 @@ public class ScheduleView implements Serializable {
 //                    e.setStyleClass(types.get(type - 1).getAbsenceName().replace(" ", "_"));
 //                    DAOFactory.getDAOFactory().getAbsenceDAO().insert(new Absence(this.currentUser, types.get(type - 1), e.getStartDate(), e.getEndDate()));
 //                    break;
-                default:
             }
 
             System.out.println(e.getStartDate());
@@ -229,7 +154,21 @@ public class ScheduleView implements Serializable {
 //            System.out.println(w);
 //        }
         event = new DefaultScheduleEvent();
+    }
+    
+    public void addIstZeitEvent(ActionEvent actionEvent){
+         if (event.getId() == null) {
+            DefaultScheduleEvent e = (DefaultScheduleEvent) event;
 
+            e.setStyleClass("istzeit");
+            IstZeitService.addIstTime(currentUser, e.getStartDate(), e.getEndDate());
+
+            eventModel.addEvent(e);
+        } else {
+            eventModel.updateEvent(event);
+        }
+
+        event = new DefaultScheduleEvent();
     }
 
     public void onEventSelect(SelectEvent selectEvent) {
