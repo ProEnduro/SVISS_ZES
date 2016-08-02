@@ -15,16 +15,31 @@ and open the template in the editor.
     </h:head>
     <h:body>
         <h:form>
-            <p:inputText value="#{benutzerverwaltungsBean.al}"/>
-            <p:inputText value="#{benutzerverwaltungsBean.un}"/>
-            <p:inputText value="#{benutzerverwaltungsBean.pn}"/>
-            <p:inputText value="#{benutzerverwaltungsBean.email}"/>
-            <p:inputText value="#{benutzerverwaltungsBean.hd}">
-                <f:convertDateTime pattern="dd.MM.yyyy"/>
-            </p:inputText>
-            <p:inputText value="#{benutzerverwaltungsBean.pw}"/>
-            <p:inputText value="#{benutzerverwaltungsBean.wt}"/>
-
+            <p:panelGrid columns="2">
+                
+                <p:outputLabel value="Alter: "/>
+                <p:inputText value="#{benutzerverwaltungsBean.al}"/>
+                
+                <p:outputLabel value="Username: "/>
+                <p:inputText value="#{benutzerverwaltungsBean.un}"/>
+                
+                <p:outputLabel value="Name: "/>
+                <p:inputText value="#{benutzerverwaltungsBean.pn}"/>
+                
+                <p:outputLabel value="EMail: "/>
+                <p:inputText value="#{benutzerverwaltungsBean.email}"/>
+                
+                <p:outputLabel value="HireDate: "/>
+                <p:inputText value="#{benutzerverwaltungsBean.hd}">
+                    <f:convertDateTime pattern="dd.MM.yyyy"/>
+                </p:inputText>
+                
+                <p:outputLabel value="Password: "/>
+                <p:inputText value="#{benutzerverwaltungsBean.pw}"/>
+                
+                <p:outputLabel value="WT: "/>
+                <p:inputText value="#{benutzerverwaltungsBean.wt}"/>
+                </p:panelGrid>
             <br/>
 
 
