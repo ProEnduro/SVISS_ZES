@@ -14,121 +14,122 @@ and open the template in the editor.
                     xmlns:ui="http://java.sun.com/jsf/facelets">
 
         <ui:define name="content">
+            <h:form>
+                <p:growl id="messages" showDetail="true" />
 
-            <p:growl id="messages" showDetail="true" />
-            
-            <p:selectOneMenu value="#{scheduleView.selectedUser}">
-                <f:selectItems value="#{scheduleView.allUsers}"/>
-            </p:selectOneMenu>
-            
-            <p:commandButton value="load" actionListener="#{scheduleView.loadAbwesenheitByUser}"/>
-            
-            <p:schedule firstHour="0" aspectRatio="3" id="schedule" value="#{scheduleView.acknowlegementModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" columnFormat="month:'ddd', week:'dd/MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
+                <p:selectOneMenu value="#{scheduleView.selectedUser}">
+                    <f:selectItems value="#{scheduleView.allUsers}"/>
+                </p:selectOneMenu>
 
-                <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
-                <p:ajax event="eventSelect" listener="#{scheduleView.onAbsenceSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
-                <p:ajax event="eventMove" listener="#{scheduleView.onEventMove}" update="messages" />
-                <p:ajax event="eventResize" listener="#{scheduleView.onEventResize}" update="messages" />
+                <p:commandButton value="load" actionListener="#{scheduleView.loadAbwesenheitByUser}"/>
 
+                <p:schedule firstHour="0" aspectRatio="3" id="schedule" value="#{scheduleView.acknowlegementModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" columnFormat="month:'ddd', week:'dd/MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
 
-            </p:schedule>
-
-            <script type="text/javascript">
-                PrimeFaces.locales['de'] = {
-                    month: 'Monat',
-                    week: 'Woche',
-                    day: 'Tag',
-                    firstDay: 1,
-                    monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
-                    monthNamesShort: ['Jan', 'Feb', 'Mrz', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
-                    dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
-                    dayNamesShort: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
-                    dayNamesMin: ['S', 'M', 'D', 'M ', 'D', 'F ', 'S'],
-                    currentText: 'Heute'
-                };
-            </script>
+                    <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
+                    <p:ajax event="eventSelect" listener="#{scheduleView.onAbsenceSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
+                    <p:ajax event="eventMove" listener="#{scheduleView.onEventMove}" update="messages" />
+                    <p:ajax event="eventResize" listener="#{scheduleView.onEventResize}" update="messages" />
 
 
-            <style type="text/css">
-                .value {
-                    width: 1000px;
-                }
-                .ui-state-highlight {
-                    background: lightgray !important;
-                }
-                .fc-event-inner{
-                    background-color: red;
-                    border-color: red;
-                    color: white;
-                }
-                .istzeit .fc-event-inner{
-                    background-color: lightblue;
-                    color: black;
-                }
-                .istzeit_acknowledged .fc-event-inner{
-                    background-color: darkblue;
-                    color: black;
-                }
-                .holiday .fc-event-inner{
-                    background-color: lightpink;
-                    color: white;
-                }
-                .holiday_acknowledged .fc-event-inner{
-                    background-color: darkmagenta;
-                    color: white;
-                }
-                .time_compensation .fc-event-inner{
-                    background-color: lightgreen;
-                    color: white;
-                }
-                .time_compensation_acknowledged .fc-event-inner{
-                    background-color: darkgreen;
-                    color: white;
-                }
-                .medical_leave .fc-event-inner{
-                    background-color: lightcoral;
-                    color: white;
-                }
-                .medical_leave_acknowledged .fc-event-inner{
-                    background-color: darkred;
-                    color: white;
-                }
-                .business-related_absence .fc-event-inner{
-                    background-color: yellow;
-                    color: black;
-                }
-                .business-related_absence_acknowledged .fc-event-inner{
-                    background-color: orange;
-                    color: black;
-                }
-            </style>
+                </p:schedule>
 
-            <p:dialog widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip">
-                <h:panelGrid id="eventDetails" columns="2">
-                    <p:outputLabel for="title" value="Titles:" />
-                    <p:inputText id="title" value="#{scheduleView.absenceEvent.title}" />
+                <script type="text/javascript">
+                    PrimeFaces.locales['de'] = {
+                        month: 'Monat',
+                        week: 'Woche',
+                        day: 'Tag',
+                        firstDay: 1,
+                        monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                        monthNamesShort: ['Jan', 'Feb', 'Mrz', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+                        dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+                        dayNamesShort: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+                        dayNamesMin: ['S', 'M', 'D', 'M ', 'D', 'F ', 'S'],
+                        currentText: 'Heute'
+                    };
+                </script>
 
-                    <p:outputLabel for="from" value="From:" />
-                    <p:calendar id="from" value="#{scheduleView.absenceEvent.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
 
-                    <p:outputLabel for="to" value="To:" />
-                    <p:calendar id="to" value="#{scheduleView.absenceEvent.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
+                <style type="text/css">
+                    .value {
+                        width: 1000px;
+                    }
+                    .ui-state-highlight {
+                        background: lightgray !important;
+                    }
+                    .fc-event-inner{
+                        background-color: red;
+                        border-color: red;
+                        color: white;
+                    }
+                    .istzeit .fc-event-inner{
+                        background-color: lightblue;
+                        color: black;
+                    }
+                    .istzeit_acknowledged .fc-event-inner{
+                        background-color: darkblue;
+                        color: black;
+                    }
+                    .holiday .fc-event-inner{
+                        background-color: lightpink;
+                        color: white;
+                    }
+                    .holiday_acknowledged .fc-event-inner{
+                        background-color: darkmagenta;
+                        color: white;
+                    }
+                    .time_compensation .fc-event-inner{
+                        background-color: lightgreen;
+                        color: white;
+                    }
+                    .time_compensation_acknowledged .fc-event-inner{
+                        background-color: darkgreen;
+                        color: white;
+                    }
+                    .medical_leave .fc-event-inner{
+                        background-color: lightcoral;
+                        color: white;
+                    }
+                    .medical_leave_acknowledged .fc-event-inner{
+                        background-color: darkred;
+                        color: white;
+                    }
+                    .business-related_absence .fc-event-inner{
+                        background-color: yellow;
+                        color: black;
+                    }
+                    .business-related_absence_acknowledged .fc-event-inner{
+                        background-color: orange;
+                        color: black;
+                    }
+                </style>
 
-                    <p:outputLabel for="allDay" value="All Day:" />
-                    <h:selectBooleanCheckbox id="allDay" value="#{scheduleView.absenceEvent.allDay}" />
+                <p:dialog widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip">
+                    <h:panelGrid id="eventDetails" columns="2">
+                        <p:outputLabel for="title" value="Titles:" />
+                        <p:inputText id="title" value="#{scheduleView.absenceEvent.title}" />
 
-                    <p:commandButton type="reset" value="Reset" />
-                    <p:commandButton id="addButton" value="Save" actionListener="#{scheduleView.addEvent}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" />
+                        <p:outputLabel for="from" value="From:" />
+                        <p:calendar id="from" value="#{scheduleView.absenceEvent.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
 
-                    <p:selectOneRadio id="type" value="#{scheduleView.type}">
-                        <f:selectItems var="t" itemLabel="#{t.absenceName}" value="#{scheduleView.types}" itemValue="#{t.absenceTypeID}"/>
-                        <!--  <p:ajax update="messages" listener="#{scheduleView.radioAjax}"/> -->
-                    </p:selectOneRadio>
-                    
-                    <p:commandButton id="acknowledgeButton" value="Acknowledge" actionListener="#{scheduleView.setAcknowledged}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();"/>
-                </h:panelGrid>
-            </p:dialog> 
+                        <p:outputLabel for="to" value="To:" />
+                        <p:calendar id="to" value="#{scheduleView.absenceEvent.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
 
+                        <p:outputLabel for="allDay" value="All Day:" />
+                        <h:selectBooleanCheckbox id="allDay" value="#{scheduleView.absenceEvent.allDay}" />
+
+                        <p:commandButton type="reset" value="Reset" />
+                        <p:commandButton id="addButton" value="Save" actionListener="#{scheduleView.addEvent}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" />
+
+                        <p:selectOneRadio id="type" value="#{scheduleView.type}">
+                            <f:selectItems var="t" itemLabel="#{t.absenceName}" value="#{scheduleView.types}" itemValue="#{t.absenceTypeID}"/>
+                            <!--  <p:ajax update="messages" listener="#{scheduleView.radioAjax}"/> -->
+                        </p:selectOneRadio>
+
+                        <p:commandButton id="acknowledgeButton" value="Acknowledge" actionListener="#{scheduleView.setAcknowledged}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();"/>
+                    </h:panelGrid>
+                </p:dialog> 
+
+            </h:form>
         </ui:define>
 
     </ui:composition>

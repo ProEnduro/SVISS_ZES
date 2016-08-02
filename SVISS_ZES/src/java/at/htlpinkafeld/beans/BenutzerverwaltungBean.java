@@ -1,17 +1,15 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ * To selectedUser this license header, choose License Headers in Project Properties.
+ * To selectedUser this template file, choose Tools | Templates
  * and open the template in the editor.
  */
 package at.htlpinkafeld.beans;
 
-import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.pojo.AccessLevel;
 import at.htlpinkafeld.pojo.User;
+import at.htlpinkafeld.service.AccessRightsService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
-import java.util.Date;
 import java.util.List;
-import javax.faces.event.ActionEvent;
 
 /**
  *
@@ -20,125 +18,59 @@ import javax.faces.event.ActionEvent;
 public class BenutzerverwaltungBean {
 
     List<User> userlist;
-    int al;
-    String pn;
-    String un;
-    String email;
-    Date hd;
-    String pw;
-    double wt;
 
-    String newPassword;
-    User change;
+    User selectedUser;
 
     /**
      * Creates a new instance of BenutzerverwaltungsBean
      */
     public BenutzerverwaltungBean() {
-
+        
     }
 
     public List<User> getUserList() {
-        return BenutzerverwaltungService.getUserList();
+        userlist = BenutzerverwaltungService.getUserList();
+        return userlist;
     }
 
-    public Object newUserSite() {
+    public Object newUser() {
+        selectedUser = new User();
+        return "";
+    }
+    // TODO: Rename Navigation rule
 
-        return "newUserSite";
+    public Object editUser(User u) {
+        selectedUser = new User(u);
+        return "";
     }
 
-    public Object newUserAnlegen() {
-        AccessLevel a = DAOFactory.getDAOFactory().getAccessLevelDAO().getAccessLevelByID(al);
-
-        User u = new User(a, pn, un, email, hd, pw, wt);
-        BenutzerverwaltungService.insertUser(u);
-
+    public Object saveUser() {
+        if (selectedUser.getUserNr() == -1) {
+            userlist.add(selectedUser);
+            BenutzerverwaltungService.insertUser(selectedUser);
+        } else {
+            userlist.remove(selectedUser);
+            userlist.add(selectedUser);
+            BenutzerverwaltungService.updateUser(selectedUser);
+        }
         return "anlegen";
     }
 
-    public Object newUserVerwerfen() {
-
+    public Object discardUserChanges() {
+        selectedUser = new User();
         return "verwerfen";
     }
 
-    public int getAl() {
-        return al;
+    public User getSelectedUser() {
+        return selectedUser;
     }
 
-    public String getPn() {
-        return pn;
+    public void setSelectedUser(User selectedUser) {
+        this.selectedUser = selectedUser;
     }
 
-    public String getUn() {
-        return un;
+    public List<AccessLevel> getAccessGroups() {
+        return AccessRightsService.AccessGroups;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public Date getHd() {
-        return hd;
-    }
-
-    public String getPw() {
-        return pw;
-    }
-
-    public double getWt() {
-        return wt;
-    }
-
-    public void setAl(int al) {
-        this.al = al;
-    }
-
-    public void setPn(String pn) {
-        this.pn = pn;
-    }
-
-    public void setUn(String un) {
-        this.un = un;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setHd(Date hd) {
-        this.hd = hd;
-    }
-
-    public void setPw(String pw) {
-        this.pw = pw;
-    }
-
-    public void setWt(double wt) {
-        this.wt = wt;
-    }
-
-    public String getNewPassword() {
-        return newPassword;
-    }
-
-    public void setNewPassword(String newPassword) {
-        this.newPassword = newPassword;
-    }
-
-    public void setUP(ActionEvent e) {
-        change = (User) e.getComponent().getAttributes().get("val");
-        System.out.println(change);
-    }
-
-    public void changePassword(ActionEvent e) {
-        change.setPass(this.newPassword);
-        BenutzerverwaltungService.updateUser(change);
-    }
-
-    public void update(ActionEvent e){
-        User u = (User)e.getComponent().getAttributes().get("user1");
-        u.setDisabled(!u.isDisabled());
-        BenutzerverwaltungService.updateUser(u);
-    }
-    
 }

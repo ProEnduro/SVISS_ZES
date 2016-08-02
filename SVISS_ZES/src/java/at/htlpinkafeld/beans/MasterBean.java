@@ -6,7 +6,6 @@
 package at.htlpinkafeld.beans;
 
 import at.htlpinkafeld.pojo.User;
-import at.htlpinkafeld.service.BenutzerverwaltungService;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +47,7 @@ public class MasterBean {
         permissionlist.add("Logout");
         permissionlist.add("Abwesenheit_eintragen");
         permissionlist.add("absence_acknowledgement");
+        permissionlist.add("benutzer_konto");
         columns = permissionlist.size();
     }
 

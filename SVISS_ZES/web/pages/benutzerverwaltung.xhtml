@@ -13,7 +13,7 @@ and open the template in the editor.
 
 
     <ui:define name="content">
-        <h:form>       
+        <h:form id="tableForm">
             <p:dataTable id="usertable" var="user" value="#{benutzerverwaltungsBean.userList}">
 
                 <p:column headerText="Username">
@@ -25,47 +25,93 @@ and open the template in the editor.
                 </p:column>
 
                 <p:column headerText="Berechtigungsstufe">
-                    <h:outputText value="#{user.accessLevel.accessLevelName}"/>
+                    <h:outputText value="#{user.accessLevel}">
+                        <f:converter converterId="accesslevelconv"/>
+                    </h:outputText>
                 </p:column>
 
                 <p:column headerText="E-Mail-Adresse">
                     <h:outputText value="#{user.email}"/>
                 </p:column>
 
-                <p:column headerText="Passwort">
-                    <h:outputText value="#{user.pass}"/>
+                <p:column headerText="Enabled">
+                    <h:outputText value="#{user.disabledString}"/>
                 </p:column>
 
-                <p:column headerText="Passwort ändern">
-                    <p:commandButton value="Ändern" actionListener="#{benutzerverwaltungsBean.setUP}" onclick="PF('dlg1').show();">
-                        <f:attribute name="val" value="#{user}" />
-                    </p:commandButton>
+                <p:column headerText="User ändern">
+                    <p:commandButton value="edit" action="#{benutzerverwaltungsBean.editUser(user)}" update=":dialogForm:dlgGrid" oncomplete="PF('udlg1').show();"/>
                 </p:column>
 
-                <p:column headerText="disable">
-                    <p:commandButton value="#{user.getDisabledString()}" actionListener="#{benutzerverwaltungsBean.update}">
-                        <f:attribute name="user1" value="#{user}" />
-                    </p:commandButton>
-                </p:column>
             </p:dataTable>
 
-
-            <p:commandButton value="New User" action="#{benutzerverwaltungsBean.newUserSite}"/>
-
-
-            <p:dialog header="Basic Dialog" widgetVar="dlg1" minHeight="40">
-                <p:inputText value="#{benutzerverwaltungsBean.newPassword}"/>
-                <p:commandButton value="OK" actionListener="#{benutzerverwaltungsBean.changePassword}" onclick="PF('dlg1').hide();" update="usertable"/>
-                <p:commandButton value="Abbruch" onclick="PF('dlg1').hide();"/>
-            </p:dialog>
-
-               
-
-
-
+            <p:commandButton id="testBut" update=":dialogForm:dlgGrid"  value="New User" action="#{benutzerverwaltungsBean.newUser}" oncomplete="PF('udlg1').show();"/>
 
         </h:form>
+
+        <p:dialog  closeOnEscape="true" header="User Dialog" widgetVar="udlg1" modal="true">
+            <h:form id="dialogForm">
+                <p:panelGrid id="dlgGrid">
+                    <p:row>
+                        <p:column><p:outputLabel value="Accesslevel "/></p:column>
+                        <p:column><p:selectOneMenu value="#{benutzerverwaltungsBean.selectedUser.accessLevel}">
+                                <f:selectItems value="#{benutzerverwaltungsBean.accessGroups}" var="ag" itemLabel="#{ag.accessLevelName}" itemValue="#{ag}"/>
+                                <f:converter converterId="accesslevelconv"/>
+                            </p:selectOneMenu></p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column><p:outputLabel value="Username: "/></p:column>
+                        <p:column><p:inputText value="#{benutzerverwaltungsBean.selectedUser.username}"/></p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column><p:outputLabel value="Password: "/></p:column>
+                        <p:column><p:inputText type="password" value="#{benutzerverwaltungsBean.selectedUser.pass}" /></p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column><p:outputLabel value="Vorname Nachname: "/></p:column>
+                        <p:column><p:inputText value="#{benutzerverwaltungsBean.selectedUser.persName}"/></p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column><p:outputLabel value="E-Mail-Adresse: "/></p:column>
+                        <p:column><p:inputText value="#{benutzerverwaltungsBean.selectedUser.email}"/></p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column><p:outputLabel value="Hiredate: "/></p:column>
+                        <p:column><p:calendar value="#{benutzerverwaltungsBean.selectedUser.hiredate}" pattern="dd.MM.yyyy" mask="true"/></p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column><p:outputLabel value="Worktime: "/></p:column>
+                        <p:column><p:inputMask id="worktimeIn"  mask="99.9" value="#{benutzerverwaltungsBean.selectedUser.weekTime}"/></p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column><p:outputLabel value="Vacation Left: "/></p:column>
+                        <p:column><p:inputText type="number" value="#{benutzerverwaltungsBean.selectedUser.vacationLeft}" /></p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column><p:outputLabel value="Overtime Left: "/></p:column>
+                        <p:column><p:inputText type="number" value="#{benutzerverwaltungsBean.selectedUser.overTimeLeft}" /></p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="2"><p:selectBooleanButton value="#{benutzerverwaltungsBean.selectedUser.disabled}"  onLabel="Disabled" offLabel="Enabled"/></p:column>
+                    </p:row>
+
+                    <f:facet name="footer">
+                        <p:row>
+                            <p:column><p:commandButton value="User speichern" action="#{benutzerverwaltungsBean.saveUser}" update=":tableForm:usertable" oncomplete="PF('udlg1').hide();"/></p:column>
+                            <p:column><p:commandButton value="Änderung verwerfen" action="#{benutzerverwaltungsBean.discardUserChanges}" oncomplete="PF('udlg1').hide();"/></p:column>
+                        </p:row>
+                    </f:facet>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>   
+
     </ui:define>
-
-
 </ui:composition>

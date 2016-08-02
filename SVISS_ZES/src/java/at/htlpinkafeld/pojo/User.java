@@ -27,10 +27,12 @@ public class User {
 
     public User() {
         userNr = -1;
+        vacationLeft = 25;
+        overTimeLeft = 0;
     }
 
     public User(User u) {
-        this.userNr=u.userNr;
+        this.userNr = u.userNr;
         this.accessLevel = u.accessLevel;
         this.PersName = u.PersName;
         this.vacationLeft = u.vacationLeft;
@@ -199,11 +201,11 @@ public class User {
         }
         return true;
     }
-    
-    public String getDisabledString(){
-        if(this.isDisabled()){
+
+    public String getDisabledString() {
+        if (this.isDisabled()) {
             return "disabled!";
-        }else{
+        } else {
             return "enabled";
         }
     }

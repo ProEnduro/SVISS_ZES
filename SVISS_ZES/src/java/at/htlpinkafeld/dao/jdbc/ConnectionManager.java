@@ -45,7 +45,8 @@ public class ConnectionManager {
     }
 
     /**
-     * Only to be used for testing purposes
+     * Only to be used for testing purposes. Causes the programm to only have a
+     * single connection, without auto-commits
      *
      * @param testing
      */

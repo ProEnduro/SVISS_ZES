@@ -11,8 +11,6 @@ import at.htlpinkafeld.dao.util.DAODML_Observer;
 import at.htlpinkafeld.pojo.AccessLevel;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  *
@@ -24,7 +22,7 @@ public class AccessRightsService implements DAODML_Observer {
     private static final AccessLevel_DAO ALDAO;
     private static final AccessRightsService ARS;
 
-    private static List<AccessLevel> AccessGroups;
+    public static List<AccessLevel> AccessGroups;
 
     static {
         PERMISSIONS = new LinkedList<>();
@@ -58,7 +56,7 @@ public class AccessRightsService implements DAODML_Observer {
         return false;
     }
 
-    private static AccessLevel getAccessLevelFromName(String accessLevelString) {
+    public static AccessLevel getAccessLevelFromName(String accessLevelString) {
         for (AccessLevel al : AccessGroups) {
             if (al.getAccessLevelName().contentEquals(accessLevelString)) {
                 return al;
