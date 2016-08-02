@@ -4,30 +4,30 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets">
     <h:head>
-        <title>sviss ZES</title>
+        <title>MainMenu</title>
         <link rel="shortcut icon" type="image/x-icon" href="#{resource['images/faviconSV.ico']}"/>
     </h:head>
     <h:body>
         <h:form>
-            <h:panelGrid columns="#{masterBean.columns}" width="100%">
-                <p:commandButton value="Ist-Zeiten" action="istzeit.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%" rendered="#{masterBean.firstEnabled()}" actionListener="#{scheduleView.reloadAbwesenheiten}"/>  
-                <p:commandButton value="Abwesenheiten eintragen" action="abwesenheit.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%" actionListener="#{scheduleView.reloadAbwesenheiten}"/>
-                <p:commandButton value="Benutzerverwaltung" action="benutzerverwaltung.xhtml?faces-redirect=true" style=" background-color: royalblue; color: black; width:100%" rendered="#{masterBean.secondEnabled()}"/>
-                <p:commandButton value="Acknowledgement" action="absence_acknowledgement.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%" actionListener="#{scheduleView.reloadAcknowledgements}"/>
-
-                <p:commandButton value="Logout" action="#{masterBean.logout}" style="background-color: royalblue; color: black; width:100%"/> 
-
-
+            <h:panelGrid columns="#{masterBean.columns}" width="100%" style="margin-top: 1%">
+                
+                <p:commandButton value="Ist-Zeiten" icon="icon-calendar-2" action="istzeit.xhtml?faces-redirect=true" style=" background-color: royalblue; color: black; width:100%" rendered="#{masterBean.firstEnabled()}"/>  
+                <p:commandButton value="Abwesenheiten eintragen" icon="icon-calendar" action="abwesenheit.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%"/>
+                <p:commandButton value="Account Verwaltung" icon="ui-icon-user" action="benutzerkonto.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%"/>
+                <p:commandButton value="Benutzerverwaltung" icon="ui-icon-users" action="benutzerverwaltung.xhtml?faces-redirect=true" style=" background-color: royalblue; color: black; width:100%" rendered="#{masterBean.secondEnabled()}"/>
+                <p:commandButton value="Logout" action="#{masterBean.logout}" style="background-color: #cc5f59; color: black; width:100%" icon="icon-logout"/> 
             </h:panelGrid>
 
 
             <ui:insert name="content">
+                MainSite.XHTML
             </ui:insert>
 
 

@@ -10,42 +10,42 @@ and open the template in the editor.
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
-        <title>Neuen Nutzer erstellen</title>
+        <title>Benutzerkonto</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <link rel="shortcut icon" type="image/x-icon" href="#{resource['images/faviconSV.ico']}"/>
     </h:head>
-    <h:body>
+    <body>
+        
         <h:form>
-            <p:panelGrid columns="2">
+            <p:panelGrid columns="2" style="border-color: #9999ff; border-style: double;">
                 
                 <p:outputLabel value="Access-Level: "/>
-                <p:inputText value="#{benutzerverwaltungsBean.al}"/>
+                <p:inputText value="#{benutzerkontoBean.accessLevel}" disabled="true"/>
                 
                 <p:outputLabel value="Username: "/>
-                <p:inputText value="#{benutzerverwaltungsBean.un}"/>
+                <p:inputText value="#{benutzerkontoBean.userName}" disabled="true"/>
                 
                 <p:outputLabel value="Name: "/>
-                <p:inputText value="#{benutzerverwaltungsBean.pn}"/>
+                <p:inputText value="#{benutzerkontoBean.persName}"/>
                 
                 <p:outputLabel value="EMail: "/>
-                <p:inputText value="#{benutzerverwaltungsBean.email}"/>
+                <p:inputText value="#{benutzerkontoBean.email}"/>
                 
                 <p:outputLabel value="HireDate: "/>
-                <p:inputText value="#{benutzerverwaltungsBean.hd}">
+                <p:inputText value="#{benutzerkontoBean.hireDate}" disabled="true">
                     <f:convertDateTime pattern="dd.MM.yyyy"/>
                 </p:inputText>
                 
                 <p:outputLabel value="Password: "/>
-                <p:inputText value="#{benutzerverwaltungsBean.pw}"/>
+                <p:inputText value="#{benutzerkontoBean.password}"/>
                 
                 <p:outputLabel value="Week-Time: "/>
-                <p:inputText value="#{benutzerverwaltungsBean.wt}"/>
-                </p:panelGrid>
-            <br/>
-
-
-            <p:commandButton value="User anlegen" action="#{benutzerverwaltungsBean.newUserAnlegen}"/>
-            <p:commandButton value="Änderung verwerfen" action="#{benutzerverwaltungsBean.newUserVerwerfen}"/>
+                <p:inputText value="#{benutzerkontoBean.weekTime}" disabled="true"/>
+                
+            </p:panelGrid>
+            
+                <p:commandButton value="Speichern" action="speichern"/>
+                <p:commandButton value="Änderungen verwerfen" action="verwerfenAen" immediate="true"/>
         </h:form>
-    </h:body>
+    </body>
 </html>

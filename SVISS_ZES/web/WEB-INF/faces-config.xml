@@ -41,9 +41,10 @@
         <from-view-id>/*</from-view-id>
         <navigation-case>
             <from-outcome>success</from-outcome>
-            <to-view-id>/pages/istzeit.xhtml</to-view-id>
+            <to-view-id>/pages/mainSite.xhtml</to-view-id>
             <redirect/>
         </navigation-case>
+        
         <navigation-case>
             <from-outcome>failure</from-outcome>
             <to-view-id>/index.xhtml</to-view-id>
@@ -66,11 +67,27 @@
             <to-view-id>/pages/benutzerverwaltung.xhtml</to-view-id>
             <redirect/>
         </navigation-case>
+        
         <navigation-case>
             <from-outcome>verwerfen</from-outcome>
             <to-view-id>/pages/benutzerverwaltung.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
     
-   
+    <navigation-rule>
+        <from-view-id>/pages/benutzerkonto.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>speichern</from-outcome>
+            <to-view-id>/pages/mainSite.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>verwerfenAen</from-outcome>
+            <to-view-id>/pages/mainSite.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    <managed-bean>
+        <managed-bean-name>benutzerkontoBean</managed-bean-name>
+        <managed-bean-class>at.htlpinkafeld.beans.BenutzerkontoBean</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
 </faces-config>
