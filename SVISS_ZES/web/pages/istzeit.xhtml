@@ -16,15 +16,32 @@ and open the template in the editor.
         <ui:define name="content">
 
             <h1 align="center">Ist-Zeiten</h1>
+            
+            <p:panelGrid columns="4">
+                <p:column>
+                    <p:outputLabel value="Urlaubstage:"/>
+                </p:column>
+                <p:column>
+                    <p:outputLabel value="#{masterBean.user.vacationLeft}"/>
+                </p:column>
+                <p:column>
+                    <p:outputLabel value="Überstunden:"/>
+                </p:column>
+                <p:column>
+                    <p:outputLabel value="#{masterBean.user.overTimeLeft}"/>
+                </p:column>
+                
+            </p:panelGrid>
+            
 
             <p:growl id="messages" showDetail="true" />
 
-            <p:schedule id="schedule" value="#{scheduleView.eventModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" columnFormat="month:'ddd', week:'dd/MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
+            <p:schedule firstHour="0" aspectRatio="3" view="agendaWeek" id="schedule" value="#{scheduleView.eventModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" columnFormat="month:'ddd', week:'dd/MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
 
                 <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
-                <p:ajax event="eventSelect" listener="#{scheduleView.onEventSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
-                <p:ajax event="eventMove" listener="#{scheduleView.onEventMove}" update="messages" />
-                <p:ajax event="eventResize" listener="#{scheduleView.onEventResize}" update="messages" />
+                <p:ajax event="eventSelect" listener="#{scheduleView.onWorkTimeEventSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
+                <p:ajax event="eventMove" listener="#{scheduleView.onWorkTimeMove}" update="messages" />
+                <p:ajax event="eventResize" listener="#{scheduleView.onWorkTimeResize}" update="messages" />
 
             </p:schedule>
 

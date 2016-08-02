@@ -17,7 +17,13 @@ and open the template in the editor.
 
             <p:growl id="messages" showDetail="true" />
             
-            <p:schedule id="schedule" value="#{scheduleView.acknowlegementModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" columnFormat="month:'ddd', week:'dd/MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
+            <p:selectOneMenu value="#{scheduleView.selectedUser}">
+                <f:selectItems value="#{scheduleView.allUsers}"/>
+            </p:selectOneMenu>
+            
+            <p:commandButton value="load" actionListener="#{scheduleView.loadAbwesenheitByUser}"/>
+            
+            <p:schedule firstHour="0" aspectRatio="3" id="schedule" value="#{scheduleView.acknowlegementModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" columnFormat="month:'ddd', week:'dd/MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
 
                 <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
                 <p:ajax event="eventSelect" listener="#{scheduleView.onAbsenceSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />

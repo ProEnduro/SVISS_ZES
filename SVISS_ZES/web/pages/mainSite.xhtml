@@ -16,19 +16,18 @@ and open the template in the editor.
     <h:body>
         <h:form>
             <h:panelGrid columns="#{masterBean.columns}" width="100%">
-                <p:commandButton value="Ist-Zeiten" action="istzeit.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%" rendered="#{masterBean.firstEnabled()}"/>  
+                <p:commandButton value="Ist-Zeiten" action="istzeit.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%" rendered="#{masterBean.firstEnabled()}" actionListener="#{scheduleView.reloadAbwesenheiten}"/>  
                 <p:commandButton value="Abwesenheiten eintragen" action="abwesenheit.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%" actionListener="#{scheduleView.reloadAbwesenheiten}"/>
                 <p:commandButton value="Benutzerverwaltung" action="benutzerverwaltung.xhtml?faces-redirect=true" style=" background-color: royalblue; color: black; width:100%" rendered="#{masterBean.secondEnabled()}"/>
-                <p:commandButton value="Acknowledgement" action="absence-acknowledgement.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%" actionListener="#{scheduleView.reloadAcknowledgements}"/>
-                
+                <p:commandButton value="Acknowledgement" action="absence_acknowledgement.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%" actionListener="#{scheduleView.reloadAcknowledgements}"/>
+
                 <p:commandButton value="Logout" action="#{masterBean.logout}" style="background-color: royalblue; color: black; width:100%"/> 
 
-                
+
             </h:panelGrid>
 
 
             <ui:insert name="content">
-                Content
             </ui:insert>
 
 

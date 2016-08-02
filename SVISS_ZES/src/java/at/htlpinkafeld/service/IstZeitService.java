@@ -29,12 +29,10 @@ public class IstZeitService {
         workT = new WorkTime(user, startTime, endTime, 0, "", "");
         workDAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
         workDAO.insert(workT);
-        List myList = workDAO.getList();
-
-        test = (WorkTime) myList.get(2);
-        System.out.println("start: " + test.getStartTime());
-        System.out.println("ende: " + test.getEndTime());
-
+    }
+    public static void addIstTime(WorkTime t){
+        workDAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
+        workDAO.insert(t);
     }
 
     public static List<WorkTime> getWorktimeByUser(User u) {

@@ -36,4 +36,8 @@ public class AbsenceService {
     public static void updateAbsence(Absence a){
         DAOFactory.getDAOFactory().getAbsenceDAO().update(a);
     }
+    
+    public static List<Absence> getAllUnacknowledged(){
+        return DAOFactory.getDAOFactory().getAbsenceDAO().getAbsencesByAcknowledgment(false);
+    }
 }
