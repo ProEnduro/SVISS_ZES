@@ -29,7 +29,9 @@ and open the template in the editor.
             <p:panelGrid columns="2" style="border-color: #9999ff; border-style: double; margin: 0 auto; margin-bottom: 0.5%; margin-top: 2%">
                 
                 <p:outputLabel value="Access-Level: "/>
-                <p:inputText value="#{benutzerkontoBean.accessLevel}" readonly="true"/>
+                <p:inputText value="#{benutzerkontoBean.accessLevel}" readonly="true">
+                    <f:converter converterId="accesslevelconv"/>
+                </p:inputText>
                 
                 <p:outputLabel value="Username: "/>
                 <p:inputText value="#{benutzerkontoBean.userName}" readonly="true"/>

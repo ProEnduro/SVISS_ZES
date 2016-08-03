@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.beans;
 
+import at.htlpinkafeld.pojo.AccessLevel;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import java.util.Date;
@@ -18,7 +19,6 @@ import javax.faces.context.FacesContext;
 public class BenutzerkontoBean {
 
     List<User> userlist;
-    int accessLevel;
     String persName;
     String userName;
     String email;
@@ -29,7 +29,7 @@ public class BenutzerkontoBean {
     FacesContext context = FacesContext.getCurrentInstance();
     MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
     User user;
-    
+
     
     public BenutzerkontoBean() {
         user = new User();
@@ -40,12 +40,8 @@ public class BenutzerkontoBean {
         return BenutzerverwaltungService.getUserList();
     }
 
-    public int getAccessLevel() {
-        return user.getAccessLevel().getAccessLevelID();
-    }
-
-    public void setAccessLevel(int accessLevel) {
-        this.accessLevel = accessLevel;
+    public AccessLevel getAccessLevel() {
+        return user.getAccessLevel();
     }
 
     public String getPersName() {
@@ -61,12 +57,8 @@ public class BenutzerkontoBean {
         return user.getUsername();
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     public String getEmail() {
-        return user.getPass();
+        return user.getEmail();
     }
 
     public void setEmail(String email) {
@@ -76,10 +68,6 @@ public class BenutzerkontoBean {
 
     public Date getHireDate() {
         return user.getHiredate();
-    }
-
-    public void setHireDate(Date hireDate) {
-        this.hireDate = hireDate;
     }
 
     public String getPassword() {
@@ -93,10 +81,5 @@ public class BenutzerkontoBean {
 
     public double getWeekTime() {
         return user.getWeekTime();
-    }
-
-    public void setWeekTime(double weekTime) {
-        this.weekTime = weekTime;
-    }
-    
+    }  
 }
