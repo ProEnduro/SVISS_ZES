@@ -36,11 +36,11 @@ public class Absence_InMemoryDAO extends Base_InMemoryDAO<Absence> implements Ab
         super.insert(new Absence(uDAO.getUser(2), aDAO.getAbsenceTypeByID(3), LocalDateTime.of(2016, 8, 17, 0, 0, 0), LocalDateTime.of(2016, 8, 18, 0, 0, 0)));
         super.insert(new Absence(uDAO.getUser(6), aDAO.getAbsenceTypeByID(3), LocalDateTime.of(2016, 8, 26, 12, 30, 0), LocalDateTime.of(2016, 8, 27, 0, 0, 0)));
         
-        super.insert(new Absence(0, uDAO.getUser(9), aDAO.getAbsenceTypeByID(4), LocalDateTime.of(2016, 8, 18, 8, 0, 0), LocalDateTime.of(2016, 7, 8, 13, 30, 0), "PC exploded BOOM!",true));
-        super.insert(new Absence(0, uDAO.getUser(9), aDAO.getAbsenceTypeByID(4), LocalDateTime.of(2016, 8, 22, 8, 0, 0), LocalDateTime.of(2016, 7, 8, 13, 30, 0), "OH my GOD a TRIPPLE!",true));
-        super.insert(new Absence(0, uDAO.getUser(9), aDAO.getAbsenceTypeByID(3), LocalDateTime.of(2016, 7, 8, 8, 0, 0), LocalDateTime.of(2016, 7, 8, 13, 30, 0), "ITS MA TIME!",true));
-        super.insert(new Absence(0, uDAO.getUser(9), aDAO.getAbsenceTypeByID(4), LocalDateTime.of(2016, 7, 15, 8, 0, 0), LocalDateTime.of(2016, 7, 8, 13, 30, 0), "Sprenggurt",true));
-        super.insert(new Absence(0, uDAO.getUser(9), aDAO.getAbsenceTypeByID(4), LocalDateTime.of(2016, 6, 26, 8, 0, 0), LocalDateTime.of(2016, 7, 8, 13, 30, 0), "ICECREAM I WANT ICECREAM!",true));
+        super.insert(new Absence(0, uDAO.getUser(9), aDAO.getAbsenceTypeByID(4), LocalDateTime.of(2016, 8, 18, 8, 0, 0), LocalDateTime.of(2016, 8, 18, 12, 30, 0), "PC exploded BOOM!",true));
+        super.insert(new Absence(0, uDAO.getUser(9), aDAO.getAbsenceTypeByID(4), LocalDateTime.of(2016, 8, 22, 8, 0, 0), LocalDateTime.of(2016, 8, 22, 13, 30, 0), "OH my GOD a TRIPPLE!",true));
+        super.insert(new Absence(0, uDAO.getUser(9), aDAO.getAbsenceTypeByID(3), LocalDateTime.of(2016, 7, 8, 8, 0, 0), LocalDateTime.of(2016, 7, 8, 16, 30, 0), "ITS MA TIME!",true));
+        super.insert(new Absence(0, uDAO.getUser(9), aDAO.getAbsenceTypeByID(4), LocalDateTime.of(2016, 7, 15, 8, 0, 0), LocalDateTime.of(2016, 7, 15, 17, 30, 0), "Sprenggurt",true));
+        super.insert(new Absence(0, uDAO.getUser(9), aDAO.getAbsenceTypeByID(4), LocalDateTime.of(2016, 6, 26, 8, 0, 0), LocalDateTime.of(2016, 6, 26, 11, 30, 0), "ICECREAM I WANT ICECREAM!",true));
         
     }
 
