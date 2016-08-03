@@ -16,16 +16,14 @@
             }
 
             .outerScreen{                 
-                background-image: url(#{resource["images/sviss_log_in.png"]});     /* image in the resource folger */
+                background-image: url(#{resource["images/sviss-loginnew.png"]});     /* image in the resource folger */
                 background-size: 30%;
                 background-position: center;
                 background-position-y: 30px;
                 background-repeat: no-repeat;
             }
-            /*
-            body{
-                background-image: url("/SVISS_ZES/resources/images/imag.jpg/rand.jpg");            
-            }*/
+           
+            
         </style>
     </h:head>
     <h:body styleClass="outerScreen">
@@ -43,7 +41,7 @@
                     <p:commandButton style=" background-color: #A9E2F3; border-style: hidden" id="login" value="Login" action="#{loginBean.login}" />
 
                     <p:messages autoUpdate="true"/>
-                    <p:commandButton style="background-color: red; border-style: hidden" id="forgotPassword" value="Passwort vergessen?" action="nope"/>
+                    <p:commandButton style="background-color: #ff2d2d; border-style: hidden" id="forgotPassword" value="Passwort vergessen?" action="nope"/>
 
                 </p:panelGrid>
 

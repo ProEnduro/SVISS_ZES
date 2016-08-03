@@ -5,47 +5,63 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
-    <h:head>
-        <title>Benutzerkonto</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <link rel="shortcut icon" type="image/x-icon" href="#{resource['images/faviconSV.ico']}"/>
-    </h:head>
+<ui:composition template="/pages/mainSite.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+
+    <ui:define name="content">
+        
+        <style>
+            .ui-panelgrid>*>tr, .ui-panelgrid .ui-panelgrid-cell {
+                border: none;
+            }
+            
+        </style>
+        
+        
     <body>
         
         <h:form>
-            <p:panelGrid columns="2" style="border-color: #9999ff; border-style: double;">
+            <p:panelGrid columns="2" style="border-color: #9999ff; border-style: double; margin: 0 auto; margin-bottom: 0.5%; margin-top: 2%">
                 
                 <p:outputLabel value="Access-Level: "/>
-                <p:inputText value="#{benutzerkontoBean.accessLevel}" disabled="true"/>
+                <p:inputText value="#{benutzerkontoBean.accessLevel}" readonly="true"/>
                 
                 <p:outputLabel value="Username: "/>
-                <p:inputText value="#{benutzerkontoBean.userName}" disabled="true"/>
+                <p:inputText value="#{benutzerkontoBean.userName}" readonly="true"/>
                 
-                <p:outputLabel value="Name: "/>
-                <p:inputText value="#{benutzerkontoBean.persName}"/>
+                <p:outputLabel value="* Name: " style="font-weight: bold"/>
+                <p:inputText value="#{benutzerkontoBean.persName}" style="font-weight: bold"/>
                 
-                <p:outputLabel value="EMail: "/>
-                <p:inputText value="#{benutzerkontoBean.email}"/>
+                <p:outputLabel value="* EMail: " style="font-weight: bold"/>
+                <p:inputText value="#{benutzerkontoBean.email}" style="font-weight: bold"/>
                 
                 <p:outputLabel value="HireDate: "/>
-                <p:inputText value="#{benutzerkontoBean.hireDate}" disabled="true">
+                <p:inputText value="#{benutzerkontoBean.hireDate}" readonly="true">
                     <f:convertDateTime pattern="dd.MM.yyyy"/>
                 </p:inputText>
                 
-                <p:outputLabel value="Password: "/>
-                <p:inputText value="#{benutzerkontoBean.password}"/>
+                <p:outputLabel value="* Password: " style="font-weight: bold"/>
+                <p:inputText value="#{benutzerkontoBean.password}" style="font-weight: bold"/>
                 
                 <p:outputLabel value="Week-Time: "/>
-                <p:inputText value="#{benutzerkontoBean.weekTime}" disabled="true"/>
+                <p:inputText value="#{benutzerkontoBean.weekTime}" readonly="true"/>
                 
             </p:panelGrid>
             
-                <p:commandButton value="Speichern" action="speichern"/>
-                <p:commandButton value="Änderungen verwerfen" action="verwerfenAen" immediate="true"/>
+            
+            <p:panelGrid columns="2" styleClass="ui-panelgrid" style="margin: 0 auto;">
+                <p:outputLabel value="* - Editable" style="font-weight: bold"/>
+                <br></br>
+                <p:commandButton value="Speichern" action="speichern" style="background-color: #91d1d4"/>
+                <p:commandButton value="Änderungen verwerfen" action="verwerfenAen" immediate="true" style="background-color: #ff7a7a"/>
+            </p:panelGrid>
+            
         </h:form>
     </body>
-</html>
+    </ui:define>
+</ui:composition>
