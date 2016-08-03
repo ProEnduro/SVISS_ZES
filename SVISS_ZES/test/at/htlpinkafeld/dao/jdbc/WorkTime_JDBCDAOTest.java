@@ -10,6 +10,7 @@ import at.htlpinkafeld.dao.interf.WorkTime_DAO;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Level;
@@ -48,7 +49,7 @@ public class WorkTime_JDBCDAOTest {
     @Test
     public void testInsertAndGetList() throws SQLException {
         List<WorkTime> expResult = workTime_DAO.getList();
-        WorkTime wt = new WorkTime(DAOFactory.getDAOFactory().getUserDAO().getUser(1), new GregorianCalendar(2016, 3, 14, 8, 0).getTime(), new GregorianCalendar(2016, 3, 14, 16, 30).getTime(), 30, "Start Test", "End Test");
+        WorkTime wt = new WorkTime(DAOFactory.getDAOFactory().getUserDAO().getUser(1), LocalDateTime.of(2016, 3, 14, 8, 0), LocalDateTime.of(2016, 3, 14, 16, 30), 30, "Start Test", "End Test");
         workTime_DAO.insert(wt);
         expResult.add(wt);
         List result = workTime_DAO.getList();
@@ -65,7 +66,7 @@ public class WorkTime_JDBCDAOTest {
     public void testInsertAndGetByUser() throws SQLException {
         User u = DAOFactory.getDAOFactory().getUserDAO().getUser(1);
         List<WorkTime> expResult = workTime_DAO.getWorkTimesByUser(u);
-        WorkTime wt = new WorkTime(u, new GregorianCalendar(2016, 3, 14, 8, 0).getTime(), new GregorianCalendar(2016, 3, 14, 16, 30).getTime(), 30, "Start Test", "End Test");
+        WorkTime wt = new WorkTime(u, LocalDateTime.of(2016, 3, 14, 8, 0), LocalDateTime.of(2016, 3, 14, 16, 30), 30, "Start Test", "End Test");
         workTime_DAO.insert(wt);
         expResult.add(wt);
         List result = workTime_DAO.getWorkTimesByUser(u);
@@ -77,7 +78,7 @@ public class WorkTime_JDBCDAOTest {
      */
     @Test
     public void testInsertAndUpdate() {
-        WorkTime wt = new WorkTime(DAOFactory.getDAOFactory().getUserDAO().getUser(1), new GregorianCalendar(2016, 3, 14, 8, 0).getTime(), new GregorianCalendar(2016, 3, 14, 16, 30).getTime(), 30, "Start Test", "End Test");
+        WorkTime wt = new WorkTime(DAOFactory.getDAOFactory().getUserDAO().getUser(1), LocalDateTime.of(2016, 3, 14, 8, 0), LocalDateTime.of(2016, 3, 14, 16, 30), 30, "Start Test", "End Test");
         workTime_DAO.insert(wt);
         wt.setBreakTime(50);
         wt.setEndComment("Updated Test Test");
@@ -93,7 +94,7 @@ public class WorkTime_JDBCDAOTest {
      */
     @Test
     public void testInsertAndDelete() {
-        WorkTime wt = new WorkTime(DAOFactory.getDAOFactory().getUserDAO().getUser(1), new GregorianCalendar(2016, 3, 14, 8, 0).getTime(), new GregorianCalendar(2016, 3, 14, 16, 30).getTime(), 30, "Start Test", "End Test");
+        WorkTime wt = new WorkTime(DAOFactory.getDAOFactory().getUserDAO().getUser(1), LocalDateTime.of(2016, 3, 14, 8, 0), LocalDateTime.of(2016, 3, 14, 16, 30), 30, "Start Test", "End Test");
         workTime_DAO.insert(wt);
         List<WorkTime> result = workTime_DAO.getList();
         assertTrue(result.contains(wt));

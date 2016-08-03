@@ -12,6 +12,8 @@ import at.htlpinkafeld.pojo.WorkTime;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +61,7 @@ public class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime
     @Override
     protected WorkTime getEntityFromResultSet(ResultSet rs) {
         try {
-            return new WorkTime(rs.getInt(TIMEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), rs.getDate(STARTTIME_COL), rs.getDate(ENDTIME_COL), rs.getInt(BREAKTIME_COL), rs.getString(STARTCOMMENT_COL), rs.getString(ENDCOMMENT_COL));
+            return new WorkTime(rs.getInt(TIMEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), rs.getTimestamp(STARTTIME_COL).toLocalDateTime(), rs.getTimestamp(ENDTIME_COL).toLocalDateTime(), rs.getInt(BREAKTIME_COL), rs.getString(STARTCOMMENT_COL), rs.getString(ENDCOMMENT_COL));
 
         } catch (SQLException ex) {
             Logger.getLogger(WorkTime_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -86,7 +88,7 @@ public class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime
                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + u.getUserNr() + " " + SQL_ORDER_BY_LINE)) {
 
             while (rs.next()) {
-                workTimes.add(new WorkTime(rs.getInt(TIMEID_COL), u, rs.getDate(STARTTIME_COL), rs.getDate(ENDTIME_COL), rs.getInt(BREAKTIME_COL), rs.getString(STARTCOMMENT_COL), rs.getString(ENDCOMMENT_COL)));
+                workTimes.add(getEntityFromResultSet(rs));
             }
 
         } catch (SQLException ex) {

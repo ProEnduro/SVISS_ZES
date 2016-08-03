@@ -71,7 +71,7 @@ public class AbsenceType_JDBCDAO extends Base_JDBCDAO<AbsenceType> implements Ab
                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ABSENCETYPEID_COL + " = " + absenceTypeID + " " + SQL_ORDER_BY_LINE)) {
 
             if (rs.next()) {
-                at = new AbsenceType(rs.getInt(ABSENCETYPEID_COL), rs.getString(ABSENCETYPENAME_COL));
+                at = getEntityFromResultSet(rs);
             }
 
         } catch (SQLException ex) {

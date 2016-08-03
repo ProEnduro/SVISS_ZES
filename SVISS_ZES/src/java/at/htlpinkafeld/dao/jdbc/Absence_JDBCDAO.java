@@ -13,6 +13,8 @@ import at.htlpinkafeld.pojo.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +62,7 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
     @Override
     protected Absence getEntityFromResultSet(ResultSet rs) {
         try {
-            return new Absence(rs.getInt(ABSENCEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), new AbsenceType_JDBCDAO().getAbsenceTypeByID(rs.getInt(ABSENCETYPEID_COL)), rs.getDate(STARTTIME_COL), rs.getDate(ENDTIME_COL), rs.getString(REASON_COL), rs.getBoolean(ACKNOWLEDGED_COL));
+            return new Absence(rs.getInt(ABSENCEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), new AbsenceType_JDBCDAO().getAbsenceTypeByID(rs.getInt(ABSENCETYPEID_COL)), rs.getTimestamp(STARTTIME_COL).toLocalDateTime(), rs.getTimestamp(ENDTIME_COL).toLocalDateTime(), rs.getString(REASON_COL), rs.getBoolean(ACKNOWLEDGED_COL));
         } catch (SQLException ex) {
             Logger.getLogger(Absence_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -86,7 +88,7 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + u.getUserNr() + " " + SQL_ORDER_BY_LINE)) {
 
             while (rs.next()) {
-                absences.add(new Absence(rs.getInt(ABSENCEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), new AbsenceType_JDBCDAO().getAbsenceTypeByID(rs.getInt(ABSENCETYPEID_COL)), rs.getDate(STARTTIME_COL), rs.getDate(ENDTIME_COL), rs.getString(REASON_COL), rs.getBoolean(ACKNOWLEDGED_COL)));
+                absences.add(getEntityFromResultSet(rs));
             }
 
         } catch (SQLException ex) {
@@ -105,7 +107,7 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ABSENCETYPEID_COL + " = " + at.getAbsenceTypeID() + " " + SQL_ORDER_BY_LINE)) {
 
             while (rs.next()) {
-                absences.add(new Absence(rs.getInt(ABSENCEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), new AbsenceType_JDBCDAO().getAbsenceTypeByID(rs.getInt(ABSENCETYPEID_COL)), rs.getDate(STARTTIME_COL), rs.getDate(ENDTIME_COL), rs.getString(REASON_COL), rs.getBoolean(ACKNOWLEDGED_COL)));
+                absences.add(getEntityFromResultSet(rs));
             }
 
         } catch (SQLException ex) {
@@ -124,7 +126,7 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ABSENCETYPEID_COL + " = " + at.getAbsenceTypeID() + " AND " + USERNR_COL + " = " + u.getUserNr() + " " + SQL_ORDER_BY_LINE)) {
 
             while (rs.next()) {
-                absences.add(new Absence(rs.getInt(ABSENCEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), new AbsenceType_JDBCDAO().getAbsenceTypeByID(rs.getInt(ABSENCETYPEID_COL)), rs.getDate(STARTTIME_COL), rs.getDate(ENDTIME_COL), rs.getString(REASON_COL), rs.getBoolean(ACKNOWLEDGED_COL)));
+                absences.add(getEntityFromResultSet(rs));
             }
 
         } catch (SQLException ex) {
@@ -143,7 +145,7 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ACKNOWLEDGED_COL + " = " + acknowledged + " " + SQL_ORDER_BY_LINE)) {
 
             while (rs.next()) {
-                absences.add(new Absence(rs.getInt(ABSENCEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), new AbsenceType_JDBCDAO().getAbsenceTypeByID(rs.getInt(ABSENCETYPEID_COL)), rs.getDate(STARTTIME_COL), rs.getDate(ENDTIME_COL), rs.getString(REASON_COL), rs.getBoolean(ACKNOWLEDGED_COL)));
+                absences.add(getEntityFromResultSet(rs));
             }
 
         } catch (SQLException ex) {
@@ -162,7 +164,7 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + u.getUserNr() + " AND " + ACKNOWLEDGED_COL + " = " + acknowledged + " " + SQL_ORDER_BY_LINE)) {
 
             while (rs.next()) {
-                absences.add(new Absence(rs.getInt(ABSENCEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), new AbsenceType_JDBCDAO().getAbsenceTypeByID(rs.getInt(ABSENCETYPEID_COL)), rs.getDate(STARTTIME_COL), rs.getDate(ENDTIME_COL), rs.getString(REASON_COL), rs.getBoolean(ACKNOWLEDGED_COL)));
+                absences.add(getEntityFromResultSet(rs));
             }
 
         } catch (SQLException ex) {

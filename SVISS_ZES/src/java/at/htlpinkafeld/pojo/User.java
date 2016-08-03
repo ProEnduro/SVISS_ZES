@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.pojo;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -20,7 +21,7 @@ public class User {
     private int overTimeLeft;
     private String username;
     private String email;
-    private Date hiredate;
+    private LocalDate hiredate;
     private String pass;
     private Double weekTime;
     private boolean disabled = false;
@@ -46,7 +47,7 @@ public class User {
     }
 
     @Deprecated
-    public User(int userNr, AccessLevel accessLevel, String PersName, int vacationLeft, int overTimeLeft, String username, String email, Date hiredate, String pass, Double weekTime, boolean disabled) {
+    public User(int userNr, AccessLevel accessLevel, String PersName, int vacationLeft, int overTimeLeft, String username, String email, LocalDate hiredate, String pass, Double weekTime, boolean disabled) {
         this.userNr = userNr;
         this.accessLevel = accessLevel;
         this.PersName = PersName;
@@ -60,7 +61,7 @@ public class User {
         this.disabled = disabled;
     }
 
-    public User(AccessLevel accessLevel, String PersName, int vacationLeft, int overTimeLeft, String username, String email, Date hiredate, String pass, Double weekTime) {
+    public User(AccessLevel accessLevel, String PersName, int vacationLeft, int overTimeLeft, String username, String email, LocalDate hiredate, String pass, Double weekTime) {
         this();
         this.accessLevel = accessLevel;
         this.PersName = PersName;
@@ -73,7 +74,7 @@ public class User {
         this.weekTime = weekTime;
     }
 
-    public User(AccessLevel accessLevel, String PersName, String username, String email, Date hiredate, String pass, Double weekTime) {
+    public User(AccessLevel accessLevel, String PersName, String username, String email, LocalDate hiredate, String pass, Double weekTime) {
         this();
         this.accessLevel = accessLevel;
         this.PersName = PersName;
@@ -140,11 +141,11 @@ public class User {
         this.email = email;
     }
 
-    public Date getHiredate() {
+    public LocalDate getHiredate() {
         return hiredate;
     }
 
-    public void setHiredate(Date hiredate) {
+    public void setHiredate(LocalDate hiredate) {
         this.hiredate = hiredate;
     }
 

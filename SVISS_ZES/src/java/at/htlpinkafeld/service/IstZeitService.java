@@ -9,6 +9,10 @@ import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.WorkTime_DAO;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
+import static com.sun.org.apache.xalan.internal.lib.ExsltDatetime.time;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -25,12 +29,13 @@ public class IstZeitService {
     public IstZeitService() {
     }
 
-    public static void addIstTime(User user, Date startTime, Date endTime) {
+    public static void addIstTime(User user, LocalDateTime startTime, LocalDateTime endTime) {
         workT = new WorkTime(user, startTime, endTime, 0, "", "");
         workDAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
         workDAO.insert(workT);
     }
-    public static void addIstTime(WorkTime t){
+
+    public static void addIstTime(WorkTime t) {
         workDAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
         workDAO.insert(t);
     }
@@ -45,7 +50,6 @@ public class IstZeitService {
         return workDAO.getList();
     }
 
-
     public static void update(WorkTime o) {
         workDAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
         workDAO.update(o);
@@ -54,5 +58,13 @@ public class IstZeitService {
     public static void delete(WorkTime o) {
         workDAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
         workDAO.delete(o);
+    }
+
+    public static LocalDateTime convertDateToLocalDateTime(Date date) {
+        return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+    }
+
+    public static Date convertLocalDateTimeToDate(LocalDateTime dateTime) {
+        return Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 }

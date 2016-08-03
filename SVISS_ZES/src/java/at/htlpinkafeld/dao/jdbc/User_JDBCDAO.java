@@ -14,7 +14,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,13 +59,12 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
                 Statement stmt = con.getConn().createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + usernr + " " + SQL_ORDER_BY_LINE)) {
 
-            AccessLevel_DAO al_DAO = new AccessLevel_JDBCDAO();
             if (rs.next()) {
-                u = new User(rs.getInt(USERNR_COL), al_DAO.getAccessLevelByID(rs.getInt(ACCESSLEVELID_COL)), rs.getString(PERSNAME_COL), rs.getInt(VACATIONLEFT_COL), rs.getInt(OVERTIMELEFT_COL), rs.getString(USERNAME_COL), rs.getString(EMAIL_COL), sdf.parse(rs.getString(HIREDATE_COL)), rs.getString(PASSWORD_COL), rs.getDouble(WEEKTIME_COL), rs.getBoolean(DISABLED_COL));
+                u = getEntityFromResultSet(rs);
 
             }
 
-        } catch (SQLException | ParseException ex) {
+        } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return u;
@@ -74,16 +77,31 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
                 Statement stmt = con.getConn().createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNAME_COL + " = '" + username + "' " + SQL_ORDER_BY_LINE)) {
 
-            AccessLevel_DAO al_DAO = new AccessLevel_JDBCDAO();
             if (rs.next()) {
-                u = new User(rs.getInt(USERNR_COL), al_DAO.getAccessLevelByID(rs.getInt(ACCESSLEVELID_COL)), rs.getString(PERSNAME_COL), rs.getInt(VACATIONLEFT_COL), rs.getInt(OVERTIMELEFT_COL), rs.getString(USERNAME_COL), rs.getString(EMAIL_COL), sdf.parse(rs.getString(HIREDATE_COL)), rs.getString(PASSWORD_COL), rs.getDouble(WEEKTIME_COL), rs.getBoolean(DISABLED_COL));
-
+                u = getEntityFromResultSet(rs);
             }
 
-        } catch (SQLException | ParseException ex) {
+        } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return u;
+    }
+
+    @Override
+    public List<User> getUserByDisabled(Boolean disabled) {
+        List<User> userL = new ArrayList<>();
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + DISABLED_COL + " IS " + disabled + " " + SQL_ORDER_BY_LINE)) {
+
+            if (rs.next()) {
+                userL.add(getEntityFromResultSet(rs));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return userL;
     }
 
     @Override
@@ -117,12 +135,12 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
             u.setOverTimeLeft(rs.getInt(OVERTIMELEFT_COL));
             u.setUsername(rs.getString(USERNAME_COL));
             u.setEmail(rs.getString(EMAIL_COL));
-            u.setHiredate(sdf.parse(rs.getString(HIREDATE_COL)));
+            u.setHiredate(rs.getDate(HIREDATE_COL).toLocalDate());
             u.setPass(rs.getString(PASSWORD_COL));
             u.setWeekTime(rs.getDouble(WEEKTIME_COL));
             u.setDisabled(rs.getBoolean(DISABLED_COL));
 
-        } catch (SQLException | ParseException ex) {
+        } catch (SQLException ex) {
             Logger.getLogger(Base_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return u;

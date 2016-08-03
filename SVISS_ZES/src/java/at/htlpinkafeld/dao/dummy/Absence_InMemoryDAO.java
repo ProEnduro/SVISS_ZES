@@ -11,8 +11,8 @@ import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.AbsenceType;
 import at.htlpinkafeld.pojo.User;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,8 +26,8 @@ public class Absence_InMemoryDAO extends Base_InMemoryDAO<Absence> implements Ab
         super(new ArrayList<>());
         User_DAO uDAO = new User_InMemoryDAO();
         AbsenceType_DAO aDAO = new AbsenceType_InMemoryDAO();
-        super.insert(new Absence(1, uDAO.getUser(1), aDAO.getAbsenceTypeByID(1), new GregorianCalendar(2016, 4, 4).getTime(), new GregorianCalendar(2016, 4, 6).getTime(), "Cold", true));
-        super.insert(new Absence(uDAO.getUser(2), aDAO.getAbsenceTypeByID(3), new GregorianCalendar(2016, 4, 4, 14, 0).getTime(), new GregorianCalendar(2016, 4, 4, 18, 0).getTime()));
+        super.insert(new Absence(0, uDAO.getUser(1), aDAO.getAbsenceTypeByID(1), LocalDateTime.of(2016, 4, 4, 0, 0, 0), LocalDateTime.of(2016, 4, 6, 0, 0, 0), "Cold", true));
+        super.insert(new Absence(uDAO.getUser(2), aDAO.getAbsenceTypeByID(3), LocalDateTime.of(2016, 4, 4, 0, 0, 0), LocalDateTime.of(2016, 4, 6, 0, 0, 0)));
     }
 
     @Override

@@ -79,7 +79,7 @@ public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeiten> implements Soll
                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + u.getUserNr() + " " + SQL_ORDER_BY_LINE)) {
 
             while (rs.next()) {
-                sollZeiten.add(new SollZeiten(SollZeiten.getDayOfWeekFromDBShort(rs.getString(DAYID_COL)), u, rs.getTime(SOLLSTARTTIME_COL).toLocalTime(), rs.getTime(SOLLENDTIME_COL).toLocalTime()));
+                sollZeiten.add(getEntityFromResultSet(rs));
             }
 
         } catch (SQLException ex) {

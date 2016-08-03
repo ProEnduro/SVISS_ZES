@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.pojo;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 
@@ -17,8 +18,8 @@ public class Absence {
     private int absenceID;
     private User user;
     private AbsenceType absenceType;
-    private Date startTime;
-    private Date endTime;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private String reason;
     private boolean acknowledged;
 
@@ -50,7 +51,7 @@ public class Absence {
      * @deprecated
      */
     @Deprecated
-    public Absence(int absenceID, User user, AbsenceType absenceType, Date startTime, Date endTime, String reason, boolean acknowledged) {
+    public Absence(int absenceID, User user, AbsenceType absenceType, LocalDateTime startTime, LocalDateTime endTime, String reason, boolean acknowledged) {
         this.absenceID = absenceID;
         this.user = user;
         this.absenceType = absenceType;
@@ -60,7 +61,7 @@ public class Absence {
         this.acknowledged = acknowledged;
     }
 
-    public Absence(User user, AbsenceType absenceType, Date startTime, Date endTime, String reason) {
+    public Absence(User user, AbsenceType absenceType, LocalDateTime startTime, LocalDateTime endTime, String reason) {
         this();
         this.user = user;
         this.absenceType = absenceType;
@@ -70,7 +71,7 @@ public class Absence {
         this.acknowledged = false;
     }
 
-    public Absence(User user, AbsenceType absenceType, Date startTime, Date endTime) {
+    public Absence(User user, AbsenceType absenceType, LocalDateTime startTime, LocalDateTime endTime) {
         this();
         this.user = user;
         this.absenceType = absenceType;
@@ -104,19 +105,19 @@ public class Absence {
         this.absenceType = absenceType;
     }
 
-    public Date getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime() {
+    public LocalDateTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
 

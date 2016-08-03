@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.pojo;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 
@@ -16,8 +17,8 @@ public class WorkTime {
 
     private int timeID;
     private User user;
-    private Date startTime;
-    private Date endTime;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     //Break Time in minutes
     private int breakTime;
     private String startComment;
@@ -38,7 +39,7 @@ public class WorkTime {
     }
 
     @Deprecated
-    public WorkTime(int timeID, User user, Date startTime, Date endTime, int breakTime, String startComment, String endComment) {
+    public WorkTime(int timeID, User user, LocalDateTime startTime, LocalDateTime endTime, int breakTime, String startComment, String endComment) {
         this.timeID = timeID;
         this.user = user;
         this.startTime = startTime;
@@ -48,7 +49,7 @@ public class WorkTime {
         this.endComment = endComment;
     }
 
-    public WorkTime(User user, Date startTime, Date endTime, int breakTime, String startComment, String endComment) {
+    public WorkTime(User user, LocalDateTime startTime, LocalDateTime endTime, int breakTime, String startComment, String endComment) {
         this();
         this.user = user;
         this.startTime = startTime;
@@ -58,7 +59,7 @@ public class WorkTime {
         this.endComment = endComment;
     }
 
-    public WorkTime(User user, Date startTime) {
+    public WorkTime(User user, LocalDateTime startTime) {
         this();
         this.user = user;
         this.startTime = startTime;
@@ -80,19 +81,19 @@ public class WorkTime {
         this.user = user;
     }
 
-    public Date getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime() {
+    public LocalDateTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
 

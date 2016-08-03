@@ -9,6 +9,7 @@ import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.dao.interf.WorkTime_DAO;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
@@ -23,8 +24,8 @@ public class WorkTime_InMemoryDAO extends Base_InMemoryDAO<WorkTime> implements 
     protected WorkTime_InMemoryDAO() {
         super(new ArrayList<>());
         User_DAO uDAO = new User_InMemoryDAO();
-        super.insert(new WorkTime(uDAO.getUser(1), new GregorianCalendar(2016, 3, 14, 8, 0).getTime(), new GregorianCalendar(2016, 3, 14, 16, 30).getTime(), 30, "Start Test", "End Test"));
-        super.insert(new WorkTime(uDAO.getUser(2), new GregorianCalendar(2016, 3, 14, 9, 0).getTime(), new GregorianCalendar(2016, 3, 14, 16, 0).getTime(), 30, "Start Later Test", "End Early Test"));
+        super.insert(new WorkTime(uDAO.getUser(1), LocalDateTime.of(2016, 3, 14, 8, 0), LocalDateTime.of(2016, 3, 14, 16, 30), 30, "Start Test", "End Test"));
+        super.insert(new WorkTime(uDAO.getUser(2), LocalDateTime.of(2016, 3, 14, 9, 0), LocalDateTime.of(2016, 3, 14, 16, 0), 30, "Start Later Test", "End Early Test"));
     }
 
     @Override

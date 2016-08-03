@@ -44,8 +44,7 @@ public class AccessLevel_JDBCDAO extends Base_JDBCDAO<AccessLevel> implements Ac
                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ACCESSLEVELID_COL + " = " + accessLevelId + " " + SQL_ORDER_BY_LINE)) {
 
             if (rs.next()) {
-                al = new AccessLevel(rs.getInt(ACCESSLEVELID_COL), rs.getString(ACCESSLEVELNAME_COL), new LinkedList<>(Arrays.asList(rs.getString(PERMISSIONS_COL).split(";"))));
-
+                al = getEntityFromResultSet(rs);
             }
 
         } catch (SQLException ex) {

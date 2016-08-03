@@ -6,6 +6,7 @@
 package at.htlpinkafeld.dao.interf;
 
 import at.htlpinkafeld.pojo.User;
+import java.util.List;
 
 /**
  *
@@ -16,4 +17,6 @@ public interface User_DAO extends Base_DAO<User> {
     public abstract User getUser(int userNr);
 
     public abstract User getUserByUsername(String username);
+    
+    public abstract List<User> getUserByDisabled(Boolean disabled);
 }
