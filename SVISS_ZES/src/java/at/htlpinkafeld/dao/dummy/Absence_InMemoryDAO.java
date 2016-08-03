@@ -34,6 +34,7 @@ public class Absence_InMemoryDAO extends Base_InMemoryDAO<Absence> implements Ab
         super.insert(new Absence(uDAO.getUser(7), aDAO.getAbsenceTypeByID(2), LocalDateTime.of(2016, 2, 12, 0, 0, 0), LocalDateTime.of(2016, 2, 12, 0, 0, 0)));
         super.insert(new Absence(uDAO.getUser(8), aDAO.getAbsenceTypeByID(4), LocalDateTime.of(2016, 12, 25, 10, 30, 0), LocalDateTime.of(2016, 12, 25, 16, 22, 0)));
         super.insert(new Absence(uDAO.getUser(2), aDAO.getAbsenceTypeByID(3), LocalDateTime.of(2016, 8, 17, 0, 0, 0), LocalDateTime.of(2016, 8, 18, 0, 0, 0)));
+        super.insert(new Absence(uDAO.getUser(6), aDAO.getAbsenceTypeByID(3), LocalDateTime.of(2016, 8, 26, 12, 30, 0), LocalDateTime.of(2016, 8, 27, 0, 0, 0)));
         
     }
 
