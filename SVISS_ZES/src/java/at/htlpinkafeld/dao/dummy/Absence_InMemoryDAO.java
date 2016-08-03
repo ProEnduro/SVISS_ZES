@@ -28,6 +28,13 @@ public class Absence_InMemoryDAO extends Base_InMemoryDAO<Absence> implements Ab
         AbsenceType_DAO aDAO = new AbsenceType_InMemoryDAO();
         super.insert(new Absence(0, uDAO.getUser(1), aDAO.getAbsenceTypeByID(1), LocalDateTime.of(2016, 4, 4, 0, 0, 0), LocalDateTime.of(2016, 4, 6, 0, 0, 0), "Cold", true));
         super.insert(new Absence(uDAO.getUser(2), aDAO.getAbsenceTypeByID(3), LocalDateTime.of(2016, 4, 4, 0, 0, 0), LocalDateTime.of(2016, 4, 6, 0, 0, 0)));
+        
+        super.insert(new Absence(uDAO.getUser(9), aDAO.getAbsenceTypeByID(4), LocalDateTime.of(2016, 7, 8, 8, 0, 0), LocalDateTime.of(2016, 7, 8, 13, 30, 0)));
+        super.insert(new Absence(uDAO.getUser(5), aDAO.getAbsenceTypeByID(1), LocalDateTime.of(2016, 9, 30, 0, 0, 0), LocalDateTime.of(2016, 9, 30, 0, 0, 0)));
+        super.insert(new Absence(uDAO.getUser(7), aDAO.getAbsenceTypeByID(2), LocalDateTime.of(2016, 2, 12, 0, 0, 0), LocalDateTime.of(2016, 2, 12, 0, 0, 0)));
+        super.insert(new Absence(uDAO.getUser(8), aDAO.getAbsenceTypeByID(4), LocalDateTime.of(2016, 12, 25, 10, 30, 0), LocalDateTime.of(2016, 12, 25, 16, 22, 0)));
+        super.insert(new Absence(uDAO.getUser(2), aDAO.getAbsenceTypeByID(3), LocalDateTime.of(2016, 8, 17, 0, 0, 0), LocalDateTime.of(2016, 8, 18, 0, 0, 0)));
+        
     }
 
     @Override

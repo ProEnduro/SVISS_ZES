@@ -26,6 +26,16 @@ public class WorkTime_InMemoryDAO extends Base_InMemoryDAO<WorkTime> implements 
         User_DAO uDAO = new User_InMemoryDAO();
         super.insert(new WorkTime(uDAO.getUser(1), LocalDateTime.of(2016, 3, 14, 8, 0), LocalDateTime.of(2016, 3, 14, 16, 30), 30, "Start Test", "End Test"));
         super.insert(new WorkTime(uDAO.getUser(2), LocalDateTime.of(2016, 3, 14, 9, 0), LocalDateTime.of(2016, 3, 14, 16, 0), 30, "Start Later Test", "End Early Test"));
+        
+        super.insert(new WorkTime(uDAO.getUser(3), LocalDateTime.of(2016, 3, 19, 8, 39), LocalDateTime.of(2016, 3, 19, 9, 17), 30, "Start changing CPU", "End changing CPU"));
+        super.insert(new WorkTime(uDAO.getUser(5), LocalDateTime.of(2016, 6, 7, 11, 22), LocalDateTime.of(2016, 6, 7, 13, 16), 30, "Start fixing RAM", "End fixing RAM"));
+        super.insert(new WorkTime(uDAO.getUser(4), LocalDateTime.of(2016, 4, 22, 15, 50), LocalDateTime.of(2016, 4, 22, 16, 22), 30, "Start complaining about something", "End complaining about something"));
+        super.insert(new WorkTime(uDAO.getUser(6), LocalDateTime.of(2016, 7, 16, 9, 33), LocalDateTime.of(2016, 7, 16, 13, 30), 30, "Start kicking the dump PC", "End kicking the dump PC"));
+        super.insert(new WorkTime(uDAO.getUser(8), LocalDateTime.of(2016, 5, 28, 12, 0), LocalDateTime.of(2016, 5, 28, 16, 55), 30, "Start executing Trojan.exe", "End executing Trojan.exe"));
+        
+        super.insert(new WorkTime(uDAO.getUser(7), LocalDateTime.of(2016, 9, 14, 16, 0), LocalDateTime.of(2016, 9, 14, 16, 59), 30, "Start buying GPUs", "End buying GPUs"));
+        super.insert(new WorkTime(uDAO.getUser(10), LocalDateTime.of(2016, 11, 10, 8, 30), LocalDateTime.of(2016, 11, 10, 11, 49), 30, "Start doing nothing", "End doing nothing"));
+        super.insert(new WorkTime(uDAO.getUser(9), LocalDateTime.of(2016, 10, 1, 11, 9), LocalDateTime.of(2016, 10, 1, 12, 32), 30, "Start playing DiabloIII", "End playing DiabloIII"));
     }
 
     @Override
