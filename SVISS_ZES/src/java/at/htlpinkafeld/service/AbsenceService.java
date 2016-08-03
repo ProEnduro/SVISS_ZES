@@ -40,4 +40,8 @@ public class AbsenceService {
     public static List<Absence> getAllUnacknowledged(){
         return DAOFactory.getDAOFactory().getAbsenceDAO().getAbsencesByAcknowledgment(false);
     }
+    
+    public static List<Absence> getAllAcknowledged(){
+        return DAOFactory.getDAOFactory().getAbsenceDAO().getAbsencesByAcknowledgment(true);
+    }
 }

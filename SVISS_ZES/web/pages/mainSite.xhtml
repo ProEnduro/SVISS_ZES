@@ -23,6 +23,9 @@ and open the template in the editor.
                 <p:commandButton value="Account Verwaltung" icon="ui-icon-user" action="benutzerkonto.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%"/>
                 <p:commandButton value="Benutzerverwaltung" icon="ui-icon-users" action="benutzerverwaltung.xhtml?faces-redirect=true" style=" background-color: royalblue; color: black; width:100%" rendered="#{masterBean.secondEnabled()}"/>
                 <p:commandButton value="Acknowledgement" action="absence_acknowledgement.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%" actionListener="#{scheduleView.reloadAcknowledgements}"/>
+                
+                <p:commandButton value="Alle Abwesenheiten" action="view_all_abwesenheiten.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%" actionListener="#{scheduleView.loadAllAbwesenheiten}"/>
+                
                 <p:commandButton value="Logout" action="#{masterBean.logout}" style="background-color: #cc5f59; color: black; width:100%" icon="icon-logout"/> 
             </h:panelGrid>
         </h:form>

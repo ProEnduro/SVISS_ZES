@@ -66,6 +66,10 @@ public class LoginBean {
             FacesContext context = FacesContext.getCurrentInstance();
             MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
             masterBean.setUser(this.getUser());
+            
+            context = FacesContext.getCurrentInstance();
+            ScheduleView scheduleView = (ScheduleView) context.getApplication().evaluateExpressionGet(context, "#{scheduleView}", ScheduleView.class);
+            scheduleView.setUser(this.getUser());
 
             this.pw = "";
             this.user = null;

@@ -24,6 +24,10 @@ public class BenutzerverwaltungService {
         
     }
 
+    public static User getUser(String selectedUser) {
+        return userdao.getUserByUsername(selectedUser);
+    }
+
     public BenutzerverwaltungService() {
     }
 
