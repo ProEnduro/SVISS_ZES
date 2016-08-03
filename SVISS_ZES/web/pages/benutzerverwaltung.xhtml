@@ -81,7 +81,7 @@ and open the template in the editor.
 
                     <p:row>
                         <p:column><p:outputLabel value="Hiredate: "/></p:column>
-                        <p:column><p:calendar value="#{benutzerverwaltungsBean.selectedUser.hiredate}" pattern="dd.MM.yyyy" mask="true"/></p:column>
+                        <p:column><p:calendar value="#{benutzerverwaltungsBean.selectedUser.hiredate}" mask="true" pattern="dd.MM.yyyy" converter="localDateConverter"/></p:column>
                     </p:row>
 
                     <p:row>

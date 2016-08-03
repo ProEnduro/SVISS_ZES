@@ -5,14 +5,14 @@
  */
 package at.htlpinkafeld.pojo;
 
+import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
  * @author Martin Six
  */
-public class AccessLevel {
+public class AccessLevel implements Serializable{
 
     private int accessLevelID;
     private String accessLevelName;

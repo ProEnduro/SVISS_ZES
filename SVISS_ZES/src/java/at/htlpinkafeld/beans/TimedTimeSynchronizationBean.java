@@ -5,15 +5,11 @@
  */
 package at.htlpinkafeld.beans;
 
-import at.htlpinkafeld.service.TimeSynchronisationTask;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ApplicationScoped;
 
@@ -40,8 +36,8 @@ public class TimedTimeSynchronizationBean {
         Duration duration = Duration.between(zonedNow, zonedNext0);
         long initalDelay = duration.getSeconds();
         try {
-            scheduler = Executors.newScheduledThreadPool(1);
-            scheduler.scheduleAtFixedRate(new TimeSynchronisationTask(), initalDelay, 24 * 60 * 60, TimeUnit.SECONDS);
+            //scheduler = Executors.newSingleThreadScheduledExecutor();
+            //scheduler.scheduleAtFixedRate(new TimeSynchronisationTask(), initalDelay, 24 * 60 * 60, TimeUnit.SECONDS);
             //scheduledFuture = scheduler.scheduleAtFixedRate(new TimeSynchronisationTask(), 10, 10, TimeUnit.SECONDS);
         } catch (Exception e) {
             e.printStackTrace();

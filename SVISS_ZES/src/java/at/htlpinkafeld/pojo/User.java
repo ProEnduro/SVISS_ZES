@@ -5,14 +5,14 @@
  */
 package at.htlpinkafeld.pojo;
 
+import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  *
  * @author Martin Six
  */
-public class User {
+public class User implements Serializable{
 
     private int userNr;
     private AccessLevel accessLevel;

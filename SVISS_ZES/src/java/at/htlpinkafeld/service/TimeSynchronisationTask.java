@@ -18,16 +18,15 @@ import java.util.List;
  * @author Martin Six
  */
 public class TimeSynchronisationTask implements Runnable {
-    
+
     User_DAO user_DAO;
-    
+
     public TimeSynchronisationTask() {
         user_DAO = DAOFactory.getDAOFactory().getUserDAO();
     }
-    
+
     @Override
     public void run() {
-        System.out.println("More Holiday");
         Date today = new Date();
         List<User> users = user_DAO.getUserByDisabled(Boolean.FALSE);
         for (User u : users) {
@@ -43,7 +42,6 @@ public class TimeSynchronisationTask implements Runnable {
                 e.printStackTrace();
             }
         }
-        System.out.println("Even more Holiday");
     }
-    
+
 }
