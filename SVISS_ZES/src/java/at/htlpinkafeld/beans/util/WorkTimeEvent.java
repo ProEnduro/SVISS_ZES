@@ -20,6 +20,8 @@ public class WorkTimeEvent extends DefaultScheduleEvent {
     public WorkTimeEvent(String title, Date start, Date end, WorkTime w) {
         super(title, start, end);
 
+        super.setStyleClass("istzeit");
+        
         worktime = w;
     }
 

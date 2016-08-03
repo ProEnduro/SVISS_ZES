@@ -34,7 +34,6 @@ public class IstZeitBean {
     public void addIstTime() {
         FacesContext context = FacesContext.getCurrentInstance();
         MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
-        IstZeitService.addIstTime(masterBean.getUser(), startTime, endTime);
     }
 
     public Date getStartTime() {

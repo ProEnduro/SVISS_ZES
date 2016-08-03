@@ -8,6 +8,7 @@ package at.htlpinkafeld.beans;
 import at.htlpinkafeld.pojo.AccessLevel;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import javax.faces.context.FacesContext;
@@ -66,7 +67,7 @@ public class BenutzerkontoBean {
         BenutzerverwaltungService.updateUser(user);
     }
 
-    public Date getHireDate() {
+    public LocalDate getHireDate() {
         return user.getHiredate();
     }
 

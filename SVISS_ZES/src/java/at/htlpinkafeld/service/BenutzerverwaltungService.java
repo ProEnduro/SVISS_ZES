@@ -16,23 +16,30 @@ import java.util.List;
  */
 public class BenutzerverwaltungService {
 
-    private static User_DAO userdao;
+    private final static User_DAO userdao;
+    
+    static{
+        
+        userdao = DAOFactory.getDAOFactory().getUserDAO();
+        
+    }
 
     public BenutzerverwaltungService() {
     }
 
     static public List<User> getUserList() {
-        userdao = DAOFactory.getDAOFactory().getUserDAO();
         return userdao.getList();
     }
 
     static public void insertUser(User u) {
-        userdao = DAOFactory.getDAOFactory().getUserDAO();
         userdao.insert(u);
     }
 
     static public void updateUser(User u) {
-        userdao = DAOFactory.getDAOFactory().getUserDAO();
         userdao.update(u);
+    }
+    
+    public static User getUser(int id){
+        return userdao.getUser(id);
     }
 }

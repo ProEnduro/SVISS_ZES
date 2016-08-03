@@ -22,13 +22,26 @@ and open the template in the editor.
                         <p:outputLabel value="Urlaubstage:"/>
                     </p:column>
                     <p:column>
-                        <p:outputLabel value="#{masterBean.user.vacationLeft}"/>
+                        <p:outputLabel value="#{scheduleView.currentUser.vacationLeft}"/>
                     </p:column>
                     <p:column>
                         <p:outputLabel value="Überstunden:"/>
                     </p:column>
                     <p:column>
-                        <p:outputLabel value="#{masterBean.user.overTimeLeft}"/>
+                        <p:outputLabel value="#{scheduleView.currentUser.overTimeLeft}"/>
+                    </p:column>
+
+                    <p:column>
+                        <p:outputLabel value="Sollarbeitszeit:"/>
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{scheduleView.currentUser.weekTime}"/>
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="Für diese Woche verbleibend:"/>
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{scheduleView.verbleibend}"/>
                     </p:column>
 
                 </p:panelGrid>
@@ -75,10 +88,6 @@ and open the template in the editor.
                     }
                     .istzeit .fc-event-inner{
                         background-color: lightblue;
-                        color: black;
-                    }
-                    .istzeit_acknowledged .fc-event-inner{
-                        background-color: darkblue;
                         color: black;
                     }
                     .holiday .fc-event-inner{
