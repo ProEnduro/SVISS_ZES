@@ -143,31 +143,39 @@ public class ScheduleView implements Serializable {
         if (event.getId() == null) {
             DefaultScheduleEvent e = (DefaultScheduleEvent) event;
 
+            Absence a = new Absence(this.currentUser, types.get(type - 1), IstZeitService.convertDateToLocalDateTime(e.getStartDate()), IstZeitService.convertDateToLocalDateTime(e.getEndDate()));
+            a.setReason(this.reason);
+
+            AbsenceEvent ev = new AbsenceEvent(currentUser.getUsername() + " " + types.get(type - 1).getAbsenceName(), event.getStartDate(), event.getEndDate(), a);
+
             switch (this.type) {
                 case 1:
-                    e.setStyleClass(types.get(type - 1).getAbsenceName().replace(" ", "_"));
-                    DAOFactory.getDAOFactory().getAbsenceDAO().insert(new Absence(this.currentUser, types.get(type - 1), IstZeitService.convertDateToLocalDateTime(e.getStartDate()), IstZeitService.convertDateToLocalDateTime(e.getEndDate())));
+                    ev.setStyleClass(types.get(type - 1).getAbsenceName().replace(" ", "_"));
+
+                    DAOFactory.getDAOFactory().getAbsenceDAO().insert(a);
                     break;
                 case 2:
-                    e.setStyleClass(types.get(type - 1).getAbsenceName().replace(" ", "_"));
+                    ev.setStyleClass(types.get(type - 1).getAbsenceName().replace(" ", "_"));
 
-                    LocalDateTime time = IstZeitService.convertDateToLocalDateTime(e.getEndDate());
+                    LocalDateTime time = IstZeitService.convertDateToLocalDateTime(ev.getEndDate());
                     Date d = IstZeitService.convertLocalDateTimeToDate(time.plusMinutes(1439));
-                    e.setEndDate(d);
+                    ev.setEndDate(d);
 
-                    DAOFactory.getDAOFactory().getAbsenceDAO().insert(new Absence(this.currentUser, types.get(type - 1), IstZeitService.convertDateToLocalDateTime(e.getStartDate()), IstZeitService.convertDateToLocalDateTime(e.getEndDate())));
+                    DAOFactory.getDAOFactory().getAbsenceDAO().insert(a);
                     break;
                 case 3:
                     e.setStyleClass(types.get(type - 1).getAbsenceName().replace(" ", "_"));
-                    DAOFactory.getDAOFactory().getAbsenceDAO().insert(new Absence(this.currentUser, types.get(type - 1), IstZeitService.convertDateToLocalDateTime(e.getStartDate()), IstZeitService.convertDateToLocalDateTime(e.getEndDate())));
+
+                    DAOFactory.getDAOFactory().getAbsenceDAO().insert(a);
                     break;
                 case 4:
                     e.setStyleClass(types.get(type - 1).getAbsenceName().replace(" ", "_"));
-                    DAOFactory.getDAOFactory().getAbsenceDAO().insert(new Absence(this.currentUser, types.get(type - 1), IstZeitService.convertDateToLocalDateTime(e.getStartDate()), IstZeitService.convertDateToLocalDateTime(e.getEndDate())));
+
+                    DAOFactory.getDAOFactory().getAbsenceDAO().insert(a);
                     break;
             }
 
-            eventModel.addEvent(e);
+            eventModel.addEvent(ev);
 //            IstZeitService.addIstTime(currentUser, e.getStartDate(),e.getEndDate());
         } else {
 
@@ -208,7 +216,6 @@ public class ScheduleView implements Serializable {
 
                 IstZeitService.update(time);
             } else if (event instanceof AbsenceEvent) {
-                System.out.println("addIstZeitEvent -> AbsenceEvent");
 
                 AbsenceService.updateAbsence(((AbsenceEvent) event).getAbsence());
             }
@@ -229,15 +236,40 @@ public class ScheduleView implements Serializable {
 
         if (event instanceof WorkTimeEvent) {
             event = (WorkTimeEvent) event;
-            WorkTimeEvent ev =(WorkTimeEvent)event;
+            WorkTimeEvent ev = (WorkTimeEvent) event;
             startcomment = ev.getWorktime().getStartComment();
             endcomment = ev.getWorktime().getEndComment();
             breaktime = ev.getWorktime().getBreakTime();
-            
+
             RequestContext.getCurrentInstance().execute("PF('eventDialog').show();");
 
         } else if (event instanceof AbsenceEvent) {
-            event = (AbsenceEvent)event;
+            event = (AbsenceEvent) event;
+            AbsenceEvent ev = (AbsenceEvent) event;
+            reason = ev.getAbsence().getReason();
+            RequestContext.getCurrentInstance().execute("PF('absenceDialog').show();");
+        }
+    }
+    
+    public void onEventInAbwesenheitenSelect(SelectEvent selectEvent) {
+        event = (ScheduleEvent) selectEvent.getObject();
+
+        startcomment = "";
+        endcomment = "";
+        breaktime = 0;
+        reason = "";
+
+        if (event instanceof WorkTimeEvent) {
+            event = (WorkTimeEvent) event;
+            WorkTimeEvent ev = (WorkTimeEvent) event;
+            startcomment = ev.getWorktime().getStartComment();
+            endcomment = ev.getWorktime().getEndComment();
+            breaktime = ev.getWorktime().getBreakTime();
+
+            RequestContext.getCurrentInstance().execute("PF('worktimeDialog').show();");
+
+        } else if (event instanceof AbsenceEvent) {
+            event = (AbsenceEvent) event;
             AbsenceEvent ev = (AbsenceEvent) event;
             reason = ev.getAbsence().getReason();
             RequestContext.getCurrentInstance().execute("PF('absenceDialog').show();");
@@ -297,7 +329,7 @@ public class ScheduleView implements Serializable {
 
             if (absenceEvent.getAbsence().getAbsenceType().getAbsenceTypeID() == 2) {
                 LocalDateTime las = absenceEvent.getAbsence().getStartTime();
-                LocalDateTime lae = absenceEvent.getAbsence().getStartTime();
+                LocalDateTime lae = absenceEvent.getAbsence().getEndTime();
 
                 int days = lae.getDayOfYear() - las.getDayOfYear();
 
@@ -308,10 +340,7 @@ public class ScheduleView implements Serializable {
                 } else {
                     User u = absenceEvent.getAbsence().getUser();
 
-                    if (lae.getHour() == 23 && lae.getMinute() == 59) {
-                        days++;
-                    }
-                    u.setVacationLeft(u.getVacationLeft() - days);
+                    u.setVacationLeft(u.getVacationLeft() - ++days);
                     BenutzerverwaltungService.updateUser(u);
                 }
             }
@@ -325,6 +354,15 @@ public class ScheduleView implements Serializable {
 
     public void onAbsenceSelect(SelectEvent selectEvent) {
         absenceEvent = (AbsenceEvent) selectEvent.getObject();
+        
+         reason = "";
+         
+         if (absenceEvent instanceof AbsenceEvent) {
+           
+            reason = absenceEvent.getAbsence().getReason();
+            RequestContext.getCurrentInstance().execute("PF('eventDialog').show();");
+         }
+         
     }
 
     public AbsenceEvent getAbsenceEvent() {
@@ -340,7 +378,7 @@ public class ScheduleView implements Serializable {
 
         for (Absence a : AbsenceService.getAllUnacknowledged()) {
 
-            AbsenceEvent e = new AbsenceEvent(a.getReason(), IstZeitService.convertLocalDateTimeToDate(a.getStartTime()), IstZeitService.convertLocalDateTimeToDate(a.getEndTime()), a);
+            AbsenceEvent e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType().getAbsenceName(), IstZeitService.convertLocalDateTimeToDate(a.getStartTime()), IstZeitService.convertLocalDateTimeToDate(a.getEndTime()), a);
 
             switch (e.getAbsence().getAbsenceType().getAbsenceTypeID()) {
 
@@ -597,7 +635,7 @@ public class ScheduleView implements Serializable {
 
         for (Absence a : AbsenceService.getAllAcknowledged()) {
 
-            e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getReason(), IstZeitService.convertLocalDateTimeToDate(a.getStartTime()), IstZeitService.convertLocalDateTimeToDate(a.getEndTime()), a);
+            e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType().getAbsenceName(), IstZeitService.convertLocalDateTimeToDate(a.getStartTime()), IstZeitService.convertLocalDateTimeToDate(a.getEndTime()), a);
 
             switch (e.getAbsence().getAbsenceType().getAbsenceTypeID()) {
 
@@ -630,9 +668,8 @@ public class ScheduleView implements Serializable {
 
         if (type == 2) {
             return "dd/MM/yyyy";
-        } else if (type == 3) {
-            return "HH:mm";
-        } else {
+        }
+         else {
             return "dd/MM/yyyy HH:mm";
         }
 
@@ -643,11 +680,7 @@ public class ScheduleView implements Serializable {
     }
 
     public boolean getHouronly() {
-        if (type == 3) {
-            return true;
-        } else {
             return false;
-        }
     }
 
     public void setHouronly(boolean b) {
@@ -677,6 +710,5 @@ public class ScheduleView implements Serializable {
     public void setReason(String reason) {
         this.reason = reason;
     }
-
 
 }

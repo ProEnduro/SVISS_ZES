@@ -17,10 +17,10 @@ and open the template in the editor.
             <h:form>
                 <p:growl id="messages" showDetail="true"/>
 
-                <p:schedule firstHour="0" aspectRatio="3" id="schedule" value="#{scheduleView.eventModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" columnFormat="month:'ddd', week:'dd/MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
+                <p:schedule firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.eventModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" columnFormat="month:'ddd', week:'dd/MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
 
                     <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
-                    <p:ajax event="eventSelect" listener="#{scheduleView.onEventSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
+                    <p:ajax event="eventSelect" listener="#{scheduleView.onEventInAbwesenheitenSelect}" update="eventDetails :absenceDialogForm:absenceDialogID :worktimeDialogForm:worktimeDialogID" />
                     <p:ajax event="eventMove" listener="#{scheduleView.onWorkTimeMove}" update="messages" />
                     <p:ajax event="eventResize" listener="#{scheduleView.onWorkTimeResize}" update="messages" />
 
@@ -106,8 +106,9 @@ and open the template in the editor.
                         <p:outputLabel for="to" value="To:" />
                         <p:calendar id="to" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="#{scheduleView.pattern}" timeOnly="#{scheduleView.houronly}"/>
 
-                        <p:outputLabel for="allDay" value="All Day:" />
-                        <h:selectBooleanCheckbox id="allDay" value="#{scheduleView.event.allDay}" />
+                        
+                        <p:outputLabel for="reason" value="Reason:"/>
+                        <p:inputText id="reason" value="#{scheduleView.reason}"/>
 
                         <p:commandButton type="reset" value="Reset" />
                         <p:commandButton id="addButton" value="Save" actionListener="#{scheduleView.addEvent}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" />
@@ -116,6 +117,50 @@ and open the template in the editor.
                             <f:selectItems var="t" itemLabel="#{t.absenceName}" value="#{scheduleView.types}" itemValue="#{t.absenceTypeID}"/>
                             <p:ajax update="eventDetails"/>
                         </p:selectOneRadio>
+                    </h:panelGrid>
+                </p:dialog> 
+
+            </h:form>
+            <h:form id="absenceDialogForm">
+
+                <p:dialog id="absenceDialogID" widgetVar="absenceDialog" header="Absence Details" showEffect="clip" hideEffect="clip" closeOnEscape="true">
+                    <h:panelGrid id="absenceDetails" columns="2">
+                        <p:outputLabel for="absencetitle" value="Titles:" />
+                        <p:inputText id="absencetitle" value="#{scheduleView.event.title}" readonly="true"/>
+
+                        <p:outputLabel for="absencefrom" value="From:" />
+                        <p:calendar id="absencefrom" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" readonly="true"/>
+
+                        <p:outputLabel for="absenceto" value="To:" />
+                        <p:calendar id="absenceto" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" readonly="true"/>
+
+                        <p:outputLabel for="reason" value="Reason:"/>
+                        <p:inputText id="reason" value="#{scheduleView.reason}" readonly="true"/>
+                    </h:panelGrid>
+                </p:dialog> 
+            </h:form>
+            
+            <h:form id="worktimeDialogForm">
+
+                <p:dialog id="worktimeDialogID" widgetVar="worktimeDialog" header="Worktime Details" showEffect="clip" hideEffect="clip" closeOnEscape="true">
+                    <h:panelGrid id="workdetails" columns="2">
+                        <p:outputLabel for="worktitle" value="Titles:" />
+                        <p:inputText id="worktitle" value="#{scheduleView.event.title}" readonly="true"/>
+
+                        <p:outputLabel for="workfrom" value="From:" />
+                        <p:calendar id="workfrom" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" readonly="true"/>
+
+                        <p:outputLabel for="workto" value="To:" />
+                        <p:calendar id="workto" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" readonly="true"/>
+
+                        <p:outputLabel for="startcomment" value="Start Comment:"/>
+                        <p:inputText id="startcomment" value="#{scheduleView.startcomment}" readonly="true"/>
+
+                        <p:outputLabel for="endcomment" value="End Comment:"/>
+                        <p:inputText id="endcomment" value="#{scheduleView.endcomment}" readonly="true"/>
+
+                        <p:outputLabel for="breaktime" value="Breaktime:"/>
+                        <p:inputText id="breaktime" value="#{scheduleView.breaktime}" readonly="true"/>
                     </h:panelGrid>
                 </p:dialog> 
             </h:form>

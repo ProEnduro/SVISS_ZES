@@ -24,13 +24,9 @@ and open the template in the editor.
 
                 <p:commandButton value="load" actionListener="#{scheduleView.loadAbwesenheitByUser}" update="schedule"/>
 
-                <p:schedule firstHour="0" aspectRatio="3" id="schedule" value="#{scheduleView.acknowlegementModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" columnFormat="month:'ddd', week:'dd/MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
+                <p:schedule draggable="false" resizable="false" firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.acknowlegementModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" columnFormat="month:'ddd', week:'dd/MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
 
-                    <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
-                    <p:ajax event="eventSelect" listener="#{scheduleView.onAbsenceSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
-                    <p:ajax event="eventMove" listener="#{scheduleView.onEventMove}" update="messages" />
-                    <p:ajax event="eventResize" listener="#{scheduleView.onEventResize}" update="messages" />
-
+                    <p:ajax event="eventSelect" listener="#{scheduleView.onAbsenceSelect}" update="eventDialog" />
 
                 </p:schedule>
 
@@ -104,27 +100,23 @@ and open the template in the editor.
                     }
                 </style>
 
-                <p:dialog widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip">
+                <p:dialog id="eventDialog" widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip">
                     <h:panelGrid id="eventDetails" columns="2">
                         <p:outputLabel for="title" value="Titles:" />
-                        <p:inputText id="title" value="#{scheduleView.absenceEvent.title}" />
-
+                        <p:inputText id="title" value="#{scheduleView.absenceEvent.title}" readonly="true" />
+                        
+                        
                         <p:outputLabel for="from" value="From:" />
-                        <p:calendar id="from" value="#{scheduleView.absenceEvent.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
+                        <p:calendar id="from" value="#{scheduleView.absenceEvent.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" readonly="true"/>
 
                         <p:outputLabel for="to" value="To:" />
-                        <p:calendar id="to" value="#{scheduleView.absenceEvent.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
+                        <p:calendar id="to" value="#{scheduleView.absenceEvent.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" readonly="true"/>
+                        
 
-                        <p:outputLabel for="allDay" value="All Day:" />
-                        <h:selectBooleanCheckbox id="allDay" value="#{scheduleView.absenceEvent.allDay}" />
+                        <p:outputLabel for="reason" value="Reason:" />
+                        <p:inputText id="reason" value="#{scheduleView.reason}" readonly="true"/>
+                        
 
-                        <p:commandButton type="reset" value="Reset" />
-                        <p:commandButton id="addButton" value="Save" actionListener="#{scheduleView.addEvent}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" />
-
-                        <p:selectOneRadio id="type" value="#{scheduleView.type}">
-                            <f:selectItems var="t" itemLabel="#{t.absenceName}" value="#{scheduleView.types}" itemValue="#{t.absenceTypeID}"/>
-                            <!--  <p:ajax update="messages" listener="#{scheduleView.radioAjax}"/> -->
-                        </p:selectOneRadio>
 
                         <p:commandButton id="acknowledgeButton" value="Acknowledge" actionListener="#{scheduleView.setAcknowledged}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();"/>
                     </h:panelGrid>
