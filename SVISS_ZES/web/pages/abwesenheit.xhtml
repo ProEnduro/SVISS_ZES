@@ -20,7 +20,7 @@ and open the template in the editor.
                 <p:schedule firstHour="0" aspectRatio="3" id="schedule" value="#{scheduleView.eventModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" columnFormat="month:'ddd', week:'dd/MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
 
                     <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
-                    <p:ajax event="eventSelect" listener="#{scheduleView.onWorkTimeEventSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
+                    <p:ajax event="eventSelect" listener="#{scheduleView.onEventSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
                     <p:ajax event="eventMove" listener="#{scheduleView.onWorkTimeMove}" update="messages" />
                     <p:ajax event="eventResize" listener="#{scheduleView.onWorkTimeResize}" update="messages" />
 
@@ -101,10 +101,10 @@ and open the template in the editor.
                         <p:inputText id="title" value="#{scheduleView.event.title}" />
 
                         <p:outputLabel for="from" value="From:" />
-                        <p:calendar id="from" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
+                        <p:calendar id="from" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="#{scheduleView.pattern}" timeOnly="#{scheduleView.houronly}"/>
 
                         <p:outputLabel for="to" value="To:" />
-                        <p:calendar id="to" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
+                        <p:calendar id="to" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="#{scheduleView.pattern}" timeOnly="#{scheduleView.houronly}"/>
 
                         <p:outputLabel for="allDay" value="All Day:" />
                         <h:selectBooleanCheckbox id="allDay" value="#{scheduleView.event.allDay}" />
@@ -114,7 +114,7 @@ and open the template in the editor.
 
                         <p:selectOneRadio id="type" value="#{scheduleView.type}">
                             <f:selectItems var="t" itemLabel="#{t.absenceName}" value="#{scheduleView.types}" itemValue="#{t.absenceTypeID}"/>
-                            <!--  <p:ajax update="messages" listener="#{scheduleView.radioAjax}"/> -->
+                            <p:ajax update="eventDetails"/>
                         </p:selectOneRadio>
                     </h:panelGrid>
                 </p:dialog> 

@@ -29,6 +29,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import org.primefaces.context.RequestContext;
 
 import org.primefaces.event.ScheduleEntryMoveEvent;
 import org.primefaces.event.ScheduleEntryResizeEvent;
@@ -60,6 +61,20 @@ public class ScheduleView implements Serializable {
 
     double verbleibend;
 
+    String startcomment;
+    String endcomment;
+    String reason;
+
+    int breaktime;
+
+    public int getBreaktime() {
+        return breaktime;
+    }
+
+    public void setBreaktime(int breaktime) {
+        this.breaktime = breaktime;
+    }
+
     @PostConstruct
     public void init() {
         eventModel = new DefaultScheduleModel();
@@ -69,8 +84,6 @@ public class ScheduleView implements Serializable {
 //        eventModel.addEvent(new DefaultScheduleEvent("Breakfast at Tiffanys", nextDay9Am(), nextDay11Am()));
 //        eventModel.addEvent(new DefaultScheduleEvent("Plant the new garden stuff", theDayAfter3Pm(), fourDaysLater3pm()));
         acknowledgementModel = new DefaultScheduleModel();
-
-        verbleibend = 38.5;
 
         types = DAOFactory.getDAOFactory().getAbsenceTypeDAO().getList();
 
@@ -137,6 +150,11 @@ public class ScheduleView implements Serializable {
                     break;
                 case 2:
                     e.setStyleClass(types.get(type - 1).getAbsenceName().replace(" ", "_"));
+
+                    LocalDateTime time = IstZeitService.convertDateToLocalDateTime(e.getEndDate());
+                    Date d = IstZeitService.convertLocalDateTimeToDate(time.plusMinutes(1439));
+                    e.setEndDate(d);
+
                     DAOFactory.getDAOFactory().getAbsenceDAO().insert(new Absence(this.currentUser, types.get(type - 1), IstZeitService.convertDateToLocalDateTime(e.getStartDate()), IstZeitService.convertDateToLocalDateTime(e.getEndDate())));
                     break;
                 case 3:
@@ -170,7 +188,11 @@ public class ScheduleView implements Serializable {
 
     public void addIstZeitEvent(ActionEvent actionEvent) {
         if (event.getId() == null) {
-            WorkTimeEvent e = new WorkTimeEvent(event.getTitle(), event.getStartDate(), event.getEndDate(), new WorkTime(currentUser, IstZeitService.convertDateToLocalDateTime(this.event.getStartDate()), IstZeitService.convertDateToLocalDateTime(this.event.getEndDate()), 0, "", ""));
+            WorkTimeEvent e = new WorkTimeEvent(this.currentUser.getUsername() + " " + "Ist-Zeit", event.getStartDate(), event.getEndDate(), new WorkTime(currentUser, IstZeitService.convertDateToLocalDateTime(this.event.getStartDate()), IstZeitService.convertDateToLocalDateTime(this.event.getEndDate()), 0, "", ""));
+
+            e.getWorktime().setStartComment(startcomment);
+            e.getWorktime().setEndComment(endcomment);
+            e.getWorktime().setBreakTime(breaktime);
 
             e.setStyleClass("istzeit");
             IstZeitService.addIstTime(e.getWorktime());
@@ -186,7 +208,7 @@ public class ScheduleView implements Serializable {
 
                 IstZeitService.update(time);
             } else if (event instanceof AbsenceEvent) {
-                System.out.println(((AbsenceEvent) event).getAbsence());
+                System.out.println("addIstZeitEvent -> AbsenceEvent");
 
                 AbsenceService.updateAbsence(((AbsenceEvent) event).getAbsence());
             }
@@ -199,6 +221,27 @@ public class ScheduleView implements Serializable {
 
     public void onEventSelect(SelectEvent selectEvent) {
         event = (ScheduleEvent) selectEvent.getObject();
+
+        startcomment = "";
+        endcomment = "";
+        breaktime = 0;
+        reason = "";
+
+        if (event instanceof WorkTimeEvent) {
+            event = (WorkTimeEvent) event;
+            WorkTimeEvent ev =(WorkTimeEvent)event;
+            startcomment = ev.getWorktime().getStartComment();
+            endcomment = ev.getWorktime().getEndComment();
+            breaktime = ev.getWorktime().getBreakTime();
+            
+            RequestContext.getCurrentInstance().execute("PF('eventDialog').show();");
+
+        } else if (event instanceof AbsenceEvent) {
+            event = (AbsenceEvent)event;
+            AbsenceEvent ev = (AbsenceEvent) event;
+            reason = ev.getAbsence().getReason();
+            RequestContext.getCurrentInstance().execute("PF('absenceDialog').show();");
+        }
     }
 
     public void onDateSelect(SelectEvent selectEvent) {
@@ -253,22 +296,21 @@ public class ScheduleView implements Serializable {
             AbsenceService.updateAbsence(absenceEvent.getAbsence());
 
             if (absenceEvent.getAbsence().getAbsenceType().getAbsenceTypeID() == 2) {
-                Date as = IstZeitService.convertLocalDateTimeToDate(absenceEvent.getAbsence().getStartTime());
-                Date ae = IstZeitService.convertLocalDateTimeToDate(absenceEvent.getAbsence().getEndTime());
-
-                LocalDateTime las = LocalDateTime.ofInstant(as.toInstant(), ZoneId.systemDefault());
-                LocalDateTime lae = LocalDateTime.ofInstant(ae.toInstant(), ZoneId.systemDefault());
+                LocalDateTime las = absenceEvent.getAbsence().getStartTime();
+                LocalDateTime lae = absenceEvent.getAbsence().getStartTime();
 
                 int days = lae.getDayOfYear() - las.getDayOfYear();
 
                 if (days == 0) {
-                    System.out.println("1");
                     User u = absenceEvent.getAbsence().getUser();
                     u.setVacationLeft(u.getVacationLeft() - 1);
                     BenutzerverwaltungService.updateUser(u);
                 } else {
-                    System.out.println(days);
                     User u = absenceEvent.getAbsence().getUser();
+
+                    if (lae.getHour() == 23 && lae.getMinute() == 59) {
+                        days++;
+                    }
                     u.setVacationLeft(u.getVacationLeft() - days);
                     BenutzerverwaltungService.updateUser(u);
                 }
@@ -297,8 +339,6 @@ public class ScheduleView implements Serializable {
         acknowledgementModel.clear();
 
         for (Absence a : AbsenceService.getAllUnacknowledged()) {
-
-            System.out.println(a);
 
             AbsenceEvent e = new AbsenceEvent(a.getReason(), IstZeitService.convertLocalDateTimeToDate(a.getStartTime()), IstZeitService.convertLocalDateTimeToDate(a.getEndTime()), a);
 
@@ -337,12 +377,14 @@ public class ScheduleView implements Serializable {
         this.currentUser = BenutzerverwaltungService.getUser(currentUser.getUserNr());
 //        verbleibend = currentUser.getWeekTime();
 
+        verbleibend = currentUser.getWeekTime();
+
         this.eventModel.clear();
         List<Absence> absenceList = AbsenceService.getAbsenceByUser(currentUser);
         DefaultScheduleEvent e;
 
         for (Absence a : absenceList) {
-            e = new AbsenceEvent(a.getReason(), IstZeitService.convertLocalDateTimeToDate(a.getStartTime()), IstZeitService.convertLocalDateTimeToDate(a.getEndTime()), a);
+            e = new AbsenceEvent(currentUser.getUsername() + " " + a.getAbsenceType().getAbsenceName(), IstZeitService.convertLocalDateTimeToDate(a.getStartTime()), IstZeitService.convertLocalDateTimeToDate(a.getEndTime()), a);
 
             switch (a.getAbsenceType().getAbsenceTypeID()) {
                 case 1:
@@ -381,8 +423,6 @@ public class ScheduleView implements Serializable {
 
         List<WorkTime> worktimelist = IstZeitService.getWorktimeByUser(currentUser);
 
-        int i = 0;
-
         LocalDate date;
         WeekFields field;
         int currentWeek;
@@ -392,17 +432,12 @@ public class ScheduleView implements Serializable {
         field = WeekFields.of(Locale.getDefault());
         currentWeek = date.get(field.weekOfWeekBasedYear());
 
-        System.out.println(currentWeek);
-
         for (WorkTime w : worktimelist) {
-            System.out.println(w);
             date = IstZeitService.convertLocalDateTimeToDate(w.getStartTime()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             field = WeekFields.of(Locale.getDefault());
             workWeek = date.get(field.weekOfWeekBasedYear());
 
-            System.out.println(workWeek);
-
-            eventModel.addEvent(new WorkTimeEvent(String.valueOf(i++), IstZeitService.convertLocalDateTimeToDate(w.getStartTime()), IstZeitService.convertLocalDateTimeToDate(w.getEndTime()), "istzeit", w));
+            eventModel.addEvent(new WorkTimeEvent(currentUser.getUsername() + " Ist-Zeit", IstZeitService.convertLocalDateTimeToDate(w.getStartTime()), IstZeitService.convertLocalDateTimeToDate(w.getEndTime()), "istzeit", w));
 
             if (currentWeek == workWeek) {
 
@@ -486,18 +521,11 @@ public class ScheduleView implements Serializable {
 
         acknowledgementModel.clear();
 
-        System.out.println(selectedUser);
-
-        if (this.selectedUser == "All") {
-            acknowledgementModel.clear();
+        if ("All".equals(this.selectedUser)) {
 
             for (Absence a : AbsenceService.getAllUnacknowledged()) {
 
-                System.out.println(a);
-
                 AbsenceEvent e = new AbsenceEvent(a.getReason(), IstZeitService.convertLocalDateTimeToDate(a.getStartTime()), IstZeitService.convertLocalDateTimeToDate(a.getEndTime()), a);
-                
-                System.out.println(e);
 
                 switch (e.getAbsence().getAbsenceType().getAbsenceTypeID()) {
 
@@ -519,8 +547,6 @@ public class ScheduleView implements Serializable {
             }
         } else {
             for (Absence a : AbsenceService.getAbsenceByUserAndUnacknowledged(BenutzerverwaltungService.getUser(selectedUser))) {
-
-                System.out.println(a);
 
                 AbsenceEvent e = new AbsenceEvent(a.getReason(), IstZeitService.convertLocalDateTimeToDate(a.getStartTime()), IstZeitService.convertLocalDateTimeToDate(a.getEndTime()), a);
 
@@ -571,8 +597,6 @@ public class ScheduleView implements Serializable {
 
         for (Absence a : AbsenceService.getAllAcknowledged()) {
 
-            System.out.println(a);
-
             e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getReason(), IstZeitService.convertLocalDateTimeToDate(a.getStartTime()), IstZeitService.convertLocalDateTimeToDate(a.getEndTime()), a);
 
             switch (e.getAbsence().getAbsenceType().getAbsenceTypeID()) {
@@ -598,6 +622,61 @@ public class ScheduleView implements Serializable {
 
     void setUser(User user) {
         this.currentUser = user;
+
+        verbleibend = currentUser.getWeekTime();
     }
+
+    public String getPattern() {
+
+        if (type == 2) {
+            return "dd/MM/yyyy";
+        } else if (type == 3) {
+            return "HH:mm";
+        } else {
+            return "dd/MM/yyyy HH:mm";
+        }
+
+    }
+
+    public void setPattern(String pat) {
+
+    }
+
+    public boolean getHouronly() {
+        if (type == 3) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void setHouronly(boolean b) {
+
+    }
+
+    public String getStartcomment() {
+        return startcomment;
+    }
+
+    public void setStartcomment(String startcomment) {
+        this.startcomment = startcomment;
+    }
+
+    public String getEndcomment() {
+        return endcomment;
+    }
+
+    public void setEndcomment(String endcomment) {
+        this.endcomment = endcomment;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
 
 }

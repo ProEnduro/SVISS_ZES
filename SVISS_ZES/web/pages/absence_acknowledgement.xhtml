@@ -22,7 +22,7 @@ and open the template in the editor.
                     <f:selectItems value="#{scheduleView.allUsers}"/>
                 </p:selectOneMenu>
 
-                <p:commandButton value="load" actionListener="#{scheduleView.loadAbwesenheitByUser}"/>
+                <p:commandButton value="load" actionListener="#{scheduleView.loadAbwesenheitByUser}" update="schedule"/>
 
                 <p:schedule firstHour="0" aspectRatio="3" id="schedule" value="#{scheduleView.acknowlegementModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" columnFormat="month:'ddd', week:'dd/MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
 
