@@ -15,7 +15,10 @@ import at.htlpinkafeld.pojo.WorkTime;
 import at.htlpinkafeld.service.AbsenceService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import at.htlpinkafeld.service.IstZeitService;
+import at.htlpinkafeld.service.TimeConverterService;
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -25,6 +28,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -229,6 +233,7 @@ public class ScheduleView implements Serializable {
     public void onEventSelect(SelectEvent selectEvent) {
         event = (ScheduleEvent) selectEvent.getObject();
 
+
         startcomment = "";
         endcomment = "";
         breaktime = 0;
@@ -250,7 +255,7 @@ public class ScheduleView implements Serializable {
             RequestContext.getCurrentInstance().execute("PF('absenceDialog').show();");
         }
     }
-    
+
     public void onEventInAbwesenheitenSelect(SelectEvent selectEvent) {
         event = (ScheduleEvent) selectEvent.getObject();
 
@@ -354,15 +359,15 @@ public class ScheduleView implements Serializable {
 
     public void onAbsenceSelect(SelectEvent selectEvent) {
         absenceEvent = (AbsenceEvent) selectEvent.getObject();
-        
-         reason = "";
-         
-         if (absenceEvent instanceof AbsenceEvent) {
-           
+
+        reason = "";
+
+        if (absenceEvent instanceof AbsenceEvent) {
+
             reason = absenceEvent.getAbsence().getReason();
             RequestContext.getCurrentInstance().execute("PF('eventDialog').show();");
-         }
-         
+        }
+
     }
 
     public AbsenceEvent getAbsenceEvent() {
@@ -668,8 +673,7 @@ public class ScheduleView implements Serializable {
 
         if (type == 2) {
             return "dd/MM/yyyy";
-        }
-         else {
+        } else {
             return "dd/MM/yyyy HH:mm";
         }
 
@@ -680,7 +684,7 @@ public class ScheduleView implements Serializable {
     }
 
     public boolean getHouronly() {
-            return false;
+        return false;
     }
 
     public void setHouronly(boolean b) {
