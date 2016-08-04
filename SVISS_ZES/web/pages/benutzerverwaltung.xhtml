@@ -9,7 +9,8 @@ and open the template in the editor.
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions">
 
 
     <ui:define name="content">
@@ -34,23 +35,35 @@ and open the template in the editor.
                     <h:outputText value="#{user.email}"/>
                 </p:column>
 
+                <p:column headerText="Overtime Left">
+                    <h:outputText value="#{user.overTimeLeft}"/>
+                </p:column>
+
+                <p:column headerText="Vacation Left">
+                    <h:outputText value="#{user.vacationLeft}"/>
+                </p:column>
+
+                <p:column headerText="WeekTime">
+                    <h:outputText value="#{user.weekTime}"/>
+                </p:column>
+
                 <p:column headerText="Enabled">
                     <h:outputText value="#{user.disabledString}"/>
                 </p:column>
 
                 <p:column headerText="User ändern">
-                    <p:commandButton value="edit" action="#{benutzerverwaltungsBean.editUser(user)}" update=":dialogForm:dlgGrid" oncomplete="PF('udlg1').show();"/>
+                    <p:commandButton id="editUserBut" value="edit" action="#{benutzerverwaltungsBean.editUser(user)}" update=":userDialogForm:userDlgGrid" oncomplete="PF('udlg1').show();"/>
                 </p:column>
 
             </p:dataTable>
 
-            <p:commandButton id="testBut" update=":dialogForm:dlgGrid"  value="New User" action="#{benutzerverwaltungsBean.newUser}" oncomplete="PF('udlg1').show();"/>
+            <p:commandButton id="newUserBut" value="New User" action="#{benutzerverwaltungsBean.newUser}" update=":userDialogForm:userDlgGrid :weekDialogForm:weekDlgPanel"  oncomplete="PF('udlg1').show();"/>
 
         </h:form>
 
-        <p:dialog  closeOnEscape="true" header="User Dialog" widgetVar="udlg1" modal="true">
-            <h:form id="dialogForm">
-                <p:panelGrid id="dlgGrid">
+        <p:dialog  closeOnEscape="true" header="User Dialog" widgetVar="udlg1" modal="true" resizable="false">
+            <h:form id="userDialogForm">
+                <p:panelGrid id="userDlgGrid">
                     <p:row>
                         <p:column><p:outputLabel value="Accesslevel "/></p:column>
                         <p:column><p:selectOneMenu value="#{benutzerverwaltungsBean.selectedUser.accessLevel}">
@@ -85,11 +98,6 @@ and open the template in the editor.
                     </p:row>
 
                     <p:row>
-                        <p:column><p:outputLabel value="Worktime: "/></p:column>
-                        <p:column><p:inputMask id="worktimeIn"  mask="99.9" value="#{benutzerverwaltungsBean.selectedUser.weekTime}"/></p:column>
-                    </p:row>
-
-                    <p:row>
                         <p:column><p:outputLabel value="Vacation Left: "/></p:column>
                         <p:column><p:inputText type="number" value="#{benutzerverwaltungsBean.selectedUser.vacationLeft}" /></p:column>
                     </p:row>
@@ -97,6 +105,12 @@ and open the template in the editor.
                     <p:row>
                         <p:column><p:outputLabel value="Overtime Left: "/></p:column>
                         <p:column><p:inputText type="number" value="#{benutzerverwaltungsBean.selectedUser.overTimeLeft}" /></p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column><p:outputLabel value="Weektime: "/></p:column>
+                        <p:column><p:commandButton id="weektimeBut"  value="change WeekTime" action="#{benutzerverwaltungsBean.loadSollZeiten}" update=":weekDialogForm:weekDlgPanel"  oncomplete="PF('uwtdlg').show();"/></p:column>
+                        <!--<p:column><p:inputMask id="weektimeIn"  mask="99.9" value="#{benutzerverwaltungsBean.selectedUser.weekTime}"/></p:column>-->
                     </p:row>
 
                     <p:row>
@@ -112,6 +126,60 @@ and open the template in the editor.
                 </p:panelGrid>
             </h:form>
         </p:dialog>   
+
+        <p:dialog widgetVar="uwtdlg" closeOnEscape="true" header="WeekTime Dialog" modal="true" maximizable="true" height="750" width="1000" dynamic="true">
+            <h:form id="weekDialogForm">
+                <p:panel  id="weekDlgPanel">
+
+                    <p:schedule minTime="6" maxTime="21" id="weektimeSchedule"  draggable="false" allDaySlot="false" showHeader="false"  columnFormat="" view="agendaWeek" 
+                                timeFormat="HH:mm" axisFormat="HH:mm" locale="de"  ignoreTimezone="false" value="#{benutzerverwaltungsBean.timeModel}">
+
+                        <p:ajax event="dateSelect" listener="#{benutzerverwaltungsBean.onDateSelect}" update=":weekTimeSelectForm:eventDetails sollZeitText" oncomplete="PF('eventDialog').show();" />
+                        <p:ajax event="eventSelect" listener="#{benutzerverwaltungsBean.onEventSelect}" update=":weekTimeSelectForm:eventDetails" oncomplete="PF('eventDialog').show();" />
+                        <p:ajax event="eventResize" listener="#{benutzerverwaltungsBean.onEventResize}" update="sollZeitText"/>
+
+                    </p:schedule>
+                    <f:facet name="footer">
+                        <p:commandButton value="Zeiten speichern" action="#{benutzerverwaltungsBean.saveTimes}" oncomplete="PF('uwtdlg').hide();"/>
+                        <p:commandButton value="Änderung verwerfen" action="#{benutzerverwaltungsBean.discardTimes}" oncomplete="PF('uwtdlg').hide();"/>
+                        <p:outputLabel value="Gesamte Sollzeit:" />
+                        <p:inputText id="sollZeitText" value="#{benutzerverwaltungsBean.newWeekTime}" readonly="true"/>
+
+                    </f:facet>
+                </p:panel>            
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="eventDialog" showEffect="clip" hideEffect="clip" closeOnEscape="true" resizable="false" dynamic="true">
+            <h:form id="weekTimeSelectForm">
+                <h:panelGrid id="eventDetails" columns="2">
+
+                    <p:outputLabel for="from" value="From:" />
+                    <p:calendar id="from" value="#{benutzerverwaltungsBean.curEvent.startDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"/>
+
+                    <p:outputLabel for="to" value="To:" />
+                    <p:calendar id="to" value="#{benutzerverwaltungsBean.curEvent.endDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"/>
+
+                    <p:commandButton type="reset" value="Reset" />
+                    <p:commandButton id="addButton" value="Save" action="#{benutzerverwaltungsBean.addEvent}" update=":weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  oncomplete="PF('eventDialog').hide();" />
+                </h:panelGrid>
+            </h:form>
+        </p:dialog> 
+
+        <script type="text/javascript">
+            PrimeFaces.locales['de'] = {
+                month: 'Monat',
+                week: 'Woche',
+                day: 'Tag',
+                firstDay: 1,
+                monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                monthNamesShort: ['Jan', 'Feb', 'Mrz', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+                dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+                dayNamesShort: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+                dayNamesMin: ['S', 'M', 'D', 'M ', 'D', 'F ', 'S'],
+                currentText: 'Heute'
+            };
+        </script>
 
     </ui:define>
 </ui:composition>

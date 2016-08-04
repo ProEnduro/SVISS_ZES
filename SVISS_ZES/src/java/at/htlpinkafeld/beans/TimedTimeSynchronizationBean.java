@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledExecutorService;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ApplicationScoped;
 
@@ -42,6 +43,11 @@ public class TimedTimeSynchronizationBean {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    @PreDestroy
+    public void destroyThreads(){
+        scheduler.shutdown();
     }
 
 }
