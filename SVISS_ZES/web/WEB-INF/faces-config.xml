@@ -78,11 +78,11 @@
         <from-view-id>/pages/benutzerkonto.xhtml</from-view-id>
         <navigation-case>
             <from-outcome>speichern</from-outcome>
-            <to-view-id>/pages/mainSite.xhtml</to-view-id>
+            <to-view-id>/pages/istzeit.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
             <from-outcome>verwerfenAen</from-outcome>
-            <to-view-id>/pages/mainSite.xhtml</to-view-id>
+            <to-view-id>/pages/istzeit.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
     <managed-bean>
