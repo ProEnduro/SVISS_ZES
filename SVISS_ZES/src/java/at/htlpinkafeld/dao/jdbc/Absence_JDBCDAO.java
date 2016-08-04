@@ -10,6 +10,7 @@ import at.htlpinkafeld.dao.util.WrappedConnection;
 import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.AbsenceType;
 import at.htlpinkafeld.pojo.User;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -162,6 +163,48 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                 Statement stmt = con.getConn().createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + u.getUserNr() + " AND " + ACKNOWLEDGED_COL + " = " + acknowledged + " " + SQL_ORDER_BY_LINE)) {
+
+            while (rs.next()) {
+                absences.add(getEntityFromResultSet(rs));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return absences;
+    }
+
+    @Override
+    public List<Absence> getAbsencesBetweenDates(java.util.Date startDateU, java.util.Date endDateU) {
+        List<Absence> absences = new ArrayList<>();
+        Date startDate = new Date(startDateU.getTime());
+        Date endDate = new Date(endDateU.getTime());
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + STARTTIME_COL + " >= '" + startDate + "' AND " + STARTTIME_COL + " < '" + endDate + "' OR "
+                        + ENDTIME_COL + " >= '" + startDate + "' AND " + ENDTIME_COL + " < '" + endDate + "' OR " + STARTTIME_COL + " < '" + startDate + "' AND " + ENDTIME_COL + " >= '" + endDate + "' " + SQL_ORDER_BY_LINE)) {
+
+            while (rs.next()) {
+                absences.add(getEntityFromResultSet(rs));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return absences;
+    }
+
+    @Override
+    public List<Absence> getAbsencesByUserBetweenDates(User user, java.util.Date startDateU, java.util.Date endDateU) {
+        List<Absence> absences = new ArrayList<>();
+        Date startDate = new Date(startDateU.getTime());
+        Date endDate = new Date(endDateU.getTime());
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + user.getUserNr() + " AND (" + STARTTIME_COL + " >= '" + startDate + "' AND " + STARTTIME_COL + " < '" + endDate + "' OR "
+                        + ENDTIME_COL + " >= '" + startDate + "' AND " + ENDTIME_COL + " < '" + endDate + "' OR " + STARTTIME_COL + " < '" + startDate + "' AND " + ENDTIME_COL + " >= '" + endDate + "') " + SQL_ORDER_BY_LINE)) {
 
             while (rs.next()) {
                 absences.add(getEntityFromResultSet(rs));

@@ -9,11 +9,10 @@ import at.htlpinkafeld.dao.interf.WorkTime_DAO;
 import at.htlpinkafeld.dao.util.WrappedConnection;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -86,6 +85,51 @@ public class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                 Statement stmt = con.getConn().createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + u.getUserNr() + " " + SQL_ORDER_BY_LINE)) {
+
+            while (rs.next()) {
+                workTimes.add(getEntityFromResultSet(rs));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return workTimes;
+    }
+
+    @Override
+    public List<WorkTime> getWorkTimesBetweenDates(java.util.Date startDateU, java.util.Date endDateU) {
+        List<WorkTime> workTimes = new ArrayList<>();
+
+        Date startDate = new Date(startDateU.getTime());
+        Date endDate = new Date(endDateU.getTime());
+
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + STARTTIME_COL + " >= '" + startDate + "' AND  " + ENDTIME_COL + " < '" + endDate + "' " + SQL_ORDER_BY_LINE)) {
+
+            while (rs.next()) {
+                workTimes.add(getEntityFromResultSet(rs));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return workTimes;
+    }
+
+    @Override
+    public List<WorkTime> getWorkTimesFromUserBetweenDates(User user, java.util.Date startDateU, java.util.Date endDateU) {
+        List<WorkTime> workTimes = new ArrayList<>();
+
+        Date startDate = new Date(startDateU.getTime());
+        Date endDate = new Date(endDateU.getTime());
+
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + user.getUserNr() + " AND "
+                        + "(" + STARTTIME_COL + " >= '" + startDate + "' AND  " + ENDTIME_COL + " < '" + endDate + "') " + SQL_ORDER_BY_LINE)) {
 
             while (rs.next()) {
                 workTimes.add(getEntityFromResultSet(rs));

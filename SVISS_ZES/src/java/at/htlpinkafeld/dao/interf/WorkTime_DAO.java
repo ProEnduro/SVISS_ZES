@@ -7,6 +7,7 @@ package at.htlpinkafeld.dao.interf;
 
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,4 +17,8 @@ import java.util.List;
 public interface WorkTime_DAO extends Base_DAO<WorkTime> {
 
     public abstract List<WorkTime> getWorkTimesByUser(User u);
+
+    public abstract List<WorkTime> getWorkTimesBetweenDates(Date startDateU, Date endDateU);
+
+    public abstract List<WorkTime> getWorkTimesFromUserBetweenDates(User user, Date startDateU, Date endDateU);
 }

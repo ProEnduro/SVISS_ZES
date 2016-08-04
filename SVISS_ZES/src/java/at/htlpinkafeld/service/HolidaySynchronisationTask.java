@@ -9,7 +9,7 @@ import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.pojo.User;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -17,11 +17,11 @@ import java.util.List;
  *
  * @author Martin Six
  */
-public class TimeSynchronisationTask implements Runnable {
+public class HolidaySynchronisationTask implements Runnable {
 
     User_DAO user_DAO;
 
-    public TimeSynchronisationTask() {
+    public HolidaySynchronisationTask() {
         user_DAO = DAOFactory.getDAOFactory().getUserDAO();
     }
 
@@ -29,11 +29,13 @@ public class TimeSynchronisationTask implements Runnable {
     public void run() {
         Date today = new Date();
         List<User> users = user_DAO.getUserByDisabled(Boolean.FALSE);
+        System.out.println("hello");
         for (User u : users) {
             try {
+
                 SimpleDateFormat fmt = new SimpleDateFormat("MMdd");
                 String t = fmt.format(today);
-                String h = fmt.format(u.getHiredate());
+                String h = u.getHiredate().format(DateTimeFormatter.ofPattern("MMdd"));
                 if (t.equals(h)) {
                     u.setVacationLeft(u.getVacationLeft() + 25);
                     user_DAO.update(u);
