@@ -132,8 +132,9 @@ and open the template in the editor.
             <h:form id="weekDialogForm">
                 <p:panel  id="weekDlgPanel">
 
-                    <p:schedule minTime="6" maxTime="21" id="weektimeSchedule" timeZone="GMT+2"  draggable="false" allDaySlot="false" showHeader="false"  columnFormat="" view="agendaWeek" 
-                                timeFormat="HH:mm" axisFormat="HH:mm" locale="de"  ignoreTimezone="true" value="#{benutzerverwaltungsBean.timeModel}">
+                    <p:schedule minTime="6" maxTime="21" id="weektimeSchedule" timeZone="GMT+2"  draggable="false" allDaySlot="false" showHeader="false"  view="agendaWeek" 
+                                timeFormat="HH:mm" axisFormat="HH:mm" locale="de"  ignoreTimezone="true" value="#{benutzerverwaltungsBean.timeModel}" 
+                                columnFormat="month:'ddd', week:'dddd', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'">
 
                         <p:ajax event="dateSelect" listener="#{benutzerverwaltungsBean.onDateSelect}" update=":weekTimeSelectForm:eventDetails sollZeitText" oncomplete="PF('eventDialog').show();" />
                         <p:ajax event="eventSelect" listener="#{benutzerverwaltungsBean.onEventSelect}" update=":weekTimeSelectForm:eventDetails" oncomplete="PF('eventDialog').show();" />
