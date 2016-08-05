@@ -9,8 +9,7 @@ and open the template in the editor.
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:pe="http://primefaces.org/ui/extensions">
+                xmlns:p="http://primefaces.org/ui">
 
 
     <ui:define name="content">
@@ -36,6 +35,9 @@ and open the template in the editor.
                 </p:column>
 
                 <p:column headerText="Overtime Left">
+                    <h:outputText value="#{user.overTimeLeft}">
+                        <f:converter converterId="minuteHourConverter"/>
+                    </h:outputText>
                 </p:column>
 
                 <p:column headerText="Vacation Left">
@@ -103,6 +105,7 @@ and open the template in the editor.
 
                     <p:row>
                         <p:column><p:outputLabel value="Overtime Left: "/></p:column>
+                        <p:column><p:inputText type="number" value="#{benutzerverwaltungsBean.selectedUser.overTimeLeft}" converter="minuteHourConverter"/></p:column>
                     </p:row>
 
                     <p:row>
