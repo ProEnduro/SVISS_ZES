@@ -18,7 +18,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Period;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,7 +25,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import org.primefaces.component.schedule.Schedule;
 import org.primefaces.event.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
@@ -74,6 +72,7 @@ public class BenutzerverwaltungBean {
 
     public void newUser() {
         selectedUser = new User();
+        newSollZeiten = new ArrayList<>();
     }
 
     public void editUser(User u) {
@@ -89,22 +88,36 @@ public class BenutzerverwaltungBean {
             userlist.add(selectedUser);
             BenutzerverwaltungService.updateUser(selectedUser);
         }
+        if (!newSollZeiten.isEmpty()) {
+            for (SollZeiten sz : newSollZeiten) {
+                if (currentSollZeiten.contains(sz)) {
+                    SollZeitenService.updateZeit(sz);
+                } else {
+                    SollZeitenService.insertZeit(sz);
+                }
+            }
+            for (SollZeiten sz : currentSollZeiten) {
+                if (!newSollZeiten.contains(sz)) {
+                    SollZeitenService.deleteZeit(sz);
+                }
+            }
+        }
     }
 
     public void saveTimes() {
         selectedUser.setWeekTime(getNewWeekTime());
-        for (SollZeiten sz : newSollZeiten) {
-            if (currentSollZeiten.contains(sz)) {
-                SollZeitenService.updateZeit(sz);
-            } else {
-                SollZeitenService.insertZeit(sz);
-            }
-        }
-        for (SollZeiten sz : currentSollZeiten) {
-            if (!newSollZeiten.contains(sz)) {
-                SollZeitenService.deleteZeit(sz);
-            }
-        }
+//        for (SollZeiten sz : newSollZeiten) {
+//            if (currentSollZeiten.contains(sz)) {
+//                SollZeitenService.updateZeit(sz);
+//            } else {
+//                SollZeitenService.insertZeit(sz);
+//            }
+//        }
+//        for (SollZeiten sz : currentSollZeiten) {
+//            if (!newSollZeiten.contains(sz)) {
+//                SollZeitenService.deleteZeit(sz);
+//            }
+//        }
     }
 
     public void discardTimes() {

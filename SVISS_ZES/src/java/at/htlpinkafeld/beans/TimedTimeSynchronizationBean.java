@@ -6,6 +6,8 @@
 package at.htlpinkafeld.beans;
 
 import at.htlpinkafeld.service.HolidaySynchronisationTask;
+import at.htlpinkafeld.service.OvertimeSynchronisationTask;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -13,8 +15,6 @@ import java.time.ZonedDateTime;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ApplicationScoped;
@@ -40,11 +40,16 @@ public class TimedTimeSynchronizationBean {
         }
 
         Duration duration = Duration.between(zonedNow, zonedNext0);
-        long initalDelay = duration.getSeconds();
+        long initalDelayHoliday = duration.getSeconds();
+        zonedNext0.with(DayOfWeek.MONDAY);
+        duration = Duration.between(zonedNow, zonedNext0);
+        long initalDelayOvertime = duration.getSeconds();
         try {
             scheduler = Executors.newSingleThreadScheduledExecutor();
-            //scheduler.scheduleAtFixedRate(new HolidaySynchronisationTask(), initalDelay, 24 * 60 * 60, TimeUnit.SECONDS);
+            scheduler.scheduleAtFixedRate(new HolidaySynchronisationTask(), initalDelayHoliday, 24 * 60 * 60, TimeUnit.SECONDS);
+            scheduler.scheduleAtFixedRate(new OvertimeSynchronisationTask(), initalDelayOvertime, 7 * 24 * 60 * 60, TimeUnit.SECONDS);
             //scheduler.scheduleAtFixedRate(new HolidaySynchronisationTask(), 10, 10, TimeUnit.SECONDS);
+            // scheduler.scheduleAtFixedRate(new OvertimeSynchronisationTask(), 10, 30, TimeUnit.SECONDS);
         } catch (Exception e) {
             e.printStackTrace();
         }

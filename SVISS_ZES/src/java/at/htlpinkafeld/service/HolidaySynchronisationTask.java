@@ -29,7 +29,7 @@ public class HolidaySynchronisationTask implements Runnable {
     public void run() {
         Date today = new Date();
         List<User> users = user_DAO.getUserByDisabled(Boolean.FALSE);
-        System.out.println("hello");
+        System.out.println("Holiday");
         for (User u : users) {
             try {
 

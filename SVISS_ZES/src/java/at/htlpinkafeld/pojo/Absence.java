@@ -5,15 +5,15 @@
  */
 package at.htlpinkafeld.pojo;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Objects;
 
 /**
  *
  * @author Martin Six
  */
-public class Absence {
+public class Absence implements Serializable{
 
     private int absenceID;
     private User user;

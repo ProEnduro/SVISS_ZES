@@ -28,7 +28,9 @@ and open the template in the editor.
                         <p:outputLabel value="Überstunden:"/>
                     </p:column>
                     <p:column>
-                        <p:outputLabel value="#{scheduleView.currentUser.overTimeLeft}"/>
+                        <p:outputLabel value="#{scheduleView.currentUser.overTimeLeft}" >
+                            <f:converter converterId="minuteHourConverter"/>
+                        </p:outputLabel>
                     </p:column>
 
                     <p:column>

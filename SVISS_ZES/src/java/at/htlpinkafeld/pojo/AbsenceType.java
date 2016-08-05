@@ -5,11 +5,13 @@
  */
 package at.htlpinkafeld.pojo;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Martin Six
  */
-public class AbsenceType {
+public class AbsenceType implements Serializable{
 
     private int absenceTypeID;
     private String absenceName;

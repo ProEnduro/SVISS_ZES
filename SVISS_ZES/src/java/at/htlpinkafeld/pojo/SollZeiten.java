@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.pojo;
 
+import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
@@ -15,7 +16,7 @@ import java.util.Objects;
  *
  * @author Martin Six
  */
-public class SollZeiten {
+public class SollZeiten implements Serializable{
 
     private DayOfWeek day;
     private User user;

@@ -12,17 +12,20 @@ import java.time.LocalDate;
  *
  * @author Martin Six
  */
-public class User implements Serializable{
+public class User implements Serializable {
 
     private int userNr;
     private AccessLevel accessLevel;
     private String PersName;
+    //in days
     private int vacationLeft;
+    //in minutes
     private int overTimeLeft;
     private String username;
     private String email;
     private LocalDate hiredate;
     private String pass;
+    //in hours
     private Double weekTime;
     private boolean disabled = false;
 
