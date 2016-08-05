@@ -67,4 +67,31 @@ public class IstZeitService {
     public static Date convertLocalDateTimeToDate(LocalDateTime dateTime) {
         return Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
+
+    public static boolean breakTimeBooleanCalc(Date startDate, Date endDate) {
+
+        LocalDateTime start = IstZeitService.convertDateToLocalDateTime(startDate);
+        LocalDateTime end = IstZeitService.convertDateToLocalDateTime(endDate);
+
+        double sd = start.getDayOfYear() * 24;
+        double sh = start.getHour();
+        double sm = start.getMinute() / 60;
+        double st = sd + sh + sm;
+        
+
+        double ed = end.getDayOfYear() * 24;
+        double eh = end.getHour();
+        double em = end.getMinute() / 60;
+        double et = ed + eh + em;
+        
+
+        double dif = et - st;
+        
+
+        if (dif >= 6.00) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

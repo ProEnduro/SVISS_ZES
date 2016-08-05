@@ -25,6 +25,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -38,6 +39,15 @@ import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.DefaultScheduleModel;
 import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
+
+import java.util.Properties;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 public class ScheduleView implements Serializable {
 
@@ -68,6 +78,15 @@ public class ScheduleView implements Serializable {
     int breaktime;
 
     public int getBreaktime() {
+
+        if (event.getStartDate() != null && event.getEndDate() != null) {
+            if (IstZeitService.breakTimeBooleanCalc(event.getStartDate(), event.getEndDate())) {
+                return 30;
+            } else {
+                return 0;
+            }
+        }
+
         return breaktime;
     }
 
@@ -206,6 +225,7 @@ public class ScheduleView implements Serializable {
             IstZeitService.addIstTime(e.getWorktime());
 
             eventModel.addEvent(e);
+
         } else {
 
             if (event instanceof WorkTimeEvent) {
@@ -493,6 +513,7 @@ public class ScheduleView implements Serializable {
                 double et = eh + em;
 
                 time = et - st;
+                time = time - ((double) w.getBreakTime() / 60);
 
                 verbleibend = verbleibend - time;
             }
@@ -853,7 +874,7 @@ public class ScheduleView implements Serializable {
 
                 eventModel.addEvent(e);
             }
-            
+
             for (Absence a : AbsenceService.getAbsenceByUserAndAcknowledged(BenutzerverwaltungService.getUser(selectedUser))) {
 
                 AbsenceEvent e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType().getAbsenceName(), IstZeitService.convertLocalDateTimeToDate(a.getStartTime()), IstZeitService.convertLocalDateTimeToDate(a.getEndTime()), a);
@@ -879,6 +900,66 @@ public class ScheduleView implements Serializable {
             }
         }
 
+    }
+
+    // TODO: Emails senden -> first Tests
+    public void sendEmail(ActionEvent e) throws AddressException, MessagingException {
+
+        Properties mailServerProperties;
+        Session getMailSession;
+        MimeMessage generateMailMessage;
+
+        // Step1
+        System.out.println("\n 1st ===> setup Mail Server Properties..");
+        mailServerProperties = System.getProperties();
+        mailServerProperties.put("mail.smtp.port", "587");
+        mailServerProperties.put("mail.smtp.auth", "true");
+        mailServerProperties.put("mail.smtp.starttls.enable", "true");
+        System.out.println("Mail Server Properties have been setup successfully..");
+
+        // Step2
+        System.out.println("\n\n 2nd ===> get Mail Session..");
+        getMailSession = Session.getDefaultInstance(mailServerProperties, null);
+        generateMailMessage = new MimeMessage(getMailSession);
+        generateMailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress("ma.six98@gmail.com"));
+        generateMailMessage.addRecipient(Message.RecipientType.CC, new InternetAddress("blaumeux.sn@gmail.com"));
+        generateMailMessage.setSubject("Greetings from Crunchify..");
+        String emailBody = "Test email by Crunchify.com JavaMail API example. " + "<br><br> Regards, <br>Crunchify Admin";
+        generateMailMessage.setContent(emailBody, "text/html");
+        System.out.println("Mail Session has been created successfully..");
+
+        // Step3
+        System.out.println("\n\n 3rd ===> Get Session and Send mail");
+        Transport transport = getMailSession.getTransport("smtp");
+
+        // Enter your correct gmail UserID and Password
+        // if you have 2FA enabled then provide App Specific Password
+        String user = "blaumeux.sn@gmail.com";
+        String password = "password";
+
+        transport.connect("smtp.gmail.com", user, password);
+        transport.sendMessage(generateMailMessage, generateMailMessage.getAllRecipients());
+        transport.close();
+
+    }
+    
+    public Date getStartDateToday(){
+        
+        LocalDateTime start = LocalDateTime.now();
+        
+        start = start.withHour(0).withMinute(0).withSecond(0).minusWeeks(1);
+            
+        return IstZeitService.convertLocalDateTimeToDate(start);
+    }
+    
+    public Date getEndDateToday(){
+        
+        LocalDateTime end = LocalDateTime.now();
+        
+        end = end.withHour(23).withMinute(59).withSecond(59);
+        
+        
+        return IstZeitService.convertLocalDateTimeToDate(end);
     }
 
 }
