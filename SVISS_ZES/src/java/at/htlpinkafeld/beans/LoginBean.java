@@ -44,9 +44,7 @@ public class LoginBean {
     }
 
     public Object login() {
-
-        System.out.println(userString);
-        System.out.println(pw);
+   
 
         User_DAO user_dao = DAOFactory.getDAOFactory().getUserDAO();
 
@@ -54,7 +52,6 @@ public class LoginBean {
 
         this.user = u;
 
-        System.out.println(u);
 
         if(user.isDisabled() == true){
             FacesContext context = FacesContext.getCurrentInstance();
@@ -75,7 +72,6 @@ public class LoginBean {
             this.user = null;
             this.userString = "";
 
-            System.out.println("success!");
 
             return "success";
         }

@@ -15,10 +15,7 @@ import at.htlpinkafeld.pojo.WorkTime;
 import at.htlpinkafeld.service.AbsenceService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import at.htlpinkafeld.service.IstZeitService;
-import at.htlpinkafeld.service.TimeConverterService;
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -28,7 +25,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -168,12 +164,12 @@ public class ScheduleView implements Serializable {
                     DAOFactory.getDAOFactory().getAbsenceDAO().insert(a);
                     break;
                 case 3:
-                    e.setStyleClass(types.get(type - 1).getAbsenceName().replace(" ", "_"));
+                    ev.setStyleClass("time_compensation");
 
                     DAOFactory.getDAOFactory().getAbsenceDAO().insert(a);
                     break;
                 case 4:
-                    e.setStyleClass(types.get(type - 1).getAbsenceName().replace(" ", "_"));
+                    ev.setStyleClass("business-related_absence");
 
                     DAOFactory.getDAOFactory().getAbsenceDAO().insert(a);
                     break;
@@ -232,7 +228,6 @@ public class ScheduleView implements Serializable {
 
     public void onEventSelect(SelectEvent selectEvent) {
         event = (ScheduleEvent) selectEvent.getObject();
-
 
         startcomment = "";
         endcomment = "";
@@ -661,6 +656,29 @@ public class ScheduleView implements Serializable {
             eventModel.addEvent(e);
         }
 
+        for (Absence a : AbsenceService.getAllUnacknowledged()) {
+
+            e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType().getAbsenceName() + " (unacknowledged)", IstZeitService.convertLocalDateTimeToDate(a.getStartTime()), IstZeitService.convertLocalDateTimeToDate(a.getEndTime()), a);
+
+            switch (e.getAbsence().getAbsenceType().getAbsenceTypeID()) {
+
+                case 1:
+                    e.setStyleClass("medical_leave");
+                    break;
+                case 2:
+                    e.setStyleClass("holiday");
+                    break;
+                case 3:
+                    e.setStyleClass("time_compensation");
+                    break;
+                case 4:
+                    e.setStyleClass("business-related_absence");
+                    break;
+
+            }
+            eventModel.addEvent(e);
+        }
+
     }
 
     void setUser(User user) {
@@ -713,6 +731,154 @@ public class ScheduleView implements Serializable {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public void loadAllTimes(ActionEvent ev) {
+
+        eventModel.clear();
+
+        this.selectedUser = "All";
+        this.allUsers = new ArrayList<>();
+
+        allUsers.add("All");
+
+        for (User u : BenutzerverwaltungService.getUserList()) {
+            allUsers.add(u.getUsername());
+        }
+
+        this.loadAllAbwesenheiten(ev);
+
+        for (WorkTime w : IstZeitService.getAllWorkTime()) {
+
+            WorkTimeEvent e = new WorkTimeEvent(w.getUser().getUsername() + " Ist-Zeit", IstZeitService.convertLocalDateTimeToDate(w.getStartTime()), IstZeitService.convertLocalDateTimeToDate(w.getEndTime()), "istzeit", w);
+
+            eventModel.addEvent(e);
+        }
+
+    }
+
+    public void loadAllTimesByUser(ActionEvent ev) {
+
+        eventModel.clear();
+
+        this.loadAbwesenheitByUserForAllTimes(ev);
+
+        if (selectedUser.equals("All")) {
+            for (WorkTime w : IstZeitService.getAllWorkTime()) {
+
+                WorkTimeEvent e = new WorkTimeEvent(w.getUser().getUsername() + " Ist-Zeit", IstZeitService.convertLocalDateTimeToDate(w.getStartTime()), IstZeitService.convertLocalDateTimeToDate(w.getEndTime()), "istzeit", w);
+
+                eventModel.addEvent(e);
+            }
+        } else {
+            for (WorkTime w : IstZeitService.getWorktimeByUser(BenutzerverwaltungService.getUser(selectedUser))) {
+                WorkTimeEvent e = new WorkTimeEvent(w.getUser().getUsername() + " Ist-Zeit", IstZeitService.convertLocalDateTimeToDate(w.getStartTime()), IstZeitService.convertLocalDateTimeToDate(w.getEndTime()), "istzeit", w);
+
+                eventModel.addEvent(e);
+            }
+        }
+    }
+
+    public void loadAbwesenheitByUserForAllTimes(ActionEvent ev) {
+
+        if ("All".equals(this.selectedUser)) {
+
+            for (Absence a : AbsenceService.getAllAcknowledged()) {
+
+                AbsenceEvent e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType().getAbsenceName(), IstZeitService.convertLocalDateTimeToDate(a.getStartTime()), IstZeitService.convertLocalDateTimeToDate(a.getEndTime()), a);
+
+                switch (e.getAbsence().getAbsenceType().getAbsenceTypeID()) {
+
+                    case 1:
+                        e.setStyleClass("medical_leave_acknowledged");
+                        break;
+                    case 2:
+                        e.setStyleClass("holiday_acknowledged");
+                        break;
+                    case 3:
+                        e.setStyleClass("time_compensation_acknowledged");
+                        break;
+                    case 4:
+                        e.setStyleClass("business-related_absence_acknowledged");
+                        break;
+
+                }
+                eventModel.addEvent(e);
+            }
+
+            for (Absence a : AbsenceService.getAllUnacknowledged()) {
+
+                AbsenceEvent e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType().getAbsenceName() + " (unacknowledged)", IstZeitService.convertLocalDateTimeToDate(a.getStartTime()), IstZeitService.convertLocalDateTimeToDate(a.getEndTime()), a);
+
+                switch (e.getAbsence().getAbsenceType().getAbsenceTypeID()) {
+
+                    case 1:
+                        e.setStyleClass("medical_leave");
+                        break;
+                    case 2:
+                        e.setStyleClass("holiday");
+                        break;
+                    case 3:
+                        e.setStyleClass("time_compensation");
+                        break;
+                    case 4:
+                        e.setStyleClass("business-related_absence");
+                        break;
+
+                }
+                eventModel.addEvent(e);
+            }
+        } else {
+
+            for (Absence a : AbsenceService.getAbsenceByUserAndUnacknowledged(BenutzerverwaltungService.getUser(selectedUser))) {
+
+                AbsenceEvent e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType().getAbsenceName() + " (unacknowledged)", IstZeitService.convertLocalDateTimeToDate(a.getStartTime()), IstZeitService.convertLocalDateTimeToDate(a.getEndTime()), a);
+
+                switch (e.getAbsence().getAbsenceType().getAbsenceTypeID()) {
+
+                    case 1:
+                        e.setStyleClass("medical_leave");
+                        break;
+                    case 2:
+                        e.setStyleClass("holiday");
+                        break;
+                    case 3:
+                        e.setStyleClass("time_compensation");
+                        break;
+                    case 4:
+                        e.setStyleClass("business-related_absence");
+                        break;
+
+                }
+
+                eventModel.addEvent(e);
+            }
+            
+            for (Absence a : AbsenceService.getAbsenceByUserAndAcknowledged(BenutzerverwaltungService.getUser(selectedUser))) {
+
+                AbsenceEvent e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType().getAbsenceName(), IstZeitService.convertLocalDateTimeToDate(a.getStartTime()), IstZeitService.convertLocalDateTimeToDate(a.getEndTime()), a);
+
+                switch (e.getAbsence().getAbsenceType().getAbsenceTypeID()) {
+
+                    case 1:
+                        e.setStyleClass("medical_leave_acknowledged");
+                        break;
+                    case 2:
+                        e.setStyleClass("holiday_acknowledged");
+                        break;
+                    case 3:
+                        e.setStyleClass("time_compensation_acknowledged");
+                        break;
+                    case 4:
+                        e.setStyleClass("business-related_absence_acknowledged");
+                        break;
+
+                }
+
+                eventModel.addEvent(e);
+            }
+        }
+
     }
 
 }
