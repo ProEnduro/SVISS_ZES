@@ -20,9 +20,9 @@ public class User_InMemoryDAO extends Base_InMemoryDAO<User> implements User_DAO
     protected User_InMemoryDAO() {
         super(new ArrayList<>());
         AccessLevel_DAO al_DAO = new AccessLevel_InMemoryDAO();
-        super.insert(new User(al_DAO.getAccessLevelByID(1), "AdminUser", 21, 36, "admin", "admin@test.at", LocalDate.of(2016, 3, 7), "admin", 14.9));
-        super.insert(new User(al_DAO.getAccessLevelByID(2), "ApproverUser", 21, 50, "approver", "approver@test.at", LocalDate.of(2016, 3, 7), "approver", 33.1));
-        super.insert(new User(al_DAO.getAccessLevelByID(3), "ReaderUser", 10, 38, "reader", "reader@test.at", LocalDate.of(2016, 3, 7), "reader", 22.4));
+        super.insert(new User(al_DAO.getAccessLevelByID(1), "AdminUser", 21, 36, "admin", "admin@test.at", LocalDate.of(2016, 3, 7), "admin", 14.0));
+        super.insert(new User(al_DAO.getAccessLevelByID(2), "ApproverUser", 21, 50, "approver", "approver@test.at", LocalDate.of(2016, 3, 7), "approver", 33.5));
+        super.insert(new User(al_DAO.getAccessLevelByID(3), "ReaderUser", 10, 38, "reader", "reader@test.at", LocalDate.of(2016, 3, 7), "reader", 22.5));
         super.insert(new User(al_DAO.getAccessLevelByID(4), "NormalUser", 19, 32, "user", "user@test.at", LocalDate.of(2016, 3, 7), "user", 17.5));
         
         super.insert(new User(al_DAO.getAccessLevelByID(4), "Manuel Lang", 20, 21, "manuel", "manuel.lang@aon.at", LocalDate.of(2016, 4, 10), "manuel", 40.0));
