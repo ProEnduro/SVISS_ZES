@@ -7,6 +7,7 @@ package at.htlpinkafeld.beans;
 
 import at.htlpinkafeld.pojo.AccessLevel;
 import at.htlpinkafeld.pojo.User;
+import at.htlpinkafeld.pojo.UserProxy;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import java.time.LocalDate;
 import java.util.Date;
@@ -33,7 +34,7 @@ public class BenutzerkontoBean {
 
     
     public BenutzerkontoBean() {
-        user = new User();
+        user = new UserProxy();
         user = masterBean.getUser();
     }
 

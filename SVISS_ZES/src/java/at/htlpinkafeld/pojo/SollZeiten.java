@@ -25,7 +25,7 @@ public class SollZeiten implements Serializable{
 
     public SollZeiten(SollZeiten sz) {
         this.day = sz.day;
-        this.user = new User(sz.user);
+        this.user = new UserProxy(sz.user);
         this.sollStartTime = sz.sollStartTime;
         this.sollEndTime = sz.sollEndTime;
     }
