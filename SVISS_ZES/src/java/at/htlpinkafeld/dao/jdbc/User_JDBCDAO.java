@@ -7,6 +7,7 @@ package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
+import at.htlpinkafeld.dao.util.DAOException;
 import at.htlpinkafeld.dao.util.WrappedConnection;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserProxy;
@@ -38,7 +39,7 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
     public static final String PASSWORD_COL = "PASSWORD";
     public static final String WEEKTIME_COL = "WEEKTIME";
     public static final String DISABLED_COL = "DISABLED";
-    
+
     private static final String REL_USERNR_COL = USERNR_COL;
     private static final String REL_APPROVER_COL = "APPROVERNR";
 
@@ -52,6 +53,45 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
 
     protected User_JDBCDAO() {
         super(TABLE_NAME, ALL_COLUMNS, PRIMARY_KEY);
+    }
+
+    @Override
+    public void insert(User u) throws DAOException {
+        super.insert(u);
+        if (u.ApproverInitialized()) {
+            try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                    Statement stmt = con.getConn().createStatement()) {
+                for (User approver : u.getApprover()) {
+                    stmt.executeUpdate("INSERT INTO " + RELATION_TABLE_NAME + " ( " + REL_APPROVER_COL + ", " + REL_USERNR_COL + " ) VALUES (" + approver.getUserNr() + ", " + u.getUserNr() + ");");
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    @Override
+    public void updateApproverOfUser(User user) {
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement()) {
+            stmt.executeUpdate("DELETE FROM " + RELATION_TABLE_NAME + " WHERE " + REL_USERNR_COL + " = " + user.getUserNr() + ";");
+            for (User approver : user.getApprover()) {
+                stmt.addBatch("INSERT INTO " + RELATION_TABLE_NAME + " ( " + REL_APPROVER_COL + ", " + REL_USERNR_COL + " ) VALUES (" + approver.getUserNr() + ", " + user.getUserNr() + ");");
+            }
+            stmt.executeBatch();
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void removeApprover(User approver) {
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement()) {
+            stmt.executeUpdate("DELETE FROM " + RELATION_TABLE_NAME + " WHERE " + REL_APPROVER_COL + " = " + approver.getUserNr() + ";");
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
@@ -156,6 +196,25 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
         } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    @Override
+    public List<User> getApprover(User user) {
+        List<User> userL = new ArrayList<>();
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT " + TABLE_NAME + ".* FROM " + TABLE_NAME + " JOIN " + RELATION_TABLE_NAME
+                        + " ON( " + TABLE_NAME + "." + USERNR_COL + " = " + RELATION_TABLE_NAME + "." + REL_APPROVER_COL + ") "
+                        + "WHERE " + RELATION_TABLE_NAME + "." + REL_USERNR_COL + " = " + user.getUserNr() + " " + SQL_ORDER_BY_LINE)) {
+
+            if (rs.next()) {
+                userL.add(getEntityFromResultSet(rs));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return userL;
     }
 
 }

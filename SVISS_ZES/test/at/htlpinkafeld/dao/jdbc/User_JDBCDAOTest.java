@@ -7,6 +7,7 @@ package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.pojo.User;
+import at.htlpinkafeld.pojo.UserProxy;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.GregorianCalendar;
@@ -50,7 +51,7 @@ public class User_JDBCDAOTest {
     @Test
     public void testInsertAndGetList() throws SQLException {
         List<User> expResult = user_DAO.getList();
-        User user = new User(JDBCDAOFactory.getDAOFactory().getAccessLevelDAO().getAccessLevelByID(1), "TestAdminUser", 0, 100, "testAdmin", "tadmin@test.at", LocalDate.of(2016, 3, 7), "tssadmin", 38.5);
+        User user = new UserProxy(JDBCDAOFactory.getDAOFactory().getAccessLevelDAO().getAccessLevelByID(1), "TestAdminUser", 0, 100, "testAdmin", "tadmin@test.at", LocalDate.of(2016, 3, 7), "tssadmin", 38.5);
         user_DAO.insert(user);
         expResult.add(user);
         List result = user_DAO.getList();
@@ -62,7 +63,7 @@ public class User_JDBCDAOTest {
      */
     @Test
     public void testUpdateAndGetUserByUsername() {
-        User user = new User(JDBCDAOFactory.getDAOFactory().getAccessLevelDAO().getAccessLevelByID(1), "TestAdminUser", 0, 100, "testAdmin", "tadmin@test.at", LocalDate.of(2016, 3, 7), "tssadmin", 38.5);
+        User user = new UserProxy(JDBCDAOFactory.getDAOFactory().getAccessLevelDAO().getAccessLevelByID(1), "TestAdminUser", 0, 100, "testAdmin", "tadmin@test.at", LocalDate.of(2016, 3, 7), "tssadmin", 38.5);
         user_DAO.insert(user);
         user = user_DAO.getUserByUsername("testAdmin");
         user.setEmail("adminemailadwd");
@@ -76,7 +77,7 @@ public class User_JDBCDAOTest {
      */
     @Test
     public void testInsertAndDelete() {
-        User user = new User(JDBCDAOFactory.getDAOFactory().getAccessLevelDAO().getAccessLevelByID(1), "TestAdminUser", 0, 100, "testAdmin", "tadmin@test.at", LocalDate.of(2016, 3, 7), "tssadmin", 38.5);
+        User user = new UserProxy(JDBCDAOFactory.getDAOFactory().getAccessLevelDAO().getAccessLevelByID(1), "TestAdminUser", 0, 100, "testAdmin", "tadmin@test.at", LocalDate.of(2016, 3, 7), "tssadmin", 38.5);
         user_DAO.insert(user);
         List<User> result = user_DAO.getList();
         assertTrue(result.contains(user));

@@ -19,4 +19,10 @@ public interface User_DAO extends Base_DAO<User> {
     public abstract User getUserByUsername(String username);
     
     public abstract List<User> getUserByDisabled(Boolean disabled);
+
+    public abstract List<User> getApprover(User user);
+    
+    public abstract void updateApproverOfUser(User user);
+    
+    public abstract void removeApprover(User approver);
 }

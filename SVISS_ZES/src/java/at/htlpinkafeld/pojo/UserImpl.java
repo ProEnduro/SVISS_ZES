@@ -5,8 +5,8 @@
  */
 package at.htlpinkafeld.pojo;
 
-import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  *
@@ -28,6 +28,8 @@ public class UserImpl implements User {
     //in hours
     private Double weekTime;
     private boolean disabled = false;
+
+    private List<User> approver;
 
     public UserImpl() {
         userNr = -1;
@@ -164,6 +166,11 @@ public class UserImpl implements User {
     }
 
     @Override
+    public List<User> getApprover() {
+        return approver;
+    }
+
+    @Override
     public void setHiredate(LocalDate hiredate) {
         this.hiredate = hiredate;
     }
@@ -199,6 +206,11 @@ public class UserImpl implements User {
     }
 
     @Override
+    public void setApprover(List<User> approver) {
+        this.approver = approver;
+    }
+
+    @Override
     public String toString() {
         return "User{" + "userNr=" + userNr + ", accessLevel=" + accessLevel + ", PersName=" + PersName + ", vacationLeft=" + vacationLeft + ", overTimeLeft=" + overTimeLeft + ", username=" + username + ", email=" + email + ", hiredate=" + hiredate + ", pass=" + pass + ", weekTime=" + weekTime + ", disabled=" + disabled + '}';
     }
@@ -218,11 +230,8 @@ public class UserImpl implements User {
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final UserImpl other = (UserImpl) obj;
-        if (this.userNr != other.userNr) {
+        final User other = (User) obj;
+        if (this.userNr != other.getUserNr()) {
             return false;
         }
         return true;
@@ -235,6 +244,11 @@ public class UserImpl implements User {
         } else {
             return "enabled";
         }
+    }
+
+    @Override
+    public boolean ApproverInitialized() {
+        return approver != null;
     }
 
 }

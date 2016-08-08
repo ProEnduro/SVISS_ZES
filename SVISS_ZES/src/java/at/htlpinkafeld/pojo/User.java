@@ -7,6 +7,7 @@ package at.htlpinkafeld.pojo;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  *
@@ -36,6 +37,8 @@ public interface User extends Serializable {
 
     Double getWeekTime();
 
+    List<User> getApprover();
+
     boolean isDisabled();
 
     void setAccessLevel(AccessLevel accessLevel);
@@ -59,5 +62,8 @@ public interface User extends Serializable {
     void setVacationLeft(int vacationLeft);
 
     void setWeekTime(Double weekTime);
-    
+
+    void setApprover(List<User> approver);
+
+    boolean ApproverInitialized();
 }

@@ -5,7 +5,10 @@
  */
 package at.htlpinkafeld.pojo;
 
+import at.htlpinkafeld.dao.factory.DAOFactory;
+import at.htlpinkafeld.dao.interf.User_DAO;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  *
@@ -13,7 +16,12 @@ import java.time.LocalDate;
  */
 public class UserProxy implements User {
 
+    private static final User_DAO USER_DAO;
     private User user;
+
+    static {
+        USER_DAO = DAOFactory.getDAOFactory().getUserDAO();
+    }
 
     public UserProxy() {
         user = new UserImpl();
@@ -149,6 +157,39 @@ public class UserProxy implements User {
     @Override
     public void setWeekTime(Double weekTime) {
         user.setWeekTime(weekTime);
+    }
+
+    @Override
+    public List<User> getApprover() {
+        if (user.getApprover() == null) {
+            user.setApprover(USER_DAO.getApprover(user));
+        }
+        return user.getApprover();
+    }
+
+    @Override
+    public void setApprover(List<User> approver) {
+        user.setApprover(approver);
+    }
+
+    @Override
+    public boolean ApproverInitialized() {
+        return user.ApproverInitialized();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return user.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return user.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return user.toString();
     }
 
 }
