@@ -17,45 +17,43 @@ import java.util.List;
  * @author Martin Six
  */
 public class AccessRightsService implements DAODML_Observer {
-
+    
     private static final List<String> PERMISSIONS;
     private static final AccessLevel_DAO ALDAO;
     private static final AccessRightsService ARS;
-
+    
     public static List<AccessLevel> AccessGroups;
-
+    
     static {
         PERMISSIONS = new LinkedList<>();
-        PERMISSIONS.add("EDIT_USERS");
+        PERMISSIONS.add("ALL");
         PERMISSIONS.add("VIEW_USERS");
-        PERMISSIONS.add("VIEW_CALENDAR");
+        PERMISSIONS.add("EDIT_USERS");
+        PERMISSIONS.add("CREATE_USERS");
+        PERMISSIONS.add("EDIT_ACCOUNT");
+        PERMISSIONS.add("ACKNOWLEDGE_USERS");
+        PERMISSIONS.add("VIEW_ALL_TIMES");
+        PERMISSIONS.add("VIEW_ALL_ABSENCES");
         PERMISSIONS.add("INPUT_TIME");
-
+        
         ALDAO = DAOFactory.getDAOFactory().getAccessLevelDAO();
         ARS = new AccessRightsService();
         ALDAO.addObserver(ARS);
-
+        
         AccessGroups = ALDAO.getList();
     }
-
+    
     private AccessRightsService() {
     }
-
+    
     public static void reloadAccessGroups() {
         AccessGroups = ALDAO.getList();
     }
-
+    
     public static boolean checkPermission(AccessLevel al, String neededPermission) {
-        if (al.containsPermission(neededPermission)) {
-            return true;
-        } else {
-            for (String p : al.getPermissions()) {
-                return checkPermission(getAccessLevelFromName(p), neededPermission);
-            }
-        }
-        return false;
+        return al.containsPermission(neededPermission) || al.containsPermission("ALL");
     }
-
+    
     public static AccessLevel getAccessLevelFromName(String accessLevelString) {
         for (AccessLevel al : AccessGroups) {
             if (al.getAccessLevelName().contentEquals(accessLevelString)) {
@@ -64,10 +62,10 @@ public class AccessRightsService implements DAODML_Observer {
         }
         return null;
     }
-
+    
     @Override
     public void notifyObserver() {
         reloadAccessGroups();
     }
-
+    
 }

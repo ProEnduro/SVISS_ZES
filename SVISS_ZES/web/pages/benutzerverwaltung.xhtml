@@ -75,37 +75,37 @@ and open the template in the editor.
 
                     <p:row>
                         <p:column><p:outputLabel value="Username: "/></p:column>
-                        <p:column><p:inputText value="#{benutzerverwaltungsBean.selectedUser.username}"/></p:column>
+                        <p:column><p:inputText value="#{benutzerverwaltungsBean.selectedUser.username}" required="true"/></p:column>
                     </p:row>
 
                     <p:row>
                         <p:column><p:outputLabel value="Password: "/></p:column>
-                        <p:column><p:inputText type="password" value="#{benutzerverwaltungsBean.selectedUser.pass}" /></p:column>
+                        <p:column><p:inputText type="password" value="#{benutzerverwaltungsBean.selectedUser.pass}" required="true"/></p:column>
                     </p:row>
 
                     <p:row>
                         <p:column><p:outputLabel value="Vorname Nachname: "/></p:column>
-                        <p:column><p:inputText value="#{benutzerverwaltungsBean.selectedUser.persName}"/></p:column>
+                        <p:column><p:inputText value="#{benutzerverwaltungsBean.selectedUser.persName}" required="true"/></p:column>
                     </p:row>
 
                     <p:row>
                         <p:column><p:outputLabel value="E-Mail-Adresse: "/></p:column>
-                        <p:column><p:inputText value="#{benutzerverwaltungsBean.selectedUser.email}"/></p:column>
+                        <p:column><p:inputText value="#{benutzerverwaltungsBean.selectedUser.email}" required="true"/></p:column>
                     </p:row>
 
                     <p:row>
                         <p:column><p:outputLabel value="Hiredate: "/></p:column>
-                        <p:column><p:calendar value="#{benutzerverwaltungsBean.selectedUser.hiredate}" mask="true" pattern="dd.MM.yyyy" converter="localDateConverter"/></p:column>
+                        <p:column><p:calendar value="#{benutzerverwaltungsBean.selectedUser.hiredate}" mask="true" pattern="dd.MM.yyyy" converter="localDateConverter"  required="true"/></p:column>
                     </p:row>
 
                     <p:row>
                         <p:column><p:outputLabel value="Vacation Left: "/></p:column>
-                        <p:column><p:inputText type="number" value="#{benutzerverwaltungsBean.selectedUser.vacationLeft}" /></p:column>
+                        <p:column><p:inputText type="number" value="#{benutzerverwaltungsBean.selectedUser.vacationLeft}" required="true"/></p:column>
                     </p:row>
 
                     <p:row>
                         <p:column><p:outputLabel value="Overtime Left: "/></p:column>
-                        <p:column><p:inputText type="number" value="#{benutzerverwaltungsBean.selectedUser.overTimeLeft}" converter="minuteHourConverter"/></p:column>
+                        <p:column><p:inputText type="number" value="#{benutzerverwaltungsBean.selectedUser.overTimeLeft}" converter="minuteHourConverter" required="true"/></p:column>
                     </p:row>
 
                     <p:row>
@@ -120,7 +120,7 @@ and open the template in the editor.
 
                     <f:facet name="footer">
                         <p:row>
-                            <p:column><p:commandButton value="User speichern" action="#{benutzerverwaltungsBean.saveUser}" update=":tableForm:usertable" oncomplete="PF('udlg1').hide();"/></p:column>
+                            <p:column><p:commandButton value="User speichern" action="#{benutzerverwaltungsBean.saveUser}" update=":tableForm:usertable" onsuccess="PF('udlg1').hide();"/></p:column>
                             <p:column><p:commandButton value="Änderung verwerfen" action="#{benutzerverwaltungsBean.discardUserChanges}" oncomplete="PF('udlg1').hide();"/></p:column>
                         </p:row>
                     </f:facet>
@@ -132,7 +132,7 @@ and open the template in the editor.
             <h:form id="weekDialogForm">
                 <p:panel  id="weekDlgPanel">
 
-                    <p:schedule minTime="6" maxTime="21" id="weektimeSchedule" timeZone="GMT+2"  draggable="false" allDaySlot="false" showHeader="false"  view="agendaWeek" 
+                    <p:schedule minTime="6" maxTime="21" id="weektimeSchedule" initialDate="#{benutzerverwaltungsBean.pointDate}" timeZone="GMT+2"  draggable="false" allDaySlot="false" showHeader="false"  view="agendaWeek" 
                                 timeFormat="HH:mm" axisFormat="HH:mm" locale="de"  ignoreTimezone="true" value="#{benutzerverwaltungsBean.timeModel}" 
                                 columnFormat="month:'ddd', week:'dddd', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'">
 

@@ -20,22 +20,24 @@ public class AccessLevel_InMemoryDAO extends Base_InMemoryDAO<AccessLevel> imple
         super(new LinkedList<>());
 
         List<String> permList = new LinkedList<>();
-        permList.add("APPROVER");
-        permList.add("EDIT_USERS");
+        permList.add("ALL");
         super.insert(new AccessLevel(1, "Admin", permList));
 
         permList = new LinkedList<>();
-        permList.add("USER");
-        permList.add("VIEW_USERS");
-        permList.add("READER");
+        permList.add("INPUT_TIME");
+        permList.add("EDIT_ACCOUNT");
+        permList.add("VIEW_ALL_ABSENCES");
+        permList.add("ACKNOWLEDGE_USERS");
         super.insert(new AccessLevel(2, "Approver", permList));
 
         permList = new LinkedList<>();
-        permList.add("VIEW_CALENDAR");
+        permList.add("VIEW_ALL_TIMES");
         super.insert(new AccessLevel(3, "Reader", permList));
 
         permList = new LinkedList<>();
         permList.add("INPUT_TIME");
+        permList.add("EDIT_ACCOUNT");
+        permList.add("VIEW_ALL_ABSENCES");
         super.insert(new AccessLevel(4, "User", permList));
     }
 

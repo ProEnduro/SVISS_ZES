@@ -57,13 +57,19 @@ public class OvertimeSynchronisationTask implements Runnable {
     public static int calcOvertime(User u, Date startDate, Date endDate) {
         int overtime = 0;
         List<WorkTime> workTimes = WORK_TIME__DAO.getWorkTimesFromUserBetweenDates(u, startDate, endDate);
+        List<SollZeiten> sollZeiten = SOLL_ZEITEN__DAO.getSollZeitenByUser(u);
         for (WorkTime wt : workTimes) {
             overtime += calcDiffInMin(wt.getStartTime().toLocalTime(), wt.getEndTime().toLocalTime());
             overtime -= wt.getBreakTime();
+            DayOfWeek sDay = wt.getStartTime().getDayOfWeek();
+            for (SollZeiten sz : sollZeiten) {
+                if (sz.getDay().equals(sDay)) {
+                    overtime -= calcDiffInMin(sz.getSollStartTime(), sz.getSollEndTime());
+                }
+            }
         }
-        overtime -= u.getWeekTime() * 60;
 
-        List<SollZeiten> sollZeiten = SOLL_ZEITEN__DAO.getSollZeitenByUser(u);
+//        overtime -= u.getWeekTime() * 60;
 
         List<Absence> absences = ABSENCE__DAO.getAbsencesByUserBetweenDates(u, startDate, endDate);
 
