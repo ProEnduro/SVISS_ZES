@@ -41,13 +41,13 @@ public class TimedTimeSynchronizationBean {
 
         Duration duration = Duration.between(zonedNow, zonedNext0);
         long initalDelayHoliday = duration.getSeconds();
-        zonedNext0.with(DayOfWeek.MONDAY);
-        duration = Duration.between(zonedNow, zonedNext0);
+//        zonedNext0.with(DayOfWeek.MONDAY);
+//        duration = Duration.between(zonedNow, zonedNext0);
         long initalDelayOvertime = duration.getSeconds();
         try {
             scheduler = Executors.newSingleThreadScheduledExecutor();
             scheduler.scheduleAtFixedRate(new HolidaySynchronisationTask(), initalDelayHoliday, 24 * 60 * 60, TimeUnit.SECONDS);
-            scheduler.scheduleAtFixedRate(new OvertimeSynchronisationTask(), initalDelayOvertime, 7 * 24 * 60 * 60, TimeUnit.SECONDS);
+            scheduler.scheduleAtFixedRate(new OvertimeSynchronisationTask(), initalDelayOvertime, 24 * 60 * 60, TimeUnit.SECONDS);
             //scheduler.scheduleAtFixedRate(new HolidaySynchronisationTask(), 10, 10, TimeUnit.SECONDS);
             // scheduler.scheduleAtFixedRate(new OvertimeSynchronisationTask(), 10, 30, TimeUnit.SECONDS);
         } catch (Exception e) {

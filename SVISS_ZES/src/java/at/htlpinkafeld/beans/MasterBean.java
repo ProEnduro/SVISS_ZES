@@ -69,7 +69,7 @@ public class MasterBean {
         this.permissionlist = permissionlist;
     }
 
-    public boolean firstEnabled() {
+    public boolean isFirstEnabled() {
         if (permissionlist.contains("first")) {
             return true;
         } else {
@@ -77,7 +77,7 @@ public class MasterBean {
         }
     }
 
-    public boolean secondEnabled() {
+    public boolean isSecondEnabled() {
         if (permissionlist.contains("second")) {
             return true;
         } else {

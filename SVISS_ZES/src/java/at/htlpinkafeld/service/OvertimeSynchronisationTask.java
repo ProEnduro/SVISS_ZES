@@ -44,7 +44,7 @@ public class OvertimeSynchronisationTask implements Runnable {
         Date endDate = new Date();
         Calendar c = Calendar.getInstance();
         c.setTime(endDate);
-        c.add(Calendar.DAY_OF_MONTH, -7);
+        c.add(Calendar.DAY_OF_MONTH, -1);
         Date startDate = c.getTime();
         System.out.println("Overtime");
         for (User u : users) {
