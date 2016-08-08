@@ -26,6 +26,7 @@ and open the template in the editor.
     <body>
         
         <h:form>
+            <p:growl id="growl" showDetail="true" life="3500" autoUpdate="true"/> 
             <p:panelGrid columns="2" style="border-color: #9999ff; border-style: double; margin: 0 auto; margin-bottom: 0.5%; margin-top: 2%">
                 
                 <p:outputLabel value="Access-Level: "/>
@@ -36,23 +37,22 @@ and open the template in the editor.
                 <p:outputLabel value="Username: "/>
                 <p:inputText value="#{benutzerkontoBean.userName}" readonly="true"/>
                 
-                <p:outputLabel value="* Name: " style="font-weight: bold"/>
-                <p:inputText value="#{benutzerkontoBean.persName}" style="font-weight: bold"/>
+                <p:outputLabel for="usernameAcc" value="* Name: " style="font-weight: bold"/>
+                <p:inputText id="usernameAcc" value="#{benutzerkontoBean.persName}" style="font-weight: bold" required="true"/>
                 
-                <p:outputLabel value="* EMail: " style="font-weight: bold"/>
-                <p:inputText value="#{benutzerkontoBean.email}" style="font-weight: bold"/>
+                <p:outputLabel for="emailAcc" value="* EMail: " style="font-weight: bold"/>
+                <p:inputText id="emailAcc" value="#{benutzerkontoBean.email}" style="font-weight: bold" required="true"/>
                 
                 <p:outputLabel value="HireDate: "/>
                 <p:inputText value="#{benutzerkontoBean.hireDate}" readonly="true" converter="localDateConverter"/>
                 
-                <p:outputLabel value="* Password: " style="font-weight: bold"/>
-                <p:inputText value="#{benutzerkontoBean.password}" type="password" style="font-weight: bold"/>
+                <p:outputLabel for="passwordAcc" value="* Password: " style="font-weight: bold"/>
+                <p:inputText id="passwordAcc" value="#{benutzerkontoBean.password}" type="password" style="font-weight: bold" required="true"/>
                 
                 <p:outputLabel value="Week-Time: "/>
                 <p:inputText value="#{benutzerkontoBean.weekTime}" readonly="true"/>
                 
-            </p:panelGrid>
-            
+            </p:panelGrid>              
             
             <p:panelGrid columns="2" styleClass="ui-panelgrid" style="margin: 0 auto;">
                 <p:outputLabel value="* - Editable" style="font-weight: bold"/>
