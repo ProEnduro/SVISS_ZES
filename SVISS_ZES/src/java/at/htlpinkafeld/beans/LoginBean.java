@@ -10,6 +10,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.User_DAO;
+import at.htlpinkafeld.service.AccessRightsService;
 
 /**
  *
@@ -44,7 +45,6 @@ public class LoginBean {
     }
 
     public Object login() {
-   
 
         User_DAO user_dao = DAOFactory.getDAOFactory().getUserDAO();
 
@@ -52,30 +52,36 @@ public class LoginBean {
 
         this.user = u;
 
-
-        if(user.isDisabled() == true){
+        if (user.isDisabled() == true) {
             FacesContext context = FacesContext.getCurrentInstance();
             context.addMessage(null, new FacesMessage("User is disabled!"));
         }
-        
+
         if (user != null && user.getPass().equals(this.pw) && user.isDisabled() == false) {
 
             FacesContext context = FacesContext.getCurrentInstance();
             MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
             masterBean.setUser(this.getUser());
-            
+
             context = FacesContext.getCurrentInstance();
             ScheduleView scheduleView = (ScheduleView) context.getApplication().evaluateExpressionGet(context, "#{scheduleView}", ScheduleView.class);
             scheduleView.setUser(this.getUser());
 
+            boolean reader = user.getAccessLevel().getAccessLevelID() == 3;
+
+            if (reader) {
+                scheduleView.loadAllTimes(null);
+                return "success_reader";
+            }
+
             this.pw = "";
             this.user = null;
             this.userString = "";
-
+            
+            scheduleView.reloadAbwesenheiten(null);
 
             return "success";
         }
-        
 
         if (user == null || (user.getPass().equals(this.pw)) == false) {
             FacesContext context = FacesContext.getCurrentInstance();

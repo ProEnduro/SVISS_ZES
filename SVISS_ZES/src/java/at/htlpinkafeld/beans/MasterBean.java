@@ -6,6 +6,7 @@
 package at.htlpinkafeld.beans;
 
 import at.htlpinkafeld.pojo.User;
+import at.htlpinkafeld.service.AccessRightsService;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,20 +38,23 @@ public class MasterBean {
         permissionlist = new ArrayList<>();
 
         this.user = u;
-        if (user.getAccessLevel().getAccessLevelID() == 1) {
-            permissionlist.add("first");
-            permissionlist.add("second");
-        } else {
-            permissionlist.add("first");
+
+        switch (u.getAccessLevel().getAccessLevelID()) {
+
+            case 1:
+                columns = 8;
+                break;
+            case 2:
+                columns = 6;
+                break;
+            case 3:
+                columns = 2;
+                break;
+            case 4:
+                columns = 5;
+                break;
         }
 
-        permissionlist.add("Logout");
-        permissionlist.add("Abwesenheit_eintragen");
-        permissionlist.add("absence_acknowledgement");
-        permissionlist.add("benutzer_konto");
-        permissionlist.add("alle_abwesenheiten");
-        permissionlist.add("alltimes");
-        columns = permissionlist.size();
     }
 
     public int getColumns() {
@@ -69,20 +73,32 @@ public class MasterBean {
         this.permissionlist = permissionlist;
     }
 
-    public boolean isFirstEnabled() {
-        if (permissionlist.contains("first")) {
-            return true;
-        } else {
-            return false;
-        }
+    public boolean isIstZeitenEnabled() {
+        return AccessRightsService.checkPermission(user.getAccessLevel(), "INPUT_TIME");
     }
 
-    public boolean isSecondEnabled() {
-        if (permissionlist.contains("second")) {
-            return true;
-        } else {
-            return false;
-        }
+    public boolean isAbwesenheitenEnabled() {
+        return AccessRightsService.checkPermission(user.getAccessLevel(), "INPUT_TIME");
+    }
+
+    public boolean isAccountVerwaltungEnabled() {
+        return AccessRightsService.checkPermission(user.getAccessLevel(), "EDIT_ACCOUNT");
+    }
+
+    public boolean isBenutzerverwaltungEnabled() {
+        return AccessRightsService.checkPermission(user.getAccessLevel(), "VIEW_USERS");
+    }
+
+    public boolean isAcknowledgementEnabled() {
+        return AccessRightsService.checkPermission(user.getAccessLevel(), "ACKNOWLEDGE_USERS");
+    }
+
+    public boolean isAlleZeitenEnabled() {
+        return AccessRightsService.checkPermission(user.getAccessLevel(), "VIEW_ALL_TIMES");
+    }
+
+    public boolean isAlleAbwesenheitenEnabled() {
+        return AccessRightsService.checkPermission(user.getAccessLevel(), "VIEW_ALL_ABSENCES");
     }
 
     public String getPage() {

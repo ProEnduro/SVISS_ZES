@@ -46,6 +46,12 @@
         </navigation-case>
         
         <navigation-case>
+            <from-outcome>success_reader</from-outcome>
+            <to-view-id>/pages/allTime.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
             <from-outcome>failure</from-outcome>
             <to-view-id>/index.xhtml</to-view-id>
         </navigation-case>
