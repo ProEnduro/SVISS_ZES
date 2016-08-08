@@ -24,9 +24,9 @@ and open the template in the editor.
         
         
     <body>
-        
         <h:form>
-            <p:growl id="growl" showDetail="true" life="3500" autoUpdate="true"/> 
+            <p:growl id="growl" showDetail="true" life="5000" autoUpdate="true"/>
+            
             <p:panelGrid columns="2" style="border-color: #9999ff; border-style: double; margin: 0 auto; margin-bottom: 0.5%; margin-top: 2%">
                 
                 <p:outputLabel value="Access-Level: "/>
@@ -37,17 +37,17 @@ and open the template in the editor.
                 <p:outputLabel value="Username: "/>
                 <p:inputText value="#{benutzerkontoBean.userName}" readonly="true"/>
                 
-                <p:outputLabel for="usernameAcc" value="* Name: " style="font-weight: bold"/>
-                <p:inputText id="usernameAcc" value="#{benutzerkontoBean.persName}" style="font-weight: bold" required="true"/>
+                <p:outputLabel value="* Name: " style="font-weight: bold"/>
+                <p:inputText value="#{benutzerkontoBean.persName}" style="font-weight: bold" required="true" requiredMessage="Name required!"/>
                 
                 <p:outputLabel for="emailAcc" value="* EMail: " style="font-weight: bold"/>
-                <p:inputText id="emailAcc" value="#{benutzerkontoBean.email}" style="font-weight: bold" required="true"/>
+                <p:inputText id="emailAcc" value="#{benutzerkontoBean.email}" style="font-weight: bold" requiredMessage="Email required!" required="true"/>
                 
                 <p:outputLabel value="HireDate: "/>
                 <p:inputText value="#{benutzerkontoBean.hireDate}" readonly="true" converter="localDateConverter"/>
                 
-                <p:outputLabel for="passwordAcc" value="* Password: " style="font-weight: bold"/>
-                <p:inputText id="passwordAcc" value="#{benutzerkontoBean.password}" type="password" style="font-weight: bold" required="true"/>
+                <p:outputLabel value="* Password: " style="font-weight: bold"/>
+                <p:inputText value="#{benutzerkontoBean.password}" type="password" style="font-weight: bold" required="true" requiredMessage="Password required!"/>
                 
                 <p:outputLabel value="Week-Time: "/>
                 <p:inputText value="#{benutzerkontoBean.weekTime}" readonly="true"/>
@@ -57,8 +57,8 @@ and open the template in the editor.
             <p:panelGrid columns="2" styleClass="ui-panelgrid" style="margin: 0 auto;">
                 <p:outputLabel value="* - Editable" style="font-weight: bold"/>
                 <br></br>
-                <p:commandButton value="Speichern" action="speichern" style="background-color: #91d1d4"/>
-                <p:commandButton value="Änderungen verwerfen" action="verwerfenAen" immediate="true" style="background-color: #ff7a7a"/>
+                <p:commandButton value="Speichern" action="istzeit.xhtml?faces-redirect=true" actionListener="#{scheduleView.reloadAbwesenheiten}" style="background-color: #91d1d4"/>
+                <p:commandButton value="Änderungen verwerfen" action="istzeit.xhtml?faces-redirect=true" actionListener="#{scheduleView.reloadAbwesenheiten}" immediate="true" style="background-color: #ff7a7a"/>
             </p:panelGrid>
             
         </h:form>
