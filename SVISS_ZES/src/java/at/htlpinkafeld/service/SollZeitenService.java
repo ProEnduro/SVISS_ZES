@@ -52,7 +52,7 @@ public class SollZeitenService {
         List<SollZeiten> list = SOLL_ZEITEN__DAO.getSollZeitenByUser(current);
         double sollzeitToday = 0;
 
-        LocalDate date = new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate date = LocalDate.now();
         DayOfWeek dayofweek = date.getDayOfWeek();
 
         LocalTime start;
@@ -64,7 +64,7 @@ public class SollZeitenService {
                 end = s.getSollEndTime();
 
                 sollzeitToday = (double) end.getHour() + (double) end.getMinute() / 60;
-                sollzeitToday = sollzeitToday - ((double) start.getHour() + (double) start.getMinute() / 60);
+                sollzeitToday -= ((double) start.getHour() + (double) start.getMinute() / 60);
 
             }
         }

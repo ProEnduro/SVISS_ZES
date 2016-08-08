@@ -9,13 +9,11 @@ import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.dao.util.WrappedConnection;
 import at.htlpinkafeld.pojo.User;
+import at.htlpinkafeld.pojo.UserProxy;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,8 +38,12 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
     public static final String PASSWORD_COL = "PASSWORD";
     public static final String WEEKTIME_COL = "WEEKTIME";
     public static final String DISABLED_COL = "DISABLED";
+    
+    private static final String REL_USERNR_COL = USERNR_COL;
+    private static final String REL_APPROVER_COL = "APPROVERNR";
 
     public static final String TABLE_NAME = "User";
+    private static final String RELATION_TABLE_NAME = "ApproverUser";
     public static final String PRIMARY_KEY = USERNR_COL;
     public static final String[] ALL_COLUMNS = {USERNR_COL, ACCESSLEVELID_COL, PERSNAME_COL, VACATIONLEFT_COL, OVERTIMELEFT_COL, USERNAME_COL, EMAIL_COL,
         HIREDATE_COL, PASSWORD_COL, WEEKTIME_COL, DISABLED_COL};
@@ -125,7 +127,7 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
 
     @Override
     protected User getEntityFromResultSet(ResultSet rs) {
-        User u = new User();
+        User u = new UserProxy();
         try {
             u.setUserNr(rs.getInt(USERNR_COL));
             AccessLevel_DAO alDAO = new AccessLevel_JDBCDAO();

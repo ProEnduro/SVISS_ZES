@@ -8,6 +8,7 @@ package at.htlpinkafeld.beans;
 import at.htlpinkafeld.pojo.AccessLevel;
 import at.htlpinkafeld.pojo.SollZeiten;
 import at.htlpinkafeld.pojo.User;
+import at.htlpinkafeld.pojo.UserProxy;
 import at.htlpinkafeld.service.AccessRightsService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import at.htlpinkafeld.service.IstZeitService;
@@ -71,12 +72,12 @@ public class BenutzerverwaltungBean {
     }
 
     public void newUser() {
-        selectedUser = new User();
+        selectedUser = new UserProxy();
         newSollZeiten = new ArrayList<>();
     }
 
     public void editUser(User u) {
-        selectedUser = new User(u);
+        selectedUser = new UserProxy(u);
     }
 
     public void saveUser() {
@@ -125,7 +126,7 @@ public class BenutzerverwaltungBean {
     }
 
     public void discardUserChanges() {
-        selectedUser = new User();
+        selectedUser = new UserProxy();
     }
 
     public User getSelectedUser() {
