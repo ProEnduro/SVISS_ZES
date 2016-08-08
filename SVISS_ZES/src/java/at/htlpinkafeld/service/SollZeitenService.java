@@ -9,6 +9,11 @@ import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
 import at.htlpinkafeld.pojo.SollZeiten;
 import at.htlpinkafeld.pojo.User;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,6 +46,30 @@ public class SollZeitenService {
 
     public static void deleteZeit(SollZeiten o) {
         SOLL_ZEITEN__DAO.delete(o);
+    }
+
+    public static double getSollZeitForToday(User current) {
+        List<SollZeiten> list = SOLL_ZEITEN__DAO.getSollZeitenByUser(current);
+        double sollzeitToday = 0;
+
+        LocalDate date = new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        DayOfWeek dayofweek = date.getDayOfWeek();
+
+        LocalTime start;
+        LocalTime end;
+
+        for (SollZeiten s : list) {
+            if (s.getDay().equals(dayofweek)) {
+                start = s.getSollStartTime();
+                end = s.getSollEndTime();
+
+                sollzeitToday = (double) end.getHour() + (double) end.getMinute() / 60;
+                sollzeitToday = sollzeitToday - ((double) start.getHour() + (double) start.getMinute() / 60);
+
+            }
+        }
+
+        return sollzeitToday;
     }
 
 }

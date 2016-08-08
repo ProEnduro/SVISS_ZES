@@ -15,9 +15,11 @@ import at.htlpinkafeld.pojo.WorkTime;
 import at.htlpinkafeld.service.AbsenceService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import at.htlpinkafeld.service.IstZeitService;
+import at.htlpinkafeld.service.SollZeitenService;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
@@ -70,6 +72,7 @@ public class ScheduleView implements Serializable {
     private List<String> allUsers;
 
     double verbleibend;
+    double overtimeleft;
 
     String startcomment;
     String endcomment;
@@ -436,6 +439,7 @@ public class ScheduleView implements Serializable {
 //        verbleibend = currentUser.getWeekTime();
 
         verbleibend = currentUser.getWeekTime();
+        overtimeleft = currentUser.getOverTimeLeft() * 60;
 
         this.eventModel.clear();
         List<Absence> absenceList = AbsenceService.getAbsenceByUser(currentUser);
@@ -490,6 +494,8 @@ public class ScheduleView implements Serializable {
         field = WeekFields.of(Locale.getDefault());
         currentWeek = date.get(field.weekOfWeekBasedYear());
 
+        int today = date.getDayOfYear();
+
         for (WorkTime w : worktimelist) {
             date = IstZeitService.convertLocalDateTimeToDate(w.getStartTime()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             field = WeekFields.of(Locale.getDefault());
@@ -516,6 +522,22 @@ public class ScheduleView implements Serializable {
                 time = time - ((double) w.getBreakTime() / 60);
 
                 verbleibend = verbleibend - time;
+            }
+
+            if (today == date.getDayOfYear()) {
+                double worktimeForToday = SollZeitenService.getSollZeitForToday(currentUser);
+
+                LocalDateTime start = w.getStartTime();
+                LocalDateTime end = w.getEndTime();
+
+                double a = (double) end.getHour() + (double) end.getMinute() / 60;
+                System.out.println("a = " + a);
+                double b = ((double) start.getHour() + (double) start.getMinute() / 60);
+                System.out.println("b = " + b);
+
+                double c = worktimeForToday - (a - b);
+
+                this.overtimeleft = overtimeleft - (c*60);
             }
         }
     }
@@ -942,24 +964,31 @@ public class ScheduleView implements Serializable {
         transport.close();
 
     }
-    
-    public Date getStartDateToday(){
-        
+
+    public Date getStartDateToday() {
+
         LocalDateTime start = LocalDateTime.now();
-        
+
         start = start.withHour(0).withMinute(0).withSecond(0).minusWeeks(1);
-            
+
         return IstZeitService.convertLocalDateTimeToDate(start);
     }
-    
-    public Date getEndDateToday(){
-        
+
+    public Date getEndDateToday() {
+
         LocalDateTime end = LocalDateTime.now();
-        
+
         end = end.withHour(23).withMinute(59).withSecond(59);
-        
-        
+
         return IstZeitService.convertLocalDateTimeToDate(end);
+    }
+
+    public double getOvertimeleft() {
+        return overtimeleft;
+    }
+
+    public void setOvertimeleft(double overtimeleft) {
+        this.overtimeleft = overtimeleft;
     }
 
 }

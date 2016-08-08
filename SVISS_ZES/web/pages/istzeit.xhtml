@@ -16,7 +16,7 @@ and open the template in the editor.
         <ui:define name="content">
             <h:form>
 
-                <p:commandButton value="send Email" actionListener="#{scheduleView.sendEmail}"/>
+                <p:commandButton value="send Email" actionListener="#{scheduleView.sendEmail}" disabled="true"/>
 
                 <h1 align="center">Ist-Zeiten</h1>
 
@@ -31,7 +31,7 @@ and open the template in the editor.
                         <p:outputLabel value="Überstunden:"/>
                     </p:column>
                     <p:column>
-                        <p:outputLabel value="#{scheduleView.currentUser.overTimeLeft}" >
+                        <p:outputLabel value="#{scheduleView.overtimeleft}">
                             <f:converter converterId="minuteHourConverter"/>
                         </p:outputLabel>
                     </p:column>
@@ -54,7 +54,7 @@ and open the template in the editor.
 
                 <p:growl id="messages" showDetail="true" />
 
-                <p:schedule firstHour="6" aspectRatio="3" view="agendaWeek" id="schedule" value="#{scheduleView.eventModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" columnFormat="month:'ddd', week:'dddd - dd.MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
+                <p:schedule draggable="false" resizable="false" firstHour="6" aspectRatio="3" view="agendaWeek" id="schedule" value="#{scheduleView.eventModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" columnFormat="month:'ddd', week:'dddd - dd.MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
 
                     <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
                     <p:ajax event="eventSelect" listener="#{scheduleView.onEventSelect}" update="eventDetails :absenceDialogForm:absenceDialogID" />
