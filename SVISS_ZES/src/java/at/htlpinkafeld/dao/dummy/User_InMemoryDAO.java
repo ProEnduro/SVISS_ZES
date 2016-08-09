@@ -7,6 +7,7 @@ package at.htlpinkafeld.dao.dummy;
 
 import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
+import at.htlpinkafeld.pojo.AccessLevel;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserProxy;
 import java.time.LocalDate;
@@ -18,8 +19,6 @@ import java.util.List;
  * @author Martin Six
  */
 public class User_InMemoryDAO extends Base_InMemoryDAO<User> implements User_DAO {
-
-    private List<User> approverList;
 
     protected User_InMemoryDAO() {
         super(new ArrayList<>());
@@ -45,9 +44,6 @@ public class User_InMemoryDAO extends Base_InMemoryDAO<User> implements User_DAO
         super.insert(new UserProxy(al_DAO.getAccessLevelByID(4), "Hans Steifer", 17, 36, "Hans", "hans.steifer@gmail.com", LocalDate.of(2016, 6, 19), "hans", 12.0));
         super.insert(new UserProxy(al_DAO.getAccessLevelByID(1), "Johannes Engmot", 4, 48, "Johannes", "johannes.engmot@aon.at", LocalDate.of(2016, 5, 2), "johannes", 22.5));
         super.insert(new UserProxy(al_DAO.getAccessLevelByID(4), "John Wayne", 15, 30, "john", "john.wayne@gmx.at", LocalDate.of(2016, 4, 14), "john", 33.5));
-
-        approverList = new ArrayList<>();
-        approverList.add(new UserProxy(al_DAO.getAccessLevelByID(1), "AdminUser", 21, 36, "admin", "admin@test.at", LocalDate.of(2016, 3, 7), "admin", 14.0));
     }
 
     @Override
@@ -82,10 +78,10 @@ public class User_InMemoryDAO extends Base_InMemoryDAO<User> implements User_DAO
 
     @Override
     public List<User> getUserByDisabled(Boolean disabled) {
-        List<User> userL = getList();
-        for (User u : userL) {
-            if (u.isDisabled() != disabled) {
-                userL.remove(u);
+        List<User> userL = new ArrayList<>();
+        for (User u : getList()) {
+            if (u.isDisabled() == disabled) {
+                userL.add(clone(u));
             }
         }
         return userL;
@@ -93,17 +89,39 @@ public class User_InMemoryDAO extends Base_InMemoryDAO<User> implements User_DAO
 
     @Override
     public List<User> getApprover(User user) {
-        return approverList;
+        List<User> approver;
+        if (user.ApproverInitialized()) {
+            approver = getList().get(getList().indexOf(user)).getApprover();
+            return approver;
+        } else {
+            approver = new ArrayList<>();
+            user.setApprover(approver);
+            update(user);
+            return approver;
+        }
     }
 
     @Override
     public void updateApproverOfUser(User user) {
-        approverList = user.getApprover();
+        update(user);
     }
 
     @Override
     public void removeApprover(User approver) {
-        this.approverList.remove(approver);
+        for (User u : getList()) {
+            u.getApprover().remove(approver);
+        }
+    }
+
+    @Override
+    public List<User> getUserByAccessLevel(AccessLevel accessLevel) {
+        List<User> userL = new ArrayList<>();
+        for (User u : getList()) {
+            if (u.getAccessLevel().equals(accessLevel)) {
+                userL.add(clone(u));
+            }
+        }
+        return userL;
     }
 
 }

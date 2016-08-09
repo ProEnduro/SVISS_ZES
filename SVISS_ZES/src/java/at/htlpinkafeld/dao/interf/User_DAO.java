@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.dao.interf;
 
+import at.htlpinkafeld.pojo.AccessLevel;
 import at.htlpinkafeld.pojo.User;
 import java.util.List;
 
@@ -17,12 +18,14 @@ public interface User_DAO extends Base_DAO<User> {
     public abstract User getUser(int userNr);
 
     public abstract User getUserByUsername(String username);
-    
+
     public abstract List<User> getUserByDisabled(Boolean disabled);
 
+    public abstract List<User> getUserByAccessLevel(AccessLevel accessLevel);
+
     public abstract List<User> getApprover(User user);
-    
+
     public abstract void updateApproverOfUser(User user);
-    
+
     public abstract void removeApprover(User approver);
 }

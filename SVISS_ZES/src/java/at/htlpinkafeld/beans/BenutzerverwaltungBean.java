@@ -28,8 +28,10 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import org.primefaces.event.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TransferEvent;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.DefaultScheduleModel;
+import org.primefaces.model.DualListModel;
 import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
 
@@ -42,6 +44,9 @@ public class BenutzerverwaltungBean {
     private List<User> userlist;
 
     private User selectedUser;
+
+    private DualListModel<User> approverModel;
+
     private List<SollZeiten> currentSollZeiten;
     private List<SollZeiten> newSollZeiten;
 
@@ -76,8 +81,8 @@ public class BenutzerverwaltungBean {
         newSollZeiten = new ArrayList<>();
     }
 
-    public void editUser(User u) {
-        selectedUser = new UserProxy(u);
+    public void editUser(User user) {
+        selectedUser = new UserProxy(user);
     }
 
     public void saveUser() {
@@ -103,8 +108,10 @@ public class BenutzerverwaltungBean {
                 }
             }
         }
+        selectedUser = null;
     }
 
+    //WeekTime Stuff
     public void saveTimes() {
         selectedUser.setWeekTime(getNewWeekTime());
 //        for (SollZeiten sz : newSollZeiten) {
@@ -141,6 +148,7 @@ public class BenutzerverwaltungBean {
         return AccessRightsService.AccessGroups;
     }
 
+    //Scheduel Stuff from this Point
     public Date getPointDate() {
         return IstZeitService.convertLocalDateTimeToDate(pointDate.atStartOfDay());
     }
@@ -216,4 +224,37 @@ public class BenutzerverwaltungBean {
             }
         }
     }
+
+    //Approver Stuff from here on
+    public void editApprover(User user) {
+        selectedUser = user;
+        List<User> source = new LinkedList<>();
+        for (AccessLevel al : AccessRightsService.AccessGroups) {
+            if (al.containsPermission("ACKNOWLEDGE_USERS") || al.containsPermission("ALL")) {
+                source.addAll(BenutzerverwaltungService.getUserByAccessLevel(al));
+            }
+        }
+        source.remove(selectedUser);
+
+        List<User> target = new LinkedList<>();
+        for (User appr : selectedUser.getApprover()) {
+            target.add(appr);
+        }
+        approverModel = new DualListModel<>(source, target);
+    }
+
+    public DualListModel<User> getApproverModel() {
+        return approverModel;
+    }
+
+    public void setApproverModel(DualListModel<User> approverModel) {
+        this.approverModel = approverModel;
+    }
+
+    public void saveApprover() {
+        selectedUser.setApprover(approverModel.getTarget());
+        BenutzerverwaltungService.updateApproverOfUser(selectedUser);
+        selectedUser = null;
+    }
+
 }
