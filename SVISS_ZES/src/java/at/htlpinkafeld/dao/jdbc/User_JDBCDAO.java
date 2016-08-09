@@ -9,6 +9,7 @@ import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.dao.util.DAOException;
 import at.htlpinkafeld.dao.util.WrappedConnection;
+import at.htlpinkafeld.pojo.AccessLevel;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserProxy;
 import java.sql.ResultSet;
@@ -136,7 +137,43 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
                 Statement stmt = con.getConn().createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + DISABLED_COL + " IS " + disabled + " " + SQL_ORDER_BY_LINE)) {
 
-            if (rs.next()) {
+            while (rs.next()) {
+                userL.add(getEntityFromResultSet(rs));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return userL;
+    }
+
+    @Override
+    public List<User> getApprover(User user) {
+        List<User> userL = new ArrayList<>();
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT " + TABLE_NAME + ".* FROM " + TABLE_NAME + " JOIN " + RELATION_TABLE_NAME
+                        + " ON( " + TABLE_NAME + "." + USERNR_COL + " = " + RELATION_TABLE_NAME + "." + REL_APPROVER_COL + ") "
+                        + "WHERE " + RELATION_TABLE_NAME + "." + REL_USERNR_COL + " = " + user.getUserNr() + " " + SQL_ORDER_BY_LINE)) {
+
+            while (rs.next()) {
+                userL.add(getEntityFromResultSet(rs));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return userL;
+    }
+
+    @Override
+    public List<User> getUserByAccessLevel(AccessLevel accessLevel) {
+        List<User> userL = new ArrayList<>();
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ACCESSLEVELID_COL + " = " + accessLevel.getAccessLevelID() + " " + SQL_ORDER_BY_LINE)) {
+
+            while (rs.next()) {
                 userL.add(getEntityFromResultSet(rs));
             }
 
@@ -197,24 +234,4 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    @Override
-    public List<User> getApprover(User user) {
-        List<User> userL = new ArrayList<>();
-        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
-                Statement stmt = con.getConn().createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT " + TABLE_NAME + ".* FROM " + TABLE_NAME + " JOIN " + RELATION_TABLE_NAME
-                        + " ON( " + TABLE_NAME + "." + USERNR_COL + " = " + RELATION_TABLE_NAME + "." + REL_APPROVER_COL + ") "
-                        + "WHERE " + RELATION_TABLE_NAME + "." + REL_USERNR_COL + " = " + user.getUserNr() + " " + SQL_ORDER_BY_LINE)) {
-
-            if (rs.next()) {
-                userL.add(getEntityFromResultSet(rs));
-            }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return userL;
-    }
-
 }

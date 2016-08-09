@@ -13,6 +13,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
@@ -63,13 +64,11 @@ public class SollZeitenService {
                 start = s.getSollStartTime();
                 end = s.getSollEndTime();
 
-                sollzeitToday = (double) end.getHour() + (double) end.getMinute() / 60;
-                sollzeitToday -= ((double) start.getHour() + (double) start.getMinute() / 60);
-
+                sollzeitToday = start.until(end, ChronoUnit.MINUTES);
+                return sollzeitToday;
             }
         }
-
-        return sollzeitToday;
+        return -1;
     }
 
 }

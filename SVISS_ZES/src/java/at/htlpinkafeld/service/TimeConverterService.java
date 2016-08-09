@@ -20,6 +20,14 @@ import java.util.TimeZone;
  */
 public class TimeConverterService {
 
+    public static LocalDate convertDateToLocalDate(Date date) {
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    public static Date convertLocalDateToDate(LocalDate date) {
+        return Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+    }
+
     public static LocalDateTime convertDateToLocalDateTime(Date date) {
         return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
     }

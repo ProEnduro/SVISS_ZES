@@ -7,6 +7,7 @@ package at.htlpinkafeld.service;
 
 import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.User_DAO;
+import at.htlpinkafeld.pojo.AccessLevel;
 import at.htlpinkafeld.pojo.User;
 import java.util.List;
 
@@ -45,5 +46,25 @@ public class BenutzerverwaltungService {
     
     public static User getUser(int id){
         return userdao.getUser(id);
+    }
+
+    public static User getUserByUsername(String username) {
+        return userdao.getUserByUsername(username);
+    }
+
+    public static List<User> getUserByDisabled(Boolean disabled) {
+        return userdao.getUserByDisabled(disabled);
+    }
+
+    public static List<User> getUserByAccessLevel(AccessLevel accessLevel) {
+        return userdao.getUserByAccessLevel(accessLevel);
+    }
+
+    public static void updateApproverOfUser(User user) {
+        userdao.updateApproverOfUser(user);
+    }
+
+    public static void removeApprover(User approver) {
+        userdao.removeApprover(approver);
     }
 }

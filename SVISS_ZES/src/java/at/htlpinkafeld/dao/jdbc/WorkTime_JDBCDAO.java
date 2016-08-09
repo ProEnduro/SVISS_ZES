@@ -61,7 +61,6 @@ public class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime
     protected WorkTime getEntityFromResultSet(ResultSet rs) {
         try {
             return new WorkTime(rs.getInt(TIMEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), rs.getTimestamp(STARTTIME_COL).toLocalDateTime(), rs.getTimestamp(ENDTIME_COL).toLocalDateTime(), rs.getInt(BREAKTIME_COL), rs.getString(STARTCOMMENT_COL), rs.getString(ENDCOMMENT_COL));
-
         } catch (SQLException ex) {
             Logger.getLogger(WorkTime_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }

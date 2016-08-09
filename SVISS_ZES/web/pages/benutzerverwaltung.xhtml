@@ -52,17 +52,21 @@ and open the template in the editor.
                     <h:outputText value="#{user.disabledString}"/>
                 </p:column>
 
+                <p:column headerText="Freigeber ändern">
+                    <p:commandButton id="editApproverBut" value="edit" action="#{benutzerverwaltungsBean.editApprover(user)}" update=":approverForm" oncomplete="PF('approverDialog').show();"/>
+                </p:column>
+
                 <p:column headerText="User ändern">
-                    <p:commandButton id="editUserBut" value="edit" action="#{benutzerverwaltungsBean.editUser(user)}" update=":userDialogForm:userDlgGrid" oncomplete="PF('udlg1').show();"/>
+                    <p:commandButton id="editUserBut" value="edit User" action="#{benutzerverwaltungsBean.editUser(user)}" update=":userDialogForm:userDlgGrid" oncomplete="PF('userdlg').show();"/>
                 </p:column>
 
             </p:dataTable>
 
-            <p:commandButton id="newUserBut" value="New User" action="#{benutzerverwaltungsBean.newUser}" update=":userDialogForm:userDlgGrid :weekDialogForm:weekDlgPanel"  oncomplete="PF('udlg1').show();"/>
+            <p:commandButton id="newUserBut" value="New User" action="#{benutzerverwaltungsBean.newUser}" update=":userDialogForm:userDlgGrid :weekDialogForm:weekDlgPanel"  oncomplete="PF('userdlg').show();"/>
 
         </h:form>
 
-        <p:dialog  closeOnEscape="true" header="User Dialog" widgetVar="udlg1" modal="true" resizable="false">
+        <p:dialog  closeOnEscape="true" header="User Dialog" widgetVar="userdlg" modal="true" resizable="false">
             <h:form id="userDialogForm">
                 <p:panelGrid id="userDlgGrid">
                     <p:row>
@@ -120,8 +124,8 @@ and open the template in the editor.
 
                     <f:facet name="footer">
                         <p:row>
-                            <p:column><p:commandButton value="User speichern" action="#{benutzerverwaltungsBean.saveUser}" update=":tableForm:usertable" onsuccess="PF('udlg1').hide();"/></p:column>
-                            <p:column><p:commandButton value="Änderung verwerfen" action="#{benutzerverwaltungsBean.discardUserChanges}" oncomplete="PF('udlg1').hide();"/></p:column>
+                            <p:column><p:commandButton value="User speichern" action="#{benutzerverwaltungsBean.saveUser}" update=":tableForm:usertable" onsuccess="PF('userdlg').hide();"/></p:column>
+                            <p:column><p:commandButton value="Änderung verwerfen" action="#{benutzerverwaltungsBean.discardUserChanges}" oncomplete="PF('userdlg').hide();"/></p:column>
                         </p:row>
                     </f:facet>
                 </p:panelGrid>
@@ -152,7 +156,7 @@ and open the template in the editor.
             </h:form>
         </p:dialog>
 
-        <p:dialog widgetVar="eventDialog" showEffect="clip" hideEffect="clip" closeOnEscape="true" resizable="false" dynamic="true">
+        <p:dialog widgetVar="eventDialog" closeOnEscape="true" resizable="false" dynamic="true">
             <h:form id="weekTimeSelectForm">
                 <h:panelGrid id="eventDetails" columns="2">
 
@@ -162,9 +166,21 @@ and open the template in the editor.
                     <p:outputLabel for="to" value="To:" />
                     <p:calendar id="to" value="#{benutzerverwaltungsBean.curEvent.endDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"/>
 
-                    <p:commandButton type="reset" value="Reset" />
                     <p:commandButton id="addButton" value="Save" action="#{benutzerverwaltungsBean.addEvent}" update=":weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  oncomplete="PF('eventDialog').hide();" />
+                    <p:commandButton type="reset" value="Reset" />
                 </h:panelGrid>
+            </h:form>
+        </p:dialog> 
+
+        <p:dialog widgetVar="approverDialog" closeOnEscape="true" resizable="false" dynamic="true" modal="true">
+            <h:form id="approverForm">
+                <p:panel id="approverPanel">
+                    <p:pickList value="#{benutzerverwaltungsBean.approverModel}" var="approver" itemLabel="#{approver.username}" itemValue="#{approver}" converter="userConverter"/>
+                    <f:facet name="footer">
+                        <p:commandButton id="saveApprover" value="Save" action="#{benutzerverwaltungsBean.saveApprover}" oncomplete="PF('approverDialog').hide();" />
+                        <p:commandButton id="cancelApprover" value="Cancel" oncomplete="PF('approverDialog').hide();"/>
+                    </f:facet>
+                </p:panel>
             </h:form>
         </p:dialog> 
 

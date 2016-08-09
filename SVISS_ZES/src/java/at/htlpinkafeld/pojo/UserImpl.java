@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.pojo;
 
+import at.htlpinkafeld.service.AccessRightsService;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -224,17 +225,21 @@ public class UserImpl implements User {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (obj instanceof User) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+
+            final User other = (User) obj;
+            if (this.userNr != other.getUserNr()) {
+                return false;
+            }
             return true;
         }
-        if (obj == null) {
-            return false;
-        }
-        final User other = (User) obj;
-        if (this.userNr != other.getUserNr()) {
-            return false;
-        }
-        return true;
+        return false;
     }
 
     @Override

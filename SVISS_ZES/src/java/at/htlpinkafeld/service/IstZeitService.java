@@ -13,6 +13,7 @@ import static com.sun.org.apache.xalan.internal.lib.ExsltDatetime.time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
@@ -26,37 +27,27 @@ public class IstZeitService {
     static WorkTime workT;
     static WorkTime test;
 
-    public IstZeitService() {
-    }
-
-    public static void addIstTime(User user, LocalDateTime startTime, LocalDateTime endTime) {
-        workT = new WorkTime(user, startTime, endTime, 0, "", "");
+    static {
         workDAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
-        workDAO.insert(workT);
     }
 
     public static void addIstTime(WorkTime t) {
-        workDAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
         workDAO.insert(t);
     }
 
     public static List<WorkTime> getWorktimeByUser(User u) {
-        workDAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
         return workDAO.getWorkTimesByUser(u);
     }
 
     public static List<WorkTime> getAllWorkTime() {
-        workDAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
         return workDAO.getList();
     }
 
     public static void update(WorkTime o) {
-        workDAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
         workDAO.update(o);
     }
 
     public static void delete(WorkTime o) {
-        workDAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
         workDAO.delete(o);
     }
 
@@ -73,20 +64,7 @@ public class IstZeitService {
         LocalDateTime start = IstZeitService.convertDateToLocalDateTime(startDate);
         LocalDateTime end = IstZeitService.convertDateToLocalDateTime(endDate);
 
-        double sd = start.getDayOfYear() * 24;
-        double sh = start.getHour();
-        double sm = start.getMinute() / 60;
-        double st = sd + sh + sm;
-        
-
-        double ed = end.getDayOfYear() * 24;
-        double eh = end.getHour();
-        double em = end.getMinute() / 60;
-        double et = ed + eh + em;
-        
-
-        double dif = et - st;
-        
+        double dif = start.until(end, ChronoUnit.HOURS);
 
         if (dif >= 6.00) {
             return true;

@@ -7,15 +7,17 @@ package at.htlpinkafeld.service;
 
 import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.Absence_DAO;
+import at.htlpinkafeld.dao.interf.Holiday_DAO;
 import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.dao.interf.WorkTime_DAO;
 import at.htlpinkafeld.pojo.Absence;
+import at.htlpinkafeld.pojo.Holiday;
 import at.htlpinkafeld.pojo.SollZeiten;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
 import java.time.DayOfWeek;
-import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -26,52 +28,59 @@ import java.util.List;
  */
 public class OvertimeSynchronisationTask implements Runnable {
 
-    private static final User_DAO USER__DAO;
-    private static final WorkTime_DAO WORK_TIME__DAO;
-    private static final Absence_DAO ABSENCE__DAO;
-    private static final SollZeiten_DAO SOLL_ZEITEN__DAO;
+    private static final User_DAO USER_DAO;
+    private static final WorkTime_DAO WORK_TIME_DAO;
+    private static final Absence_DAO ABSENCE_DAO;
+    private static final SollZeiten_DAO SOLL_ZEITEN_DAO;
+    private static final Holiday_DAO HOLIDAY_DAO;
 
     static {
-        USER__DAO = DAOFactory.getDAOFactory().getUserDAO();
-        WORK_TIME__DAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
-        ABSENCE__DAO = DAOFactory.getDAOFactory().getAbsenceDAO();
-        SOLL_ZEITEN__DAO = DAOFactory.getDAOFactory().getSollZeitenDAO();
+        USER_DAO = DAOFactory.getDAOFactory().getUserDAO();
+        WORK_TIME_DAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
+        ABSENCE_DAO = DAOFactory.getDAOFactory().getAbsenceDAO();
+        SOLL_ZEITEN_DAO = DAOFactory.getDAOFactory().getSollZeitenDAO();
+        HOLIDAY_DAO = DAOFactory.getDAOFactory().getHolidayDAO();
     }
+
+    private boolean holiday = false;
 
     @Override
     public void run() {
-        List<User> users = USER__DAO.getUserByDisabled(Boolean.FALSE);
+        List<User> users = USER_DAO.getUserByDisabled(Boolean.FALSE);
         Date endDate = new Date();
         Calendar c = Calendar.getInstance();
         c.setTime(endDate);
-        c.add(Calendar.DAY_OF_MONTH, -1);
+        c.add(Calendar.DAY_OF_YEAR, -1);
         Date startDate = c.getTime();
         System.out.println("Overtime");
-        for (User u : users) {
-            int overtime = calcOvertime(u, startDate, endDate);
-            u.setOverTimeLeft(u.getOverTimeLeft() + overtime);
+        holiday = !HOLIDAY_DAO.getHolidayBetweenDates(startDate, endDate).isEmpty();
+        if (!holiday) {
+            for (User u : users) {
+                int overtime = calcOvertime(u, startDate, endDate);
+                u.setOverTimeLeft(u.getOverTimeLeft() + overtime);
+            }
         }
     }
 
     // TODO: Fragen wegen Rechtslage bei Überstunden etc.
     public static int calcOvertime(User u, Date startDate, Date endDate) {
         int overtime = 0;
-        List<WorkTime> workTimes = WORK_TIME__DAO.getWorkTimesFromUserBetweenDates(u, startDate, endDate);
-        List<SollZeiten> sollZeiten = SOLL_ZEITEN__DAO.getSollZeitenByUser(u);
+
+        List<WorkTime> workTimes = WORK_TIME_DAO.getWorkTimesFromUserBetweenDates(u, startDate, endDate);
+        List<SollZeiten> sollZeiten = SOLL_ZEITEN_DAO.getSollZeitenByUser(u);
         for (WorkTime wt : workTimes) {
-            overtime += calcDiffInMin(wt.getStartTime().toLocalTime(), wt.getEndTime().toLocalTime());
+            overtime += wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
             overtime -= wt.getBreakTime();
             DayOfWeek sDay = wt.getStartTime().getDayOfWeek();
             for (SollZeiten sz : sollZeiten) {
                 if (sz.getDay().equals(sDay)) {
-                    overtime -= calcDiffInMin(sz.getSollStartTime(), sz.getSollEndTime());
+                    overtime -= sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
                 }
             }
         }
 
 //        overtime -= u.getWeekTime() * 60;
-
-        List<Absence> absences = ABSENCE__DAO.getAbsencesByUserBetweenDates(u, startDate, endDate);
+        List<Absence> absences = ABSENCE_DAO.getAbsencesByUserBetweenDates(u, startDate, endDate);
 
         for (Absence a : absences) {
             if (a.getStartTime().isBefore(TimeConverterService.convertDateToLocalDateTime(startDate))) {
@@ -87,7 +96,7 @@ public class OvertimeSynchronisationTask implements Runnable {
                     for (int i = 0; i < holidayLength; i++, hDay.plus(1)) {
                         for (SollZeiten sz : sollZeiten) {
                             if (sz.getDay().equals(hDay)) {
-                                int diff = calcDiffInMin(sz.getSollStartTime(), sz.getSollEndTime());
+                                int diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
                                 if (diff > 6 * 60) {
                                     diff -= 30;
                                 }
@@ -106,16 +115,16 @@ public class OvertimeSynchronisationTask implements Runnable {
                                 int diff;
                                 if (i == 0 || i == (dayNum - 1)) {
                                     if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime()) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
-                                        diff = calcDiffInMin(a.getStartTime().toLocalTime(), a.getEndTime().toLocalTime());
+                                        diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
                                     } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime())) {
-                                        diff = calcDiffInMin(a.getStartTime().toLocalTime(), sz.getSollEndTime());
+                                        diff = (int) a.getStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
                                     } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
-                                        diff = calcDiffInMin(sz.getSollStartTime(), a.getEndTime().toLocalTime());
+                                        diff = (int) sz.getSollStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
                                     } else {
-                                        diff = calcDiffInMin(sz.getSollStartTime(), sz.getSollEndTime());
+                                        diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
                                     }
                                 } else {
-                                    diff = calcDiffInMin(sz.getSollStartTime(), sz.getSollEndTime());
+                                    diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
                                 }
                                 if (diff > 6 * 60) {
                                     diff -= 30;
@@ -130,11 +139,5 @@ public class OvertimeSynchronisationTask implements Runnable {
             }
         }
         return overtime;
-    }
-
-    private static int calcDiffInMin(LocalTime startTime, LocalTime endTime) {
-        int diff = (endTime.getHour() - startTime.getHour()) * 60;
-        diff += endTime.getMinute() - startTime.getMinute();
-        return diff;
     }
 }
