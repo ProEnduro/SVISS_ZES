@@ -96,4 +96,25 @@
         <managed-bean-class>at.htlpinkafeld.beans.BenutzerkontoBean</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
+    <managed-bean>
+        <managed-bean-name>themeService</managed-bean-name>
+        <managed-bean-class>at.htlpinkafeld.beans.ThemeService</managed-bean-class>
+        <managed-bean-scope>application</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>guestPreferences</managed-bean-name>
+        <managed-bean-class>at.htlpinkafeld.beans.util.GuestPreferences</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>theme</managed-bean-name>
+        <managed-bean-class>at.htlpinkafeld.beans.util.Theme</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    
+    <converter>
+        <converter-id>theme</converter-id>
+        <converter-class>at.htlpinkafeld.beans.util.ThemeConverter</converter-class>
+    </converter>
+    
 </faces-config>

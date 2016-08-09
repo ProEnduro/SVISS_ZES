@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 
 /**
  *
@@ -27,6 +28,8 @@ public class BenutzerkontoBean {
     Date hireDate;
     String password;
     double weekTime;
+    
+    String themeTest="1";
 
     FacesContext context = FacesContext.getCurrentInstance();
     MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
@@ -84,4 +87,12 @@ public class BenutzerkontoBean {
     public double getWeekTime() {
         return user.getWeekTime();
     }  
+    
+
+    
+    
+    
+
+    
+    
 }
