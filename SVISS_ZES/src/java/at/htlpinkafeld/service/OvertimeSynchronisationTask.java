@@ -126,7 +126,7 @@ public class OvertimeSynchronisationTask implements Runnable {
                                 } else {
                                     diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
                                 }
-                                if (diff >= 6 * 60) {
+                                if (diff > 6 * 60) {
                                     diff -= 30;
                                 }
                                 overtime += diff;
