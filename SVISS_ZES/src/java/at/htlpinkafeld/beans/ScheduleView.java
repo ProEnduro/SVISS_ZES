@@ -16,10 +16,15 @@ import at.htlpinkafeld.service.AbsenceService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import at.htlpinkafeld.service.IstZeitService;
 import at.htlpinkafeld.service.SollZeitenService;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
@@ -32,6 +37,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.imageio.ImageIO;
 import org.primefaces.context.RequestContext;
 
 import org.primefaces.event.ScheduleEntryMoveEvent;
@@ -42,14 +48,14 @@ import org.primefaces.model.DefaultScheduleModel;
 import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
 
-import java.util.Properties;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import javax.mail.*;
+import javax.mail.internet.*;
+import javax.servlet.ServletContext;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 public class ScheduleView implements Serializable {
 
@@ -183,6 +189,8 @@ public class ScheduleView implements Serializable {
                     Date d = IstZeitService.convertLocalDateTimeToDate(time.plusMinutes(1439));
                     ev.setEndDate(d);
 
+                    ev.setAllDay(true);
+
                     DAOFactory.getDAOFactory().getAbsenceDAO().insert(a);
                     break;
                 case 3:
@@ -216,6 +224,25 @@ public class ScheduleView implements Serializable {
         event = new DefaultScheduleEvent();
     }
 
+    public void deleteEvent(ActionEvent actionEvent) {
+
+        if (event.getId() != null) {
+            if (event instanceof AbsenceEvent) {
+                AbsenceEvent absenceEvent = (AbsenceEvent) event;
+                if (absenceEvent.getAbsence().isAcknowledged() == false) {
+                    AbsenceService.removeAbsence(absenceEvent.getAbsence());
+                    eventModel.deleteEvent(event);
+                    event = new DefaultScheduleEvent();
+                } else {
+                    FacesContext context = FacesContext.getCurrentInstance();
+
+                    context.addMessage(null, new FacesMessage("Failed", "You can't delete acknowledged absences!"));
+                }
+            }
+        }
+
+    }
+
     public void addIstZeitEvent(ActionEvent actionEvent) {
         if (event.getId() == null) {
             WorkTimeEvent e = new WorkTimeEvent(this.currentUser.getUsername() + " " + "Ist-Zeit", event.getStartDate(), event.getEndDate(), new WorkTime(currentUser, IstZeitService.convertDateToLocalDateTime(this.event.getStartDate()), IstZeitService.convertDateToLocalDateTime(this.event.getEndDate()), 0, "", ""));
@@ -247,6 +274,17 @@ public class ScheduleView implements Serializable {
         }
 
         event = new DefaultScheduleEvent();
+    }
+
+    public void deleteIstZeitEvent(ActionEvent e) {
+        if (event.getId() != null) {
+            if (event instanceof WorkTimeEvent) {
+                eventModel.deleteEvent(event);
+                WorkTimeEvent workevent = (WorkTimeEvent) event;
+                IstZeitService.delete(workevent.getWorktime());
+                event = new DefaultScheduleEvent();
+            }
+        }
     }
 
     public void onEventSelect(SelectEvent selectEvent) {
@@ -535,9 +573,14 @@ public class ScheduleView implements Serializable {
                 double b = ((double) start.getHour() + (double) start.getMinute() / 60);
                 System.out.println("b = " + b);
 
-                double c = worktimeForToday - (a - b);
+                double c;
+                if (w.getBreakTime() == 0) {
+                    c = worktimeForToday - (a - b);
+                } else {
+                    c = worktimeForToday - (a - b - w.getBreakTime() / 60);
+                }
 
-                this.overtimeleft = overtimeleft - (c*60);
+                this.overtimeleft = overtimeleft - (c * 60);
             }
         }
     }
@@ -943,8 +986,7 @@ public class ScheduleView implements Serializable {
         System.out.println("\n\n 2nd ===> get Mail Session..");
         getMailSession = Session.getDefaultInstance(mailServerProperties, null);
         generateMailMessage = new MimeMessage(getMailSession);
-        generateMailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress("ma.six98@gmail.com"));
-        generateMailMessage.addRecipient(Message.RecipientType.CC, new InternetAddress("blaumeux.sn@gmail.com"));
+        generateMailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress("neumeistersebastian@gmx.net"));
         generateMailMessage.setSubject("Greetings from Crunchify..");
         String emailBody = "Test email by Crunchify.com JavaMail API example. " + "<br><br> Regards, <br>Crunchify Admin";
         generateMailMessage.setContent(emailBody, "text/html");
@@ -989,6 +1031,59 @@ public class ScheduleView implements Serializable {
 
     public void setOvertimeleft(double overtimeleft) {
         this.overtimeleft = overtimeleft;
+    }
+
+    public void testPDF(ActionEvent e) throws IOException {
+
+        ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+        String path = serv.getRealPath("/") + "/pdfs/";
+
+        BufferedImage one = ImageIO.read(new File(path + "1.png"));
+        BufferedImage two = ImageIO.read(new File(path + "2.jpg"));
+
+        BufferedImage joined = joinBufferedImage(one, two);
+
+        boolean success = ImageIO.write(joined, "png", new File(path + "joined.png"));
+        System.out.println("saved success? " + success);
+
+        if (success == true) {
+            PDDocument doc = new PDDocument();
+            PDPage blank = new PDPage();
+            doc.addPage(blank);
+            PDImageXObject image = JPEGFactory.createFromImage(doc, joined);
+            PDPageContentStream contentStream = new PDPageContentStream(doc, blank, true, true, true);
+
+            int w = joined.getWidth();
+            int h = joined.getHeight();
+
+            
+
+            contentStream.drawXObject(image, 0, 792-h, w, h);
+            contentStream.close();
+            doc.save(new File(path + "test.pdf"));
+            doc.close();
+        }
+    }
+
+    public static BufferedImage joinBufferedImage(BufferedImage img1, BufferedImage img2) {
+
+        //do some calculate first
+        int offset = 5;
+        int wid = img1.getWidth() + img2.getWidth() + offset;
+        int height = Math.max(img1.getHeight(), img2.getHeight());
+        //create a new buffer and draw two image into the new image
+        BufferedImage newImage = new BufferedImage(wid, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = newImage.createGraphics();
+        Color oldColor = g2.getColor();
+        //fill background
+        g2.setPaint(Color.WHITE);
+        g2.fillRect(0, 0, wid, height);
+        //draw image
+        g2.setColor(oldColor);
+        g2.drawImage(img1, null, 0, 0);
+        g2.drawImage(img2, null, img1.getWidth() + offset, 0);
+        g2.dispose();
+        return newImage;
     }
 
 }

@@ -48,4 +48,8 @@ public class AbsenceService {
     public static List<Absence> getAbsenceByUserAndAcknowledged(User u) {
         return DAOFactory.getDAOFactory().getAbsenceDAO().getAbsencesByUserAndAcknowledgment(u, true);
     }
+    
+    public static void removeAbsence(Absence a){
+        DAOFactory.getDAOFactory().getAbsenceDAO().delete(a);
+    }
 }
