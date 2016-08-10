@@ -117,4 +117,15 @@
         <converter-class>at.htlpinkafeld.beans.util.ThemeConverter</converter-class>
     </converter>
     
+    <managed-bean>
+        <managed-bean-name>auswertungsBean</managed-bean-name>
+        <managed-bean-class>at.htlpinkafeld.beans.AuswertungsBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    
+    <managed-bean>
+        <managed-bean-name>feiertageBean</managed-bean-name>
+        <managed-bean-class>at.htlpinkafeld.beans.FeiertageBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
 </faces-config>

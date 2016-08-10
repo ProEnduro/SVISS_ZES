@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<ui:composition template="/pages/mainSite.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+
+    <ui:define name="content">
+
+        <style>
+            .ui-panelgrid>*>tr, .ui-panelgrid .ui-panelgrid-cell {
+                border: none;
+            }
+
+        </style>
+
+
+        <body>
+            <h:form id="hform">
+                <p:selectOneMenu id="selectUserID" value="#{auswertungsBean.selectedUser}" rendered="#{auswertungsBean.notUser}">
+                    <f:selectItems value="#{auswertungsBean.allUser}"/>
+                </p:selectOneMenu>
+                <p:commandButton value="load" actionListener="#{auswertungsBean.auswerten}" update="pie1"/>
+                <p:commandButton value="export" actionListener="#{auswertungsBean.renderPicture}" onclick="exportChart();"/>
+                <h:inputHidden id="img" value="#{auswertungsBean.image}"/>
+
+
+                <p:chart id="pie1" widgetVar="chart" type="pie" model="#{auswertungsBean.pieModel1}" style="width:400px;height:300px"/>
+
+
+                <script type="text/javascript">
+                    function exportChart() {
+                        // exportAsImage() will return a base64 png encoded string
+                        var img = PF('chart').exportAsImage();
+                        document.getElementById('hform:img').value = img.src;
+                    }
+
+                    function pieExtender() {
+                        this.cfg.highlighter = {
+                            show: true,
+                            tooltipLocation: 'n',
+                            useAxesFormatters: false,
+                            formatString: '%s = %1.2f'
+                        };
+                    }
+                </script>
+
+            </h:form>
+        </body>
+    </ui:define>
+</ui:composition>

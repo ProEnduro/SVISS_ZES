@@ -146,7 +146,7 @@ and open the template in the editor.
 
                     </p:schedule>
                     <f:facet name="footer">
-                        <p:commandButton value="Zeiten speichern" action="#{benutzerverwaltungsBean.saveTimes}" oncomplete="PF('uwtdlg').hide();"/>
+                        <p:commandButton value="Zeiten speichern" action="#{benutzerverwaltungsBean.saveTimes}" onsuccess="PF('uwtdlg').hide();"/>
                         <p:commandButton value="Änderung verwerfen" action="#{benutzerverwaltungsBean.discardTimes}" oncomplete="PF('uwtdlg').hide();"/>
                         <p:outputLabel value="Gesamte Sollzeit:" />
                         <p:inputText id="sollZeitText" value="#{benutzerverwaltungsBean.newWeekTime}" readonly="true"/>
@@ -166,7 +166,8 @@ and open the template in the editor.
                     <p:outputLabel for="to" value="To:" />
                     <p:calendar id="to" value="#{benutzerverwaltungsBean.curEvent.endDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"/>
 
-                    <p:commandButton id="addButton" value="Save" action="#{benutzerverwaltungsBean.addEvent}" update=":weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  oncomplete="PF('eventDialog').hide();" />
+                    <p:commandButton id="addButton" value="Save" action="#{benutzerverwaltungsBean.addEvent}" update=":weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  onsuccess="PF('eventDialog').hide();" />
+                    <p:commandButton id="delButton" value="Remove" action="#{benutzerverwaltungsBean.removeEvent}" update=":weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  onsuccess="PF('eventDialog').hide();" />
                     <p:commandButton type="reset" value="Reset" />
                 </h:panelGrid>
             </h:form>

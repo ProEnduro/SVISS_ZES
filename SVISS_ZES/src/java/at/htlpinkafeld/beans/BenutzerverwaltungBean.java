@@ -28,7 +28,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import org.primefaces.event.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TransferEvent;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.DefaultScheduleModel;
 import org.primefaces.model.DualListModel;
@@ -211,6 +210,11 @@ public class BenutzerverwaltungBean {
         newSollZeiten.remove(sz);
         newSollZeiten.add(sz);
         curEvent = new DefaultScheduleEvent();
+    }
+
+    public void removeEvent() {
+        SollZeiten sz = new SollZeiten((DayOfWeek) curEvent.getData(), selectedUser, null, null);
+        newSollZeiten.remove(sz);
     }
 
     public void onEventResize(ScheduleEntryResizeEvent event) {
