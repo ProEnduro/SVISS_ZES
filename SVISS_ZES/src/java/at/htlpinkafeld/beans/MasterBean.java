@@ -42,10 +42,10 @@ public class MasterBean {
         switch (u.getAccessLevel().getAccessLevelID()) {
 
             case 1:
-                columns = 8;
+                columns = 9;
                 break;
             case 2:
-                columns = 6;
+                columns = 7;
                 break;
             case 3:
                 columns = 2;
@@ -99,6 +99,10 @@ public class MasterBean {
 
     public boolean isAlleAbwesenheitenEnabled() {
         return AccessRightsService.checkPermission(user.getAccessLevel(), "VIEW_ALL_ABSENCES");
+    }
+    
+    public boolean isFeiertageEintragenEnabled(){
+        return AccessRightsService.checkPermission(user.getAccessLevel(), "EDIT_HOLIDAY");
     }
 
     public String getPage() {
