@@ -116,5 +116,9 @@
         <converter-id>theme</converter-id>
         <converter-class>at.htlpinkafeld.beans.util.ThemeConverter</converter-class>
     </converter>
-    
+    <managed-bean>
+        <managed-bean-name>feiertageBean</managed-bean-name>
+        <managed-bean-class>at.htlpinkafeld.beans.FeiertageBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
 </faces-config>
