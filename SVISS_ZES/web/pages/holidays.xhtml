@@ -5,12 +5,57 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <title>TODO supply a title</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition template="/pages/mainSite.xhtml"
+                    xmlns="http://www.w3.org/1999/xhtml"
+                    xmlns:ui="http://java.sun.com/jsf/facelets">
+        <ui:define name="content">
+            <h:form  id="scheduleForm">
+
+                <p:schedule value="#{feiertageBean.timeModel}" resizable="false" timeZone="GMT+2" locale="de" timeFormat="" axisFormat="HH:mm" ignoreTimezone="true" allDaySlot="false" rightHeaderTemplate="">
+                    <p:ajax event="dateSelect" listener="#{feiertageBean.onDateSelect}" update=":eventForm:eventDetails" oncomplete="PF('eventDialog').show();" />
+                    <p:ajax event="eventSelect" listener="#{feiertageBean.onEventSelect}" update=":eventForm:eventDetails" oncomplete="PF('eventDialog').show();" />
+                    <p:ajax event="eventMove" listener="#{feiertageBean.onEventMove}"/>
+                </p:schedule>
+            </h:form>
+
+            <p:dialog widgetVar="eventDialog" closeOnEscape="true" resizable="false" dynamic="true">
+                <p:ajax event="close"  listener="#{feiertageBean.onDialogClose}"/>
+                <h:form id="eventForm">
+                    <h:panelGrid id="eventDetails" columns="2">
+
+                        <p:outputLabel for="comment" value="Comment:" />
+                        <p:inputText id="comment" value="#{feiertageBean.curEvent.title}" required="true"/>
+
+                        <p:outputLabel for="date" value="Date:" />
+                        <p:calendar id="date" value="#{feiertageBean.curEvent.startDate}" disabled="#{feiertageBean.dateDisabled}" pattern="dd/MM/yyyy"   locale="de" required="true"/>
+
+                        <f:facet name="footer">
+                            <p:commandButton id="addButton" value="Save" action="#{feiertageBean.addEvent}" update=":scheduleForm"   onsuccess="PF('eventDialog').hide();" />
+                            <p:commandButton id="delButton" value="Delete" action="#{feiertageBean.removeEvent}" update=":scheduleForm"  onsuccess="PF('eventDialog').hide();" />
+                            <p:commandButton type="reset" value="Reset" />
+                        </f:facet>
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog> 
+
+            <script type="text/javascript">
+                PrimeFaces.locales['de'] = {
+                    month: 'Monat',
+                    week: 'Woche',
+                    day: 'Tag',
+                    firstDay: 1,
+                    monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                    monthNamesShort: ['Jan', 'Feb', 'Mrz', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+                    dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+                    dayNamesShort: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+                    dayNamesMin: ['S', 'M', 'D', 'M ', 'D', 'F ', 'S'],
+                    currentText: 'Heute'
+                };
+            </script>
+        </ui:define>
+    </ui:composition>
 </html>

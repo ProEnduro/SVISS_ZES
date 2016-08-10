@@ -18,11 +18,11 @@ import java.util.List;
 public class BenutzerverwaltungService {
 
     private final static User_DAO userdao;
-    
-    static{
-        
+
+    static {
+
         userdao = DAOFactory.getDAOFactory().getUserDAO();
-        
+
     }
 
     public static User getUser(String selectedUser) {
@@ -32,19 +32,19 @@ public class BenutzerverwaltungService {
     public BenutzerverwaltungService() {
     }
 
-    static public List<User> getUserList() {
+    public static List<User> getUserList() {
         return userdao.getList();
     }
 
-    static public void insertUser(User u) {
+    public static void insertUser(User u) {
         userdao.insert(u);
     }
 
-    static public void updateUser(User u) {
+    public static void updateUser(User u) {
         userdao.update(u);
     }
-    
-    public static User getUser(int id){
+
+    public static User getUser(int id) {
         return userdao.getUser(id);
     }
 

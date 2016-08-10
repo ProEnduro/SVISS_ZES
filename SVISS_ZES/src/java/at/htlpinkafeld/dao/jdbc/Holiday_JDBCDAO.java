@@ -6,21 +6,14 @@
 package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.Holiday_DAO;
-import static at.htlpinkafeld.dao.jdbc.SollZeiten_JDBCDAO.ALL_COLUMNS;
-import static at.htlpinkafeld.dao.jdbc.SollZeiten_JDBCDAO.DAYID_COL;
-import static at.htlpinkafeld.dao.jdbc.SollZeiten_JDBCDAO.PRIMARY_KEY;
-import static at.htlpinkafeld.dao.jdbc.SollZeiten_JDBCDAO.SOLLENDTIME_COL;
-import static at.htlpinkafeld.dao.jdbc.SollZeiten_JDBCDAO.SOLLSTARTTIME_COL;
-import static at.htlpinkafeld.dao.jdbc.SollZeiten_JDBCDAO.TABLE_NAME;
-import static at.htlpinkafeld.dao.jdbc.SollZeiten_JDBCDAO.USERNR_COL;
 import at.htlpinkafeld.dao.util.WrappedConnection;
 import at.htlpinkafeld.pojo.Holiday;
-import at.htlpinkafeld.pojo.SollZeiten;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,16 +62,17 @@ public class Holiday_JDBCDAO extends Base_JDBCDAO<Holiday> implements Holiday_DA
     }
 
     @Override
-    public List<Holiday> getHolidayBetweenDates(Date startDateU, Date endDateU) {
+    public List<Holiday> getHolidayBetweenDates(java.util.Date startDateU, java.util.Date endDateU) {
         List<Holiday> holidays = new ArrayList<>();
 
         Date startDate = new Date(startDateU.getTime());
         Date endDate = new Date(endDateU.getTime());
 
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
-                Statement stmt = con.getConn().createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + HOLIDAYDATE_COL + " >= '" + startDate + "' AND  " + HOLIDAYDATE_COL + " < '" + endDate + "' " + SQL_ORDER_BY_LINE)) {
-
+                PreparedStatement stmt = con.getConn().prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE " + HOLIDAYDATE_COL + " >= ? AND  " + HOLIDAYDATE_COL + " < ? " + SQL_ORDER_BY_LINE)) {
+            stmt.setDate(1, startDate);
+            stmt.setDate(2, endDate);
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 holidays.add(getEntityFromResultSet(rs));
             }

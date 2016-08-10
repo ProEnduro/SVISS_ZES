@@ -57,7 +57,7 @@ public class LoginBean {
             context.addMessage(null, new FacesMessage("User is disabled!"));
         }
 
-        if (user != null && user.getPass().equals(this.pw) && user.isDisabled() == false) {
+        if (user != null && user.getPass().equals(this.pw) && user.getUsername().contentEquals(this.userString) && user.isDisabled() == false) {
 
             FacesContext context = FacesContext.getCurrentInstance();
             MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
@@ -77,7 +77,7 @@ public class LoginBean {
             this.pw = "";
             this.user = null;
             this.userString = "";
-            
+
             scheduleView.reloadAbwesenheiten(null);
 
             return "success";
@@ -87,7 +87,10 @@ public class LoginBean {
             FacesContext context = FacesContext.getCurrentInstance();
             context.addMessage(null, new FacesMessage("Invalid Password!"));
         }
-
+        if (user == null || (user.getUsername().contentEquals(this.userString)) == false) {
+            FacesContext context = FacesContext.getCurrentInstance();
+            context.addMessage(null, new FacesMessage("Invalid User!"));
+        }
         return "failure";
     }
 

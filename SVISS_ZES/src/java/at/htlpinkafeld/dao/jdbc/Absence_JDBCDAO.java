@@ -11,11 +11,10 @@ import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.AbsenceType;
 import at.htlpinkafeld.pojo.User;
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -181,10 +180,17 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
         Date startDate = new Date(startDateU.getTime());
         Date endDate = new Date(endDateU.getTime());
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
-                Statement stmt = con.getConn().createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + STARTTIME_COL + " >= '" + startDate + "' AND " + STARTTIME_COL + " < '" + endDate + "' OR "
-                        + ENDTIME_COL + " >= '" + startDate + "' AND " + ENDTIME_COL + " < '" + endDate + "' OR " + STARTTIME_COL + " < '" + startDate + "' AND " + ENDTIME_COL + " >= '" + endDate + "' " + SQL_ORDER_BY_LINE)) {
+                PreparedStatement stmt = con.getConn().prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE " + STARTTIME_COL + " >= ? AND " + STARTTIME_COL + " < ? OR "
+                        + ENDTIME_COL + " >= ? AND " + ENDTIME_COL + " < ? OR " + STARTTIME_COL + " < ? AND " + ENDTIME_COL + " >= ? " + SQL_ORDER_BY_LINE)) {
 
+            stmt.setDate(1, startDate);
+            stmt.setDate(2, endDate);
+            stmt.setDate(3, startDate);
+            stmt.setDate(4, endDate);
+            stmt.setDate(5, startDate);
+            stmt.setDate(6, endDate);
+            ResultSet rs = stmt.executeQuery();
+            
             while (rs.next()) {
                 absences.add(getEntityFromResultSet(rs));
             }
@@ -202,10 +208,17 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
         Date startDate = new Date(startDateU.getTime());
         Date endDate = new Date(endDateU.getTime());
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
-                Statement stmt = con.getConn().createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + user.getUserNr() + " AND (" + STARTTIME_COL + " >= '" + startDate + "' AND " + STARTTIME_COL + " < '" + endDate + "' OR "
-                        + ENDTIME_COL + " >= '" + startDate + "' AND " + ENDTIME_COL + " < '" + endDate + "' OR " + STARTTIME_COL + " < '" + startDate + "' AND " + ENDTIME_COL + " >= '" + endDate + "') " + SQL_ORDER_BY_LINE)) {
+                PreparedStatement stmt = con.getConn().prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + user.getUserNr() + " AND (" + STARTTIME_COL + " >= ? AND " + STARTTIME_COL + " < ? OR "
+                        + ENDTIME_COL + " >= ? AND " + ENDTIME_COL + " < ? OR " + STARTTIME_COL + " < ? AND " + ENDTIME_COL + " >= ?) " + SQL_ORDER_BY_LINE)) {
 
+            stmt.setDate(1, startDate);
+            stmt.setDate(2, endDate);
+            stmt.setDate(3, startDate);
+            stmt.setDate(4, endDate);
+            stmt.setDate(5, startDate);
+            stmt.setDate(6, endDate);
+            ResultSet rs = stmt.executeQuery();
+            
             while (rs.next()) {
                 absences.add(getEntityFromResultSet(rs));
             }
