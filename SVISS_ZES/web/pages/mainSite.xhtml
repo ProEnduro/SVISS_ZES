@@ -55,6 +55,8 @@ and open the template in the editor.
                 <p:commandButton value="Feiertage eintragen" rendered="#{masterBean.feiertageEintragenEnabled}" action="holidays.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%"/>
                 <p:commandButton value="Alle Zeiten" rendered="#{masterBean.alleZeitenEnabled}" action="allTime.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%" actionListener="#{scheduleView.loadAllTimes}"/>
                 <p:commandButton value="Alle Abwesenheiten" rendered="#{masterBean.alleAbwesenheitenEnabled}" action="view_all_abwesenheiten.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%" actionListener="#{scheduleView.loadAllAbwesenheiten}" icon="icon-left-circled"/>
+                
+                <p:commandButton value="Auswertung" rendered="#{masterBean.auswertungEnabled}" actionListener="#{auswertungsBean.auswerten}" action="auswertung.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%"/>
 
                 <p:commandButton value="Logout" action="#{masterBean.logout}" style="background-color: #cc5f59; color: black; width:100%" icon="icon-logout"/> 
             </h:panelGrid>

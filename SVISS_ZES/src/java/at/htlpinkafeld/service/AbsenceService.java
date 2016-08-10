@@ -16,40 +16,44 @@ import java.util.List;
  * @author msi
  */
 public class AbsenceService {
-    
-    public static List<Absence> getAbsenceByUserAndUnacknowledged(User u){
+
+    public static List<Absence> getAbsenceByUserAndUnacknowledged(User u) {
         List<Absence> absenceList;
-        
+
         absenceList = DAOFactory.getDAOFactory().getAbsenceDAO().getAbsencesByUserAndAcknowledgment(u, false);
-        
+
         return absenceList;
     }
-    
-    public static List<Absence> getAbsenceByUser(User u){
+
+    public static List<Absence> getAbsenceByUser(User u) {
         List<Absence> absenceList;
-        
+
         absenceList = DAOFactory.getDAOFactory().getAbsenceDAO().getAbsencesByUser(u);
-        
+
         return absenceList;
     }
-    
-    public static void updateAbsence(Absence a){
+
+    public static void updateAbsence(Absence a) {
         DAOFactory.getDAOFactory().getAbsenceDAO().update(a);
     }
-    
-    public static List<Absence> getAllUnacknowledged(){
+
+    public static List<Absence> getAllUnacknowledged() {
         return DAOFactory.getDAOFactory().getAbsenceDAO().getAbsencesByAcknowledgment(false);
     }
-    
-    public static List<Absence> getAllAcknowledged(){
+
+    public static List<Absence> getAllAcknowledged() {
         return DAOFactory.getDAOFactory().getAbsenceDAO().getAbsencesByAcknowledgment(true);
     }
 
     public static List<Absence> getAbsenceByUserAndAcknowledged(User u) {
         return DAOFactory.getDAOFactory().getAbsenceDAO().getAbsencesByUserAndAcknowledgment(u, true);
     }
-    
-    public static void removeAbsence(Absence a){
+
+    public static void removeAbsence(Absence a) {
         DAOFactory.getDAOFactory().getAbsenceDAO().delete(a);
+    }
+
+    public static List<Absence> getAllAbsences() {
+        return DAOFactory.getDAOFactory().getAbsenceDAO().getList();
     }
 }

@@ -42,16 +42,16 @@ public class MasterBean {
         switch (u.getAccessLevel().getAccessLevelID()) {
 
             case 1:
-                columns = 9;
+                columns = 10;
                 break;
             case 2:
-                columns = 7;
+                columns = 8;
                 break;
             case 3:
-                columns = 2;
+                columns = 3;
                 break;
             case 4:
-                columns = 5;
+                columns = 6;
                 break;
         }
 
@@ -103,6 +103,10 @@ public class MasterBean {
     
     public boolean isFeiertageEintragenEnabled(){
         return AccessRightsService.checkPermission(user.getAccessLevel(), "EDIT_HOLIDAY");
+    }
+    
+    public boolean isAuswertungEnabled(){
+        return true;
     }
 
     public String getPage() {
