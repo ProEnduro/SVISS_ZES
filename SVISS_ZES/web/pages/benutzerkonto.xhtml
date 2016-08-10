@@ -23,7 +23,7 @@ and open the template in the editor.
         </style>
         
         
-    <body>
+        <body>
         <h:form>
             <p:growl id="growl" showDetail="true" life="5000" autoUpdate="true"/>
             
@@ -54,12 +54,27 @@ and open the template in the editor.
                 
             </p:panelGrid>              
 
-            
+            <h:panelGrid columns="2" cellpadding="10" style="margin: 0 auto">
+                <p:outputLabel for="themeSwitch" value="Theme: " /> 
+
+                <p:themeSwitcher id="themeSwitch" style="width:165px" value="#{guestPreferences.theme}" effect="fade" var="t">
+                    <f:selectItems value="#{themeSwitcherView.themes}" var="theme" itemLabel="#{theme.displayName}" itemValue="#{theme}"/>
+                    <p:column>
+                        <h:outputText value="#{t.id}" styleClass="ui-theme ui-theme-#{t.name}" style="display-block" />
+                    </p:column>
+                    
+                    <p:column>
+                        #{t.displayName}
+                    </p:column>
+                </p:themeSwitcher>
+            </h:panelGrid>
+
             <p:panelGrid columns="2" styleClass="ui-panelgrid" style="margin: 0 auto;">
                 <p:outputLabel value="* - Editable" style="font-weight: bold"/>
                 <br></br>
                 <p:commandButton value="Speichern" action="istzeit.xhtml?faces-redirect=true" actionListener="#{scheduleView.reloadAbwesenheiten}" style="background-color: #91d1d4"/>
                 <p:commandButton value="Änderungen verwerfen" action="istzeit.xhtml?faces-redirect=true" actionListener="#{scheduleView.reloadAbwesenheiten}" immediate="true" style="background-color: #ff7a7a"/>
+                <p:commandButton value="submit"/>
             </p:panelGrid>
             
         </h:form>

@@ -9,8 +9,7 @@ and open the template in the editor.
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:ui="http://java.sun.com/jsf/facelets">
     <h:head>
         <title>sviss ZES</title>
         <link rel="shortcut icon" type="image/x-icon" href="#{resource['images/faviconSV.ico']}"/>
@@ -18,45 +17,19 @@ and open the template in the editor.
     <h:body>
         <h:form>
 
-            <h:panelGrid columns="2" cellpadding="10">
-                <p:outputLabel for="advanced" value="Advanced:" /> 
-
-                <p:themeSwitcher id="advanced" style="width:165px" value="#{guestPreferences.theme}" effect="fade" var="t">
-                    <f:selectItems value="#{themeSwitcherView.themes}" var="theme" itemLabel="#{theme.displayName}" itemValue="#{theme}" />
-
-                    <p:column>
-                        <h:outputText value="#{t.id}" styleClass="ui-theme ui-theme-#{t.name}" style="display-block" />
-                    </p:column>
-
-                    <p:column>
-                        #{t.displayName}
-                    </p:column>
-
-                    <p:column>
-                        <p:commandButton value="save"/>
-
-                    </p:column>
-                </p:themeSwitcher>
-
-                <p:commandButton value="submit" action="submit" />
-
-            </h:panelGrid>
-        </h:form>
-
-        <h:form>   
             <h:panelGrid id="panGridMainMenu" columns="#{masterBean.columns}" width="100%" style="margin-top: 1%">
 
-                <p:commandButton value="Ist-Zeiten" rendered="#{masterBean.istZeitenEnabled}" icon="icon-calendar-2" action="istzeit.xhtml?faces-redirect=true" style=" background-color: royalblue; color: black; width:100%"  actionListener="#{scheduleView.reloadAbwesenheiten}"/>  
-                <p:commandButton value="Abwesenheiten eintragen" rendered="#{masterBean.abwesenheitenEnabled}" icon="icon-calendar" action="abwesenheit.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%" actionListener="#{scheduleView.reloadAbwesenheiten}"/>
-                <p:commandButton value="Account Verwaltung" rendered="#{masterBean.accountVerwaltungEnabled}" icon="ui-icon-user" action="benutzerkonto.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%"/>
-                <p:commandButton value="Benutzerverwaltung" rendered="#{masterBean.benutzerverwaltungEnabled}" icon="ui-icon-users" action="benutzerverwaltung.xhtml?faces-redirect=true" style=" background-color: royalblue; color: black; width:100%"/>
-                <p:commandButton value="Acknowledgement" rendered="#{masterBean.acknowledgementEnabled}" action="absence_acknowledgement.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%" actionListener="#{scheduleView.reloadAcknowledgements}" icon="icon-check"/>
+                <p:commandButton value="Ist-Zeiten" rendered="#{masterBean.istZeitenEnabled}" icon="icon-calendar-2" action="istzeit.xhtml?faces-redirect=true" style=" background-color: royalblue; width:100%"  actionListener="#{scheduleView.reloadAbwesenheiten}"/>  
+                <p:commandButton value="Abwesenheiten eintragen" rendered="#{masterBean.abwesenheitenEnabled}" icon="icon-calendar" action="abwesenheit.xhtml?faces-redirect=true" style="background-color: royalblue; width:100%" actionListener="#{scheduleView.reloadAbwesenheiten}"/>
+                <p:commandButton value="Account Verwaltung" rendered="#{masterBean.accountVerwaltungEnabled}" icon="ui-icon-user" action="benutzerkonto.xhtml?faces-redirect=true" style="background-color: royalblue; width:100%"/>
+                <p:commandButton value="Benutzerverwaltung" rendered="#{masterBean.benutzerverwaltungEnabled}" icon="ui-icon-users" action="benutzerverwaltung.xhtml?faces-redirect=true" style=" background-color: royalblue; width:100%"/>
+                <p:commandButton value="Acknowledgement" rendered="#{masterBean.acknowledgementEnabled}" action="absence_acknowledgement.xhtml?faces-redirect=true" style="background-color: royalblue; width:100%" actionListener="#{scheduleView.reloadAcknowledgements}" icon="icon-check"/>
 
-                <p:commandButton value="Feiertage eintragen" rendered="#{masterBean.feiertageEintragenEnabled}" action="holidays.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%"/>
-                <p:commandButton value="Alle Zeiten" rendered="#{masterBean.alleZeitenEnabled}" action="allTime.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%" actionListener="#{scheduleView.loadAllTimes}"/>
-                <p:commandButton value="Alle Abwesenheiten" rendered="#{masterBean.alleAbwesenheitenEnabled}" action="view_all_abwesenheiten.xhtml?faces-redirect=true" style="background-color: royalblue; color: black; width:100%" actionListener="#{scheduleView.loadAllAbwesenheiten}" icon="icon-left-circled"/>
+                <p:commandButton value="Feiertage eintragen" rendered="#{masterBean.feiertageEintragenEnabled}" action="holidays.xhtml?faces-redirect=true" style="background-color: royalblue; width:100%"/>
+                <p:commandButton value="Alle Zeiten" rendered="#{masterBean.alleZeitenEnabled}" action="allTime.xhtml?faces-redirect=true" style="background-color: royalblue; width:100%" actionListener="#{scheduleView.loadAllTimes}"/>
+                <p:commandButton value="Alle Abwesenheiten" rendered="#{masterBean.alleAbwesenheitenEnabled}" action="view_all_abwesenheiten.xhtml?faces-redirect=true" style="background-color: royalblue; width:100%" actionListener="#{scheduleView.loadAllAbwesenheiten}" icon="icon-left-circled"/>
 
-                <p:commandButton value="Logout" action="#{masterBean.logout}" style="background-color: #cc5f59; color: black; width:100%" icon="icon-logout"/> 
+                <p:commandButton value="Logout" action="#{masterBean.logout}" style="background-color: #cc5f59 ; width:100%" icon="icon-logout"/> 
             </h:panelGrid>
 
             <p:sticky target="panGridMainMenu"/>

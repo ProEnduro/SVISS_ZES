@@ -14,7 +14,7 @@ and open the template in the editor.
 
     <ui:define name="content">
         <h:form id="tableForm">
-            <p:dataTable id="usertable" var="user" value="#{benutzerverwaltungsBean.userList}">
+            <p:dataTable id="usertable" var="user" value="#{benutzerverwaltungsBean.userList}" style="margin-top: 1.5%">
 
                 <p:column headerText="Username">
                     <h:outputText value="#{user.username}"/>

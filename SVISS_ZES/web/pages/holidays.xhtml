@@ -5,12 +5,40 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <title>TODO supply a title</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    </head>
+<ui:composition template="/pages/mainSite.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+
+    <ui:define name="content">
+        
     <body>
-        <div>TODO write content</div>
+        <h:form>
+            
+            
+            <p:panelGrid columns="2">
+                <p:button value="button"/>
+                <p:button value="button"/>
+                <p:panelGrid columns="2">
+                    <p:button value="BUTTON"/>
+                    <p:button value="BUTTON"/>
+                    <p:button value="BUTTON"/>
+                    <p:button value="BUTTON"/>
+                </p:panelGrid>
+                <p:button value="button"/>
+                <p:button value="button"/>
+                <p:button value="button"/>
+                <p:button value="button"/>
+            </p:panelGrid>
+            
+            
+            
+            
+            
+        </h:form>
     </body>
-</html>
+    </ui:define>
+</ui:composition>
