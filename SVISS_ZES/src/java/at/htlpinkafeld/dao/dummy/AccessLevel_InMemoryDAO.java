@@ -28,6 +28,7 @@ public class AccessLevel_InMemoryDAO extends Base_InMemoryDAO<AccessLevel> imple
         permList.add("EDIT_ACCOUNT");
         permList.add("VIEW_ALL_ABSENCES");
         permList.add("ACKNOWLEDGE_USERS");
+        permList.add("EDIT_HOLIDAY");
         super.insert(new AccessLevel(2, "Approver", permList));
 
         permList = new LinkedList<>();

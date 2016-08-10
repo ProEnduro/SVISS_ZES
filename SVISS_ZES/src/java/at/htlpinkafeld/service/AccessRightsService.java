@@ -35,6 +35,7 @@ public class AccessRightsService implements DAODML_Observer {
         PERMISSIONS.add("VIEW_ALL_TIMES");
         PERMISSIONS.add("VIEW_ALL_ABSENCES");
         PERMISSIONS.add("INPUT_TIME");
+        PERMISSIONS.add("EDIT_HOLIDAY");
         
         ALDAO = DAOFactory.getDAOFactory().getAccessLevelDAO();
         ARS = new AccessRightsService();
