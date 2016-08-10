@@ -23,14 +23,16 @@ and open the template in the editor.
             </h:form>
 
             <p:dialog widgetVar="eventDialog" closeOnEscape="true" resizable="false" dynamic="true">
+                <p:ajax event="close"  listener="#{feiertageBean.onDialogClose}"/>
                 <h:form id="eventForm">
                     <h:panelGrid id="eventDetails" columns="2">
 
-                        <p:outputLabel for="date" value="Date:" />
-                        <p:calendar id="date" value="#{feiertageBean.curEvent.startDate}" pattern="dd/MM/yyyy"   locale="de" required="true"/>
-
                         <p:outputLabel for="comment" value="Comment:" />
                         <p:inputText id="comment" value="#{feiertageBean.curEvent.title}" required="true"/>
+
+                        <p:outputLabel for="date" value="Date:" />
+                        <p:calendar id="date" value="#{feiertageBean.curEvent.startDate}" disabled="#{feiertageBean.dateDisabled}" pattern="dd/MM/yyyy"   locale="de" required="true"/>
+
                         <f:facet name="footer">
                             <p:commandButton id="addButton" value="Save" action="#{feiertageBean.addEvent}" update=":scheduleForm"   onsuccess="PF('eventDialog').hide();" />
                             <p:commandButton id="delButton" value="Delete" action="#{feiertageBean.removeEvent}" update=":scheduleForm"  onsuccess="PF('eventDialog').hide();" />

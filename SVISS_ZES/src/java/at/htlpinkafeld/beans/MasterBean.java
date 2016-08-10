@@ -9,6 +9,7 @@ import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.service.AccessRightsService;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.context.FacesContext;
 
 /**
  *
@@ -100,8 +101,8 @@ public class MasterBean {
     public boolean isAlleAbwesenheitenEnabled() {
         return AccessRightsService.checkPermission(user.getAccessLevel(), "VIEW_ALL_ABSENCES");
     }
-    
-    public boolean isFeiertageEintragenEnabled(){
+
+    public boolean isFeiertageEintragenEnabled() {
         return AccessRightsService.checkPermission(user.getAccessLevel(), "EDIT_HOLIDAY");
     }
 
@@ -126,10 +127,8 @@ public class MasterBean {
     }
 
     public Object logout() {
-        this.user = null;
-        this.page = null;
-
-        return "failure";
+        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+        return "/index.xhtml?faces-redirect=true";
     }
 
 }

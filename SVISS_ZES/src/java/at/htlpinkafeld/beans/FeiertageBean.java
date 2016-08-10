@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import org.primefaces.event.CloseEvent;
 import org.primefaces.event.ScheduleEntryMoveEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
@@ -27,6 +28,7 @@ public class FeiertageBean {
 
     private ScheduleModel timeModel;
     private ScheduleEvent curEvent;
+    private Boolean dateDisabled=false;
 
     @PostConstruct
     public void init() {
@@ -55,6 +57,14 @@ public class FeiertageBean {
         this.curEvent = curEvent;
     }
 
+    public Boolean getDateDisabled() {
+        return dateDisabled;
+    }
+
+    public void setDateDisabled(Boolean dateDisabled) {
+        this.dateDisabled = dateDisabled;
+    }
+
     public void addEvent() {
         Holiday h = new Holiday(TimeConverterService.convertDateToLocalDate(curEvent.getStartDate()), curEvent.getTitle());
         HolidayService.delete(h);
@@ -68,6 +78,7 @@ public class FeiertageBean {
 
     public void onEventSelect(SelectEvent selectEvent) {
         curEvent = (ScheduleEvent) selectEvent.getObject();
+        dateDisabled=true;
     }
 
     public void onDateSelect(SelectEvent selectEvent) {
@@ -89,6 +100,10 @@ public class FeiertageBean {
         HolidayService.insert(h);
         h = new Holiday(h.getHolidayDate().minusDays(e.getDayDelta()), h.getHolidayComment());
         HolidayService.delete(h);
+    }
+    
+    public void onDialogClose(CloseEvent e){
+        dateDisabled=false;
     }
 
 }
