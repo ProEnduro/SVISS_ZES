@@ -11,19 +11,29 @@ import at.htlpinkafeld.pojo.WorkTime;
 import at.htlpinkafeld.service.AbsenceService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import at.htlpinkafeld.service.IstZeitService;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.imageio.ImageIO;
-import static javax.imageio.ImageIO.write;
 import javax.servlet.ServletContext;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 import org.primefaces.model.chart.PieChartModel;
 
 /**
@@ -36,6 +46,7 @@ public class AuswertungsBean {
      * Creates a new instance of AuswertungsBean
      */
     String image;
+    StreamedContent file;
 
     User currentUser;
     String selectedUser;
@@ -162,9 +173,9 @@ public class AuswertungsBean {
 
         pieModel1.setTitle("Auswertung aller Zeiten in Stunden");
         pieModel1.setLegendPosition("e");
-        pieModel1.setExtender("pieExtender");
-        pieModel1.setShowDataLabels(true);
 
+//        pieModel1.setExtender("pieExtender");
+//        pieModel1.setShowDataLabels(true);
         selectedUser = null;
     }
 
@@ -186,12 +197,77 @@ public class AuswertungsBean {
 
                 ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
                 String path = serv.getRealPath("/");
-                ImageIO.write(renderedImage, "png", new File(path + "/out.png"));
-                
+                boolean b = ImageIO.write(renderedImage, "png", new File(path + "/pdfs/out.png"));
+
+                if (b) {
+                    testPDF(null);
+                    InputStream stream = FacesContext.getCurrentInstance().getExternalContext().getResourceAsStream("/pdfs/test.pdf");
+                    file = new DefaultStreamedContent(stream, "application/pdf", "auswertung_" + this.selectedUser +  ".pdf");
+                }
+
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
     }
+
+    public void testPDF(ActionEvent e) throws IOException {
+
+        ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+        String path = serv.getRealPath("/") + "/pdfs/";
+
+        BufferedImage img = ImageIO.read(new File(path + "out.png"));
+       
+        
+//        function for joining two pictures -> 
+//        BufferedImage joined = joinBufferedImage(one, two);
+//        boolean success = ImageIO.write(joined, "png", new File(path + "joined.png"));
+//        System.out.println("saved success? " + success);
+
+        PDDocument doc = new PDDocument();
+        PDPage blank = new PDPage();
+        doc.addPage(blank);
+        PDImageXObject image = JPEGFactory.createFromImage(doc, img);
+        PDPageContentStream contentStream = new PDPageContentStream(doc, blank, true, true, true);
+
+        int w = (int) (img.getWidth()/3);
+        int h = (int) (img.getHeight()/3);
+
+        contentStream.drawXObject(image, 0, 792 - h, w, h);
+        contentStream.close();
+        doc.save(new File(path + "test.pdf"));
+
+        doc.close();
+    }
+
+    public static BufferedImage joinBufferedImage(BufferedImage img1, BufferedImage img2) {
+
+        //do some calculate first
+        int offset = 5;
+        int wid = img1.getWidth() + img2.getWidth() + offset;
+        int height = Math.max(img1.getHeight(), img2.getHeight());
+        //create a new buffer and draw two image into the new image
+        BufferedImage newImage = new BufferedImage(wid, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = newImage.createGraphics();
+        Color oldColor = g2.getColor();
+        //fill background
+        g2.setPaint(Color.WHITE);
+        g2.fillRect(0, 0, wid, height);
+        //draw image
+        g2.setColor(oldColor);
+        g2.drawImage(img1, null, 0, 0);
+        g2.drawImage(img2, null, img1.getWidth() + offset, 0);
+        g2.dispose();
+        return newImage;
+    }
+
+    public StreamedContent getFile() {
+        return file;
+    }
+
+    public void setFile(StreamedContent file) {
+        this.file = file;
+    }
+    
 
 }
