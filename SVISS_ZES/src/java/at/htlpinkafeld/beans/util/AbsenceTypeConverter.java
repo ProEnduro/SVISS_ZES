@@ -9,18 +9,20 @@ import at.htlpinkafeld.pojo.AbsenceType;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.faces.convert.FacesConverter;
 
 /**
  *
  * @author Martin Six
  */
+@FacesConverter(value = "absenceTypeConv", forClass = AbsenceType.class)
 public class AbsenceTypeConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String string) {
-        string = string.substring(string.indexOf('{'), string.length());
+        string = string.substring(string.indexOf('=') + 1, string.length() - 1);
         String[] parts = string.split(",");
-        return new AbsenceType(Integer.parseInt(parts[0].trim()), parts[1].trim());
+        return new AbsenceType(Integer.parseInt(parts[0]), parts[1].substring(parts[1].indexOf("=") + 1));
     }
 
     @Override

@@ -15,10 +15,6 @@ and open the template in the editor.
 
         <ui:define name="content">
             <h:form>
-
-                <p:commandButton value="send Email" actionListener="#{scheduleView.sendEmail}" disabled="true"/>
-                <p:commandButton value="test pdf" actionListener="#{scheduleView.testPDF}" />
-
                 <h1 align="center">Ist-Zeiten</h1>
 
                 <p:panelGrid id="verbleibend" columns="4">
@@ -59,10 +55,6 @@ and open the template in the editor.
 
                     <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
                     <p:ajax event="eventSelect" listener="#{scheduleView.onEventSelect}" update="eventDetails :absenceDialogForm:absenceDialogID" />
-                    <p:ajax event="eventMove" listener="#{scheduleView.onWorkTimeMove}" update="messages" />
-                    <p:ajax event="eventResize" listener="#{scheduleView.onWorkTimeResize}" update="messages" />
-
-
                 </p:schedule>
 
                 <script type="text/javascript">
@@ -137,7 +129,8 @@ and open the template in the editor.
                         <p:inputText id="title" value="#{scheduleView.event.title}" disabled="true"/>
 
                         <p:outputLabel for="from" value="From:" />
-                        <p:calendar id="from" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" mindate="#{scheduleView.startDateToday}" maxdate="#{scheduleView.endDateToday}">
+                        <p:calendar id="from" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" showOn="button" mask="true"
+                                    mindate="#{scheduleView.startDateToday}" maxdate="#{scheduleView.endDateToday}">
 
                             <p:ajax event="dateSelect" process="from" update="breaktime" partialSubmit="true"/>
                             <p:ajax event="valueChange" process="from" update="breaktime" partialSubmit="true"/>
@@ -145,7 +138,8 @@ and open the template in the editor.
                         </p:calendar>
 
                         <p:outputLabel for="to" value="To:" />
-                        <p:calendar id="to" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" mindate="#{scheduleView.startDateToday}" maxdate="#{scheduleView.endDateToday}">
+                        <p:calendar id="to" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" showOn="button" mask="true"
+                                    mindate="#{scheduleView.startDateToday}" maxdate="#{scheduleView.endDateToday}">
                             <p:ajax event="dateSelect" process="to" update="breaktime" partialSubmit="true"/>
                             <p:ajax event="valueChange" process="to" update="breaktime" partialSubmit="true"/>
                         </p:calendar>
@@ -174,10 +168,10 @@ and open the template in the editor.
                         <p:inputText id="absencetitle" value="#{scheduleView.event.title}" disabled="true"/>
 
                         <p:outputLabel for="absencefrom" value="From:" />
-                        <p:calendar id="absencefrom" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
+                        <p:calendar id="absencefrom" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" showOn="button" mask="true"/>
 
                         <p:outputLabel for="absenceto" value="To:" />
-                        <p:calendar id="absenceto" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
+                        <p:calendar id="absenceto" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" showOn="button" mask="true"/>
 
                         <p:outputLabel for="reason" value="Reason:"/>
                         <p:inputText id="reason" value="#{scheduleView.reason}"/>

@@ -213,8 +213,10 @@ public class BenutzerverwaltungBean {
     }
 
     public void removeEvent() {
-        SollZeiten sz = new SollZeiten((DayOfWeek) curEvent.getData(), selectedUser, null, null);
-        newSollZeiten.remove(sz);
+        if (curEvent.getId() != null) {
+            SollZeiten sz = new SollZeiten((DayOfWeek) curEvent.getData(), selectedUser, null, null);
+            newSollZeiten.remove(sz);
+        }
     }
 
     public void onEventResize(ScheduleEntryResizeEvent event) {

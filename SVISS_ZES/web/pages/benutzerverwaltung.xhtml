@@ -79,43 +79,43 @@ and open the template in the editor.
 
                     <p:row>
                         <p:column><p:outputLabel value="Username: "/></p:column>
-                        <p:column><p:inputText value="#{benutzerverwaltungsBean.selectedUser.username}" required="true"/></p:column>
+                        <p:column><p:inputText value="#{benutzerverwaltungsBean.selectedUser.username}" required="true" autocomplete="false"/></p:column>
                     </p:row>
 
                     <p:row>
                         <p:column><p:outputLabel value="Password: "/></p:column>
-                        <p:column><p:inputText type="password" value="#{benutzerverwaltungsBean.selectedUser.pass}" required="true"/></p:column>
+                        <p:column><p:inputText type="password" value="#{benutzerverwaltungsBean.selectedUser.pass}" required="true" autocomplete="false"/></p:column>
                     </p:row>
 
                     <p:row>
                         <p:column><p:outputLabel value="Vorname Nachname: "/></p:column>
-                        <p:column><p:inputText value="#{benutzerverwaltungsBean.selectedUser.persName}" required="true"/></p:column>
+                        <p:column><p:inputText value="#{benutzerverwaltungsBean.selectedUser.persName}" required="true" autocomplete="false"/></p:column>
                     </p:row>
 
                     <p:row>
                         <p:column><p:outputLabel value="E-Mail-Adresse: "/></p:column>
-                        <p:column><p:inputText value="#{benutzerverwaltungsBean.selectedUser.email}" required="true"/></p:column>
+                        <p:column><p:inputText value="#{benutzerverwaltungsBean.selectedUser.email}" required="true" autocomplete="false"/></p:column>
                     </p:row>
 
                     <p:row>
                         <p:column><p:outputLabel value="Hiredate: "/></p:column>
-                        <p:column><p:calendar value="#{benutzerverwaltungsBean.selectedUser.hiredate}" mask="true" pattern="dd.MM.yyyy" converter="localDateConverter"  required="true"/></p:column>
+                        <p:column><p:calendar value="#{benutzerverwaltungsBean.selectedUser.hiredate}" mask="true" pattern="dd.MM.yyyy" converter="localDateConverter" showOn="button"
+                                              required="true" autocomplete="false"/></p:column>
                     </p:row>
 
                     <p:row>
                         <p:column><p:outputLabel value="Vacation Left: "/></p:column>
-                        <p:column><p:inputText type="number" value="#{benutzerverwaltungsBean.selectedUser.vacationLeft}" required="true"/></p:column>
+                        <p:column><p:inputText type="number" value="#{benutzerverwaltungsBean.selectedUser.vacationLeft}" required="true" autocomplete="false"/></p:column>
                     </p:row>
 
                     <p:row>
                         <p:column><p:outputLabel value="Overtime Left: "/></p:column>
-                        <p:column><p:inputText type="number" value="#{benutzerverwaltungsBean.selectedUser.overTimeLeft}" converter="minuteHourConverter" required="true"/></p:column>
+                        <p:column><p:inputText type="number" value="#{benutzerverwaltungsBean.selectedUser.overTimeLeft}" converter="minuteHourConverter" required="true" autocomplete="false"/></p:column>
                     </p:row>
 
                     <p:row>
                         <p:column><p:outputLabel value="Weektime: "/></p:column>
                         <p:column><p:commandButton id="weektimeBut"  value="change WeekTime" action="#{benutzerverwaltungsBean.loadSollZeiten}" update=":weekDialogForm:weekDlgPanel"  oncomplete="PF('uwtdlg').show();"/></p:column>
-                        <!--<p:column><p:inputMask id="weektimeIn"  mask="99.9" value="#{benutzerverwaltungsBean.selectedUser.weekTime}"/></p:column>-->
                     </p:row>
 
                     <p:row>
@@ -136,8 +136,8 @@ and open the template in the editor.
             <h:form id="weekDialogForm">
                 <p:panel  id="weekDlgPanel">
 
-                    <p:schedule minTime="6" maxTime="21" id="weektimeSchedule" initialDate="#{benutzerverwaltungsBean.pointDate}" timeZone="GMT+2"  draggable="false" allDaySlot="false" showHeader="false"  view="agendaWeek" 
-                                timeFormat="HH:mm" axisFormat="HH:mm" locale="de"  ignoreTimezone="true" value="#{benutzerverwaltungsBean.timeModel}" 
+                    <p:schedule minTime="6" maxTime="21" id="weektimeSchedule" initialDate="#{benutzerverwaltungsBean.pointDate}" timeZone="GMT+2"  draggable="false" allDaySlot="false" showHeader="false"
+                                view="agendaWeek" timeFormat="HH:mm" axisFormat="HH:mm" locale="de"  ignoreTimezone="true" value="#{benutzerverwaltungsBean.timeModel}" 
                                 columnFormat="month:'ddd', week:'dddd', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'">
 
                         <p:ajax event="dateSelect" listener="#{benutzerverwaltungsBean.onDateSelect}" update=":weekTimeSelectForm:eventDetails sollZeitText" oncomplete="PF('eventDialog').show();" />
@@ -148,9 +148,9 @@ and open the template in the editor.
                     <f:facet name="footer">
                         <p:commandButton value="Zeiten speichern" action="#{benutzerverwaltungsBean.saveTimes}" onsuccess="PF('uwtdlg').hide();"/>
                         <p:commandButton value="Änderung verwerfen" action="#{benutzerverwaltungsBean.discardTimes}" oncomplete="PF('uwtdlg').hide();"/>
+                        
                         <p:outputLabel value="Gesamte Sollzeit:" />
                         <p:inputText id="sollZeitText" value="#{benutzerverwaltungsBean.newWeekTime}" readonly="true"/>
-
                     </f:facet>
                 </p:panel>            
             </h:form>
@@ -161,10 +161,10 @@ and open the template in the editor.
                 <h:panelGrid id="eventDetails" columns="2">
 
                     <p:outputLabel for="from" value="From:" />
-                    <p:calendar id="from" value="#{benutzerverwaltungsBean.curEvent.startDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"/>
+                    <p:calendar id="from" value="#{benutzerverwaltungsBean.curEvent.startDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"  showOn="button" mask="true"/>
 
                     <p:outputLabel for="to" value="To:" />
-                    <p:calendar id="to" value="#{benutzerverwaltungsBean.curEvent.endDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"/>
+                    <p:calendar id="to" value="#{benutzerverwaltungsBean.curEvent.endDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"  showOn="button" mask="true"/>
 
                     <p:commandButton id="addButton" value="Save" action="#{benutzerverwaltungsBean.addEvent}" update=":weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  onsuccess="PF('eventDialog').hide();" />
                     <p:commandButton id="delButton" value="Remove" action="#{benutzerverwaltungsBean.removeEvent}" update=":weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  onsuccess="PF('eventDialog').hide();" />
