@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.service;
 
+import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.User;
 import java.util.Properties;
 import javax.mail.Message;
@@ -20,7 +21,66 @@ import javax.mail.internet.MimeMessage;
  */
 public class EmailService {
 
-    public static void sendEmail(String subject, String body, User from, User... to) {
+    public static void sendUserEnteredAbsenceEmail(Absence a, User... approver) {
+        String subject = "";
+        String body = "";
+        User sender = a.getUser();
+        switch (a.getAbsenceType().getAbsenceName()) {
+            case "medical leave":
+                subject = "Krankenstand : " + sender.getPersName() + " " + a.getStartTime() + " -- " + a.getEndTime();
+                break;
+            case "holiday":
+                subject = "Urlaubsantrag : " + sender.getPersName() + " " + a.getStartTime() + " -- " + a.getEndTime();
+                body = sender.getPersName() + " hat einen Urlaubsantrag für den Zeitraum von " + a.getStartTime() + " bis " + a.getEndTime() + "gemacht.";
+                if (!a.getReason().isEmpty()) {
+                    body += "\n Grund: " + a.getReason();
+                }
+                break;
+            case "time compensation":
+                subject = "Antrag auf Zeitausgleich : " + sender.getPersName() + " " + a.getStartTime() + " -- " + a.getEndTime();
+                body = sender.getPersName() + " hat einen Antrag auf Zeitausgleich für den Zeitraum von " + a.getStartTime() + " bis " + a.getEndTime() + "gemacht.";
+                if (!a.getReason().isEmpty()) {
+                    body += "\n Grund: " + a.getReason();
+                }
+                break;
+            case "business-related absence":
+                subject = "";
+                break;
+            default:
+                break;
+        }
+
+        sendEmail(subject, body, sender, approver);
+    }
+
+    public static void sendAcknowledgmentEmail(Absence a, User approver, User... otherApprover) {
+        String subject = "";
+        String bodyApprover = "";
+        String bodySender = "";
+        User sender = a.getUser();
+        switch (a.getAbsenceType().getAbsenceName()) {
+            case "medical leave":
+                subject = "Re: Krankenstand : " + sender.getPersName() + " " + a.getStartTime() + " -- " + a.getEndTime();
+                break;
+            case "holiday":
+                subject = "Re: Urlaubsantrag : " + sender.getPersName() + " " + a.getStartTime() + " -- " + a.getEndTime();
+                bodyApprover = "Der Urlaubsantrag von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime() + " bis " + a.getEndTime() + "wurde von " + approver.getPersName() + " angenommen.";
+                bodySender = "Ihr Urlaubsantrag für den Zeitraum von " + a.getStartTime() + " bis " + a.getEndTime() + "wurde von " + approver.getPersName() + " angenommen.";
+                break;
+            case "time compensation":
+                subject = "Re: Antrag auf Zeitausgleich : " + sender.getPersName() + " " + a.getStartTime() + " -- " + a.getEndTime();
+                bodyApprover = "Der Antrag auf Zeitausgleich von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime() + " bis " + a.getEndTime() + "wurde von " + approver.getPersName() + " angenommen.";
+                bodySender = "Ihr Antrag auf Zeitausgleich für den Zeitraum von " + a.getStartTime() + " bis " + a.getEndTime() + "wurde von " + approver.getPersName() + " angenommen.";
+                break;
+            default:
+                break;
+        }
+
+        sendEmail(subject, bodyApprover, approver, otherApprover);
+        sendEmail(subject, bodySender, approver, sender);
+    }
+
+    private static void sendEmail(String subject, String body, User from, User... to) {
         // Assuming you are sending email from localhost
         String host = "localhost";
 
