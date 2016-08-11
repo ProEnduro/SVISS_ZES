@@ -49,7 +49,7 @@ public class MasterBean {
                 columns = 8;
                 break;
             case 3:
-                columns = 3;
+                columns = 4;
                 break;
             case 4:
                 columns = 6;
