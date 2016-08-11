@@ -130,9 +130,9 @@ public class ScheduleView implements Serializable {
                 case 2:
                     ev.setStyleClass("holiday");
 
-                    LocalDateTime time = TimeConverterService.convertDateToLocalDateTime(ev.getEndDate());
-                    Date d = TimeConverterService.convertLocalDateTimeToDate(time.plusMinutes(1439));
-                    ev.setEndDate(d);
+//                    LocalDateTime time = TimeConverterService.convertDateToLocalDateTime(ev.getEndDate());
+//                    Date d = TimeConverterService.convertLocalDateTimeToDate(time.plusMinutes(1439));
+//                    ev.setEndDate(d);
 
                     ev.setAllDay(true);
                     break;
@@ -309,6 +309,16 @@ public class ScheduleView implements Serializable {
                 BenutzerverwaltungService.updateUser(u);
 
             }
+            if(absenceEvent.getAbsence().getAbsenceType().getAbsenceName().equals("time compensation")){
+                LocalDateTime start = absenceEvent.getAbsence().getStartTime();
+                LocalDateTime end = absenceEvent.getAbsence().getEndTime();
+                
+                int min = (int) start.until(end, ChronoUnit.MINUTES);
+                
+                User u = absenceEvent.getAbsence().getUser();
+                u.setOverTimeLeft(u.getOverTimeLeft() - min);
+                BenutzerverwaltungService.updateUser(u);
+            }
 
         }
 
@@ -352,6 +362,7 @@ public class ScheduleView implements Serializable {
                     break;
                 case 2:
                     e.setStyleClass("holiday");
+                    e.setAllDay(true);
                     break;
                 case 3:
                     e.setStyleClass("time_compensation");
@@ -380,7 +391,7 @@ public class ScheduleView implements Serializable {
         this.currentUser = BenutzerverwaltungService.getUser(currentUser.getUserNr());
 
         verbleibend = currentUser.getWeekTime();
-        overtimeleft = currentUser.getOverTimeLeft() * 60;
+        overtimeleft = currentUser.getOverTimeLeft();
 
         this.eventModel.clear();
         List<Absence> absenceList = AbsenceService.getAbsenceByUser(currentUser);
@@ -403,6 +414,7 @@ public class ScheduleView implements Serializable {
                     } else {
                         e.setStyleClass("holiday_acknowledged");
                     }
+                    e.setAllDay(true);
                     break;
                 case 3:
                     if (a.isAcknowledged() == false) {
@@ -514,6 +526,7 @@ public class ScheduleView implements Serializable {
                         break;
                     case 2:
                         e.setStyleClass("holiday");
+                        e.setAllDay(true);
                         break;
                     case 3:
                         e.setStyleClass("time_compensation");
@@ -537,6 +550,7 @@ public class ScheduleView implements Serializable {
                         break;
                     case 2:
                         e.setStyleClass("holiday");
+                        e.setAllDay(true);
                         break;
                     case 3:
                         e.setStyleClass("time_compensation");
@@ -586,6 +600,7 @@ public class ScheduleView implements Serializable {
                     break;
                 case 2:
                     e.setStyleClass("holiday_acknowledged");
+                    e.setAllDay(true);
                     break;
                 case 3:
                     e.setStyleClass("time_compensation_acknowledged");
@@ -609,6 +624,7 @@ public class ScheduleView implements Serializable {
                     break;
                 case 2:
                     e.setStyleClass("holiday");
+                    e.setAllDay(true);
                     break;
                 case 3:
                     e.setStyleClass("time_compensation");
@@ -748,6 +764,7 @@ public class ScheduleView implements Serializable {
                         break;
                     case 2:
                         e.setStyleClass("holiday_acknowledged");
+                        e.setAllDay(true);
                         break;
                     case 3:
                         e.setStyleClass("time_compensation_acknowledged");
@@ -771,6 +788,7 @@ public class ScheduleView implements Serializable {
                         break;
                     case 2:
                         e.setStyleClass("holiday");
+                        e.setAllDay(true);
                         break;
                     case 3:
                         e.setStyleClass("time_compensation");
@@ -795,6 +813,7 @@ public class ScheduleView implements Serializable {
                         break;
                     case 2:
                         e.setStyleClass("holiday");
+                        e.setAllDay(true);
                         break;
                     case 3:
                         e.setStyleClass("time_compensation");
@@ -819,6 +838,7 @@ public class ScheduleView implements Serializable {
                         break;
                     case 2:
                         e.setStyleClass("holiday_acknowledged");
+                        e.setAllDay(true);
                         break;
                     case 3:
                         e.setStyleClass("time_compensation_acknowledged");

@@ -124,7 +124,7 @@ and open the template in the editor.
                 </style>
 
                 <p:dialog id="evDialog" widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip" closeOnEscape="true">
-                    <h:panelGrid id="eventDetails" columns="2">
+                    <h:panelGrid id="eventDetails" columns="2" style="vertical-align:middle">
                         <p:outputLabel for="title" value="Titles:" />
                         <p:inputText id="title" value="#{scheduleView.event.title}" disabled="true"/>
 
@@ -145,13 +145,13 @@ and open the template in the editor.
                         </p:calendar>
 
                         <p:outputLabel for="startcomment" value="Start Comment:"/>
-                        <p:inputText id="startcomment" value="#{scheduleView.startcomment}"/>
+                        <p:inputTextarea id="startcomment" value="#{scheduleView.startcomment}"/>
 
                         <p:outputLabel for="endcomment" value="End Comment:"/>
-                        <p:inputText id="endcomment" value="#{scheduleView.endcomment}"/>
+                        <p:inputTextarea id="endcomment" value="#{scheduleView.endcomment}"/>
 
                         <p:outputLabel for="breaktime" value="Breaktime:"/>
-                        <p:inputText id="breaktime" value="#{scheduleView.breaktime}"/>
+                        <p:inputText  type="number" id="breaktime" value="#{scheduleView.breaktime}"/>
 
                         <p:commandButton type="reset" value="Reset" />
                         <p:commandButton update="verbleibend" id="addButton" value="Save" actionListener="#{scheduleView.addIstZeitEvent}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" />
@@ -174,7 +174,7 @@ and open the template in the editor.
                         <p:calendar id="absenceto" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" showOn="button" mask="true"/>
 
                         <p:outputLabel for="reason" value="Reason:"/>
-                        <p:inputText id="reason" value="#{scheduleView.reason}"/>
+                        <p:inputTextarea id="reason" value="#{scheduleView.reason}"/>
                     </h:panelGrid>
                 </p:dialog> 
 

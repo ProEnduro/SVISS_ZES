@@ -106,7 +106,7 @@ and open the template in the editor.
 
 
                         <p:outputLabel for="reason" value="Reason:"/>
-                        <p:inputText id="reason" value="#{scheduleView.reason}"/>
+                        <p:inputTextarea id="reason" value="#{scheduleView.reason}"/>
 
                         <p:commandButton type="reset" value="Reset" />
                         <p:commandButton id="addButton" value="Save" actionListener="#{scheduleView.addEvent}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" />
@@ -133,7 +133,7 @@ and open the template in the editor.
                         <p:calendar id="absenceto" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" readonly="true"/>
 
                         <p:outputLabel for="reason" value="Reason:"/>
-                        <p:inputText id="reason" value="#{scheduleView.reason}" readonly="true"/>
+                        <p:inputTextarea id="reason" value="#{scheduleView.reason}" readonly="true"/>
 
                         <p:commandButton value="Delete" actionListener="#{scheduleView.deleteEvent}" oncomplete="PF('absenceDialog').hide();" update=":abwesenheitForm"/>
                     </h:panelGrid>
@@ -154,10 +154,10 @@ and open the template in the editor.
                         <p:calendar id="workto" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" readonly="true"/>
 
                         <p:outputLabel for="startcomment" value="Start Comment:"/>
-                        <p:inputText id="startcomment" value="#{scheduleView.startcomment}" readonly="true"/>
+                        <p:inputTextarea id="startcomment" value="#{scheduleView.startcomment}" readonly="true"/>
 
                         <p:outputLabel for="endcomment" value="End Comment:"/>
-                        <p:inputText id="endcomment" value="#{scheduleView.endcomment}" readonly="true"/>
+                        <p:inputTextarea id="endcomment" value="#{scheduleView.endcomment}" readonly="true"/>
 
                         <p:outputLabel for="breaktime" value="Breaktime:"/>
                         <p:inputText id="breaktime" value="#{scheduleView.breaktime}" readonly="true"/>
