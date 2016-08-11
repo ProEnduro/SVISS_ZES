@@ -17,7 +17,8 @@ and open the template in the editor.
             <h:form id="abwesenheitForm">
                 <p:growl id="messages" showDetail="true"/>
 
-                <p:schedule firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.eventModel}" draggable="false" resizable="false" widgetVar="myschedule" timeZone="GMT+2" locale="de" columnFormat="month:'ddd', week:'dd/MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
+                <p:schedule firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.eventModel}" draggable="false" resizable="false" widgetVar="myschedule" timeZone="GMT+2" locale="de" 
+                            columnFormat="month:'ddd', week:'dddd - dd.MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
 
                     <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
                     <p:ajax event="eventSelect" listener="#{scheduleView.onEventInAbwesenheitenSelect}" update="eventDetails :absenceDialogForm:absenceDialogID :worktimeDialogForm:worktimeDialogID" />

@@ -28,7 +28,7 @@ and open the template in the editor.
                 <p:commandButton value="load" actionListener="#{scheduleView.loadAllTimesByUser}" update="schedule selectedUserString"/>
 
                 <p:schedule draggable="false" resizable="false" firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.eventModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" 
-                            columnFormat="month:'ddd', week:'dd/MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
+                            columnFormat="month:'ddd',  week:'dddd - dd.MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
                     <p:ajax event="eventSelect" listener="#{scheduleView.onEventInAbwesenheitenSelect}" update=":absenceDialogForm:absenceDialogID :worktimeDialogForm:worktimeDialogID" />
                 </p:schedule>
 

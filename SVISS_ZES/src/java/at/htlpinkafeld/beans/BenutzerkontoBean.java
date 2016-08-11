@@ -34,14 +34,13 @@ public class BenutzerkontoBean {
     Date hireDate;
     String password;
     double weekTime;
-    
-    String themeTest="1";
+
+    String themeTest = "1";
 
     FacesContext context = FacesContext.getCurrentInstance();
     MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
     User user;
 
-    
     public BenutzerkontoBean() {
         user = new UserProxy();
         user = masterBean.getUser();
@@ -86,34 +85,11 @@ public class BenutzerkontoBean {
     }
 
     public void setPassword(String password) {
-        user.setPass(password); 
+        user.setPass(password);
         BenutzerverwaltungService.updateUser(user);
     }
 
     public double getWeekTime() {
         return user.getWeekTime();
-    }  
-
-    
-    public void readPropertie() throws FileNotFoundException, IOException{
-        ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
-        String path = serv.getRealPath("/") + "/resources/";
-        File file=new File(path+"themes.properties");
-        
-        String key, value;
-        
-        FileInputStream inSF=new FileInputStream(file);
-        Properties prop=new Properties();
-        prop.load(inSF);
-        
-        Enumeration enu=prop.keys();
-        
-        while(enu.hasMoreElements()){      
-            key=(String)enu.nextElement();
-            value=prop.getProperty(key);
-            
-            System.out.println(key+" "+value);
-            
-        }
     }
 }
