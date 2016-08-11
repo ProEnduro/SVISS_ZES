@@ -9,11 +9,17 @@ import at.htlpinkafeld.pojo.AccessLevel;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserProxy;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+import javax.servlet.ServletContext;
 
 /**
  *
@@ -87,12 +93,27 @@ public class BenutzerkontoBean {
     public double getWeekTime() {
         return user.getWeekTime();
     }  
-    
 
     
-    
-    
-
-    
-    
+    public void readPropertie() throws FileNotFoundException, IOException{
+        ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+        String path = serv.getRealPath("/") + "/resources/";
+        File file=new File(path+"themes.properties");
+        
+        String key, value;
+        
+        FileInputStream inSF=new FileInputStream(file);
+        Properties prop=new Properties();
+        prop.load(inSF);
+        
+        Enumeration enu=prop.keys();
+        
+        while(enu.hasMoreElements()){      
+            key=(String)enu.nextElement();
+            value=prop.getProperty(key);
+            
+            System.out.println(key+" "+value);
+            
+        }
+    }
 }

@@ -5,12 +5,21 @@
  */
 package at.htlpinkafeld.beans;
 
+import at.htlpinkafeld.beans.util.GuestPreferences;
 import at.htlpinkafeld.pojo.User;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.service.AccessRightsService;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Properties;
+import javax.servlet.ServletContext;
 
 /**
  *
@@ -44,8 +53,8 @@ public class LoginBean {
         this.pw = pw;
     }
 
-    public Object login() {
-
+    public Object login() throws IOException {
+        createThemePropertie();
         User_DAO user_dao = DAOFactory.getDAOFactory().getUserDAO();
 
         User u = user_dao.getUserByUsername(userString);
@@ -68,6 +77,7 @@ public class LoginBean {
             scheduleView.setUser(this.getUser());
 
             boolean reader = user.getAccessLevel().getAccessLevelID() == 3;
+            
 
             if (reader) {
                 scheduleView.loadAllTimes(null);
@@ -77,9 +87,9 @@ public class LoginBean {
             this.pw = "";
             this.user = null;
             this.userString = "";
-
+  //          setTheme();
             scheduleView.reloadAbwesenheiten(null);
-
+            
             return "success";
         }
 
@@ -96,6 +106,57 @@ public class LoginBean {
 
     public User getUser() {
         return this.user;
+    }
+    
+    /*
+    public void setTheme() throws FileNotFoundException, IOException{
+        ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+        String path = serv.getRealPath("/") + "/resources/";
+        File file=new File(path+"themes.properties");
+        Enumeration enu;
+        
+        FileInputStream inSF=new FileInputStream(file);
+        Properties prop=new Properties();
+        prop.load(inSF);
+        
+        String key, value;
+        GuestPreferences gP=new GuestPreferences();
+       
+        enu=prop.keys();
+        
+        while(enu.hasMoreElements()){      
+            key=(String)enu.nextElement();
+            
+            if(key.equals(this.user.getUsername())){
+                gP.setTheme(prop.getProperty(key));
+            }
+            
+            //value=prop.getProperty(key);
+            
+            //System.out.println(key+" "+value);
+            
+        }
+        
+    } */
+    
+    
+    public void createThemePropertie() throws FileNotFoundException, IOException{
+        ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+        String path = serv.getRealPath("/") + "/resources/";
+        File file=new File(path+"themes.properties");
+        
+        if(file.exists()==false){
+            Properties prop=new Properties();
+            prop.setProperty("admin", "delta");
+            prop.setProperty("user", "afterdark");
+            
+            try (FileOutputStream outSF = new FileOutputStream(file)) {
+                file.createNewFile();
+                prop.store(outSF, "Themes_of_user");
+                outSF.close();
+            } 
+        }
+        
     }
 
 }

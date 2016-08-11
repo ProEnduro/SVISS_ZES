@@ -20,7 +20,6 @@ import javax.faces.bean.ManagedBean;
 @ManagedBean(name="themeService", eager = true)
 
 public class ThemeService {
-     
     private List<Theme> themes;
      
     @PostConstruct
@@ -38,7 +37,6 @@ public class ThemeService {
         themes.add(new Theme(9, "Eggplant", "eggplant"));
         themes.add(new Theme(10, "Hot-Sneaks", "hot-sneaks"));
         themes.add(new Theme(11, "Dot-LUV", "dot-luv"));
-        
     }
      
     public List<Theme> getThemes() {
