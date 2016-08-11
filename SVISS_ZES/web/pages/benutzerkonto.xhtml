@@ -26,58 +26,63 @@ and open the template in the editor.
         <body>
             <h:form>
                 <p:growl id="growl" showDetail="true" life="5000" autoUpdate="true"/>
+                <p:panelGrid columns="2"  >
+                    <p:panel>
+                        <p:panelGrid columns="2" style="border-color: #9999ff; border-style: double; margin: 0 auto; margin-bottom: 0.5%; margin-top: 2%">
 
-                <p:panelGrid columns="2" style="border-color: #9999ff; border-style: double; margin: 0 auto; margin-bottom: 0.5%; margin-top: 2%">
+                            <p:outputLabel value="Access-Level: "/>
+                            <p:inputText value="#{benutzerkontoBean.accessLevel}" readonly="true" autocomplete="false">
+                                <f:converter converterId="accesslevelconv"/>
+                            </p:inputText>
 
-                    <p:outputLabel value="Access-Level: "/>
-                    <p:inputText value="#{benutzerkontoBean.accessLevel}" readonly="true" autocomplete="false">
-                        <f:converter converterId="accesslevelconv"/>
-                    </p:inputText>
+                            <p:outputLabel value="Username: "/>
+                            <p:inputText value="#{benutzerkontoBean.userName}" readonly="true" autocomplete="false"/>
 
-                    <p:outputLabel value="Username: "/>
-                    <p:inputText value="#{benutzerkontoBean.userName}" readonly="true" autocomplete="false"/>
+                            <p:outputLabel value="* Name: " style="font-weight: bold"/>
+                            <p:inputText value="#{benutzerkontoBean.persName}" style="font-weight: bold" required="true" requiredMessage="Name required!" autocomplete="false"/>
 
-                    <p:outputLabel value="* Name: " style="font-weight: bold"/>
-                    <p:inputText value="#{benutzerkontoBean.persName}" style="font-weight: bold" required="true" requiredMessage="Name required!" autocomplete="false"/>
+                            <p:outputLabel for="emailAcc" value="* EMail: " style="font-weight: bold"/>
+                            <p:inputText id="emailAcc" value="#{benutzerkontoBean.email}" style="font-weight: bold" requiredMessage="Email required!" required="true" autocomplete="false"/>
 
-                    <p:outputLabel for="emailAcc" value="* EMail: " style="font-weight: bold"/>
-                    <p:inputText id="emailAcc" value="#{benutzerkontoBean.email}" style="font-weight: bold" requiredMessage="Email required!" required="true" autocomplete="false"/>
+                            <p:outputLabel value="HireDate: "/>
+                            <p:inputText value="#{benutzerkontoBean.hireDate}" readonly="true" converter="localDateConverter" autocomplete="false"/>
 
-                    <p:outputLabel value="HireDate: "/>
-                    <p:inputText value="#{benutzerkontoBean.hireDate}" readonly="true" converter="localDateConverter" autocomplete="false"/>
+                            <p:outputLabel value="* Password: " style="font-weight: bold"/>
+                            <p:inputText value="#{benutzerkontoBean.password}" type="password" style="font-weight: bold" required="true" autocomplete="false" requiredMessage="Password required!"/>
 
-                    <p:outputLabel value="* Password: " style="font-weight: bold"/>
-                    <p:inputText value="#{benutzerkontoBean.password}" type="password" style="font-weight: bold" required="true" autocomplete="false" requiredMessage="Password required!"/>
+                            <p:outputLabel value="Week-Time: "/>
+                            <p:inputText value="#{benutzerkontoBean.weekTime}" readonly="true" autocomplete="false"/>
 
-                    <p:outputLabel value="Week-Time: "/>
-                    <p:inputText value="#{benutzerkontoBean.weekTime}" readonly="true" autocomplete="false"/>
+                        </p:panelGrid>              
 
-                </p:panelGrid>              
+                        <h:panelGrid columns="2" cellpadding="10" style="margin: 0 auto">
+                            <p:outputLabel for="themeSwitch" value="Theme: " /> 
 
-                <h:panelGrid columns="2" cellpadding="10" style="margin: 0 auto">
-                    <p:outputLabel for="themeSwitch" value="Theme: " /> 
+                            <p:themeSwitcher id="themeSwitch" style="width:165px" value="#{guestPreferences.theme}" effect="fade" var="t">
+                                <f:selectItems value="#{themeSwitcherView.themes}" var="theme" itemLabel="#{theme.displayName}" itemValue="#{theme}"/>
+                                <p:column>
+                                    <h:outputText value="#{t.id}" styleClass="ui-theme ui-theme-#{t.name}" style="display-block" />
+                                </p:column>
 
-                    <p:themeSwitcher id="themeSwitch" style="width:165px" value="#{guestPreferences.theme}" effect="fade" var="t">
-                        <f:selectItems value="#{themeSwitcherView.themes}" var="theme" itemLabel="#{theme.displayName}" itemValue="#{theme}"/>
-                        <p:column>
-                            <h:outputText value="#{t.id}" styleClass="ui-theme ui-theme-#{t.name}" style="display-block" />
-                        </p:column>
+                                <p:column>
+                                    #{t.displayName}
+                                </p:column>
+                            </p:themeSwitcher>
+                        </h:panelGrid>
 
-                        <p:column>
-                            #{t.displayName}
-                        </p:column>
-                    </p:themeSwitcher>
-                </h:panelGrid>
+                        <p:panelGrid columns="2" styleClass="ui-panelgrid" style="margin: 0 auto;">
+                            <p:outputLabel value="* - Editable" style="font-weight: bold"/>
+                            <br></br>
+                            <p:commandButton value="Speichern" style="background-color: #91d1d4"/>
+                            <p:commandButton value="Änderungen verwerfen" immediate="true" 
+                                             style="background-color: #ff7a7a"/>
 
-                <p:panelGrid columns="2" styleClass="ui-panelgrid" style="margin: 0 auto;">
-                    <p:outputLabel value="* - Editable" style="font-weight: bold"/>
-                    <br></br>
-                    <p:commandButton value="Speichern" style="background-color: #91d1d4"/>
-                    <p:commandButton value="Änderungen verwerfen" immediate="true" 
-                                     style="background-color: #ff7a7a"/>
+                        </p:panelGrid>
+                    </p:panel>
+                    <p:schedule>
 
+                    </p:schedule>
                 </p:panelGrid>
-
             </h:form>
         </body>
     </ui:define>

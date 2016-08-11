@@ -53,11 +53,15 @@ and open the template in the editor.
                 </p:column>
 
                 <p:column headerText="Freigeber ändern">
-                    <p:commandButton id="editApproverBut" value="edit" action="#{benutzerverwaltungsBean.editApprover(user)}" update=":approverForm" oncomplete="PF('approverDialog').show();"/>
+                    <p:commandButton id="editApproverBut" value="edit" actionListener="#{benutzerverwaltungsBean.editApprover}" update=":approverForm" oncomplete="PF('approverDialog').show();">
+                        <f:attribute name="user" value="#{user}"/>
+                    </p:commandButton>
                 </p:column>
 
                 <p:column headerText="User ändern">
-                    <p:commandButton id="editUserBut" value="edit User" action="#{benutzerverwaltungsBean.editUser(user)}" update=":userDialogForm:userDlgGrid" oncomplete="PF('userdlg').show();"/>
+                    <p:commandButton id="editUserBut" value="edit User" actionListener="#{benutzerverwaltungsBean.editUser}" update=":userDialogForm:userDlgGrid" oncomplete="PF('userdlg').show();">
+                        <f:attribute name="user" value="#{user}"/>
+                    </p:commandButton>
                 </p:column>
 
             </p:dataTable>
@@ -148,7 +152,7 @@ and open the template in the editor.
                     <f:facet name="footer">
                         <p:commandButton value="Zeiten speichern" action="#{benutzerverwaltungsBean.saveTimes}" onsuccess="PF('uwtdlg').hide();"/>
                         <p:commandButton value="Änderung verwerfen" action="#{benutzerverwaltungsBean.discardTimes}" oncomplete="PF('uwtdlg').hide();"/>
-                        
+
                         <p:outputLabel value="Gesamte Sollzeit:" />
                         <p:inputText id="sollZeitText" value="#{benutzerverwaltungsBean.newWeekTime}" readonly="true"/>
                     </f:facet>

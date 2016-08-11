@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.faces.event.ActionEvent;
 import org.primefaces.event.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
@@ -80,8 +81,8 @@ public class BenutzerverwaltungBean {
         newSollZeiten = new ArrayList<>();
     }
 
-    public void editUser(User user) {
-        selectedUser = new UserProxy(user);
+    public void editUser(ActionEvent e) {
+        selectedUser = new UserProxy((User) e.getComponent().getAttributes().get("user"));
     }
 
     public void saveUser() {
@@ -232,8 +233,9 @@ public class BenutzerverwaltungBean {
     }
 
     //Approver Stuff from here on
-    public void editApprover(User user) {
-        selectedUser = user;
+    public void editApprover(ActionEvent e) {
+
+        selectedUser = (User) e.getComponent().getAttributes().get("user");
         List<User> source = new LinkedList<>();
         for (AccessLevel al : AccessRightsService.AccessGroups) {
             if (al.containsPermission("ACKNOWLEDGE_USERS") || al.containsPermission("ALL")) {

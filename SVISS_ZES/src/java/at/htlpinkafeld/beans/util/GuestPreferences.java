@@ -9,8 +9,6 @@ package at.htlpinkafeld.beans.util;
  *
  * @author ÐarkHell2
  */
-
-
 import at.htlpinkafeld.beans.MasterBean;
 import at.htlpinkafeld.pojo.User;
 import java.io.File;
@@ -28,90 +26,85 @@ import javax.servlet.ServletContext;
 
 @ManagedBean(eager = true)
 public class GuestPreferences implements Serializable {
+
     ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
     String path = serv.getRealPath("/") + "/resources/";
     FacesContext context = FacesContext.getCurrentInstance();
     MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
-    
+
     User user;
-    File file=new File(path+"themes.properties");
+    File file = new File(path + "themes.properties");
     Enumeration enu;
     String key;
-    
+
     String theme = "aristo";
-    
 
     public String getTheme() throws IOException {
-        user=masterBean.getUser();
-        if(user!=null){
+        user = masterBean.getUser();
+        if (user != null) {
             setTheme();
         }
         return this.theme;
-	}
+    }
 
-	public void setTheme(String theme) throws IOException {
-            this.theme = theme;
-            if(user!=null){
-                setThemeProp(theme);
-            }
-	}
+    public void setTheme(String theme) throws IOException {
+        this.theme = theme;
+        if (user != null) {
+            setThemeProp(theme);
+        }
+    }
 
-    
     public void changeTheme() {
         Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		if(params.containsKey("globaltheme")) {
-			theme = params.get("globaltheme");
-		}
+        if (params.containsKey("globaltheme")) {
+            theme = params.get("globaltheme");
+        }
     }
-    
-    
-    public void setTheme() throws FileNotFoundException, IOException{  
-        
+
+    public void setTheme() throws FileNotFoundException, IOException {
+
         try (FileInputStream inSF = new FileInputStream(file)) {
-            Properties prop=new Properties();
+            Properties prop = new Properties();
             prop.load(inSF);
-            
-            enu=prop.keys();
-            
-            while(enu.hasMoreElements()){
-                key=(String)enu.nextElement();
-                
-                if(key.equals(this.user.getUsername())){
+
+            enu = prop.keys();
+
+            while (enu.hasMoreElements()) {
+                key = (String) enu.nextElement();
+
+                if (key.equals(this.user.getUsername())) {
                     this.setTheme(prop.getProperty(key));
                 }
             }
             inSF.close();
         }
-        
-    } 
-    
-        public void setThemeProp(String newTheme) throws FileNotFoundException, IOException{
-        
+
+    }
+
+    public void setThemeProp(String newTheme) throws FileNotFoundException, IOException {
+
         try (FileInputStream inSF = new FileInputStream(file)) {
-            Properties prop=new Properties();
+            Properties prop = new Properties();
             prop.load(inSF);
-            enu=prop.keys();
-            
-            
-            while(enu.hasMoreElements()){
-                key=(String)enu.nextElement();
-                
-                if(key.equals(this.user.getUsername())){
+            enu = prop.keys();
+
+            while (enu.hasMoreElements()) {
+                key = (String) enu.nextElement();
+
+                if (key.equals(this.user.getUsername())) {
                     try (FileOutputStream outSF = new FileOutputStream(file)) {
                         prop.setProperty(key, newTheme);
                         prop.store(outSF, "Themes_of_user");
                         outSF.close();
                     }
-                }else{
-                    if(prop.containsKey(this.user.getUsername())==false){
-                        try (FileOutputStream outSF = new FileOutputStream(file)) {
-                            prop.setProperty(this.user.getUsername(), "aristo");
-                            prop.store(outSF, "Themes_of_user");
-                            outSF.close();
-                        }
+                } else if (prop.containsKey(this.user.getUsername()) == false) {
+                    try (FileOutputStream outSF = new FileOutputStream(file)) {
+                        prop.setProperty(this.user.getUsername(), "aristo");
+                        prop.store(outSF, "Themes_of_user");
+                        outSF.close();
                     }
                 }
-            
+
             }
             inSF.close();
         }
