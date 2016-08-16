@@ -73,6 +73,10 @@ public class AbsenceService {
         return ABSENCE_TYPE_DAO.getList();
     }
 
+    public static void deleteAbsence(Absence absence) {
+        ABSENCE_DAO.delete(absence);
+    }
+
     public List<Absence> getAbsencesBetweenDates(Date startDateU, Date endDateU) {
         return ABSENCE_DAO.getAbsencesBetweenDates(startDateU, endDateU);
     }

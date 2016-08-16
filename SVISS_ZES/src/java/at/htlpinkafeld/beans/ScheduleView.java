@@ -12,7 +12,9 @@ import at.htlpinkafeld.pojo.AbsenceType;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
 import at.htlpinkafeld.service.AbsenceService;
+import at.htlpinkafeld.service.AccessRightsService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
+import at.htlpinkafeld.service.EmailService;
 import at.htlpinkafeld.service.IstZeitService;
 import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
@@ -133,7 +135,6 @@ public class ScheduleView implements Serializable {
 //                    LocalDateTime time = TimeConverterService.convertDateToLocalDateTime(ev.getEndDate());
 //                    Date d = TimeConverterService.convertLocalDateTimeToDate(time.plusMinutes(1439));
 //                    ev.setEndDate(d);
-
                     ev.setAllDay(true);
                     break;
                 case 3:
@@ -144,7 +145,16 @@ public class ScheduleView implements Serializable {
                     break;
             }
             AbsenceService.insertAbsence(a);
+            List<User> approverlist = currentUser.getApprover();
+            User[] approverArray = (User[]) approverlist.toArray(new User[approverlist.size()]);
 
+            for (int i = 0; i < approverArray.length; i++) {
+                System.out.println(approverArray[i]);
+            }
+
+            if (approverArray.length != 0) {
+                EmailService.sendUserEnteredAbsenceEmail(a, approverArray);
+            }
             eventModel.addEvent(ev);
         } else {
             if (event instanceof WorkTimeEvent) {
@@ -293,38 +303,64 @@ public class ScheduleView implements Serializable {
 
         } else {
 
-            acknowledgementModel.deleteEvent(absenceEvent);
+            if (currentUser.getUsername().equals(absenceEvent.getAbsence().getUser().getUsername())) {
 
-            absenceEvent.getAbsence().setAcknowledged(true);
-            AbsenceService.updateAbsence(absenceEvent.getAbsence());
+                FacesContext context = FacesContext.getCurrentInstance();
+                context.addMessage(null, new FacesMessage("Absence-acknowledge failed", "You can't acknowledge your own abscences!"));
 
-            if (absenceEvent.getAbsence().getAbsenceType().getAbsenceTypeID() == 2) {
-                LocalDateTime las = absenceEvent.getAbsence().getStartTime();
-                LocalDateTime lae = absenceEvent.getAbsence().getEndTime();
+            } else {
 
-                int days = lae.getDayOfYear() - las.getDayOfYear() + 1;
+                acknowledgementModel.deleteEvent(absenceEvent);
 
-                User u = absenceEvent.getAbsence().getUser();
-                u.setVacationLeft(u.getVacationLeft() - days);
-                BenutzerverwaltungService.updateUser(u);
+                absenceEvent.getAbsence().setAcknowledged(true);
+                AbsenceService.updateAbsence(absenceEvent.getAbsence());
+
+                if (absenceEvent.getAbsence().getAbsenceType().getAbsenceTypeID() == 2) {
+                    LocalDateTime las = absenceEvent.getAbsence().getStartTime();
+                    LocalDateTime lae = absenceEvent.getAbsence().getEndTime();
+
+                    int days = lae.getDayOfYear() - las.getDayOfYear() + 1;
+
+                    User u = absenceEvent.getAbsence().getUser();
+                    u.setVacationLeft(u.getVacationLeft() - days);
+                    BenutzerverwaltungService.updateUser(u);
+
+                }
+                if (absenceEvent.getAbsence().getAbsenceType().getAbsenceName().equals("time compensation")) {
+                    LocalDateTime start = absenceEvent.getAbsence().getStartTime();
+                    LocalDateTime end = absenceEvent.getAbsence().getEndTime();
+
+                    int min = (int) start.until(end, ChronoUnit.MINUTES);
+
+                    User u = absenceEvent.getAbsence().getUser();
+                    u.setOverTimeLeft(u.getOverTimeLeft() - min);
+                    BenutzerverwaltungService.updateUser(u);
+                }
+
+                List<User> otherApprover = absenceEvent.getAbsence().getUser().getApprover();
+                otherApprover.remove(currentUser);
+                EmailService.sendAcknowledgmentEmail(absenceEvent.getAbsence(), currentUser, otherApprover.toArray(new User[otherApprover.size()]));
 
             }
-            if(absenceEvent.getAbsence().getAbsenceType().getAbsenceName().equals("time compensation")){
-                LocalDateTime start = absenceEvent.getAbsence().getStartTime();
-                LocalDateTime end = absenceEvent.getAbsence().getEndTime();
-                
-                int min = (int) start.until(end, ChronoUnit.MINUTES);
-                
-                User u = absenceEvent.getAbsence().getUser();
-                u.setOverTimeLeft(u.getOverTimeLeft() - min);
-                BenutzerverwaltungService.updateUser(u);
-            }
-
         }
 
         this.reloadAcknowledgements(actionEvent);
 
         absenceEvent = new AbsenceEvent();
+    }
+
+    public void deleteAcknowledgement(ActionEvent e) {
+        if (absenceEvent.getId() == null) {
+
+        } else {
+            acknowledgementModel.deleteEvent(absenceEvent);
+            AbsenceService.deleteAbsence(absenceEvent.getAbsence());
+
+            List<User> otherApprover = absenceEvent.getAbsence().getUser().getApprover();
+            otherApprover.remove(currentUser);
+            EmailService.sendAbsenceDeleted(absenceEvent.getAbsence(), currentUser, otherApprover.toArray(new User[otherApprover.size()]));
+
+        }
     }
 
     public void onAbsenceSelect(SelectEvent selectEvent) {
@@ -853,5 +889,19 @@ public class ScheduleView implements Serializable {
             }
         }
 
+    }
+
+    public boolean isAcknowledgedAbsence() {
+        if(AccessRightsService.checkPermission(this.currentUser.getAccessLevel(), "ALL")){
+            return true;
+        }
+        return false;
+    }
+    
+    public void deleteEventInAllTime(ActionEvent e){
+        AbsenceEvent absenceevent = (AbsenceEvent)event;
+        
+        this.eventModel.deleteEvent(absenceevent);
+        AbsenceService.deleteAbsence(absenceevent.getAbsence());
     }
 }

@@ -117,4 +117,33 @@ public class EmailService {
             mex.printStackTrace();
         }
     }
+
+    public static void sendAbsenceDeleted(Absence a, User approver, User... otherApprover) {
+        String subject = "";
+        String bodyApprover = "";
+        String bodySender = "";
+        User sender = a.getUser();
+        switch (a.getAbsenceType().getAbsenceName()) {
+            case "medical leave":
+                subject = "Re: Krankenstand : " + sender.getPersName() + " " + a.getStartTime() + " -- " + a.getEndTime();
+                break;
+            case "holiday":
+                subject = "Re: Urlaubsantrag : " + sender.getPersName() + " " + a.getStartTime() + " -- " + a.getEndTime();
+                bodyApprover = "Der Urlaubsantrag von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime() + " bis " + a.getEndTime() + "wurde von " + approver.getPersName() + " angenommen.";
+                bodySender = "Ihr Urlaubsantrag für den Zeitraum von " + a.getStartTime() + " bis " + a.getEndTime() + "wurde von " + approver.getPersName() + " angenommen.";
+                break;
+            case "time compensation":
+                subject = "Re: Antrag auf Zeitausgleich : " + sender.getPersName() + " " + a.getStartTime() + " -- " + a.getEndTime();
+                bodyApprover = "Der Antrag auf Zeitausgleich von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime() + " bis " + a.getEndTime() + "wurde von " + approver.getPersName() + " angenommen.";
+                bodySender = "Ihr Antrag auf Zeitausgleich für den Zeitraum von " + a.getStartTime() + " bis " + a.getEndTime() + "wurde von " + approver.getPersName() + " angenommen.";
+                break;
+            default:
+                break;
+        }
+
+        subject = subject + " wurde zurückgewiesen!";
+        
+        sendEmail(subject, bodyApprover, approver, otherApprover);
+        sendEmail(subject, bodySender, approver, sender);
+    }
 }

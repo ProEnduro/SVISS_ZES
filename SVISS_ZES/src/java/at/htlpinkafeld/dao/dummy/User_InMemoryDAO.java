@@ -23,8 +23,8 @@ public class User_InMemoryDAO extends Base_InMemoryDAO<User> implements User_DAO
     protected User_InMemoryDAO() {
         super(new ArrayList<>());
         AccessLevel_DAO al_DAO = new AccessLevel_InMemoryDAO();
-        super.insert(new UserProxy(al_DAO.getAccessLevelByID(1), "AdminUser", 21, 36 * 60, "admin", "admin@test.at", LocalDate.of(2016, 3, 7), "admin", 14.0));
-        super.insert(new UserProxy(al_DAO.getAccessLevelByID(2), "ApproverUser", 21, 60 * 60, "approver", "approver@test.at", LocalDate.of(2016, 3, 7), "approver", 33.5));
+        super.insert(new UserProxy(al_DAO.getAccessLevelByID(1), "AdminUser", 21, 36 * 60, "admin", "admin@noplan.at", LocalDate.of(2016, 3, 7), "admin", 14.0));
+        super.insert(new UserProxy(al_DAO.getAccessLevelByID(2), "ApproverUser", 21, 60 * 60, "approver", "blaumeux.sn@gmail.com", LocalDate.of(2016, 3, 7), "approver", 33.5));
         super.insert(new UserProxy(al_DAO.getAccessLevelByID(3), "ReaderUser", 10, 54 * 60, "reader", "reader@test.at", LocalDate.of(2016, 3, 7), "reader", 22.5));
         super.insert(new UserProxy(al_DAO.getAccessLevelByID(4), "NormalUser", 19, 30 * 60, "user", "user@test.at", LocalDate.of(2016, 3, 7), "user", 17.5));
 
