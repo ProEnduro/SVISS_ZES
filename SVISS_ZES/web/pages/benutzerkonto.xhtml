@@ -26,9 +26,10 @@ and open the template in the editor.
         <body>
             <h:form>
                 <p:growl id="growl" showDetail="true" life="5000" autoUpdate="true"/>
-                <p:panelGrid columns="2"  >
-                    <p:panel>
-                        <p:panelGrid columns="2" style="border-color: #9999ff; border-style: double; margin: 0 auto; margin-bottom: 0.5%; margin-top: 2%">
+                <h:panelGrid columns="2"  >
+
+                    <h:column>
+                        <h:panelGrid columns="2" style="border-color: #9999ff; border-style: double; margin: 0 auto; margin-bottom: 0.5%; margin-top: 2%">
 
                             <p:outputLabel value="Access-Level: "/>
                             <p:inputText value="#{benutzerkontoBean.accessLevel}" readonly="true" autocomplete="false">
@@ -53,7 +54,7 @@ and open the template in the editor.
                             <p:outputLabel value="Week-Time: "/>
                             <p:inputText value="#{benutzerkontoBean.weekTime}" readonly="true" autocomplete="false"/>
 
-                        </p:panelGrid>              
+                        </h:panelGrid>              
 
                         <h:panelGrid columns="2" cellpadding="10" style="margin: 0 auto">
                             <p:outputLabel for="themeSwitch" value="Theme: " /> 
@@ -70,20 +71,38 @@ and open the template in the editor.
                             </p:themeSwitcher>
                         </h:panelGrid>
 
-                        <p:panelGrid columns="2" styleClass="ui-panelgrid" style="margin: 0 auto;">
+                        <h:panelGrid columns="2" styleClass="ui-panelgrid" style="margin: 0 auto;">
                             <p:outputLabel value="* - Editable" style="font-weight: bold"/>
                             <br></br>
                             <p:commandButton value="Speichern" style="background-color: #91d1d4"/>
                             <p:commandButton value="Änderungen verwerfen" immediate="true" 
                                              style="background-color: #ff7a7a"/>
 
-                        </p:panelGrid>
-                    </p:panel>
-                    <p:schedule>
+                        </h:panelGrid>
+                    </h:column>
+                        <p:commandButton value="test" update="weektimeSchedule"/>
 
-                    </p:schedule>
-                </p:panelGrid>
+                        <p:schedule minTime="6" maxTime="21" id="weektimeSchedule" initialDate="#{benutzerkontoBean.pointDate}" timeZone="GMT+2"  draggable="false" allDaySlot="false" showHeader="false"
+                                    view="agendaWeek" timeFormat="HH:mm" axisFormat="HH:mm" locale="de"  ignoreTimezone="true" value="#{benutzerkontoBean.sollzeitModel}" 
+                                    columnFormat="month:'ddd', week:'dddd', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'">
+                        </p:schedule>
+                </h:panelGrid>
             </h:form>
         </body>
+
+        <script type="text/javascript">
+            PrimeFaces.locales['de'] = {
+                month: 'Monat',
+                week: 'Woche',
+                day: 'Tag',
+                firstDay: 1,
+                monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                monthNamesShort: ['Jan', 'Feb', 'Mrz', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+                dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+                dayNamesShort: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+                dayNamesMin: ['S', 'M', 'D', 'M ', 'D', 'F ', 'S'],
+                currentText: 'Heute'
+            };
+        </script>
     </ui:define>
 </ui:composition>
