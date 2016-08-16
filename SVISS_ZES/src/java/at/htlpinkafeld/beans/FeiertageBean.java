@@ -5,14 +5,28 @@
  */
 package at.htlpinkafeld.beans;
 
+import at.htlpinkafeld.dao.util.DAOException;
 import at.htlpinkafeld.pojo.Holiday;
 import at.htlpinkafeld.service.HolidayService;
 import at.htlpinkafeld.service.TimeConverterService;
-import java.util.Calendar;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
+import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.Component;
 import org.primefaces.event.CloseEvent;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.ScheduleEntryMoveEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
@@ -28,7 +42,7 @@ public class FeiertageBean {
 
     private ScheduleModel timeModel;
     private ScheduleEvent curEvent;
-    private Boolean dateDisabled=false;
+    private Boolean dateDisabled = false;
 
     @PostConstruct
     public void init() {
@@ -37,12 +51,34 @@ public class FeiertageBean {
             public void loadEvents(Date start, Date end) {
                 List<Holiday> holidays = HolidayService.getHolidayBetweenDates(start, end);
                 for (Holiday h : holidays) {
-                    this.addEvent(new DefaultScheduleEvent(h.getHolidayComment(), TimeConverterService.convertLocalDateTimeToDate(h.getHolidayDate().atStartOfDay()),
-                            TimeConverterService.convertLocalDateTimeToDate(h.getHolidayDate().atTime(23, 59, 59))));
+                    DefaultScheduleEvent dse = new DefaultScheduleEvent(h.getHolidayComment(), TimeConverterService.convertLocalDateTimeToDate(h.getHolidayDate().atStartOfDay()),
+                            TimeConverterService.convertLocalDateTimeToDate(h.getHolidayDate().atStartOfDay()));
+                    dse.setAllDay(true);
+                    this.addEvent(dse);
                 }
             }
 
         };
+    }
+
+    public void loadEventsFromICS(FileUploadEvent event) throws FileNotFoundException, IOException, ParserException {
+
+        ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+        String path = serv.getRealPath("/") + "/resources/Feiertage Österreich.ics";
+
+        CalendarBuilder builder = new CalendarBuilder();
+
+        net.fortuna.ical4j.model.Calendar calendar = builder.build(event.getFile().getInputstream());
+        for (Iterator i = calendar.getComponents().iterator(); i.hasNext();) {
+            Component component = (Component) i.next();
+            String name = component.getProperty("SUMMARY").getValue();
+            LocalDate date = LocalDate.parse(component.getProperty("DTSTART").getValue(), DateTimeFormatter.ofPattern("yyyyMMdd"));
+            try {
+                HolidayService.insert(new Holiday(date, name));
+            } catch (DAOException ex) {
+            }
+        }
+        FacesContext.getCurrentInstance().addMessage("Feiertage", new FacesMessage("Feiertage wurden geladen"));
     }
 
     public ScheduleModel getTimeModel() {
@@ -78,7 +114,7 @@ public class FeiertageBean {
 
     public void onEventSelect(SelectEvent selectEvent) {
         curEvent = (ScheduleEvent) selectEvent.getObject();
-        dateDisabled=true;
+        dateDisabled = true;
     }
 
     public void onDateSelect(SelectEvent selectEvent) {
@@ -101,9 +137,9 @@ public class FeiertageBean {
         h = new Holiday(h.getHolidayDate().minusDays(e.getDayDelta()), h.getHolidayComment());
         HolidayService.delete(h);
     }
-    
-    public void onDialogClose(CloseEvent e){
-        dateDisabled=false;
+
+    public void onDialogClose(CloseEvent e) {
+        dateDisabled = false;
     }
 
 }

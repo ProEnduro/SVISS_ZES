@@ -154,7 +154,8 @@ and open the template in the editor.
                         <p:commandButton value="Änderung verwerfen" action="#{benutzerverwaltungsBean.discardTimes}" oncomplete="PF('uwtdlg').hide();"/>
 
                         <p:outputLabel value="Gesamte Sollzeit:" />
-                        <p:inputText id="sollZeitText" value="#{benutzerverwaltungsBean.newWeekTime}" readonly="true"/>
+                        <p:inputText id="sollZeitText" value="#{benutzerverwaltungsBean.newWeekTime}" />
+                        <p:commandButton value="Zeiten verteilen" action="#{benutzerverwaltungsBean.distributeTimes}" update="weektimeSchedule"/>
                     </f:facet>
                 </p:panel>            
             </h:form>
@@ -165,10 +166,10 @@ and open the template in the editor.
                 <h:panelGrid id="eventDetails" columns="2">
 
                     <p:outputLabel for="from" value="From:" />
-                    <p:calendar id="from" value="#{benutzerverwaltungsBean.curEvent.startDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"  showOn="button" mask="true"/>
+                    <p:calendar id="from" value="#{benutzerverwaltungsBean.curEvent.startDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"  showOn="button"/>
 
                     <p:outputLabel for="to" value="To:" />
-                    <p:calendar id="to" value="#{benutzerverwaltungsBean.curEvent.endDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"  showOn="button" mask="true"/>
+                    <p:calendar id="to" value="#{benutzerverwaltungsBean.curEvent.endDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"  showOn="button"/>
 
                     <p:commandButton id="addButton" value="Save" action="#{benutzerverwaltungsBean.addEvent}" update=":weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  onsuccess="PF('eventDialog').hide();" />
                     <p:commandButton id="delButton" value="Remove" action="#{benutzerverwaltungsBean.removeEvent}" update=":weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  onsuccess="PF('eventDialog').hide();" />
@@ -180,7 +181,11 @@ and open the template in the editor.
         <p:dialog widgetVar="approverDialog" closeOnEscape="true" resizable="false" dynamic="true" modal="true">
             <h:form id="approverForm">
                 <p:panel id="approverPanel">
-                    <p:pickList value="#{benutzerverwaltungsBean.approverModel}" var="approver" itemLabel="#{approver.username}" itemValue="#{approver}" converter="userConverter"/>
+                    <p:pickList value="#{benutzerverwaltungsBean.approverModel}" var="approver" itemLabel="#{approver.username}" itemValue="#{approver}" converter="userConverter">
+                        <f:facet name="sourceCaption">Approver</f:facet>
+                        <f:facet name="targetCaption">Zugeteilt</f:facet>
+                    </p:pickList>
+
                     <f:facet name="footer">
                         <p:commandButton id="saveApprover" value="Save" action="#{benutzerverwaltungsBean.saveApprover}" oncomplete="PF('approverDialog').hide();" />
                         <p:commandButton id="cancelApprover" value="Cancel" oncomplete="PF('approverDialog').hide();"/>

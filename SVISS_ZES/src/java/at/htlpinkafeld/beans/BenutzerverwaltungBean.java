@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -54,6 +55,8 @@ public class BenutzerverwaltungBean {
     private ScheduleEvent curEvent;
 
     private LocalDate pointDate;
+
+    private Double weekTime;
 
     @PostConstruct
     public void init() {
@@ -150,7 +153,7 @@ public class BenutzerverwaltungBean {
 
     //Scheduel Stuff from this Point
     public Date getPointDate() {
-        return IstZeitService.convertLocalDateTimeToDate(pointDate.atStartOfDay());
+        return TimeConverterService.convertLocalDateTimeToDate(pointDate.atStartOfDay());
     }
 
     public ScheduleEvent getCurEvent() {
@@ -163,11 +166,39 @@ public class BenutzerverwaltungBean {
 
     public Double getNewWeekTime() {
         Double wt = 0.0;
+        Double dayTime;
         for (SollZeiten sz : newSollZeiten) {
-            wt += sz.getSollEndTime().getHour() - sz.getSollStartTime().getHour();
-            wt += (sz.getSollEndTime().getMinute() - sz.getSollStartTime().getMinute()) / 60.0;
+            dayTime = sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES) / 60.0;
+            if (dayTime >= 6) {
+                dayTime -= 0.5;
+            }
+            wt += dayTime;
         }
         return wt;
+    }
+
+    public void setNewWeekTime(Double weekTime) {
+        this.weekTime = weekTime;
+    }
+
+    public void distributeTimes() {
+        timeModel.clear();
+        discardTimes();
+        LocalTime startTime = LocalTime.of(8, 0);
+        LocalTime endTime;
+        if (weekTime >= 30) {
+            endTime = startTime.plusMinutes((long) ((weekTime / 5) * 60 + 30));
+        } else {
+            endTime = startTime.plusMinutes((long) ((weekTime / 5) * 60));
+        }
+
+        for (int i = 0; i < 5; i++) {
+            LocalDateTime sDateTime = LocalDateTime.of(pointDate.plusDays(i), startTime);
+            curEvent = new DefaultScheduleEvent("", TimeConverterService.convertLocalDateTimeToDate(sDateTime), TimeConverterService.convertLocalDateTimeToDate(sDateTime.with(endTime)));
+            SollZeiten sz = new SollZeiten(sDateTime.getDayOfWeek(), selectedUser, startTime, endTime);
+            timeModel.addEvent(curEvent);
+            newSollZeiten.add(sz);
+        }
     }
 
     public void loadSollZeiten() {
