@@ -17,11 +17,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.DefaultScheduleModel;
 import org.primefaces.model.ScheduleEvent;
@@ -47,15 +47,16 @@ public class BenutzerkontoBean {
     MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
     User user;
 
-    ScheduleModel sollzeitModel; 
+    ScheduleModel sollzeitModel;
     User currentUser;
     LocalDate pointDate;
+    ScheduleEvent curEvent;
 
     @PostConstruct
     public void init() {
         pointDate = LocalDate.of(2016, 8, 1);
-        
-        loadSollZeiten(null);
+
+        loadSollZeiten();
     }
 
     public BenutzerkontoBean() {
@@ -77,7 +78,6 @@ public class BenutzerkontoBean {
 
     public void setPersName(String persName) {
         user.setPersName(persName);
-        BenutzerverwaltungService.updateUser(user);
     }
 
     public String getUserName() {
@@ -90,7 +90,6 @@ public class BenutzerkontoBean {
 
     public void setEmail(String email) {
         user.setEmail(email);
-        BenutzerverwaltungService.updateUser(user);
     }
 
     public LocalDate getHireDate() {
@@ -103,11 +102,15 @@ public class BenutzerkontoBean {
 
     public void setPassword(String password) {
         user.setPass(password);
-        BenutzerverwaltungService.updateUser(user);
     }
 
     public double getWeekTime() {
         return user.getWeekTime();
+    }
+
+    public void saveUser() {
+        BenutzerverwaltungService.updateUser(user);
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("User gespeichert!", ""));
     }
 
     public ScheduleModel getSollzeitModel() {
@@ -118,9 +121,17 @@ public class BenutzerkontoBean {
         this.sollzeitModel = sollzeitModel;
     }
 
-    public void loadSollZeiten(ActionEvent e) {
+    public ScheduleEvent getCurEvent() {
+        return curEvent;
+    }
+
+    public void setCurEvent(ScheduleEvent curEvent) {
+        this.curEvent = curEvent;
+    }
+
+    public void loadSollZeiten() {
         this.sollzeitModel = new DefaultScheduleModel();
-        
+
         currentUser = masterBean.getUser();
         System.out.println(currentUser);
 
@@ -137,6 +148,10 @@ public class BenutzerkontoBean {
                     TimeConverterService.convertLocalDateTimeToDate(LocalDateTime.of(curDate, sz.getSollEndTime())), curDate.getDayOfWeek());
             sollzeitModel.addEvent(de);
         }
+    }
+
+    public void onEventSelect(SelectEvent selectEvent) {
+        curEvent = (ScheduleEvent) selectEvent.getObject();
     }
 
     public Date getPointDate() {

@@ -11,7 +11,6 @@ import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserProxy;
 import at.htlpinkafeld.service.AccessRightsService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
-import at.htlpinkafeld.service.IstZeitService;
 import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
 import java.time.DayOfWeek;
@@ -86,6 +85,7 @@ public class BenutzerverwaltungBean {
 
     public void editUser(ActionEvent e) {
         selectedUser = new UserProxy((User) e.getComponent().getAttributes().get("user"));
+        newSollZeiten = new ArrayList<>();
     }
 
     public void saveUser() {

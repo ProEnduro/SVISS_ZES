@@ -23,13 +23,12 @@ and open the template in the editor.
         </style>
 
 
-        <body>
-            <h:form>
-                <p:growl id="growl" showDetail="true" life="5000" autoUpdate="true"/>
-                <h:panelGrid columns="2"  >
-
-                    <h:column>
-                        <h:panelGrid columns="2" style="border-color: #9999ff; border-style: double; margin: 0 auto; margin-bottom: 0.5%; margin-top: 2%">
+        <p:growl id="growl" showDetail="true" life="5000" autoUpdate="true"/>
+        <p:panelGrid  style="border-color: #9999ff; border-style: double; margin: 0 auto; margin-bottom: 0.5%; margin-top: 2%">
+            <p:row>
+                <p:column>
+                    <h:form>
+                        <p:panelGrid columns="2" >
 
                             <p:outputLabel value="Access-Level: "/>
                             <p:inputText value="#{benutzerkontoBean.accessLevel}" readonly="true" autocomplete="false">
@@ -39,24 +38,24 @@ and open the template in the editor.
                             <p:outputLabel value="Username: "/>
                             <p:inputText value="#{benutzerkontoBean.userName}" readonly="true" autocomplete="false"/>
 
-                            <p:outputLabel value="* Name: " style="font-weight: bold"/>
+                            <p:outputLabel value="Name: " style="font-weight: bold"/>
                             <p:inputText value="#{benutzerkontoBean.persName}" style="font-weight: bold" required="true" requiredMessage="Name required!" autocomplete="false"/>
 
-                            <p:outputLabel for="emailAcc" value="* EMail: " style="font-weight: bold"/>
+                            <p:outputLabel  value="EMail: " style="font-weight: bold"/>
                             <p:inputText id="emailAcc" value="#{benutzerkontoBean.email}" style="font-weight: bold" requiredMessage="Email required!" required="true" autocomplete="false"/>
 
                             <p:outputLabel value="HireDate: "/>
                             <p:inputText value="#{benutzerkontoBean.hireDate}" readonly="true" converter="localDateConverter" autocomplete="false"/>
 
-                            <p:outputLabel value="* Password: " style="font-weight: bold"/>
+                            <p:outputLabel value="Password: " style="font-weight: bold"/>
                             <p:inputText value="#{benutzerkontoBean.password}" type="password" style="font-weight: bold" required="true" autocomplete="false" requiredMessage="Password required!"/>
 
                             <p:outputLabel value="Week-Time: "/>
                             <p:inputText value="#{benutzerkontoBean.weekTime}" readonly="true" autocomplete="false"/>
 
-                        </h:panelGrid>              
+                        </p:panelGrid>              
 
-                        <h:panelGrid columns="2" cellpadding="10" style="margin: 0 auto">
+                        <p:panelGrid columns="2" style="margin: 0 auto">
                             <p:outputLabel for="themeSwitch" value="Theme: " /> 
 
                             <p:themeSwitcher id="themeSwitch" style="width:165px" value="#{guestPreferences.theme}" effect="fade" var="t">
@@ -69,26 +68,45 @@ and open the template in the editor.
                                     #{t.displayName}
                                 </p:column>
                             </p:themeSwitcher>
-                        </h:panelGrid>
+                        </p:panelGrid>
 
-                        <h:panelGrid columns="2" styleClass="ui-panelgrid" style="margin: 0 auto;">
+                        <p:panelGrid columns="2" styleClass="ui-panelgrid">
                             <p:outputLabel value="* - Editable" style="font-weight: bold"/>
                             <br></br>
-                            <p:commandButton value="Speichern" style="background-color: #91d1d4"/>
-                            <p:commandButton value="Änderungen verwerfen" immediate="true" 
+                            <p:commandButton value="Speichern" action="#{benutzerkontoBean.saveUser}"/>
+                            <p:commandButton value="Änderungen verwerfen" type="reset" 
                                              style="background-color: #ff7a7a"/>
 
-                        </h:panelGrid>
-                    </h:column>
-                        <p:commandButton value="test" update="weektimeSchedule"/>
+                        </p:panelGrid>
+                    </h:form>
 
-                        <p:schedule minTime="6" maxTime="21" id="weektimeSchedule" initialDate="#{benutzerkontoBean.pointDate}" timeZone="GMT+2"  draggable="false" allDaySlot="false" showHeader="false"
-                                    view="agendaWeek" timeFormat="HH:mm" axisFormat="HH:mm" locale="de"  ignoreTimezone="true" value="#{benutzerkontoBean.sollzeitModel}" 
+                </p:column>
+                <p:column>
+                    <h:form>
+                        <p:outputLabel for="weektimeScheduleS" value="Soll Zeiten: " style="font-weight: bold"  /> 
+                        <p:schedule minTime="7" maxTime="20" id="weektimeScheduleS" initialDate="#{benutzerkontoBean.pointDate}" timeZone="GMT+2"  draggable="false" allDaySlot="false"  aspectRatio="0"  showHeader="false" 
+                                    view="agendaWeek" timeFormat="HH:mm" axisFormat="HH:mm" locale="de"  ignoreTimezone="true" value="#{benutzerkontoBean.sollzeitModel}"  resizable="false" slotMinutes="90"
                                     columnFormat="month:'ddd', week:'dddd', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'">
+                            <p:ajax event="eventSelect" listener="#{benutzerkontoBean.onEventSelect}" update=":weekTimeSelectForm:eventDetails" oncomplete="PF('eventDialog').show();" />
+
                         </p:schedule>
+                    </h:form>
+                </p:column>
+            </p:row>
+        </p:panelGrid>
+
+        <p:dialog widgetVar="eventDialog" closeOnEscape="true" resizable="false" dynamic="true">
+            <h:form id="weekTimeSelectForm">
+                <h:panelGrid id="eventDetails" columns="2">
+
+                    <p:outputLabel for="from" value="From:" />
+                    <p:calendar id="from" value="#{benutzerkontoBean.curEvent.startDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de" showOn=""  readonly="true"/>
+
+                    <p:outputLabel for="to" value="To:" />
+                    <p:calendar id="to" value="#{benutzerkontoBean.curEvent.endDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de" showOn="" readonly="true"/>
                 </h:panelGrid>
             </h:form>
-        </body>
+        </p:dialog> 
 
         <script type="text/javascript">
             PrimeFaces.locales['de'] = {
