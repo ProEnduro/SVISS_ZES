@@ -96,14 +96,11 @@ and open the template in the editor.
 
                 <p:dialog widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip">
                     <h:panelGrid id="eventDetails" columns="2">
-                        <p:outputLabel for="title" value="Titles:" />
-                        <p:inputText id="title" value="#{scheduleView.event.title}" readonly="true" />
-
                         <p:outputLabel for="from" value="From:" />
-                        <p:calendar id="from" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="#{scheduleView.pattern}" showOn="button" mask="true"/>
+                        <p:calendar id="from" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="#{scheduleView.pattern}" showOn="button" mask="true" readonlyInput="true"/>
 
                         <p:outputLabel for="to" value="To:" />
-                        <p:calendar id="to" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="#{scheduleView.pattern}" showOn="button" mask="true"/>
+                        <p:calendar id="to" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="#{scheduleView.pattern}" showOn="button" mask="true" readonlyInput="true"/>
 
 
                         <p:outputLabel for="reason" value="Reason:"/>
