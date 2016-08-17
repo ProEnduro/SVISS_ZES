@@ -144,4 +144,58 @@ public class EmailService {
         sendEmail(subject, bodyApprover, approver, otherApprover);
         sendEmail(subject, bodySender, approver, sender);
     }
+    
+    public static void sendUserDeletedOwnAbsenceEmail(Absence a, User... approver) {
+        String subject = "";
+        String body = "";
+        User sender = a.getUser();
+        switch (a.getAbsenceType().getAbsenceName()) {
+            case "medical leave":
+                subject = "Löschung des Krankenstandes:" + " " + sender.getPersName() + " " + a.getStartTime() + " -- " + a.getEndTime();
+                body = sender.getPersName() + " hat den Krankenstand von" + " " + a.getStartTime() + " -- " + a.getEndTime() + " gelöscht";
+                break;
+            case "holiday":
+                subject = sender.getPersName() + " " + "löschte seinen Urlaub von" + " " + a.getStartTime() + " -- " + a.getEndTime();
+                body = sender.getPersName() + " hat den Urlaubsantrag für den Zeitraum von " + a.getStartTime() + " bis " + a.getEndTime() + " gelöscht.";
+                break;
+            case "time compensation":
+                subject = "Löschung des Zeitausgleiches : " + sender.getPersName() + " " + a.getStartTime() + " -- " + a.getEndTime();
+                body = sender.getPersName() + " hat den Antrag auf Zeitausgleich für den Zeitraum von " + a.getStartTime() + " bis " + a.getEndTime() + " gelöscht.";
+                break;
+            case "business-related absence":
+                subject = " ";
+                break;
+            default:
+                break;
+        }
+
+    sendEmail(subject, body, sender, approver);
+    }
+    
+    public static void sendUserForgotPasswordEmail(Absence a, User... admin) {
+        String subject;
+        String body;
+        User sender = a.getUser();
+        
+        subject = sender.getDisabledString() + " vergaß das Passwort";
+        body = sender.getPersName() + " hat hat das Passwort vergessen und fordert ein neues an.";
+
+        sendEmail(subject, body, sender, admin);
+    }
+    
+    public static void sendUserNewPasswordEmail(Absence a, String newPassword, User... user) {
+        String subject;
+        String body;
+        User sender = a.getUser();
+        
+        subject = "Neues Passwort von Admin " + sender.getPersName() + " bekommen"; 
+        body = "Hallo, dein neues Passwort lautet " + newPassword + " !";
+
+        sendEmail(subject, body, sender, user);
+    }
+        
+        
+        
+        
+        
 }
