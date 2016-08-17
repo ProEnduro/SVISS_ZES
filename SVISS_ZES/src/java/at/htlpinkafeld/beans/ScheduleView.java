@@ -144,14 +144,8 @@ public class ScheduleView implements Serializable {
             }
             AbsenceService.insertAbsence(a);
             List<User> approverlist = currentUser.getApprover();
-            User[] approverArray = (User[]) approverlist.toArray(new User[approverlist.size()]);
-
-            for (int i = 0; i < approverArray.length; i++) {
-                System.out.println(approverArray[i]);
-            }
-
-            if (approverArray.length != 0) {
-                EmailService.sendUserEnteredAbsenceEmail(a, approverArray);
+            if (!approverlist.isEmpty()) {
+                EmailService.sendUserEnteredAbsenceEmail(a, approverlist);
             }
             eventModel.addEvent(ev);
         } else {
@@ -175,6 +169,7 @@ public class ScheduleView implements Serializable {
                     AbsenceService.removeAbsence(absenceEvent.getAbsence());
                     eventModel.deleteEvent(event);
                     event = new DefaultScheduleEvent();
+                    EmailService.sendUserDeletedOwnAbsenceEmail(absenceEvent.getAbsence(), absenceEvent.getAbsence().getUser().getApprover());
                 } else {
                     FacesContext context = FacesContext.getCurrentInstance();
 
@@ -303,47 +298,44 @@ public class ScheduleView implements Serializable {
 
         if (absenceEvent.getId() == null) {
 
+        } else if (currentUser.getUsername().equals(absenceEvent.getAbsence().getUser().getUsername())) {
+
+            FacesContext context = FacesContext.getCurrentInstance();
+            context.addMessage(null, new FacesMessage("Absence-acknowledge failed", "You can't acknowledge your own abscences!"));
+
         } else {
 
-            if (currentUser.getUsername().equals(absenceEvent.getAbsence().getUser().getUsername())) {
+            acknowledgementModel.deleteEvent(absenceEvent);
 
-                FacesContext context = FacesContext.getCurrentInstance();
-                context.addMessage(null, new FacesMessage("Absence-acknowledge failed", "You can't acknowledge your own abscences!"));
+            absenceEvent.getAbsence().setAcknowledged(true);
+            AbsenceService.updateAbsence(absenceEvent.getAbsence());
 
-            } else {
+            if (absenceEvent.getAbsence().getAbsenceType().getAbsenceTypeID() == 2) {
+                LocalDateTime las = absenceEvent.getAbsence().getStartTime();
+                LocalDateTime lae = absenceEvent.getAbsence().getEndTime();
 
-                acknowledgementModel.deleteEvent(absenceEvent);
+                int days = lae.getDayOfYear() - las.getDayOfYear() + 1;
 
-                absenceEvent.getAbsence().setAcknowledged(true);
-                AbsenceService.updateAbsence(absenceEvent.getAbsence());
-
-                if (absenceEvent.getAbsence().getAbsenceType().getAbsenceTypeID() == 2) {
-                    LocalDateTime las = absenceEvent.getAbsence().getStartTime();
-                    LocalDateTime lae = absenceEvent.getAbsence().getEndTime();
-
-                    int days = lae.getDayOfYear() - las.getDayOfYear() + 1;
-
-                    User u = absenceEvent.getAbsence().getUser();
-                    u.setVacationLeft(u.getVacationLeft() - days);
-                    BenutzerverwaltungService.updateUser(u);
-
-                }
-                if (absenceEvent.getAbsence().getAbsenceType().getAbsenceName().equals("time compensation")) {
-                    LocalDateTime start = absenceEvent.getAbsence().getStartTime();
-                    LocalDateTime end = absenceEvent.getAbsence().getEndTime();
-
-                    int min = (int) start.until(end, ChronoUnit.MINUTES);
-
-                    User u = absenceEvent.getAbsence().getUser();
-                    u.setOverTimeLeft(u.getOverTimeLeft() - min);
-                    BenutzerverwaltungService.updateUser(u);
-                }
-
-                List<User> otherApprover = absenceEvent.getAbsence().getUser().getApprover();
-                otherApprover.remove(currentUser);
-                EmailService.sendAcknowledgmentEmail(absenceEvent.getAbsence(), currentUser, otherApprover.toArray(new User[otherApprover.size()]));
+                User u = absenceEvent.getAbsence().getUser();
+                u.setVacationLeft(u.getVacationLeft() - days);
+                BenutzerverwaltungService.updateUser(u);
 
             }
+            if (absenceEvent.getAbsence().getAbsenceType().getAbsenceName().equals("time compensation")) {
+                LocalDateTime start = absenceEvent.getAbsence().getStartTime();
+                LocalDateTime end = absenceEvent.getAbsence().getEndTime();
+
+                int min = (int) start.until(end, ChronoUnit.MINUTES);
+
+                User u = absenceEvent.getAbsence().getUser();
+                u.setOverTimeLeft(u.getOverTimeLeft() - min);
+                BenutzerverwaltungService.updateUser(u);
+            }
+
+            List<User> otherApprover = absenceEvent.getAbsence().getUser().getApprover();
+            otherApprover.remove(currentUser);
+            EmailService.sendAcknowledgmentEmail(absenceEvent.getAbsence(), currentUser, otherApprover);
+
         }
 
         this.reloadAcknowledgements(actionEvent);
@@ -360,7 +352,7 @@ public class ScheduleView implements Serializable {
 
             List<User> otherApprover = absenceEvent.getAbsence().getUser().getApprover();
             otherApprover.remove(currentUser);
-            EmailService.sendAbsenceDeleted(absenceEvent.getAbsence(), currentUser, otherApprover.toArray(new User[otherApprover.size()]));
+            EmailService.sendAbsenceDeleted(absenceEvent.getAbsence(), currentUser, otherApprover);
 
         }
     }

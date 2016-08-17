@@ -7,6 +7,8 @@ package at.htlpinkafeld.service;
 
 import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.User;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -21,7 +23,7 @@ import javax.mail.internet.MimeMessage;
  */
 public class EmailService {
 
-    private static void sendEmail(String subject, String body, User from, User... to) {
+    private static void sendEmail(String subject, String body, User from, List<User> to) {
         // Assuming you are sending email from localhost
         String host = "localhost";
 
@@ -39,7 +41,11 @@ public class EmailService {
             MimeMessage message = new MimeMessage(session);
 
             // Set From: header field of the header.
-            message.setFrom(new InternetAddress(from.getEmail()));
+            if (from != null) {
+                message.setFrom(new InternetAddress(from.getEmail()));
+            } else {
+                message.setFrom(new InternetAddress("admin@noplan.at"));
+            }
 
             // Set To: header field of the header.
             for (User u : to) {
@@ -47,7 +53,7 @@ public class EmailService {
             }
 
             // Set Subject: header field
-            message.setSubject(subject);
+            message.setSubject(subject, "utf-8");
 
             // Now set the actual message
             message.setText(body, "utf-8", "html");
@@ -59,7 +65,7 @@ public class EmailService {
         }
     }
 
-    public static void sendUserEnteredAbsenceEmail(Absence a, User... approver) {
+    public static void sendUserEnteredAbsenceEmail(Absence a, List<User> approver) {
         String subject = "";
         String body = "";
         User sender = a.getUser();
@@ -91,7 +97,7 @@ public class EmailService {
         sendEmail(subject, body, sender, approver);
     }
 
-    public static void sendAcknowledgmentEmail(Absence a, User approver, User... otherApprover) {
+    public static void sendAcknowledgmentEmail(Absence a, User approver, List<User> otherApprover) {
         String subject = "";
         String bodyApprover = "";
         String bodySender = "";
@@ -114,11 +120,14 @@ public class EmailService {
                 break;
         }
 
+        List<User> senderL = new ArrayList<>();
+        senderL.add(sender);
+
         sendEmail(subject, bodyApprover, approver, otherApprover);
-        sendEmail(subject, bodySender, approver, sender);
+        sendEmail(subject, bodySender, approver, senderL);
     }
 
-    public static void sendAbsenceDeleted(Absence a, User approver, User... otherApprover) {
+    public static void sendAbsenceDeleted(Absence a, User approver, List<User> otherApprover) {
         String subject = "";
         String bodyApprover = "";
         String bodySender = "";
@@ -141,25 +150,28 @@ public class EmailService {
                 break;
         }
 
+        List<User> senderL = new ArrayList<>();
+        senderL.add(sender);
+
         sendEmail(subject, bodyApprover, approver, otherApprover);
-        sendEmail(subject, bodySender, approver, sender);
+        sendEmail(subject, bodySender, approver, senderL);
     }
-    
-    public static void sendUserDeletedOwnAbsenceEmail(Absence a, User... approver) {
+
+    public static void sendUserDeletedOwnAbsenceEmail(Absence a, List<User> approver) {
         String subject = "";
         String body = "";
         User sender = a.getUser();
         switch (a.getAbsenceType().getAbsenceName()) {
             case "medical leave":
-                subject = "Löschung des Krankenstandes:" + " " + sender.getPersName() + " " + a.getStartTime() + " -- " + a.getEndTime();
+                subject = "Re: Krankenstand : " + sender.getPersName() + " " + a.getStartTime() + " -- " + a.getEndTime();
                 body = sender.getPersName() + " hat den Krankenstand von" + " " + a.getStartTime() + " -- " + a.getEndTime() + " gelöscht";
                 break;
             case "holiday":
-                subject = sender.getPersName() + " " + "löschte seinen Urlaub von" + " " + a.getStartTime() + " -- " + a.getEndTime();
+                subject = "Re: Urlaubsantrag : " + sender.getPersName() + " " + a.getStartTime() + " -- " + a.getEndTime();
                 body = sender.getPersName() + " hat den Urlaubsantrag für den Zeitraum von " + a.getStartTime() + " bis " + a.getEndTime() + " gelöscht.";
                 break;
             case "time compensation":
-                subject = "Löschung des Zeitausgleiches : " + sender.getPersName() + " " + a.getStartTime() + " -- " + a.getEndTime();
+                subject = "Re: Antrag auf Zeitausgleich : " + sender.getPersName() + " " + a.getStartTime() + " -- " + a.getEndTime();
                 body = sender.getPersName() + " hat den Antrag auf Zeitausgleich für den Zeitraum von " + a.getStartTime() + " bis " + a.getEndTime() + " gelöscht.";
                 break;
             case "business-related absence":
@@ -169,33 +181,30 @@ public class EmailService {
                 break;
         }
 
-    sendEmail(subject, body, sender, approver);
+        sendEmail(subject, body, sender, approver);
     }
-    
-    public static void sendUserForgotPasswordEmail(Absence a, User... admin) {
-        String subject;
-        String body;
-        User sender = a.getUser();
-        
-        subject = sender.getDisabledString() + " vergaß das Passwort";
-        body = sender.getPersName() + " hat hat das Passwort vergessen und fordert ein neues an.";
 
-        sendEmail(subject, body, sender, admin);
-    }
-    
-    public static void sendUserNewPasswordEmail(Absence a, String newPassword, User... user) {
+    public static void sendUserForgotPasswordEmail(User sender, List<User> admins) {
         String subject;
         String body;
-        User sender = a.getUser();
-        
-        subject = "Neues Passwort von Admin " + sender.getPersName() + " bekommen"; 
+
+        subject = sender.getUsername() + " vergaß das Passwort";
+        body = sender.getPersName() + " hat das Passwort vergessen und fordert ein neues an.";
+
+        sendEmail(subject, body, sender, admins);
+    }
+
+    public static void sendUserNewPasswordEmail(String newPassword, User user) {
+        String subject;
+        String body;
+
+        subject = "Passwort wurde zurückgesetzt";
         body = "Hallo, dein neues Passwort lautet " + newPassword + " !";
 
-        sendEmail(subject, body, sender, user);
+        List<User> userL = new ArrayList<>();
+        userL.add(user);
+
+        sendEmail(subject, body, null, userL);
     }
-        
-        
-        
-        
-        
+
 }

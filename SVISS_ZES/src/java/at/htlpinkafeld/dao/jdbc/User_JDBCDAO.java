@@ -131,6 +131,23 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
     }
 
     @Override
+    public User getUserByEmail(String email) {
+        User u = null;
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + EMAIL_COL + " = '" + email + "' " + SQL_ORDER_BY_LINE)) {
+
+            if (rs.next()) {
+                u = getEntityFromResultSet(rs);
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return u;
+    }
+
+    @Override
     public List<User> getUserByDisabled(Boolean disabled) {
         List<User> userL = new ArrayList<>();
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();

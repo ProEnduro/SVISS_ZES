@@ -67,4 +67,8 @@ public class BenutzerverwaltungService {
     public static void removeApprover(User approver) {
         userdao.removeApprover(approver);
     }
+
+    public static User getUserByEmail(String email) {
+        return userdao.getUserByEmail(email);
+    }
 }

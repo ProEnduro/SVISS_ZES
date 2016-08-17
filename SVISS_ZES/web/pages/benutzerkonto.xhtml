@@ -28,30 +28,30 @@ and open the template in the editor.
             <p:row>
                 <p:column>
                     <h:form>
-                        <p:panelGrid columns="2" >
+                        <p:panelGrid columns="2" id="usertable" >
 
                             <p:outputLabel value="Access-Level: "/>
-                            <p:inputText value="#{benutzerkontoBean.accessLevel}" readonly="true" autocomplete="false">
+                            <p:inputText value="#{benutzerkontoBean.user.accessLevel}" readonly="true" autocomplete="false">
                                 <f:converter converterId="accesslevelconv"/>
                             </p:inputText>
 
                             <p:outputLabel value="Username: "/>
-                            <p:inputText value="#{benutzerkontoBean.userName}" readonly="true" autocomplete="false"/>
+                            <p:inputText value="#{benutzerkontoBean.user.username}" readonly="true" autocomplete="false"/>
 
                             <p:outputLabel value="Name: " style="font-weight: bold"/>
-                            <p:inputText value="#{benutzerkontoBean.persName}" style="font-weight: bold" required="true" requiredMessage="Name required!" autocomplete="false"/>
+                            <p:inputText value="#{benutzerkontoBean.user.persName}" style="font-weight: bold" required="true" requiredMessage="Name required!" autocomplete="false"/>
 
                             <p:outputLabel  value="EMail: " style="font-weight: bold"/>
-                            <p:inputText id="emailAcc" value="#{benutzerkontoBean.email}" style="font-weight: bold" requiredMessage="Email required!" required="true" autocomplete="false"/>
+                            <p:inputText id="emailAcc" value="#{benutzerkontoBean.user.email}" style="font-weight: bold" requiredMessage="Email required!" required="true" autocomplete="false"/>
 
                             <p:outputLabel value="HireDate: "/>
-                            <p:inputText value="#{benutzerkontoBean.hireDate}" readonly="true" converter="localDateConverter" autocomplete="false"/>
+                            <p:inputText value="#{benutzerkontoBean.user.hiredate}" readonly="true" converter="localDateConverter" autocomplete="false"/>
 
                             <p:outputLabel value="Password: " style="font-weight: bold"/>
-                            <p:inputText value="#{benutzerkontoBean.password}" type="password" style="font-weight: bold" required="true" autocomplete="false" requiredMessage="Password required!"/>
+                            <p:commandButton value="Passwort ändern" oncomplete="PF('passwordDialog').show();" />
 
                             <p:outputLabel value="Week-Time: "/>
-                            <p:inputText value="#{benutzerkontoBean.weekTime}" readonly="true" autocomplete="false"/>
+                            <p:inputText value="#{benutzerkontoBean.user.weekTime}" readonly="true" autocomplete="false"/>
 
                         </p:panelGrid>              
 
@@ -74,10 +74,10 @@ and open the template in the editor.
                             <p:outputLabel value="* - Editable" style="font-weight: bold"/>
                             <br></br>
                             <p:commandButton value="Speichern" action="#{benutzerkontoBean.saveUser}"/>
-                            <p:commandButton value="Änderungen verwerfen" type="reset" 
-                                             style="background-color: #ff7a7a"/>
+                            <p:commandButton value="Änderungen verwerfen" type="reset" style="background-color: #ff7a7a"/>
 
                         </p:panelGrid>
+                        <p:remoteCommand update="usertable" action="#{benutzerkontoBean.onLoad}" autoRun="true"/>
                     </h:form>
 
                 </p:column>
@@ -95,7 +95,7 @@ and open the template in the editor.
             </p:row>
         </p:panelGrid>
 
-        <p:dialog widgetVar="eventDialog" closeOnEscape="true" resizable="false" dynamic="true">
+        <p:dialog widgetVar="eventDialog" closeOnEscape="true" resizable="false" dynamic="true" header="Soll Zeit">
             <h:form id="weekTimeSelectForm">
                 <h:panelGrid id="eventDetails" columns="2">
 
@@ -107,6 +107,29 @@ and open the template in the editor.
                 </h:panelGrid>
             </h:form>
         </p:dialog> 
+
+        <p:dialog widgetVar="passwordDialog" closeOnEscape="true" dynamic="true" header="Passwort Ändern">
+            <h:form id="PasswordForm">
+                <h:panelGrid id="eventDetails" columns="2">
+
+                    <p:outputLabel for="oldPw" value="Altes Passwort:" />
+                    <p:password id="oldPw" autocomplete="false" required="true" immediate="true">
+                        <f:validator validatorId="oldPasswordValidator"/>
+                    </p:password>
+
+                    <p:outputLabel for="newPw" value="Neues Passwort:" />
+                    <p:password id="newPw" value="#{benutzerkontoBean.newPw}" autocomplete="false" required="true" match="newPwConf">
+                        <f:validateLength minimum="6"/>
+                    </p:password>
+
+                    <p:outputLabel for="newPwConf" value="Neues Passwort bestätigen:" />
+                    <p:password id="newPwConf" value="#{benutzerkontoBean.newPw}" autocomplete="false"  required="true"/>
+
+                    <p:commandButton value="User speichern" action="#{benutzerkontoBean.savePassword}"  update=":growl" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('passwordDialog').hide()"/>
+                    <p:commandButton value="Änderung verwerfen" action="#{benutzerkontoBean.discardPasswordChanges}" oncomplete="PF('passwordDialog').hide();" immediate="true"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
 
         <script type="text/javascript">
             PrimeFaces.locales['de'] = {

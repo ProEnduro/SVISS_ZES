@@ -12,43 +12,45 @@ and open the template in the editor.
                 xmlns:p="http://primefaces.org/ui">
 
 
+
+
     <ui:define name="content">
         <h:form id="tableForm">
-            <p:dataTable id="usertable" var="user" value="#{benutzerverwaltungsBean.userList}" style="margin-top: 1.5%">
+            <p:dataTable id="usertable" var="user" value="#{benutzerverwaltungsBean.userList}" style="margin-top: 1.5%" >
 
-                <p:column headerText="Username">
+                <p:column headerText="Username" sortBy="#{user.username}" filterBy="#{user.username}">
                     <h:outputText value="#{user.username}"/>
                 </p:column>
 
-                <p:column headerText="Name">
+                <p:column headerText="Name" sortBy="#{user.persName}" filterBy="#{user.persName}">
                     <h:outputText value="#{user.persName}"/>
                 </p:column>
 
-                <p:column headerText="Berechtigungsstufe">
+                <p:column headerText="Berechtigungsstufe"  sortBy="#{user.accessLevel.accessLevelName}" filterBy="#{user.accessLevel.accessLevelName}">
                     <h:outputText value="#{user.accessLevel}">
                         <f:converter converterId="accesslevelconv"/>
                     </h:outputText>
                 </p:column>
 
-                <p:column headerText="E-Mail-Adresse">
+                <p:column headerText="E-Mail-Adresse"  sortBy="#{user.email}" filterBy="#{user.email}">
                     <h:outputText value="#{user.email}"/>
                 </p:column>
 
-                <p:column headerText="Overtime Left">
+                <p:column headerText="Overtime Left"  sortBy="#{user.overTimeLeft}">
                     <h:outputText value="#{user.overTimeLeft}">
                         <f:converter converterId="minuteHourConverter"/>
                     </h:outputText>
                 </p:column>
 
-                <p:column headerText="Vacation Left">
+                <p:column headerText="Vacation Left"  sortBy="#{user.vacationLeft}">
                     <h:outputText value="#{user.vacationLeft}"/>
                 </p:column>
 
-                <p:column headerText="WeekTime">
+                <p:column headerText="WeekTime"  sortBy="#{user.weekTime}" filterBy="#{user.weekTime}">
                     <h:outputText value="#{user.weekTime}"/>
                 </p:column>
 
-                <p:column headerText="Enabled">
+                <p:column headerText="Enabled"  sortBy="#{user.disabled}" filterBy="#{user.disabled}">
                     <h:outputText value="#{user.disabledString}"/>
                 </p:column>
 
@@ -68,6 +70,7 @@ and open the template in the editor.
 
             <p:commandButton id="newUserBut" value="New User" action="#{benutzerverwaltungsBean.newUser}" update=":userDialogForm:userDlgGrid :weekDialogForm:weekDlgPanel"  oncomplete="PF('userdlg').show();"/>
 
+            <p:remoteCommand update="usertable" action="#{benutzerverwaltungsBean.onLoad}" autoRun="true"/>
         </h:form>
 
         <p:dialog  closeOnEscape="true" header="User Dialog" widgetVar="userdlg" modal="true" resizable="false">
@@ -88,7 +91,7 @@ and open the template in the editor.
 
                     <p:row>
                         <p:column><p:outputLabel value="Password: "/></p:column>
-                        <p:column><p:inputText type="password" value="#{benutzerverwaltungsBean.selectedUser.pass}" required="true" autocomplete="false"/></p:column>
+                        <p:column><p:commandButton value="reset Password" update=":passwordForm" oncomplete="PF('passwordResetDialog').show();"/></p:column>
                     </p:row>
 
                     <p:row>
@@ -166,7 +169,7 @@ and open the template in the editor.
                 <h:panelGrid id="eventDetails" columns="2">
 
                     <p:outputLabel for="from" value="From:" />
-                    <p:calendar id="from" value="#{benutzerverwaltungsBean.curEvent.startDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"  showOn="button"/>
+                    <p:calendar id="oldPw" value="#{benutzerverwaltungsBean.curEvent.startDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"  showOn="button"/>
 
                     <p:outputLabel for="to" value="To:" />
                     <p:calendar id="to" value="#{benutzerverwaltungsBean.curEvent.endDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"  showOn="button"/>
@@ -191,6 +194,18 @@ and open the template in the editor.
                         <p:commandButton id="cancelApprover" value="Cancel" oncomplete="PF('approverDialog').hide();"/>
                     </f:facet>
                 </p:panel>
+            </h:form>
+        </p:dialog> 
+
+        <p:dialog widgetVar="passwordResetDialog" closeOnEscape="true" resizable="false" dynamic="true" modal="true" header="Reset Password">
+            <h:form id="passwordForm">
+                <h:panelGrid id="passwordGrid" columns="2">
+                    <p:outputLabel value="Random new Password: "/>
+                    <p:inputText value="#{benutzerverwaltungsBean.resetPWString}" required="true" autocomplete="false"/>
+
+                    <p:commandButton id="resetPassword" value="Reset" action="#{benutzerverwaltungsBean.resetPWString}" oncomplete="PF('passwordResetDialog').hide();" />
+                    <p:commandButton  value="Cancel" oncomplete="PF('passwordResetDialog').hide();"/>
+                </h:panelGrid>
             </h:form>
         </p:dialog> 
 

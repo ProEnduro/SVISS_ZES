@@ -5,12 +5,11 @@
  */
 package at.htlpinkafeld.beans;
 
-import at.htlpinkafeld.pojo.AccessLevel;
 import at.htlpinkafeld.pojo.SollZeiten;
 import at.htlpinkafeld.pojo.User;
-import at.htlpinkafeld.pojo.UserProxy;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import at.htlpinkafeld.service.IstZeitService;
+import at.htlpinkafeld.service.PasswordEncryptionService;
 import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
 import java.time.LocalDate;
@@ -20,7 +19,12 @@ import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.validator.FacesValidator;
+import javax.faces.validator.Validator;
+import javax.faces.validator.ValidatorException;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.DefaultScheduleModel;
@@ -31,86 +35,63 @@ import org.primefaces.model.ScheduleModel;
  *
  * @author ÐarkHell2
  */
-public class BenutzerkontoBean {
-
-    List<User> userlist;
-    String persName;
-    String userName;
-    String email;
-    Date hireDate;
-    String password;
-    double weekTime;
+@FacesValidator("oldPasswordValidator")
+public class BenutzerkontoBean implements Validator {
 
     String themeTest = "1";
 
     FacesContext context = FacesContext.getCurrentInstance();
     MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
-    User user;
 
     ScheduleModel sollzeitModel;
-    User currentUser;
+    User user;
     LocalDate pointDate;
     ScheduleEvent curEvent;
+
+    private String newPw = "";
 
     @PostConstruct
     public void init() {
         pointDate = LocalDate.of(2016, 8, 1);
-
-        loadSollZeiten();
     }
 
     public BenutzerkontoBean() {
-        user = new UserProxy();
         user = masterBean.getUser();
     }
 
-    public List<User> getUserList() {
-        return BenutzerverwaltungService.getUserList();
+    public void onLoad() {
+        user = masterBean.getUser();
+        loadSollZeiten();
     }
 
-    public AccessLevel getAccessLevel() {
-        return user.getAccessLevel();
+    public User getUser() {
+        return user;
     }
 
-    public String getPersName() {
-        return user.getPersName();
-    }
-
-    public void setPersName(String persName) {
-        user.setPersName(persName);
-    }
-
-    public String getUserName() {
-        return user.getUsername();
-    }
-
-    public String getEmail() {
-        return user.getEmail();
-    }
-
-    public void setEmail(String email) {
-        user.setEmail(email);
-    }
-
-    public LocalDate getHireDate() {
-        return user.getHiredate();
-    }
-
-    public String getPassword() {
-        return user.getPass();
-    }
-
-    public void setPassword(String password) {
-        user.setPass(password);
-    }
-
-    public double getWeekTime() {
-        return user.getWeekTime();
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public void saveUser() {
         BenutzerverwaltungService.updateUser(user);
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("User gespeichert!", ""));
+    }
+
+    public String getNewPw() {
+        return newPw;
+    }
+
+    public void setNewPw(String newPw) {
+        this.newPw = newPw;
+    }
+
+    public void discardPasswordChanges() {
+        newPw = "";
+    }
+
+    public void savePassword() {
+        user.setPass(PasswordEncryptionService.digestPassword(newPw));
+        BenutzerverwaltungService.updateUser(user);
     }
 
     public ScheduleModel getSollzeitModel() {
@@ -132,15 +113,9 @@ public class BenutzerkontoBean {
     public void loadSollZeiten() {
         this.sollzeitModel = new DefaultScheduleModel();
 
-        currentUser = masterBean.getUser();
-        System.out.println(currentUser);
-
-        currentUser = BenutzerverwaltungService.getUser(currentUser.getUsername());
-        System.out.println(currentUser);
-
         List<SollZeiten> currentSollZeiten;
 
-        currentSollZeiten = SollZeitenService.getSollZeitenByUser(currentUser);
+        currentSollZeiten = SollZeitenService.getSollZeitenByUser(user);
 
         for (SollZeiten sz : currentSollZeiten) {
             LocalDate curDate = pointDate.with(TemporalAdjusters.firstInMonth(sz.getDay()));
@@ -156,5 +131,12 @@ public class BenutzerkontoBean {
 
     public Date getPointDate() {
         return IstZeitService.convertLocalDateTimeToDate(pointDate.atStartOfDay());
+    }
+
+    @Override
+    public void validate(FacesContext fc, UIComponent uic, Object o) throws ValidatorException {
+        if (!o.toString().contentEquals(user.getPass())) {
+            throw new ValidatorException(new FacesMessage("Altes Passwort stimmt nicht", ""));
+        }
     }
 }

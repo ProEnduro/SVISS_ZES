@@ -11,6 +11,8 @@ import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserProxy;
 import at.htlpinkafeld.service.AccessRightsService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
+import at.htlpinkafeld.service.EmailService;
+import at.htlpinkafeld.service.PasswordEncryptionService;
 import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
 import java.time.DayOfWeek;
@@ -27,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.event.ActionEvent;
+import org.apache.commons.lang.RandomStringUtils;
 import org.primefaces.event.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
@@ -56,6 +59,8 @@ public class BenutzerverwaltungBean {
     private LocalDate pointDate;
 
     private Double weekTime;
+    
+    private String resetPWString;
 
     @PostConstruct
     public void init() {
@@ -69,12 +74,18 @@ public class BenutzerverwaltungBean {
     public BenutzerverwaltungBean() {
     }
 
+    public void onLoad() {
+        userlist = BenutzerverwaltungService.getUserList();
+    }
+
     public ScheduleModel getTimeModel() {
         return timeModel;
     }
 
     public List<User> getUserList() {
-        userlist = BenutzerverwaltungService.getUserList();
+//        if (userlist == null) {
+//            userlist = BenutzerverwaltungService.getUserList();
+//        }
         return userlist;
     }
 
@@ -112,6 +123,27 @@ public class BenutzerverwaltungBean {
             }
         }
         selectedUser = null;
+    }
+
+    public String getResetPWString() {
+        return RandomStringUtils.randomAlphanumeric(10);
+    }
+
+    public void setResetPWString(String resetPWString) {
+        this.resetPWString = resetPWString;
+    }
+
+    public void resetPassword() {
+        selectedUser.setPass(PasswordEncryptionService.digestPassword(resetPWString));
+        if (selectedUser.getUserNr() == -1) {
+            userlist.add(selectedUser);
+            BenutzerverwaltungService.insertUser(selectedUser);
+        } else {
+            userlist.remove(selectedUser);
+            userlist.add(selectedUser);
+            BenutzerverwaltungService.updateUser(selectedUser);
+        }
+        EmailService.sendUserNewPasswordEmail(resetPWString, selectedUser);
     }
 
     //WeekTime Stuff

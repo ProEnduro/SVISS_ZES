@@ -5,19 +5,19 @@
  */
 package at.htlpinkafeld.beans;
 
-import at.htlpinkafeld.beans.util.GuestPreferences;
 import at.htlpinkafeld.pojo.User;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.service.AccessRightsService;
+import at.htlpinkafeld.service.BenutzerverwaltungService;
+import at.htlpinkafeld.service.EmailService;
+import at.htlpinkafeld.service.PasswordEncryptionService;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.Properties;
 import javax.servlet.ServletContext;
 
@@ -30,6 +30,8 @@ public class LoginBean {
     public String userString;
     public String pw;
     private User user;
+
+    private String emailOrUsername;
 
     /**
      * Creates a new instance of LoginBean
@@ -50,7 +52,7 @@ public class LoginBean {
     }
 
     public void setPw(String pw) {
-        this.pw = pw;
+        this.pw = PasswordEncryptionService.digestPassword(pw);
     }
 
     public Object login() throws IOException {
@@ -77,19 +79,19 @@ public class LoginBean {
             scheduleView.setUser(this.getUser());
 
             boolean reader = user.getAccessLevel().getAccessLevelID() == 3;
-            
 
             if (reader) {
                 scheduleView.loadAllTimes(null);
                 return "success_reader";
             }
 
+            System.out.println(pw + "   " + pw.length());
             this.pw = "";
             this.user = null;
             this.userString = "";
-  //          setTheme();
+            //          setTheme();
             scheduleView.reloadAbwesenheiten(null);
-            
+
             return "success";
         }
 
@@ -107,56 +109,50 @@ public class LoginBean {
     public User getUser() {
         return this.user;
     }
-    
-    /*
-    public void setTheme() throws FileNotFoundException, IOException{
-        ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
-        String path = serv.getRealPath("/") + "/resources/";
-        File file=new File(path+"themes.properties");
-        Enumeration enu;
-        
-        FileInputStream inSF=new FileInputStream(file);
-        Properties prop=new Properties();
-        prop.load(inSF);
-        
-        String key, value;
-        GuestPreferences gP=new GuestPreferences();
-       
-        enu=prop.keys();
-        
-        while(enu.hasMoreElements()){      
-            key=(String)enu.nextElement();
-            
-            if(key.equals(this.user.getUsername())){
-                gP.setTheme(prop.getProperty(key));
+
+    public String getEmailOrUsername() {
+        return emailOrUsername;
+    }
+
+    public void setEmailOrUsername(String emailOrUsername) {
+        this.emailOrUsername = emailOrUsername;
+    }
+
+    public void sendPWResetRequest() {
+        User u = null;
+        if (emailOrUsername == null || emailOrUsername.isEmpty()) {
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Es muss etwas eingegeben werden!", ""));
+        } else {
+            if (emailOrUsername.contains("@")) {
+                u = BenutzerverwaltungService.getUserByEmail(emailOrUsername);
+            } else {
+                u = BenutzerverwaltungService.getUserByUsername(emailOrUsername);
             }
-            
-            //value=prop.getProperty(key);
-            
-            //System.out.println(key+" "+value);
-            
+            if (u == null) {
+                FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Es gibt keinen passenden User!", ""));
+            } else {
+                EmailService.sendUserForgotPasswordEmail(user, BenutzerverwaltungService.getUserByAccessLevel(AccessRightsService.getAccessLevelFromName("admin")));
+            }
         }
-        
-    } */
-    
-    
-    public void createThemePropertie() throws FileNotFoundException, IOException{
+    }
+
+    public void createThemePropertie() throws FileNotFoundException, IOException {
         ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
         String path = serv.getRealPath("/") + "/resources/";
-        File file=new File(path+"themes.properties");
-        
-        if(file.exists()==false){
-            Properties prop=new Properties();
+        File file = new File(path + "themes.properties");
+
+        if (file.exists() == false) {
+            Properties prop = new Properties();
             prop.setProperty("admin", "delta");
             prop.setProperty("user", "afterdark");
-            
+
             try (FileOutputStream outSF = new FileOutputStream(file)) {
                 file.createNewFile();
                 prop.store(outSF, "Themes_of_user");
                 outSF.close();
-            } 
+            }
         }
-        
+
     }
 
 }

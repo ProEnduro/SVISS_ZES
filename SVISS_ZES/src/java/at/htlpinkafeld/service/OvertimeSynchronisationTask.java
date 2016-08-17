@@ -16,6 +16,7 @@ import at.htlpinkafeld.pojo.SollZeiten;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
 import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
@@ -67,8 +68,16 @@ public class OvertimeSynchronisationTask implements Runnable {
 
         List<WorkTime> workTimes = WORK_TIME_DAO.getWorkTimesFromUserBetweenDates(u, startDate, endDate);
         List<SollZeiten> sollZeiten = SOLL_ZEITEN_DAO.getSollZeitenByUser(u);
+
+        LocalTime lt19Plus = LocalTime.of(19, 0);
+
         for (WorkTime wt : workTimes) {
-            overtime += wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
+            if (lt19Plus.isBefore(wt.getEndTime().toLocalTime())) {
+                overtime += wt.getStartTime().until(wt.getEndTime().with(lt19Plus), ChronoUnit.MINUTES);
+                overtime += wt.getEndTime().with(lt19Plus).until(wt.getEndTime(), ChronoUnit.MINUTES) * 1.5;
+            } else {
+                overtime += wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
+            }
             overtime -= wt.getBreakTime();
             DayOfWeek sDay = wt.getStartTime().getDayOfWeek();
             for (SollZeiten sz : sollZeiten) {

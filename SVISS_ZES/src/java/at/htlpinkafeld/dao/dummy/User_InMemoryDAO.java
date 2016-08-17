@@ -10,6 +10,7 @@ import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.pojo.AccessLevel;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserProxy;
+import at.htlpinkafeld.service.PasswordEncryptionService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,19 +24,19 @@ public class User_InMemoryDAO extends Base_InMemoryDAO<User> implements User_DAO
     protected User_InMemoryDAO() {
         super(new ArrayList<>());
         AccessLevel_DAO al_DAO = new AccessLevel_InMemoryDAO();
-        super.insert(new UserProxy(al_DAO.getAccessLevelByID(1), "AdminUser", 21, 36 * 60, "admin", "admin@noplan.at", LocalDate.of(2016, 3, 7), "admin", 14.0));
-        super.insert(new UserProxy(al_DAO.getAccessLevelByID(2), "ApproverUser", 21, 60 * 60, "approver", "blaumeux.sn@gmail.com", LocalDate.of(2016, 3, 7), "approver", 33.5));
-        super.insert(new UserProxy(al_DAO.getAccessLevelByID(3), "ReaderUser", 10, 54 * 60, "reader", "reader@test.at", LocalDate.of(2016, 3, 7), "reader", 22.5));
-        super.insert(new UserProxy(al_DAO.getAccessLevelByID(4), "NormalUser", 19, 30 * 60, "user", "user@test.at", LocalDate.of(2016, 3, 7), "user", 17.5));
+        super.insert(new UserProxy(al_DAO.getAccessLevelByID(1), "AdminUser", 21, 36 * 60, "admin", "admin@noplan.at", LocalDate.of(2016, 3, 7), PasswordEncryptionService.digestPassword("admin"), 14.0));
+        super.insert(new UserProxy(al_DAO.getAccessLevelByID(2), "ApproverUser", 21, 60 * 60, "approver", "blaumeux.sn@gmail.com", LocalDate.of(2016, 3, 7), PasswordEncryptionService.digestPassword("approver"), 33.5));
+        super.insert(new UserProxy(al_DAO.getAccessLevelByID(3), "ReaderUser", 10, 54 * 60, "reader", "reader@test.at", LocalDate.of(2016, 3, 7), PasswordEncryptionService.digestPassword("reader"), 22.5));
+        super.insert(new UserProxy(al_DAO.getAccessLevelByID(4), "NormalUser", 19, 30 * 60, "user", "user@test.at", LocalDate.of(2016, 3, 7), PasswordEncryptionService.digestPassword("user"), 17.5));
 
-        super.insert(new UserProxy(al_DAO.getAccessLevelByID(4), "Manuel Lang", 20, 24 * 60, "manuel", "manuel.lang@aon.at", LocalDate.of(2016, 4, 10), "manuel", 40.0));
-        super.insert(new UserProxy(al_DAO.getAccessLevelByID(4), "Matthias Hochhan", 12, 48 * 60, "matthias", "matthias.hochhan@gmx.at", LocalDate.of(2016, 2, 14), "matthias", 51.5));
-        super.insert(new UserProxy(al_DAO.getAccessLevelByID(3), "Franz Schuh", 12, 42 * 60, "franz", "franz.schuh@gmail.com", LocalDate.of(2016, 7, 28), "franz", 1.0));
-        super.insert(new UserProxy(al_DAO.getAccessLevelByID(1), "Scott Whisky", 5, 30 * 60, "scott", "scott.whisky@gmx.at", LocalDate.of(2016, 9, 30), "scott", 12.5));
-        super.insert(new UserProxy(al_DAO.getAccessLevelByID(2), "Smith Hemington", 1, 0 * 60, "smith", "smith.hemington@aon.at", LocalDate.of(2016, 3, 1), "smith", 7.0));
+        super.insert(new UserProxy(al_DAO.getAccessLevelByID(4), "Manuel Lang", 20, 24 * 60, "manuel", "manuel.lang@aon.at", LocalDate.of(2016, 4, 10), PasswordEncryptionService.digestPassword("manuel"), 40.0));
+        super.insert(new UserProxy(al_DAO.getAccessLevelByID(4), "Matthias Hochhan", 12, 48 * 60, "matthias", "matthias.hochhan@gmx.at", LocalDate.of(2016, 2, 14), PasswordEncryptionService.digestPassword("matthias"), 51.5));
+        super.insert(new UserProxy(al_DAO.getAccessLevelByID(3), "Franz Schuh", 12, 42 * 60, "franz", "franz.schuh@gmail.com", LocalDate.of(2016, 7, 28), PasswordEncryptionService.digestPassword("franz"), 1.0));
+        super.insert(new UserProxy(al_DAO.getAccessLevelByID(1), "Scott Whisky", 5, 30 * 60, "scott", "scott.whisky@gmx.at", LocalDate.of(2016, 9, 30), PasswordEncryptionService.digestPassword("scott"), 12.5));
+        super.insert(new UserProxy(al_DAO.getAccessLevelByID(2), "Smith Hemington", 1, 0 * 60, "smith", "smith.hemington@aon.at", LocalDate.of(2016, 3, 1), PasswordEncryptionService.digestPassword("smith"), 7.0));
 
-        super.insert(new UserProxy(al_DAO.getAccessLevelByID(1), "Revan Purp", 11, 12 * 60, "revan", "revan.purp@gmx.at", LocalDate.of(2016, 8, 26), "revan", 55.5));
-        super.insert(new UserProxy(al_DAO.getAccessLevelByID(3), "Jen-Hsun Huang", 12, 54 * 60, "jen", "jen.huang@nvidia.com", LocalDate.of(2016, 1, 1), "jen", 111.5));
+        super.insert(new UserProxy(al_DAO.getAccessLevelByID(1), "Revan Purp", 11, 12 * 60, "revan", "revan.purp@gmx.at", LocalDate.of(2016, 8, 26), PasswordEncryptionService.digestPassword("revan"), 55.5));
+        super.insert(new UserProxy(al_DAO.getAccessLevelByID(3), "Jen-Hsun Huang", 12, 54 * 60, "jen", "jen.huang@nvidia.com", LocalDate.of(2016, 1, 1), PasswordEncryptionService.digestPassword("jen"), 111.5));
 
         super.insert(new UserProxy(al_DAO.getAccessLevelByID(4), "Meg Hang", 9, 18 * 60, "meg", "meg.hang@gmx.at", LocalDate.of(2016, 8, 21), "meg", 0.0));
         super.insert(new UserProxy(al_DAO.getAccessLevelByID(2), "Hodor Hold_the_Door", 10, 12 * 60, "Hodor", "hodor.door@gmx.at", LocalDate.of(2016, 1, 18), "hodor", 10.0));
@@ -122,6 +123,16 @@ public class User_InMemoryDAO extends Base_InMemoryDAO<User> implements User_DAO
             }
         }
         return userL;
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        for (User u : super.getList()) {
+            if (u.getEmail().contentEquals(email)) {
+                return clone(u);
+            }
+        }
+        return null;
     }
 
 }
