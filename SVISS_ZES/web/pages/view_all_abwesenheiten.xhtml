@@ -17,10 +17,10 @@ and open the template in the editor.
             <h:form>
                 <p:growl id="messages" showDetail="true"/>
 
-                <p:schedule draggable="false" resizable="false" firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.eventModel}" widgetVar="myschedule" timeZone="GMT+2" 
+                <p:schedule draggable="false" resizable="false" firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.alleAbwesenheitenModel}" widgetVar="myschedule" timeZone="GMT+2" 
                             locale="de" columnFormat="month:'ddd',  week:'dddd - dd.MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
 
-                    <p:ajax event="eventSelect" listener="#{scheduleView.onEventInAbwesenheitenSelect}" update="absenceDialog" />
+                    <p:ajax event="eventSelect" listener="#{scheduleView.onEventInAbwesenheitenSelect}" update="absenceDialog :feiertagDialogForm:feiertagDialogID" />
                     
 
                 </p:schedule>
@@ -92,6 +92,9 @@ and open the template in the editor.
                         background-color: orange;
                         color: black;
                     }
+                    .feiertag .fc-event-inner{
+                        background-color: #33ffcc;
+                    }
                 </style>
 
                  <p:dialog id="absenceDialog" widgetVar="absenceDialog" header="Absence Details" showEffect="clip" hideEffect="clip" closeOnEscape="true">
@@ -110,6 +113,20 @@ and open the template in the editor.
                     </h:panelGrid>
                 </p:dialog> 
 
+            </h:form>
+            
+            <h:form id="feiertagDialogForm">
+
+                <p:dialog id="feiertagDialogID" widgetVar="feiertagDialog" header="Feiertag Details" showEffect="clip" hideEffect="clip" closeOnEscape="true">
+                    <h:panelGrid id="absenceDetails" columns="2">
+                        <p:outputLabel for="feiertagtitle" value="Titles:" />
+                        <p:inputText id="feiertagtitle" value="#{scheduleView.event.title}" disabled="true"/>
+
+                        <p:outputLabel for="feiertagfrom" value="Date:" />
+                        <p:calendar id="feiertagfrom" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy" showOn="" readonly="true"/>
+
+                    </h:panelGrid>
+                </p:dialog> 
             </h:form>
         </ui:define>
 

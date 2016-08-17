@@ -72,4 +72,8 @@ public class IstZeitService {
             return false;
         }
     }
+    
+    public static List<WorkTime> getWorkTimeForUserBetweenStartAndEndDate(User u, Date start, Date end){
+        return workDAO.getWorkTimesFromUserBetweenDates(u, start, end);
+    }
 }

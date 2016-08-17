@@ -15,9 +15,6 @@ and open the template in the editor.
 
         <ui:define name="content">
             <h:form>
-                <p:outputLabel id="selectedUserString" value="#{scheduleView.selectedUser}"/>
-                <br/>
-
 
                 <p:growl id="messages" showDetail="true" />
 
@@ -25,11 +22,11 @@ and open the template in the editor.
                     <f:selectItems value="#{scheduleView.allUsers}"/>
                 </p:selectOneMenu>
 
-                <p:commandButton value="load" actionListener="#{scheduleView.loadAllTimesByUser}" update="schedule selectedUserString"/>
+                <p:commandButton value="load" actionListener="#{scheduleView.loadAllTimesByUser}" update="schedule"/>
 
-                <p:schedule draggable="false" resizable="false" firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.eventModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" 
+                <p:schedule draggable="false" resizable="false" firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.allTimesModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" 
                             columnFormat="month:'ddd',  week:'dddd - dd.MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
-                    <p:ajax event="eventSelect" listener="#{scheduleView.onEventInAbwesenheitenSelect}" update=":absenceDialogForm:absenceDialogID :worktimeDialogForm:worktimeDialogID" />
+                    <p:ajax event="eventSelect" listener="#{scheduleView.onEventInAbwesenheitenSelect}" update=":absenceDialogForm:absenceDialogID :worktimeDialogForm:worktimeDialogID :feiertagDialogForm:feiertagDialogID" />
                 </p:schedule>
 
                 <script type="text/javascript">
@@ -96,6 +93,9 @@ and open the template in the editor.
                         background-color: orange;
                         color: black;
                     }
+                    .feiertag .fc-event-inner{
+                        background-color: #33ffcc;
+                    }
                 </style>
 
             </h:form>
@@ -141,6 +141,20 @@ and open the template in the editor.
 
                         <p:outputLabel for="breaktime" value="Breaktime:"/>
                         <p:inputText id="breaktime" value="#{scheduleView.breaktime}" readonly="true"/>
+                    </h:panelGrid>
+                </p:dialog> 
+            </h:form>
+            
+            <h:form id="feiertagDialogForm">
+
+                <p:dialog id="feiertagDialogID" widgetVar="feiertagDialog" header="Feiertag Details" showEffect="clip" hideEffect="clip" closeOnEscape="true">
+                    <h:panelGrid id="absenceDetails" columns="2">
+                        <p:outputLabel for="feiertagtitle" value="Titles:" />
+                        <p:inputText id="feiertagtitle" value="#{scheduleView.event.title}" disabled="true"/>
+
+                        <p:outputLabel for="feiertagfrom" value="Date:" />
+                        <p:calendar id="feiertagfrom" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy" showOn="" readonly="true"/>
+
                     </h:panelGrid>
                 </p:dialog> 
             </h:form>
