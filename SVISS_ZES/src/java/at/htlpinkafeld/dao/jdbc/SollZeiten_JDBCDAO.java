@@ -7,11 +7,12 @@ package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
 import at.htlpinkafeld.dao.util.WrappedConnection;
-import at.htlpinkafeld.pojo.SollZeiten;
+import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.DayOfWeek;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
  *
  * @author Martin Six
  */
-public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeiten> implements SollZeiten_DAO {
+public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeit> implements SollZeiten_DAO {
 
     public static final String DAYID_COL = "DayID";
     public static final String USERNR_COL = User_JDBCDAO.USERNR_COL;
@@ -39,10 +40,10 @@ public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeiten> implements Soll
     }
 
     @Override
-    protected Map<String, Object> entityToMap(SollZeiten entity) {
+    protected Map<String, Object> entityToMap(SollZeit entity) {
         Map<String, Object> resMap = new HashMap<>();
 
-        resMap.put(DAYID_COL, SollZeiten.getDBShortFromDayOfWeek(entity.getDay()));
+        resMap.put(DAYID_COL, SollZeit.getDBShortFromDayOfWeek(entity.getDay()));
         resMap.put(USERNR_COL, entity.getUser().getUserNr());
         resMap.put(SOLLSTARTTIME_COL, entity.getSollStartTime());
         resMap.put(SOLLENDTIME_COL, entity.getSollEndTime());
@@ -51,9 +52,9 @@ public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeiten> implements Soll
     }
 
     @Override
-    protected SollZeiten getEntityFromResultSet(ResultSet rs) {
+    protected SollZeit getEntityFromResultSet(ResultSet rs) {
         try {
-            return new SollZeiten(SollZeiten.getDayOfWeekFromDBShort(rs.getString(DAYID_COL)), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), rs.getTime(SOLLSTARTTIME_COL).toLocalTime(), rs.getTime(SOLLENDTIME_COL).toLocalTime());
+            return new SollZeit(SollZeit.getDayOfWeekFromDBShort(rs.getString(DAYID_COL)), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), rs.getTime(SOLLSTARTTIME_COL).toLocalTime(), rs.getTime(SOLLENDTIME_COL).toLocalTime());
         } catch (SQLException ex) {
             Logger.getLogger(SollZeiten_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -61,7 +62,7 @@ public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeiten> implements Soll
     }
 
     @Override
-    protected void updateEntityWithAutoKeys(ResultSet rs, SollZeiten entity) {
+    protected void updateEntityWithAutoKeys(ResultSet rs, SollZeit entity) {
 //        try {
 //        rs.next();
 //            entity.setDay(DayOfWeek.valueOf(rs.getString(1)));
@@ -71,8 +72,8 @@ public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeiten> implements Soll
     }
 
     @Override
-    public List<SollZeiten> getSollZeitenByUser(User u) {
-        List<SollZeiten> sollZeiten = new LinkedList<>();
+    public List<SollZeit> getSollZeitenByUser(User u) {
+        List<SollZeit> sollZeiten = new LinkedList<>();
 
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                 Statement stmt = con.getConn().createStatement();
@@ -87,6 +88,26 @@ public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeiten> implements Soll
         }
 
         return sollZeiten;
+    }
+
+    @Override
+    public SollZeit getSollZeitenByUser_DayOfWeek(User u, DayOfWeek d) {
+        SollZeit sollZeit = null;
+
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + u.getUserNr() + " AND "
+                        + DAYID_COL + " = " + SollZeit.getDBShortFromDayOfWeek(d) + " " + SQL_ORDER_BY_LINE)) {
+
+            if (rs.next()) {
+                sollZeit = getEntityFromResultSet(rs);
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return sollZeit;
     }
 
 }

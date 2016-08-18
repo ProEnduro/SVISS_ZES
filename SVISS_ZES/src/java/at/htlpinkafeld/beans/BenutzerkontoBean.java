@@ -5,7 +5,7 @@
  */
 package at.htlpinkafeld.beans;
 
-import at.htlpinkafeld.pojo.SollZeiten;
+import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import at.htlpinkafeld.service.IstZeitService;
@@ -130,11 +130,11 @@ public class BenutzerkontoBean implements Validator {
     public void loadSollZeiten() {
         this.sollzeitModel = new DefaultScheduleModel();
 
-        List<SollZeiten> currentSollZeiten;
+        List<SollZeit> currentSollZeiten;
 
         currentSollZeiten = SollZeitenService.getSollZeitenByUser(user);
 
-        for (SollZeiten sz : currentSollZeiten) {
+        for (SollZeit sz : currentSollZeiten) {
             LocalDate curDate = pointDate.with(TemporalAdjusters.firstInMonth(sz.getDay()));
             DefaultScheduleEvent de = new DefaultScheduleEvent("", TimeConverterService.convertLocalTimeToDate(curDate, sz.getSollStartTime()),
                     TimeConverterService.convertLocalDateTimeToDate(LocalDateTime.of(curDate, sz.getSollEndTime())), curDate.getDayOfWeek());

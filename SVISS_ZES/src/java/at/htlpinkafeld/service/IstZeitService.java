@@ -6,11 +6,11 @@
 package at.htlpinkafeld.service;
 
 import at.htlpinkafeld.dao.factory.DAOFactory;
+import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
 import at.htlpinkafeld.dao.interf.WorkTime_DAO;
+import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
-import static com.sun.org.apache.xalan.internal.lib.ExsltDatetime.time;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -24,14 +24,21 @@ import java.util.List;
 public class IstZeitService {
 
     static WorkTime_DAO workDAO;
+    static SollZeiten_DAO sollZeiten_DAO;
     static WorkTime workT;
     static WorkTime test;
 
     static {
         workDAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
+        sollZeiten_DAO = DAOFactory.getDAOFactory().getSollZeitenDAO();
     }
 
     public static void addIstTime(WorkTime t) {
+        if (t.getSollStartTime() == null) {
+            SollZeit sz = sollZeiten_DAO.getSollZeitenByUser_DayOfWeek(t.getUser(), t.getStartTime().getDayOfWeek());
+            t.setSollStartTime(sz.getSollStartTime());
+            t.setSollEndTime(sz.getSollEndTime());
+        }
         workDAO.insert(t);
     }
 
@@ -72,8 +79,8 @@ public class IstZeitService {
             return false;
         }
     }
-    
-    public static List<WorkTime> getWorkTimeForUserBetweenStartAndEndDate(User u, Date start, Date end){
+
+    public static List<WorkTime> getWorkTimeForUserBetweenStartAndEndDate(User u, Date start, Date end) {
         return workDAO.getWorkTimesFromUserBetweenDates(u, start, end);
     }
 }

@@ -11,6 +11,7 @@ import at.htlpinkafeld.dao.interf.Absence_DAO;
 import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
 import at.htlpinkafeld.dao.interf.Holiday_DAO;
 import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
+import at.htlpinkafeld.dao.interf.UserHistory_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.dao.interf.WorkTime_DAO;
 import at.htlpinkafeld.dao.jdbc.JDBCDAOFactory;
@@ -80,4 +81,6 @@ public abstract class DAOFactory {
     public abstract Absence_DAO getAbsenceDAO();
 
     public abstract Holiday_DAO getHolidayDAO();
+
+    public abstract UserHistory_DAO getUserHistoryDAO();
 }

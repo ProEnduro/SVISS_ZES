@@ -34,10 +34,13 @@ public class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime
     public static final String BREAKTIME_COL = "BreakTime";
     public static final String STARTCOMMENT_COL = "StartComment";
     public static final String ENDCOMMENT_COL = "EndComment";
+    public static final String SOLLSTARTTIME_COL = "SollStartTime";
+    public static final String SOLLENDTIME_COL = "SollEndTime";
 
     public static final String TABLE_NAME = "WorkTime";
     public static final String[] PRIMARY_KEY = {USERNR_COL, TIMEID_COL};
-    public static final String[] ALL_COLUMNS = {TIMEID_COL, USERNR_COL, STARTTIME_COL, ENDTIME_COL, BREAKTIME_COL, STARTCOMMENT_COL, ENDCOMMENT_COL};
+    public static final String[] ALL_COLUMNS = {TIMEID_COL, USERNR_COL, STARTTIME_COL, ENDTIME_COL, BREAKTIME_COL, STARTCOMMENT_COL,
+        ENDCOMMENT_COL, SOLLSTARTTIME_COL, SOLLENDTIME_COL};
 
     protected WorkTime_JDBCDAO() {
         super(TABLE_NAME, ALL_COLUMNS, PRIMARY_KEY);
@@ -54,6 +57,8 @@ public class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime
         resMap.put(BREAKTIME_COL, entity.getBreakTime());
         resMap.put(STARTCOMMENT_COL, entity.getStartComment());
         resMap.put(ENDCOMMENT_COL, entity.getEndComment());
+        resMap.put(SOLLSTARTTIME_COL, entity.getSollStartTime());
+        resMap.put(SOLLENDTIME_COL, entity.getSollEndTime());
 
         return resMap;
     }
@@ -61,7 +66,9 @@ public class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime
     @Override
     protected WorkTime getEntityFromResultSet(ResultSet rs) {
         try {
-            return new WorkTime(rs.getInt(TIMEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), rs.getTimestamp(STARTTIME_COL).toLocalDateTime(), rs.getTimestamp(ENDTIME_COL).toLocalDateTime(), rs.getInt(BREAKTIME_COL), rs.getString(STARTCOMMENT_COL), rs.getString(ENDCOMMENT_COL));
+            return new WorkTime(rs.getInt(TIMEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), rs.getTimestamp(STARTTIME_COL).toLocalDateTime(),
+                    rs.getTimestamp(ENDTIME_COL).toLocalDateTime(), rs.getTime(SOLLSTARTTIME_COL).toLocalTime(), rs.getTime(SOLLENDTIME_COL).toLocalTime(), 
+                    rs.getInt(BREAKTIME_COL), rs.getString(STARTCOMMENT_COL), rs.getString(ENDCOMMENT_COL));
         } catch (SQLException ex) {
             Logger.getLogger(WorkTime_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }

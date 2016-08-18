@@ -7,7 +7,7 @@ package at.htlpinkafeld.dao.jdbc;
 
 import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
-import at.htlpinkafeld.pojo.SollZeiten;
+import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
@@ -48,8 +48,8 @@ public class SollZeiten_JDBCDAOTest {
      */
     @Test
     public void testInsertAndGetList() throws SQLException {
-        List<SollZeiten> expResult = sollZeiten_DAO.getList();
-        SollZeiten sz = new SollZeiten(DayOfWeek.of(7), DAOFactory.getDAOFactory().getUserDAO().getUser(1), LocalTime.parse("08:00:00"), LocalTime.parse("16:30:00"));
+        List<SollZeit> expResult = sollZeiten_DAO.getList();
+        SollZeit sz = new SollZeit(DayOfWeek.of(7), DAOFactory.getDAOFactory().getUserDAO().getUser(1), LocalTime.parse("08:00:00"), LocalTime.parse("16:30:00"));
         sollZeiten_DAO.insert(sz);
         expResult.add(sz);
         List result = sollZeiten_DAO.getList();
@@ -65,8 +65,8 @@ public class SollZeiten_JDBCDAOTest {
     @Test
     public void testInsertAndGetByUser() throws SQLException {
         User u = DAOFactory.getDAOFactory().getUserDAO().getUser(1);
-        List<SollZeiten> expResult = sollZeiten_DAO.getSollZeitenByUser(u);
-        SollZeiten sz = new SollZeiten(DayOfWeek.of(7), DAOFactory.getDAOFactory().getUserDAO().getUser(1), LocalTime.parse("08:00:00"), LocalTime.parse("16:30:00"));
+        List<SollZeit> expResult = sollZeiten_DAO.getSollZeitenByUser(u);
+        SollZeit sz = new SollZeit(DayOfWeek.of(7), DAOFactory.getDAOFactory().getUserDAO().getUser(1), LocalTime.parse("08:00:00"), LocalTime.parse("16:30:00"));
         sollZeiten_DAO.insert(sz);
         expResult.add(sz);
         List result = sollZeiten_DAO.getSollZeitenByUser(u);
@@ -78,10 +78,10 @@ public class SollZeiten_JDBCDAOTest {
      */
     @Test
     public void testInsertAndUpdate() {
-        SollZeiten sz = new SollZeiten(DayOfWeek.of(7), DAOFactory.getDAOFactory().getUserDAO().getUser(1), LocalTime.parse("08:00:00"), LocalTime.parse("16:30:00"));
+        SollZeit sz = new SollZeit(DayOfWeek.of(7), DAOFactory.getDAOFactory().getUserDAO().getUser(1), LocalTime.parse("08:00:00"), LocalTime.parse("16:30:00"));
         sollZeiten_DAO.insert(sz);
-        List<SollZeiten> resultList = sollZeiten_DAO.getSollZeitenByUser(sz.getUser());
-        SollZeiten result = resultList.get(resultList.indexOf(sz));
+        List<SollZeit> resultList = sollZeiten_DAO.getSollZeitenByUser(sz.getUser());
+        SollZeit result = resultList.get(resultList.indexOf(sz));
 
         sz.setSollEndTime(LocalTime.parse("09:00:00"));
         sz.setSollStartTime(LocalTime.parse("17:30:00"));
@@ -100,9 +100,9 @@ public class SollZeiten_JDBCDAOTest {
      */
     @Test
     public void testInsertAndDelete() throws InterruptedException {
-        SollZeiten sz = new SollZeiten(DayOfWeek.of(7), DAOFactory.getDAOFactory().getUserDAO().getUser(1), LocalTime.parse("08:00:00"), LocalTime.parse("16:30:00"));
+        SollZeit sz = new SollZeit(DayOfWeek.of(7), DAOFactory.getDAOFactory().getUserDAO().getUser(1), LocalTime.parse("08:00:00"), LocalTime.parse("16:30:00"));
         sollZeiten_DAO.insert(sz);
-        List<SollZeiten> result = sollZeiten_DAO.getList();
+        List<SollZeit> result = sollZeiten_DAO.getList();
         assertTrue(result.contains(sz));
         sollZeiten_DAO.delete(sz);
         result = sollZeiten_DAO.getList();

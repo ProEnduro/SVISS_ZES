@@ -5,12 +5,16 @@
  */
 package at.htlpinkafeld.dao.dummy;
 
+import at.htlpinkafeld.dao.factory.DAOFactory;
+import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.dao.interf.WorkTime_DAO;
+import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
 import at.htlpinkafeld.service.TimeConverterService;
 import java.sql.Date;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -43,6 +47,14 @@ public class WorkTime_InMemoryDAO extends Base_InMemoryDAO<WorkTime> implements 
         super.insert(new WorkTime(uDAO.getUser(12), LocalDateTime.of(2016, 1, 18, 8, 0), LocalDateTime.of(2016, 1, 18, 17, 00), 30, "Holding the door!", "Stop holding the door!"));
         super.insert(new WorkTime(uDAO.getUser(14), LocalDateTime.of(2016, 6, 19, 10, 0), LocalDateTime.of(2016, 6, 19, 14, 23), 30, "Kicking the server!", "Server has a nice shape now!"));
 
+        SollZeiten_DAO szdao = new SollZeiten_InMemoryDAO();
+        for (WorkTime wt : super.getList()) {
+            SollZeit sz = szdao.getSollZeitenByUser_DayOfWeek(wt.getUser(), wt.getStartTime().getDayOfWeek());
+            if (sz != null) {
+                wt.setSollStartTime(sz.getSollStartTime());
+                wt.setSollEndTime(sz.getSollEndTime());
+            }
+        }
     }
 
     @Override

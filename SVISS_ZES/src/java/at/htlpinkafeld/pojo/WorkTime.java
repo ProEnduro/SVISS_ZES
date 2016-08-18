@@ -7,18 +7,21 @@ package at.htlpinkafeld.pojo;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 
 /**
  *
  * @author Martin Six
  */
-public class WorkTime implements Serializable{
+public class WorkTime implements Serializable {
 
     private int timeID;
     private User user;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private LocalTime sollStartTime;
+    private LocalTime sollEndTime;
     //Break Time in minutes
     private int breakTime;
     private String startComment;
@@ -36,14 +39,18 @@ public class WorkTime implements Serializable{
         this.breakTime = wt.breakTime;
         this.startComment = wt.startComment;
         this.endComment = wt.endComment;
+        this.sollStartTime = wt.sollStartTime;
+        this.sollEndTime = wt.sollEndTime;
     }
 
     @Deprecated
-    public WorkTime(int timeID, User user, LocalDateTime startTime, LocalDateTime endTime, int breakTime, String startComment, String endComment) {
+    public WorkTime(int timeID, User user, LocalDateTime startTime, LocalDateTime endTime, LocalTime sollStartTime, LocalTime sollEndTime, int breakTime, String startComment, String endComment) {
         this.timeID = timeID;
         this.user = user;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.sollStartTime = sollStartTime;
+        this.sollEndTime = sollEndTime;
         this.breakTime = breakTime;
         this.startComment = startComment;
         this.endComment = endComment;
@@ -95,6 +102,22 @@ public class WorkTime implements Serializable{
 
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
+    }
+
+    public LocalTime getSollStartTime() {
+        return sollStartTime;
+    }
+
+    public void setSollStartTime(LocalTime sollStartTime) {
+        this.sollStartTime = sollStartTime;
+    }
+
+    public LocalTime getSollEndTime() {
+        return sollEndTime;
+    }
+
+    public void setSollEndTime(LocalTime sollEndTime) {
+        this.sollEndTime = sollEndTime;
     }
 
     public int getBreakTime() {

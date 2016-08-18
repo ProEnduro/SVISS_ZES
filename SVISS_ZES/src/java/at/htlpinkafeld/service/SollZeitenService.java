@@ -7,7 +7,7 @@ package at.htlpinkafeld.service;
 
 import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
-import at.htlpinkafeld.pojo.SollZeiten;
+import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -29,28 +29,28 @@ public class SollZeitenService {
         SOLL_ZEITEN__DAO = DAOFactory.getDAOFactory().getSollZeitenDAO();
     }
 
-    public static List<SollZeiten> getSollZeitenByUser(User u) {
+    public static List<SollZeit> getSollZeitenByUser(User u) {
         return SOLL_ZEITEN__DAO.getSollZeitenByUser(u);
     }
 
-    public static List<SollZeiten> getSollZeiten() {
+    public static List<SollZeit> getSollZeiten() {
         return SOLL_ZEITEN__DAO.getList();
     }
 
-    public static void insertZeit(SollZeiten o) {
+    public static void insertZeit(SollZeit o) {
         SOLL_ZEITEN__DAO.insert(o);
     }
 
-    public static void updateZeit(SollZeiten o) {
+    public static void updateZeit(SollZeit o) {
         SOLL_ZEITEN__DAO.update(o);
     }
 
-    public static void deleteZeit(SollZeiten o) {
+    public static void deleteZeit(SollZeit o) {
         SOLL_ZEITEN__DAO.delete(o);
     }
 
     public static double getSollZeitForToday(User current) {
-        List<SollZeiten> list = SOLL_ZEITEN__DAO.getSollZeitenByUser(current);
+        List<SollZeit> list = SOLL_ZEITEN__DAO.getSollZeitenByUser(current);
         double sollzeitToday = 0;
 
         LocalDate date = LocalDate.now();
@@ -59,7 +59,7 @@ public class SollZeitenService {
         LocalTime start;
         LocalTime end;
 
-        for (SollZeiten s : list) {
+        for (SollZeit s : list) {
             if (s.getDay().equals(dayofweek)) {
                 start = s.getSollStartTime();
                 end = s.getSollEndTime();

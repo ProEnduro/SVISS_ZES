@@ -12,7 +12,7 @@ import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.dao.interf.WorkTime_DAO;
 import at.htlpinkafeld.pojo.Absence;
-import at.htlpinkafeld.pojo.SollZeiten;
+import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
 import java.time.DayOfWeek;
@@ -67,7 +67,7 @@ public class OvertimeSynchronisationTask implements Runnable {
         int overtime = 0;
 
         List<WorkTime> workTimes = WORK_TIME_DAO.getWorkTimesFromUserBetweenDates(u, startDate, endDate);
-        List<SollZeiten> sollZeiten = SOLL_ZEITEN_DAO.getSollZeitenByUser(u);
+        List<SollZeit> sollZeiten = SOLL_ZEITEN_DAO.getSollZeitenByUser(u);
 
         LocalTime lt19Plus = LocalTime.of(19, 0);
 
@@ -80,7 +80,7 @@ public class OvertimeSynchronisationTask implements Runnable {
             }
             overtime -= wt.getBreakTime();
             DayOfWeek sDay = wt.getStartTime().getDayOfWeek();
-            for (SollZeiten sz : sollZeiten) {
+            for (SollZeit sz : sollZeiten) {
                 if (sz.getDay().equals(sDay)) {
                     overtime -= sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
                 }
@@ -105,7 +105,7 @@ public class OvertimeSynchronisationTask implements Runnable {
                     int holidayLength = (a.getEndTime().getDayOfYear() - a.getStartTime().getDayOfYear() + 1);
                     DayOfWeek hDay = a.getStartTime().getDayOfWeek();
                     for (int i = 0; i < holidayLength; i++, hDay.plus(1)) {
-                        for (SollZeiten sz : sollZeiten) {
+                        for (SollZeit sz : sollZeiten) {
                             if (sz.getDay().equals(hDay)) {
                                 int diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
                                 if (diff > 6 * 60) {
@@ -124,7 +124,7 @@ public class OvertimeSynchronisationTask implements Runnable {
                     int dayNum = a.getEndTime().getDayOfYear() - a.getStartTime().getDayOfYear() + 1;
                     DayOfWeek sDay = a.getStartTime().getDayOfWeek();
                     for (int i = 0; i < dayNum; i++, sDay.plus(1)) {
-                        for (SollZeiten sz : sollZeiten) {
+                        for (SollZeit sz : sollZeiten) {
                             if (sz.getDay().equals(sDay)) {
                                 int diff;
                                 if (i == 0 || i == (dayNum - 1)) {

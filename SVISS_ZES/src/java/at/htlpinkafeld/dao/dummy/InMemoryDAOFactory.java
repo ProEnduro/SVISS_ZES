@@ -11,6 +11,7 @@ import at.htlpinkafeld.dao.interf.Absence_DAO;
 import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
 import at.htlpinkafeld.dao.interf.Holiday_DAO;
 import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
+import at.htlpinkafeld.dao.interf.UserHistory_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.dao.interf.WorkTime_DAO;
 
@@ -27,6 +28,7 @@ public class InMemoryDAOFactory extends DAOFactory {
     private final AbsenceType_DAO absenceType_DAO;
     private final Absence_DAO absence_DAO;
     private final Holiday_DAO holiday_DAO;
+    private final UserHistory_DAO userHistory_DAO;
 
     public InMemoryDAOFactory() {
         user_DAO = new User_InMemoryDAO();
@@ -36,6 +38,7 @@ public class InMemoryDAOFactory extends DAOFactory {
         absenceType_DAO = new AbsenceType_InMemoryDAO();
         absence_DAO = new Absence_InMemoryDAO();
         holiday_DAO = new Holiday_InMemoryDAO();
+        userHistory_DAO= new UserHistory_InMemoryDAO();
     }
 
     @Override
@@ -71,6 +74,11 @@ public class InMemoryDAOFactory extends DAOFactory {
     @Override
     public Holiday_DAO getHolidayDAO() {
         return holiday_DAO;
+    }
+
+    @Override
+    public UserHistory_DAO getUserHistoryDAO() {
+        return userHistory_DAO;
     }
 
 }

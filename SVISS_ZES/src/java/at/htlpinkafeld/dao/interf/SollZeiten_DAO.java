@@ -5,15 +5,18 @@
  */
 package at.htlpinkafeld.dao.interf;
 
-import at.htlpinkafeld.pojo.SollZeiten;
+import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
+import java.time.DayOfWeek;
 import java.util.List;
 
 /**
  *
  * @author Martin Six
  */
-public interface SollZeiten_DAO extends Base_DAO<SollZeiten> {
+public interface SollZeiten_DAO extends Base_DAO<SollZeit> {
 
-    public abstract List<SollZeiten> getSollZeitenByUser(User u);
+    public abstract List<SollZeit> getSollZeitenByUser(User u);
+    
+    public abstract SollZeit getSollZeitenByUser_DayOfWeek(User u, DayOfWeek d);
 }
