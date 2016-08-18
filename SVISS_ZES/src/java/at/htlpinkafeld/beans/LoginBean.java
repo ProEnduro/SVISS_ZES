@@ -60,6 +60,13 @@ public class LoginBean {
         User_DAO user_dao = DAOFactory.getDAOFactory().getUserDAO();
 
         User u = user_dao.getUserByUsername(userString);
+        
+        if(u == null){
+            FacesContext context = FacesContext.getCurrentInstance();
+            context.addMessage(null, new FacesMessage("Invalid User!"));
+            
+            return "failure";
+        }
 
         this.user = u;
 
@@ -81,16 +88,13 @@ public class LoginBean {
             boolean reader = user.getAccessLevel().getAccessLevelID() == 3;
 
             if (reader) {
-                scheduleView.loadAllTimes(null);
-                return "success_reader";
+                return scheduleView.loadAllTimes();
             }
-
-            System.out.println(pw + "   " + pw.length());
             this.pw = "";
             this.user = null;
             this.userString = "";
             //          setTheme();
-            scheduleView.reloadAbwesenheiten(null);
+            scheduleView.reloadAbwesenheiten();
 
             return "success";
         }
@@ -98,10 +102,6 @@ public class LoginBean {
         if (user == null || (user.getPass().equals(this.pw)) == false) {
             FacesContext context = FacesContext.getCurrentInstance();
             context.addMessage(null, new FacesMessage("Invalid Password!"));
-        }
-        if (user == null || (user.getUsername().contentEquals(this.userString)) == false) {
-            FacesContext context = FacesContext.getCurrentInstance();
-            context.addMessage(null, new FacesMessage("Invalid User!"));
         }
         return "failure";
     }

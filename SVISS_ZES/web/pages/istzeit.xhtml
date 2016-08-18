@@ -13,6 +13,9 @@ and open the template in the editor.
                     xmlns="http://www.w3.org/1999/xhtml"
                     xmlns:ui="http://java.sun.com/jsf/facelets">
 
+
+        <ui:param name="currentIndex" value="0" />
+
         <ui:define name="content">
             <h:form>
                 <h1 align="center">Ist-Zeiten</h1>
@@ -136,7 +139,7 @@ and open the template in the editor.
                         <p:outputLabel for="to" value="To:" />
                         <p:calendar id="to" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd.MM.yyyy HH:mm" showOn="button" mask="true"
                                     mindate="#{scheduleView.startDateToday}" maxdate="#{scheduleView.endDateToday}" readonlyInput="true">
-                            
+
                             <p:ajax event="dateSelect" process="to" update="breaktime" partialSubmit="true"/>
                             <p:ajax event="valueChange" process="to" update="breaktime" partialSubmit="true"/>
                         </p:calendar>
@@ -175,7 +178,7 @@ and open the template in the editor.
                     </h:panelGrid>
                 </p:dialog> 
             </h:form>
-            
+
             <h:form id="feiertagDialogForm">
 
                 <p:dialog id="feiertagDialogID" widgetVar="feiertagDialog" header="Feiertag Details" showEffect="clip" hideEffect="clip" closeOnEscape="true">

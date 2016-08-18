@@ -13,6 +13,8 @@ and open the template in the editor.
                 xmlns:p="http://primefaces.org/ui">
 
 
+    <ui:param name="currentIndex" value="2" />
+
     <ui:define name="content">
 
         <style>
@@ -22,6 +24,7 @@ and open the template in the editor.
 
         </style>
 
+        <h1 align="center">Accountverwaltung</h1>
 
         <p:growl id="growl" showDetail="true" life="5000" autoUpdate="true"/>
         <p:panelGrid  style="border-color: #9999ff; border-style: double; margin: 0 auto; margin-bottom: 0.5%; margin-top: 2%">
@@ -78,6 +81,7 @@ and open the template in the editor.
 
                         </p:panelGrid>
                         <p:remoteCommand update="usertable" action="#{benutzerkontoBean.onLoad}" autoRun="true"/>
+
                     </h:form>
 
                 </p:column>

@@ -64,9 +64,11 @@ public class AuswertungsBean {
         currentUser = scheduleView.getCurrentUser();
     }
 
-    public void auswerten(ActionEvent e) {
+    public String auswerten() {
         reloadCurrentUser();
         this.createPieModels();
+        
+        return "/pages/auswertung.xhtml";
     }
 
     public boolean isNotUser() {

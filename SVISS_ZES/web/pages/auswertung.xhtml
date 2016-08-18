@@ -13,6 +13,8 @@ and open the template in the editor.
                 xmlns:p="http://primefaces.org/ui">
 
 
+    <ui:param name="currentIndex" value="8" />
+
     <ui:define name="content">
 
         <style>
@@ -25,45 +27,47 @@ and open the template in the editor.
 
         <h:body>
             <h:form id="hform">
-                <p:selectOneMenu id="selectUserID" value="#{auswertungsBean.selectedUser}" rendered="#{auswertungsBean.notUser}">
-                    <f:selectItems value="#{auswertungsBean.allUser}"/>
-                </p:selectOneMenu>
-                <p:commandButton value="load" actionListener="#{auswertungsBean.auswerten}" update="pie1"/>
-                <p:commandButton ajax="false" value="export" actionListener="#{auswertungsBean.renderPicture}" onclick="exportChart();
-                        PrimeFaces.monitorDownload(start, stop);">
-                    <p:fileDownload value="#{auswertungsBean.file}"/>
-                </p:commandButton>
-                <h:inputHidden id="img" value="#{auswertungsBean.image}"/>
+                <p:panel>
+                    <h1 align="center">Auswertung</h1>
+                    <p:selectOneMenu id="selectUserID" value="#{auswertungsBean.selectedUser}" rendered="#{auswertungsBean.notUser}">
+                        <f:selectItems value="#{auswertungsBean.allUser}"/>
+                    </p:selectOneMenu>
+                    <p:commandButton value="load" actionListener="#{auswertungsBean.auswerten}" update="pie1"/>
+                    <p:commandButton ajax="false" value="export" actionListener="#{auswertungsBean.renderPicture}" onclick="exportChart();
+                            PrimeFaces.monitorDownload(start, stop);">
+                        <p:fileDownload value="#{auswertungsBean.file}"/>
+                    </p:commandButton>
+                    <h:inputHidden id="img" value="#{auswertungsBean.image}"/>
 
 
-                <p:chart id="pie1" widgetVar="chart" type="pie" model="#{auswertungsBean.pieModel1}" style="width:612px;height:792px"/>
+                    <p:chart id="pie1" widgetVar="chart" type="pie" model="#{auswertungsBean.pieModel1}" style="width:612px;height:792px"/>
 
 
-                <script type="text/javascript">
-                    function exportChart() {
-                        // exportAsImage() will return a base64 png encoded string
-                        var img = PF('chart').exportAsImage();
-                        document.getElementById('hform:img').value = img.src;
-                    }
+                    <script type="text/javascript">
+                        function exportChart() {
+                            // exportAsImage() will return a base64 png encoded string
+                            var img = PF('chart').exportAsImage();
+                            document.getElementById('hform:img').value = img.src;
+                        }
 
-                    function pieExtender() {
-                        this.cfg.highlighter = {
-                            show: true,
-                            tooltipLocation: 'n',
-                            useAxesFormatters: false,
-                            formatString: '%s = %1.2f'
-                        };
-                    }
+                        function pieExtender() {
+                            this.cfg.highlighter = {
+                                show: true,
+                                tooltipLocation: 'n',
+                                useAxesFormatters: false,
+                                formatString: '%s = %1.2f'
+                            };
+                        }
 
-                    function start() {
-                        PF('statusDialog').show();
-                    }
+                        function start() {
+                            PF('statusDialog').show();
+                        }
 
-                    function stop() {
-                        PF('statusDialog').hide();
-                    }
-                </script>
-
+                        function stop() {
+                            PF('statusDialog').hide();
+                        }
+                    </script>
+                </p:panel>
             </h:form>
         </h:body>
     </ui:define>

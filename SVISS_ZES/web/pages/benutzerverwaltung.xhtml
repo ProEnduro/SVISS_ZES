@@ -14,63 +14,70 @@ and open the template in the editor.
 
 
 
+    <ui:param name="currentIndex" value="3" />
+
     <ui:define name="content">
         <h:form id="tableForm">
-            <p:dataTable id="usertable" var="user" value="#{benutzerverwaltungsBean.userList}" style="margin-top: 1.5%" >
+            <p:panel>
+                <h1 align="center">Benutzerverwaltung</h1>
 
-                <p:column headerText="Username" sortBy="#{user.username}" filterBy="#{user.username}">
-                    <h:outputText value="#{user.username}"/>
-                </p:column>
 
-                <p:column headerText="Name" sortBy="#{user.persName}" filterBy="#{user.persName}">
-                    <h:outputText value="#{user.persName}"/>
-                </p:column>
+                <p:dataTable id="usertable" var="user" value="#{benutzerverwaltungsBean.userList}" style="margin-top: 1.5%" >
 
-                <p:column headerText="Berechtigungsstufe"  sortBy="#{user.accessLevel.accessLevelName}" filterBy="#{user.accessLevel.accessLevelName}">
-                    <h:outputText value="#{user.accessLevel}">
-                        <f:converter converterId="accesslevelconv"/>
-                    </h:outputText>
-                </p:column>
+                    <p:column headerText="Username" sortBy="#{user.username}" filterBy="#{user.username}">
+                        <h:outputText value="#{user.username}"/>
+                    </p:column>
 
-                <p:column headerText="E-Mail-Adresse"  sortBy="#{user.email}" filterBy="#{user.email}">
-                    <h:outputText value="#{user.email}"/>
-                </p:column>
+                    <p:column headerText="Name" sortBy="#{user.persName}" filterBy="#{user.persName}">
+                        <h:outputText value="#{user.persName}"/>
+                    </p:column>
 
-                <p:column headerText="Overtime Left"  sortBy="#{user.overTimeLeft}">
-                    <h:outputText value="#{user.overTimeLeft}">
-                        <f:converter converterId="minuteHourConverter"/>
-                    </h:outputText>
-                </p:column>
+                    <p:column headerText="Berechtigungsstufe"  sortBy="#{user.accessLevel.accessLevelName}" filterBy="#{user.accessLevel.accessLevelName}">
+                        <h:outputText value="#{user.accessLevel}">
+                            <f:converter converterId="accesslevelconv"/>
+                        </h:outputText>
+                    </p:column>
 
-                <p:column headerText="Vacation Left"  sortBy="#{user.vacationLeft}">
-                    <h:outputText value="#{user.vacationLeft}"/>
-                </p:column>
+                    <p:column headerText="E-Mail-Adresse"  sortBy="#{user.email}" filterBy="#{user.email}">
+                        <h:outputText value="#{user.email}"/>
+                    </p:column>
 
-                <p:column headerText="WeekTime"  sortBy="#{user.weekTime}" filterBy="#{user.weekTime}">
-                    <h:outputText value="#{user.weekTime}"/>
-                </p:column>
+                    <p:column headerText="Overtime Left"  sortBy="#{user.overTimeLeft}">
+                        <h:outputText value="#{user.overTimeLeft}">
+                            <f:converter converterId="minuteHourConverter"/>
+                        </h:outputText>
+                    </p:column>
 
-                <p:column headerText="Enabled"  sortBy="#{user.disabled}" filterBy="#{user.disabled}">
-                    <h:outputText value="#{user.disabledString}"/>
-                </p:column>
+                    <p:column headerText="Vacation Left"  sortBy="#{user.vacationLeft}">
+                        <h:outputText value="#{user.vacationLeft}"/>
+                    </p:column>
 
-                <p:column headerText="Freigeber ändern">
-                    <p:commandButton id="editApproverBut" value="edit" actionListener="#{benutzerverwaltungsBean.editApprover}" update=":approverForm" oncomplete="PF('approverDialog').show();">
-                        <f:attribute name="user" value="#{user}"/>
-                    </p:commandButton>
-                </p:column>
+                    <p:column headerText="WeekTime"  sortBy="#{user.weekTime}" filterBy="#{user.weekTime}">
+                        <h:outputText value="#{user.weekTime}"/>
+                    </p:column>
 
-                <p:column headerText="User ändern">
-                    <p:commandButton id="editUserBut" value="edit User" actionListener="#{benutzerverwaltungsBean.editUser}" update=":userDialogForm:userDlgGrid" oncomplete="PF('userdlg').show();">
-                        <f:attribute name="user" value="#{user}"/>
-                    </p:commandButton>
-                </p:column>
+                    <p:column headerText="Enabled"  sortBy="#{user.disabled}" filterBy="#{user.disabled}">
+                        <h:outputText value="#{user.disabledString}"/>
+                    </p:column>
 
-            </p:dataTable>
+                    <p:column headerText="Freigeber ändern">
+                        <p:commandButton id="editApproverBut" value="edit" actionListener="#{benutzerverwaltungsBean.editApprover}" update=":approverForm" oncomplete="PF('approverDialog').show();">
+                            <f:attribute name="user" value="#{user}"/>
+                        </p:commandButton>
+                    </p:column>
 
-            <p:commandButton id="newUserBut" value="New User" action="#{benutzerverwaltungsBean.newUser}" update=":userDialogForm:userDlgGrid :weekDialogForm:weekDlgPanel"  oncomplete="PF('userdlg').show();"/>
+                    <p:column headerText="User ändern">
+                        <p:commandButton id="editUserBut" value="edit User" actionListener="#{benutzerverwaltungsBean.editUser}" update=":userDialogForm:userDlgGrid" oncomplete="PF('userdlg').show();">
+                            <f:attribute name="user" value="#{user}"/>
+                        </p:commandButton>
+                    </p:column>
 
-            <p:remoteCommand update="usertable" action="#{benutzerverwaltungsBean.onLoad}" autoRun="true"/>
+                </p:dataTable>
+
+                <p:commandButton id="newUserBut" value="New User" action="#{benutzerverwaltungsBean.newUser}" update=":userDialogForm:userDlgGrid :weekDialogForm:weekDlgPanel"  oncomplete="PF('userdlg').show();"/>
+
+                <p:remoteCommand update="usertable" action="#{benutzerverwaltungsBean.onLoad}" autoRun="true"/>
+            </p:panel>
         </h:form>
 
         <p:dialog  closeOnEscape="true" header="User Dialog" widgetVar="userdlg" modal="true" resizable="false">

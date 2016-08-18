@@ -82,7 +82,7 @@ public class ScheduleView implements Serializable {
         allTimesModel = new AllTimeLazyScheduleModel();
         alleAbwesenheitenModel = new AlleAbwesenheitenLazyScheduleModel();
 
-        this.reloadAbwesenheiten(null);
+        this.reloadAbwesenheiten();
     }
 
     public int getBreaktime() {
@@ -338,7 +338,7 @@ public class ScheduleView implements Serializable {
 
         }
 
-        this.reloadAcknowledgements(actionEvent);
+        this.reloadAcknowledgements();
 
         absenceEvent = new AbsenceEvent();
     }
@@ -378,8 +378,7 @@ public class ScheduleView implements Serializable {
         this.absenceEvent = event;
     }
 
-    public void reloadAcknowledgements(ActionEvent event) {
-
+    public String reloadAcknowledgements() {
         this.selectedUser = "All";
         this.allUsers = new ArrayList<>();
 
@@ -388,14 +387,18 @@ public class ScheduleView implements Serializable {
         for (User u : BenutzerverwaltungService.getUserList()) {
             allUsers.add(u.getUsername());
         }
+        
+        return "/pages/absence_acknowledgement.xhtml?faces-redirect=true";
     }
 
-    public void reloadAbwesenheiten(ActionEvent event) {
+    public String reloadAbwesenheiten() {
 
         this.currentUser = BenutzerverwaltungService.getUser(currentUser.getUserNr());
 
         verbleibend = currentUser.getWeekTime();
         overtimeleft = currentUser.getOverTimeLeft();
+        
+        return "/pages/istzeit.xhtml?faces-redirect=true";
     }
 
     public ScheduleModel getAlleAbwesenheitenModel() {
@@ -510,7 +513,7 @@ public class ScheduleView implements Serializable {
         this.overtimeleft = overtimeleft;
     }
 
-    public void loadAllTimes(ActionEvent ev) {
+    public String loadAllTimes() {
         this.selectedUser = "All";
         this.allUsers = new ArrayList<>();
 
@@ -519,6 +522,8 @@ public class ScheduleView implements Serializable {
         for (User u : BenutzerverwaltungService.getUserList()) {
             allUsers.add(u.getUsername());
         }
+        
+        return "/pages/allTime.xhtml?faces-redirect=true";
     }
 
     public void loadAllTimesByUser(ActionEvent ev) {

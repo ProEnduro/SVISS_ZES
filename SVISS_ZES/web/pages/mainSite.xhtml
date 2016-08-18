@@ -9,7 +9,8 @@ and open the template in the editor.
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
         <title>sviss ZES</title>
         <link rel="shortcut icon" type="image/x-icon" href="#{resource['images/faviconSV.ico']}"/>
@@ -17,24 +18,45 @@ and open the template in the editor.
     <h:body>
         <h:form>
 
-            <h:panelGrid id="panGridMainMenu" columns="#{masterBean.columns}" width="100%" style="margin-top: 1%">
+            <p:menubar id="menubar" styleClass="menu">
+                <p:menuitem value="Ist-Zeiten" rendered="#{masterBean.istZeitenEnabled}" action="#{scheduleView.reloadAbwesenheiten}" style="white-space: nowrap"/>
+                <p:menuitem value="Abwesenheiten eintragen" url="abwesenheit.xhtml" rendered="#{masterBean.abwesenheitenEnabled}" style="white-space: nowrap"/>
+                <p:menuitem value="Accountverwaltung" url="benutzerkonto.xhtml" rendered="#{masterBean.accountVerwaltungEnabled}" style="white-space: nowrap"/>
+                <p:menuitem value="Benutzerverwaltung" url="benutzerverwaltung.xhtml" rendered="#{masterBean.benutzerverwaltungEnabled}" style="white-space: nowrap"/>
+                <p:menuitem value="Acknowledgement" rendered="#{masterBean.acknowledgementEnabled}" action="#{scheduleView.reloadAcknowledgements}" style="white-space: nowrap"/>
+                <p:menuitem value="Feiertage" url="holidays.xhtml" rendered="#{masterBean.feiertageEintragenEnabled}" style="white-space: nowrap"/>
+                <p:menuitem value="Alle Zeiten" rendered="#{masterBean.alleZeitenEnabled}" action="#{scheduleView.loadAllTimes}" style="white-space: nowrap"/>
+                <p:menuitem value="Alle Abwesenheiten" url="view_all_abwesenheiten.xhtml" rendered="#{masterBean.alleAbwesenheitenEnabled}" style="white-space: nowrap"/>
+                <p:menuitem value="Auswertung" rendered="#{masterBean.auswertungEnabled}" action="#{auswertungsBean.auswerten}" style="white-space: nowrap"/>
+                <p:menuitem value="Logout" action="#{masterBean.logout}" style="white-space: nowrap; background-color: #cc5f59"/>
+            </p:menubar>
 
-                <p:commandButton value="Ist-Zeiten" rendered="#{masterBean.istZeitenEnabled}" icon="icon-calendar-2" action="istzeit.xhtml?faces-redirect=true" style=" background-color: royalblue; width:100%"  actionListener="#{scheduleView.reloadAbwesenheiten}"/>  
-                <p:commandButton value="Abwesenheiten eintragen" rendered="#{masterBean.abwesenheitenEnabled}" icon="icon-calendar" action="abwesenheit.xhtml?faces-redirect=true" style="background-color: royalblue; width:100%" actionListener="#{scheduleView.reloadAbwesenheiten}"/>
-                <p:commandButton value="Account Verwaltung" rendered="#{masterBean.accountVerwaltungEnabled}" icon="ui-icon-user" action="benutzerkonto.xhtml?faces-redirect=true" style="background-color: royalblue; width:100%"/>
-                <p:commandButton value="Benutzerverwaltung" rendered="#{masterBean.benutzerverwaltungEnabled}" icon="ui-icon-users" action="benutzerverwaltung.xhtml?faces-redirect=true" style=" background-color: royalblue; width:100%"/>
-                <p:commandButton value="Acknowledgement" rendered="#{masterBean.acknowledgementEnabled}" action="absence_acknowledgement.xhtml?faces-redirect=true" style="background-color: royalblue; width:100%" actionListener="#{scheduleView.reloadAcknowledgements}" icon="icon-check"/>
+            <style type="text/css">
+                div.menu{
+                    text-align: center;
+                    width: 100%;
+                }
+                .menu div.ui-menubar {
+                    text-align: center;
+                }
+                .menu .ui-menu-list{
+                    width:100%;
+                    display: inline-flex;
+                }
+                div.menu>ul.ui-menu-list>li>a{
+                    width: 100%;
+                }
+                div.menu>ul.ui-menu-list>li{
+                    width: 100%;
+                }
+                .ui-menuitem-text{
+                    float: none!important;
+                }
 
-                <p:commandButton value="Feiertage eintragen" rendered="#{masterBean.feiertageEintragenEnabled}" action="holidays.xhtml?faces-redirect=true" style="background-color: royalblue; width:100%"/>
-                <p:commandButton value="Alle Zeiten" rendered="#{masterBean.alleZeitenEnabled}" action="allTime.xhtml?faces-redirect=true" style="background-color: royalblue; width:100%" actionListener="#{scheduleView.loadAllTimes}"/>
-                <p:commandButton value="Alle Abwesenheiten" rendered="#{masterBean.alleAbwesenheitenEnabled}" action="view_all_abwesenheiten.xhtml?faces-redirect=true" style="background-color: royalblue; width:100%" icon="icon-left-circled"/>
-                
-                <p:commandButton value="Auswertung" rendered="#{masterBean.auswertungEnabled}" actionListener="#{auswertungsBean.auswerten}" action="auswertung.xhtml?faces-redirect=true" style="background-color: royalblue; width:100%"/>
+            </style>
 
-                <p:commandButton value="Logout" action="#{masterBean.logout}" style="background-color: #cc5f59 ; width:100%" icon="icon-logout"/> 
-            </h:panelGrid>
 
-            <p:sticky target="panGridMainMenu"/>
+            <p:sticky target="menubar"/>
         </h:form>
 
         <ui:insert name="content">
