@@ -8,6 +8,7 @@ package at.htlpinkafeld.pojo;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 /**
@@ -142,6 +143,15 @@ public class WorkTime implements Serializable {
 
     public void setEndComment(String endComment) {
         this.endComment = endComment;
+    }
+
+    public int getOvertimeAfter19() {
+        long ot = LocalTime.of(19, 0).until(endTime, ChronoUnit.MINUTES);
+        if (ot >= 0) {
+            return (int) ot;
+        } else {
+            return 0;
+        }
     }
 
     @Override
