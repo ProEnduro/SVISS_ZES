@@ -206,5 +206,60 @@ public class EmailService {
 
         sendEmail(subject, body, null, userL);
     }
+    
+    public static void sendReminderAcknowledgementEmail(Absence a, List<User> approver) {
+        String subject = "";
+        String body = "";
+        User sender = a.getUser();
+        switch (a.getAbsenceType().getAbsenceName()) {
+            case "medical leave":
+                subject = "Re: Erinnerung zum Freigeben des Krankenstandes von : " + sender.getPersName();
+                body = "Der Krankenstand von " + sender.getPersName() + "von " + a.getStartTime() + " -- " + a.getEndTime() + " muss noch freigegeben werden!";
+                break;
+            case "holiday":
+                subject = "Re: Erinnerung zum Freigeben des Urlaubes von : " + sender.getPersName();
+                body = "Der Urlaub von " + sender.getPersName() + "von " + a.getStartTime() + " -- " + a.getEndTime() + " muss noch freigegeben werden!";
+                break;
+            case "time compensation":
+                subject = "Re: Erinnerung zum Freigeben des Zeitausgleiches von : " + sender.getPersName();
+                body = "Der Zeitausgleich von " + sender.getPersName() + "von " + a.getStartTime() + " -- " + a.getEndTime() + " muss noch freigegeben werden!";
+                break;
+            case "business-related absence":
+                subject = " ";
+                break;
+            default:
+                break;
+        }
+        sendEmail(subject, body, null, approver);
+    }
+    
+    
+        public static void sendAbsenceDeletedEmail(Absence a, List<User> approver) {
+        String subject = "";
+        String body = "";
+        User sender = a.getUser();
+        switch (a.getAbsenceType().getAbsenceName()) {
+            case "medical leave":
+                subject = "Re: Re: Löschung des Krankenstandes von : " + sender.getPersName();
+                body = "Der Krankenstand von " + sender.getPersName() + "von " + a.getStartTime() + " -- " + a.getEndTime() + " wurde gelöscht!";
+                break;
+            case "holiday":
+                subject = "Re: Re: Löschung des Urlaubes von : " + sender.getPersName();
+                body = "Der Urlaub von " + sender.getPersName() + "von " + a.getStartTime() + " -- " + a.getEndTime() + " wurde gelöscht!";
+                break;
+            case "time compensation":
+                subject = "Re: Re: Löschung des Zeitausgleiches von : " + sender.getPersName();
+                body = "Der Zeitausgleich von " + sender.getPersName() + "von " + a.getStartTime() + " -- " + a.getEndTime() + " wurde gelöscht!";
+                break;
+            case "business-related absence":
+                subject = " ";
+                break;
+            default:
+                break;
+        }
+        sendEmail(subject, body, null, approver);
+    }
 
 }
+
+
