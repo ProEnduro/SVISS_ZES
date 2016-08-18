@@ -68,7 +68,7 @@ public class AuswertungsBean {
         reloadCurrentUser();
         this.createPieModels();
         
-        return "/pages/auswertung.xhtml";
+        return "/pages/auswertungspages/overview.xhtml?faces-redirect=true";
     }
 
     public boolean isNotUser() {

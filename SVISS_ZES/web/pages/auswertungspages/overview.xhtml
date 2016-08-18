@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<ui:composition template="/pages/auswertung.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="currentAuswertungsIndex" value="0" />
+
+    <ui:define name="auswertung">
+
+        <style>
+            .ui-panelgrid>*>tr, .ui-panelgrid .ui-panelgrid-cell {
+                border: none;
+            }
+
+        </style>
+
+
+        <h:body>
+            <h:form id="hform">
+                <p:panel>
+                    <h1 align="center">Auswertung: Overview</h1>
+                    <p:panelGrid columns="3" style="border-style: none">
+                        <p:selectOneMenu id="selectUserID" value="#{auswertungsBean.selectedUser}" rendered="#{auswertungsBean.notUser}">
+                            <f:selectItems value="#{auswertungsBean.allUser}"/>
+                        </p:selectOneMenu>
+                        <p:commandButton value="load" actionListener="#{auswertungsBean.auswerten}" update="pie1"/>
+                        <p:commandButton ajax="false" value="export" actionListener="#{auswertungsBean.renderPicture}" onclick="exportChart();
+                                PrimeFaces.monitorDownload(start, stop);">
+                            <p:fileDownload value="#{auswertungsBean.file}"/>
+                        </p:commandButton>
+
+                    </p:panelGrid>
+                    <h:inputHidden id="img" value="#{auswertungsBean.image}"/>
+
+
+                    <p:chart id="pie1" widgetVar="chart" type="pie" model="#{auswertungsBean.pieModel1}" style="width:612px;height:792px"/>
+
+
+                    <script type="text/javascript">
+                        function exportChart() {
+                            // exportAsImage() will return a base64 png encoded string
+                            var img = PF('chart').exportAsImage();
+                            document.getElementById('hform:img').value = img.src;
+                        }
+
+                        function pieExtender() {
+                            this.cfg.highlighter = {
+                                show: true,
+                                tooltipLocation: 'n',
+                                useAxesFormatters: false,
+                                formatString: '%s = %1.2f'
+                            };
+                        }
+
+                        function start() {
+                            PF('statusDialog').show();
+                        }
+
+                        function stop() {
+                            PF('statusDialog').hide();
+                        }
+                    </script>
+                </p:panel>
+            </h:form>
+        </h:body>
+
+
+    </ui:define>
+
+
+
+</ui:composition>

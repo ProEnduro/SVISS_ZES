@@ -17,58 +17,15 @@ and open the template in the editor.
 
     <ui:define name="content">
 
-        <style>
-            .ui-panelgrid>*>tr, .ui-panelgrid .ui-panelgrid-cell {
-                border: none;
-            }
-
-        </style>
-
-
-        <h:body>
-            <h:form id="hform">
-                <p:panel>
-                    <h1 align="center">Auswertung</h1>
-                    <p:selectOneMenu id="selectUserID" value="#{auswertungsBean.selectedUser}" rendered="#{auswertungsBean.notUser}">
-                        <f:selectItems value="#{auswertungsBean.allUser}"/>
-                    </p:selectOneMenu>
-                    <p:commandButton value="load" actionListener="#{auswertungsBean.auswerten}" update="pie1"/>
-                    <p:commandButton ajax="false" value="export" actionListener="#{auswertungsBean.renderPicture}" onclick="exportChart();
-                            PrimeFaces.monitorDownload(start, stop);">
-                        <p:fileDownload value="#{auswertungsBean.file}"/>
-                    </p:commandButton>
-                    <h:inputHidden id="img" value="#{auswertungsBean.image}"/>
-
-
-                    <p:chart id="pie1" widgetVar="chart" type="pie" model="#{auswertungsBean.pieModel1}" style="width:612px;height:792px"/>
-
-
-                    <script type="text/javascript">
-                        function exportChart() {
-                            // exportAsImage() will return a base64 png encoded string
-                            var img = PF('chart').exportAsImage();
-                            document.getElementById('hform:img').value = img.src;
-                        }
-
-                        function pieExtender() {
-                            this.cfg.highlighter = {
-                                show: true,
-                                tooltipLocation: 'n',
-                                useAxesFormatters: false,
-                                formatString: '%s = %1.2f'
-                            };
-                        }
-
-                        function start() {
-                            PF('statusDialog').show();
-                        }
-
-                        function stop() {
-                            PF('statusDialog').hide();
-                        }
-                    </script>
-                </p:panel>
-            </h:form>
-        </h:body>
+        <p:tabMenu activeIndex="#{currentAuswertungsIndex}">
+            <p:menuitem value="Overview" url="overview.xhtml"/>
+            <p:menuitem value="Alle User" url="alleUser.xhtml"/>
+            <p:menuitem value="User Details" url="userDetails.xhtml"/>
+            <p:menuitem value="Alle Abwesenheiten" url="alleAbwesenheiten.xhtml"/>
+        </p:tabMenu>
+        
+        
+        <ui:insert name="auswertung"/>
+        
     </ui:define>
 </ui:composition>
