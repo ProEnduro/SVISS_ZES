@@ -39,24 +39,30 @@
 
                     <p:commandButton style=" background-color: #A9E2F3; border-style: hidden" id="login" value="Login" action="#{loginBean.login}" />
 
-                    <p:messages autoUpdate="true"/>
-                    <p:commandButton style="background-color: #ff2d2d; border-style: hidden" id="forgotPassword" value="Passwort vergessen?" action="nope"/>
+                    <p:messages autoUpdate="true" globalOnly="true"/>
+                    <p:commandButton style="background-color: #ff2d2d; border-style: hidden" id="forgotPassword" value="Passwort vergessen?" onclick="PF('passwResetDialog').show();"/>
 
                 </p:panelGrid>
-
-
-
             </f:view>
         </h:form>
-        <p:dialog widgetVar="passwResetDialog">
-            <h:form>
-                <p:panelGrid columns="2">
+
+        <p:dialog widgetVar="passwResetDialog" resizable="false" closeOnEscape="true" modal="true" dynamic="true" header="Passwort Vergessen">
+            <h:form id="passwordResetForm">
+                <p:panelGrid columns="2" >
                     <p:outputLabel for="inputIdentification" value="Benutzername oder E-Mail eingeben:"/>
-                    <p:inputText id="inputIdentification" value=""/>
-                    <p:commandButton value="neues Passwort anfragen"/>
+                    <p:inputText id="inputIdentification" value="#{loginBean.emailOrUsername}" size="32"/>
+                    <p:commandButton value="neues Passwort anfragen" action="#{loginBean.sendPWResetRequest}" update="pwResetId" />
+                    <p:message  id="pwResetId" for="passwordResetForm" />
                 </p:panelGrid>
             </h:form>
         </p:dialog>
+
+        <style>
+            .ui-panelgrid>*>tr, .ui-panelgrid .ui-panelgrid-cell {
+                border: none;
+            }
+
+        </style>
 
     </h:body>
 </html>

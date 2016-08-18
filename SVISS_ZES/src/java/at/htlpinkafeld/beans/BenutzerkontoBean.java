@@ -24,7 +24,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.validator.FacesValidator;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.DefaultScheduleModel;
@@ -38,17 +37,16 @@ import org.primefaces.model.ScheduleModel;
 @FacesValidator("oldPasswordValidator")
 public class BenutzerkontoBean implements Validator {
 
-    String themeTest = "1";
+    private FacesContext context;
+    private MasterBean masterBean;
 
-    FacesContext context = FacesContext.getCurrentInstance();
-    MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
-
-    ScheduleModel sollzeitModel;
-    User user;
-    LocalDate pointDate;
-    ScheduleEvent curEvent;
+    private ScheduleModel sollzeitModel;
+    private User user;
+    private LocalDate pointDate;
+    private ScheduleEvent curEvent;
 
     private String newPw = "";
+    private String newPw2 = "";
 
     @PostConstruct
     public void init() {
@@ -56,6 +54,8 @@ public class BenutzerkontoBean implements Validator {
     }
 
     public BenutzerkontoBean() {
+        context = FacesContext.getCurrentInstance();
+        MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
         user = masterBean.getUser();
     }
 
@@ -74,7 +74,7 @@ public class BenutzerkontoBean implements Validator {
 
     public void saveUser() {
         BenutzerverwaltungService.updateUser(user);
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("User gespeichert!", ""));
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("User gespeichert!"));
     }
 
     public String getNewPw() {
@@ -85,13 +85,30 @@ public class BenutzerkontoBean implements Validator {
         this.newPw = newPw;
     }
 
+    public String getNewPw2() {
+        return newPw2;
+    }
+
+    public void setNewPw2(String newPw2) {
+        this.newPw2 = newPw2;
+    }
+
     public void discardPasswordChanges() {
         newPw = "";
+        newPw2 = "";
     }
 
     public void savePassword() {
-        user.setPass(PasswordEncryptionService.digestPassword(newPw));
-        BenutzerverwaltungService.updateUser(user);
+        if (newPw.length() < 6) {
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Das Passwort muss mindestens 6 Zeichen beinhalten"));
+            FacesContext.getCurrentInstance().validationFailed();
+        } else if (!newPw.contentEquals(newPw2)) {
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Die neuen Passwörter stimmen nicht überein"));
+            FacesContext.getCurrentInstance().validationFailed();
+        } else {
+            user.setPass(PasswordEncryptionService.digestPassword(newPw));
+            BenutzerverwaltungService.updateUser(user);
+        }
     }
 
     public ScheduleModel getSollzeitModel() {
@@ -135,8 +152,8 @@ public class BenutzerkontoBean implements Validator {
 
     @Override
     public void validate(FacesContext fc, UIComponent uic, Object o) throws ValidatorException {
-        if (!o.toString().contentEquals(user.getPass())) {
-            throw new ValidatorException(new FacesMessage("Altes Passwort stimmt nicht", ""));
+        if (!PasswordEncryptionService.digestPassword(o.toString()).contentEquals(user.getPass())) {
+            throw new ValidatorException(new FacesMessage("Altes Passwort stimmt nicht"));
         }
     }
 }

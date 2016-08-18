@@ -41,11 +41,11 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
     public static final String WEEKTIME_COL = "WEEKTIME";
     public static final String DISABLED_COL = "DISABLED";
 
-    private static final String REL_USERNR_COL = USERNR_COL;
-    private static final String REL_APPROVER_COL = "APPROVERNR";
+    public static final String REL_USERNR_COL = USERNR_COL;
+    public static final String REL_APPROVER_COL = "APPROVERNR";
 
     public static final String TABLE_NAME = "User";
-    private static final String RELATION_TABLE_NAME = "ApproverUser";
+    public static final String RELATION_TABLE_NAME = "ApproverUser";
     public static final String PRIMARY_KEY = USERNR_COL;
     public static final String[] ALL_COLUMNS = {USERNR_COL, ACCESSLEVELID_COL, PERSNAME_COL, VACATIONLEFT_COL, OVERTIMELEFT_COL, USERNAME_COL, EMAIL_COL,
         HIREDATE_COL, PASSWORD_COL, WEEKTIME_COL, DISABLED_COL};

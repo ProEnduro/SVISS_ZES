@@ -121,7 +121,7 @@ public class LoginBean {
     public void sendPWResetRequest() {
         User u = null;
         if (emailOrUsername == null || emailOrUsername.isEmpty()) {
-            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Es muss etwas eingegeben werden!", ""));
+            FacesContext.getCurrentInstance().addMessage("passwordResetForm", new FacesMessage("Es muss etwas eingegeben werden!"));
         } else {
             if (emailOrUsername.contains("@")) {
                 u = BenutzerverwaltungService.getUserByEmail(emailOrUsername);
@@ -129,7 +129,7 @@ public class LoginBean {
                 u = BenutzerverwaltungService.getUserByUsername(emailOrUsername);
             }
             if (u == null) {
-                FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Es gibt keinen passenden User!", ""));
+                FacesContext.getCurrentInstance().addMessage("passwordResetForm", new FacesMessage("Es gibt keinen passenden User!"));
             } else {
                 EmailService.sendUserForgotPasswordEmail(user, BenutzerverwaltungService.getUserByAccessLevel(AccessRightsService.getAccessLevelFromName("admin")));
             }

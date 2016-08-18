@@ -26,7 +26,7 @@ and open the template in the editor.
 
         <h1 align="center">Accountverwaltung</h1>
 
-        <p:growl id="growl" showDetail="true" life="5000" autoUpdate="true"/>
+        <p:growl id="growl" life="5000" autoUpdate="true"/>
         <p:panelGrid  style="border-color: #9999ff; border-style: double; margin: 0 auto; margin-bottom: 0.5%; margin-top: 2%">
             <p:row>
                 <p:column>
@@ -122,14 +122,12 @@ and open the template in the editor.
                     </p:password>
 
                     <p:outputLabel for="newPw" value="Neues Passwort:" />
-                    <p:password id="newPw" value="#{benutzerkontoBean.newPw}" autocomplete="false" required="true" match="newPwConf">
-                        <f:validateLength minimum="6"/>
-                    </p:password>
+                    <p:password id="newPw" value="#{benutzerkontoBean.newPw}" autocomplete="false" required="true"/>
 
                     <p:outputLabel for="newPwConf" value="Neues Passwort bestätigen:" />
-                    <p:password id="newPwConf" value="#{benutzerkontoBean.newPw}" autocomplete="false"  required="true"/>
+                    <p:password id="newPwConf" value="#{benutzerkontoBean.newPw2}" autocomplete="false"  required="true"/>
 
-                    <p:commandButton value="User speichern" action="#{benutzerkontoBean.savePassword}"  update=":growl" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('passwordDialog').hide()"/>
+                    <p:commandButton value="User speichern" action="#{benutzerkontoBean.savePassword}" update=":growl" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('passwordDialog').hide()"/>
                     <p:commandButton value="Änderung verwerfen" action="#{benutzerkontoBean.discardPasswordChanges}" oncomplete="PF('passwordDialog').hide();" immediate="true"/>
                 </h:panelGrid>
             </h:form>

@@ -118,7 +118,7 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
     }
 
     @Override
-    public List<Absence> getAbsencesByAbsenceTypeAndUser(AbsenceType at, User u) {
+    public List<Absence> getAbsencesByAbsenceType_User(AbsenceType at, User u) {
         List<Absence> absences = new ArrayList<>();
 
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
@@ -156,7 +156,7 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
     }
 
     @Override
-    public List<Absence> getAbsencesByUserAndAcknowledgment(User u, boolean acknowledged) {
+    public List<Absence> getAbsencesByUser_Acknowledgment(User u, boolean acknowledged) {
         List<Absence> absences = new ArrayList<>();
 
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
@@ -190,7 +190,7 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
             stmt.setDate(5, startDate);
             stmt.setDate(6, endDate);
             ResultSet rs = stmt.executeQuery();
-            
+
             while (rs.next()) {
                 absences.add(getEntityFromResultSet(rs));
             }
@@ -203,12 +203,13 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
     }
 
     @Override
-    public List<Absence> getAbsencesByUserBetweenDates(User user, java.util.Date startDateU, java.util.Date endDateU) {
+    public List<Absence> getAbsencesByUser_BetweenDates(User user, java.util.Date startDateU, java.util.Date endDateU) {
         List<Absence> absences = new ArrayList<>();
         Date startDate = new Date(startDateU.getTime());
         Date endDate = new Date(endDateU.getTime());
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
-                PreparedStatement stmt = con.getConn().prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + user.getUserNr() + " AND (" + STARTTIME_COL + " >= ? AND " + STARTTIME_COL + " < ? OR "
+                PreparedStatement stmt = con.getConn().prepareStatement("SELECT * FROM " + TABLE_NAME
+                        + " WHERE " + USERNR_COL + " = " + user.getUserNr() + " AND (" + STARTTIME_COL + " >= ? AND " + STARTTIME_COL + " < ? OR "
                         + ENDTIME_COL + " >= ? AND " + ENDTIME_COL + " < ? OR " + STARTTIME_COL + " < ? AND " + ENDTIME_COL + " >= ?) " + SQL_ORDER_BY_LINE)) {
 
             stmt.setDate(1, startDate);
@@ -218,7 +219,66 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
             stmt.setDate(5, startDate);
             stmt.setDate(6, endDate);
             ResultSet rs = stmt.executeQuery();
-            
+
+            while (rs.next()) {
+                absences.add(getEntityFromResultSet(rs));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return absences;
+    }
+
+    @Override
+    public List<Absence> getAbsencesByApprover_Acknowledgment_BetweenDates(User approver, boolean acknowledged, java.util.Date startDateU, java.util.Date endDateU) {
+        List<Absence> absences = new ArrayList<>();
+        Date startDate = new Date(startDateU.getTime());
+        Date endDate = new Date(endDateU.getTime());
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                PreparedStatement stmt = con.getConn().prepareStatement("SELECT " + TABLE_NAME + ".* FROM " + TABLE_NAME + " JOIN " + User_JDBCDAO.RELATION_TABLE_NAME
+                        + " WHERE " + User_JDBCDAO.REL_APPROVER_COL + " = " + approver.getUserNr() + " AND " + ACKNOWLEDGED_COL + " = " + acknowledged
+                        + " AND (" + STARTTIME_COL + " >= ? AND " + STARTTIME_COL + " < ? OR " + ENDTIME_COL + " >= ? AND "
+                        + ENDTIME_COL + " < ? OR " + STARTTIME_COL + " < ? AND " + ENDTIME_COL + " >= ?) " + SQL_ORDER_BY_LINE)) {
+
+            stmt.setDate(1, startDate);
+            stmt.setDate(2, endDate);
+            stmt.setDate(3, startDate);
+            stmt.setDate(4, endDate);
+            stmt.setDate(5, startDate);
+            stmt.setDate(6, endDate);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                absences.add(getEntityFromResultSet(rs));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return absences;
+    }
+
+    @Override
+    public List<Absence> getAbsencesByAcknowledgment_BetweenDates(boolean acknowledged, java.util.Date startDateU, java.util.Date endDateU) {
+        List<Absence> absences = new ArrayList<>();
+        Date startDate = new Date(startDateU.getTime());
+        Date endDate = new Date(endDateU.getTime());
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                PreparedStatement stmt = con.getConn().prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE "
+                        + ACKNOWLEDGED_COL + " = " + acknowledged + " AND (" + STARTTIME_COL + " >= ? AND " + STARTTIME_COL + " < ? OR " + ENDTIME_COL + " >= ? AND "
+                        + ENDTIME_COL + " < ? OR " + STARTTIME_COL + " < ? AND " + ENDTIME_COL + " >= ?) " + SQL_ORDER_BY_LINE)) {
+
+            stmt.setDate(1, startDate);
+            stmt.setDate(2, endDate);
+            stmt.setDate(3, startDate);
+            stmt.setDate(4, endDate);
+            stmt.setDate(5, startDate);
+            stmt.setDate(6, endDate);
+            ResultSet rs = stmt.executeQuery();
+
             while (rs.next()) {
                 absences.add(getEntityFromResultSet(rs));
             }

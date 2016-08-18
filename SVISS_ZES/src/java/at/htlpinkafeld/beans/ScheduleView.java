@@ -352,7 +352,7 @@ public class ScheduleView implements Serializable {
 
             List<User> otherApprover = absenceEvent.getAbsence().getUser().getApprover();
             otherApprover.remove(currentUser);
-            EmailService.sendAbsenceDeleted(absenceEvent.getAbsence(), currentUser, otherApprover);
+            EmailService.sendAbsenceDeletedByApprover(absenceEvent.getAbsence(), currentUser, otherApprover);
 
         }
     }

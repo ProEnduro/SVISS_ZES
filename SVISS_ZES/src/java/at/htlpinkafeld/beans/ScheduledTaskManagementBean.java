@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.beans;
 
+import at.htlpinkafeld.service.AbsenceCleaningTask;
 import at.htlpinkafeld.service.HolidaySynchronisationTask;
 import at.htlpinkafeld.service.OvertimeSynchronisationTask;
 import java.time.DayOfWeek;
@@ -25,11 +26,11 @@ import javax.faces.bean.ApplicationScoped;
  */
 @ManagedBean(eager = true)
 @ApplicationScoped
-public class TimedTimeSynchronizationBean {
+public class ScheduledTaskManagementBean {
 
     ScheduledExecutorService scheduler;
 
-    public TimedTimeSynchronizationBean() {
+    public ScheduledTaskManagementBean() {
         LocalDateTime localNow = LocalDateTime.now();
         ZoneId currentZone = ZoneId.systemDefault();
         ZonedDateTime zonedNow = ZonedDateTime.of(localNow, currentZone);
@@ -48,8 +49,7 @@ public class TimedTimeSynchronizationBean {
             scheduler = Executors.newSingleThreadScheduledExecutor();
             scheduler.scheduleAtFixedRate(new HolidaySynchronisationTask(), initalDelayHoliday, 24 * 60 * 60, TimeUnit.SECONDS);
             scheduler.scheduleAtFixedRate(new OvertimeSynchronisationTask(), initalDelayOvertime, 24 * 60 * 60, TimeUnit.SECONDS);
-            //scheduler.scheduleAtFixedRate(new HolidaySynchronisationTask(), 10, 10, TimeUnit.SECONDS);
-            // scheduler.scheduleAtFixedRate(new OvertimeSynchronisationTask(), 10, 30, TimeUnit.SECONDS);
+            scheduler.scheduleAtFixedRate(new AbsenceCleaningTask(), initalDelayOvertime, 24 * 60 * 60, TimeUnit.SECONDS);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -58,9 +58,6 @@ public class TimedTimeSynchronizationBean {
     @PreDestroy
     public void destroyThreads() {
         scheduler.shutdown();
-        if (scheduler.isShutdown()) {
-            System.out.println("Threads shutdown");
-        }
     }
 
 }

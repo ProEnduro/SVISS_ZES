@@ -87,11 +87,11 @@ public class Absence_JDBCDAOTest {
     public void testInsertAndGetByAbsenceTypeAndUser() throws SQLException {
         User u = DAOFactory.getDAOFactory().getUserDAO().getUser(1);
         AbsenceType at = absenceType_DAO.getAbsenceTypeByID(1);
-        List<Absence> expResult = absence_DAO.getAbsencesByAbsenceTypeAndUser(at, u);
+        List<Absence> expResult = absence_DAO.getAbsencesByAbsenceType_User(at, u);
         Absence absence = new Absence(u, at, LocalDateTime.of(2016, 4, 4, 0, 0, 0), LocalDateTime.of(2016, 4, 6, 0, 0, 0), "Pest");
         absence_DAO.insert(absence);
         expResult.add(absence);
-        List<Absence> result = absence_DAO.getAbsencesByAbsenceTypeAndUser(at, u);
+        List<Absence> result = absence_DAO.getAbsencesByAbsenceType_User(at, u);
         assertArrayEquals(expResult.toArray(), result.toArray());
     }
 
@@ -151,19 +151,19 @@ public class Absence_JDBCDAOTest {
     }
 
     /**
-     * Test of getAbsencesByUserAndAcknowledgment method, of class
-     * Absence_JDBCDAO.
+     * Test of getAbsencesByUser_Acknowledgment method, of class
+ Absence_JDBCDAO.
      */
     @Test
     public void testGetAbsencesByUserAndAcknowledgment() {
         User u = DAOFactory.getDAOFactory().getUserDAO().getUser(1);
         Absence absence = new Absence(u, absenceType_DAO.getAbsenceTypeByID(1), LocalDateTime.of(2016, 4, 4, 0, 0, 0), LocalDateTime.of(2016, 4, 6, 0, 0, 0), "Pest");
         absence_DAO.insert(absence);
-        List<Absence> result = absence_DAO.getAbsencesByUserAndAcknowledgment(u, false);
+        List<Absence> result = absence_DAO.getAbsencesByUser_Acknowledgment(u, false);
         assertTrue(result.contains(absence));
         absence.setAcknowledged(true);
         absence_DAO.update(absence);
-        result = absence_DAO.getAbsencesByUserAndAcknowledgment(u, true);
+        result = absence_DAO.getAbsencesByUser_Acknowledgment(u, true);
         assertTrue(result.contains(absence));
     }
 

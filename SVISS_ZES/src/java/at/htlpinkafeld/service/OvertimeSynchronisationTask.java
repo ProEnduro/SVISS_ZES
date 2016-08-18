@@ -88,7 +88,7 @@ public class OvertimeSynchronisationTask implements Runnable {
         }
 
 //        overtime -= u.getWeekTime() * 60;
-        List<Absence> absences = ABSENCE_DAO.getAbsencesByUserBetweenDates(u, startDate, endDate);
+        List<Absence> absences = ABSENCE_DAO.getAbsencesByUser_BetweenDates(u, startDate, endDate);
 
         for (Absence a : absences) {
             if (a.getStartTime().isBefore(TimeConverterService.convertDateToLocalDateTime(startDate))) {
@@ -99,6 +99,9 @@ public class OvertimeSynchronisationTask implements Runnable {
             }
             switch (a.getAbsenceType().getAbsenceName()) {
                 case "holiday":
+                    if (!a.isAcknowledged()) {
+                        break;
+                    }
                     int holidayLength = (a.getEndTime().getDayOfYear() - a.getStartTime().getDayOfYear() + 1);
                     DayOfWeek hDay = a.getStartTime().getDayOfWeek();
                     for (int i = 0; i < holidayLength; i++, hDay.plus(1)) {
@@ -113,8 +116,11 @@ public class OvertimeSynchronisationTask implements Runnable {
                         }
                     }
                     break;
-                case "medical leave":
                 case "time compensation":
+                    if (!a.isAcknowledged()) {
+                        break;
+                    }
+                case "medical leave":
                     int dayNum = a.getEndTime().getDayOfYear() - a.getStartTime().getDayOfYear() + 1;
                     DayOfWeek sDay = a.getStartTime().getDayOfWeek();
                     for (int i = 0; i < dayNum; i++, sDay.plus(1)) {

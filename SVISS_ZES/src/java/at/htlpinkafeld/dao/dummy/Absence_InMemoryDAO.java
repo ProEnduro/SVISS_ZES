@@ -74,7 +74,7 @@ public class Absence_InMemoryDAO extends Base_InMemoryDAO<Absence> implements Ab
     }
 
     @Override
-    public List<Absence> getAbsencesByAbsenceTypeAndUser(AbsenceType at, User u) {
+    public List<Absence> getAbsencesByAbsenceType_User(AbsenceType at, User u) {
         List<Absence> aList = new LinkedList<>();
         for (Absence a : super.getList()) {
             if (a.getAbsenceType().equals(at) && a.getUser().equals(u)) {
@@ -96,7 +96,7 @@ public class Absence_InMemoryDAO extends Base_InMemoryDAO<Absence> implements Ab
     }
 
     @Override
-    public List<Absence> getAbsencesByUserAndAcknowledgment(User u, boolean acknowledged) {
+    public List<Absence> getAbsencesByUser_Acknowledgment(User u, boolean acknowledged) {
         List<Absence> aList = new LinkedList<>();
         for (Absence a : super.getList()) {
             if (a.isAcknowledged() == acknowledged && a.getUser().equals(u)) {
@@ -121,7 +121,7 @@ public class Absence_InMemoryDAO extends Base_InMemoryDAO<Absence> implements Ab
     }
 
     @Override
-    public List<Absence> getAbsencesByUserBetweenDates(User user, java.util.Date startDate, java.util.Date endDate) {
+    public List<Absence> getAbsencesByUser_BetweenDates(User user, java.util.Date startDate, java.util.Date endDate) {
         List<Absence> aList = new LinkedList<>();
         for (Absence a : super.getList()) {
             if (a.getUser().equals(user)) {
@@ -130,6 +130,41 @@ public class Absence_InMemoryDAO extends Base_InMemoryDAO<Absence> implements Ab
                         || ((a.getEndTime().isAfter(TimeConverterService.convertDateToLocalDateTime(startDate)) || a.getEndTime().isEqual(TimeConverterService.convertDateToLocalDateTime(startDate)))
                         && a.getEndTime().isBefore(TimeConverterService.convertDateToLocalDateTime(endDate)))) {
                     aList.add(clone(a));
+                }
+            }
+        }
+        return aList;
+    }
+
+    @Override
+    public List<Absence> getAbsencesByApprover_Acknowledgment_BetweenDates(User approver, boolean acknowledged, java.util.Date startDate, java.util.Date endDate) {
+        List<Absence> aList = new LinkedList<>();
+        for (Absence a : super.getList()) {
+            if (a.isAcknowledged() == acknowledged) {
+                if (a.getUser().getApprover().contains(approver)) {
+                    if (((a.getStartTime().isAfter(TimeConverterService.convertDateToLocalDateTime(startDate)) || a.getStartTime().isEqual(TimeConverterService.convertDateToLocalDateTime(startDate)))
+                            && a.getStartTime().isBefore(TimeConverterService.convertDateToLocalDateTime(endDate)))
+                            || ((a.getEndTime().isAfter(TimeConverterService.convertDateToLocalDateTime(startDate)) || a.getEndTime().isEqual(TimeConverterService.convertDateToLocalDateTime(startDate)))
+                            && a.getEndTime().isBefore(TimeConverterService.convertDateToLocalDateTime(endDate)))) {
+                        aList.add(clone(a));
+                    }
+                }
+            }
+        }
+        return aList;
+    }
+
+    @Override
+    public List<Absence> getAbsencesByAcknowledgment_BetweenDates(boolean acknowledged, java.util.Date startDate, java.util.Date endDate) {
+        List<Absence> aList = new LinkedList<>();
+        for (Absence a : super.getList()) {
+            if (a.isAcknowledged() == acknowledged) {
+                if (((a.getStartTime().isAfter(TimeConverterService.convertDateToLocalDateTime(startDate)) || a.getStartTime().isEqual(TimeConverterService.convertDateToLocalDateTime(startDate)))
+                        && a.getStartTime().isBefore(TimeConverterService.convertDateToLocalDateTime(endDate)))
+                        || ((a.getEndTime().isAfter(TimeConverterService.convertDateToLocalDateTime(startDate)) || a.getEndTime().isEqual(TimeConverterService.convertDateToLocalDateTime(startDate)))
+                        && a.getEndTime().isBefore(TimeConverterService.convertDateToLocalDateTime(endDate)))) {
+                    aList.add(clone(a));
+
                 }
             }
         }
