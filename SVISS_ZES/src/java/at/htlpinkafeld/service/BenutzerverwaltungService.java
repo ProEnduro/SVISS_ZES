@@ -6,9 +6,13 @@
 package at.htlpinkafeld.service;
 
 import at.htlpinkafeld.dao.factory.DAOFactory;
+import at.htlpinkafeld.dao.interf.UserHistory_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.pojo.AccessLevel;
 import at.htlpinkafeld.pojo.User;
+import at.htlpinkafeld.pojo.UserHistoryEntry;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -17,12 +21,12 @@ import java.util.List;
  */
 public class BenutzerverwaltungService {
 
-    private final static User_DAO userdao;
+    private static final User_DAO userdao;
+    private static final UserHistory_DAO UHDAO;
 
     static {
-
         userdao = DAOFactory.getDAOFactory().getUserDAO();
-
+        UHDAO = DAOFactory.getDAOFactory().getUserHistoryDAO();
     }
 
     public static User getUser(String selectedUser) {
@@ -38,6 +42,7 @@ public class BenutzerverwaltungService {
 
     public static void insertUser(User u) {
         userdao.insert(u);
+        UHDAO.insert(new UserHistoryEntry(LocalDate.now().withDayOfMonth(1).atStartOfDay(), u, u.getOverTimeLeft(), u.getVacationLeft()));
     }
 
     public static void updateUser(User u) {

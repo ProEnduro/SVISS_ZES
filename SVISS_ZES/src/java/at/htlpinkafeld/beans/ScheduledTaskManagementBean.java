@@ -8,6 +8,7 @@ package at.htlpinkafeld.beans;
 import at.htlpinkafeld.service.AbsenceCleaningTask;
 import at.htlpinkafeld.service.HolidaySynchronisationTask;
 import at.htlpinkafeld.service.OvertimeSynchronisationTask;
+import at.htlpinkafeld.service.UpdateUserHistoryTask;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -50,6 +51,7 @@ public class ScheduledTaskManagementBean {
             scheduler.scheduleAtFixedRate(new HolidaySynchronisationTask(), initalDelayHoliday, 24 * 60 * 60, TimeUnit.SECONDS);
             scheduler.scheduleAtFixedRate(new OvertimeSynchronisationTask(), initalDelayOvertime, 24 * 60 * 60, TimeUnit.SECONDS);
             scheduler.scheduleAtFixedRate(new AbsenceCleaningTask(), initalDelayOvertime, 24 * 60 * 60, TimeUnit.SECONDS);
+            scheduler.scheduleAtFixedRate(new UpdateUserHistoryTask(), initalDelayOvertime, 24 * 60 * 60, TimeUnit.SECONDS);
         } catch (Exception e) {
             e.printStackTrace();
         }
