@@ -17,8 +17,49 @@ and open the template in the editor.
     <ui:define name="auswertung">
         <h:body>
             <h:form>
-                <h1 align="center">Auswertung: Alle Abwesenheiten</h1>
+                
+                <p:panelGrid columns="2" style="border-style: hidden">
+                    <p:selectOneMenu value="#{alleAbwesenheitenBean.selectedUser}">
+                        <f:selectItems value="#{alleAbwesenheitenBean.allUsers}"/>
+                    </p:selectOneMenu>
+                    
+                    <p:commandButton value="load" actionListener="#{alleAbwesenheitenBean.loadAllAbsenceByUser}" update=":absenceform:absenceid"/>
+                </p:panelGrid>
+                
             </h:form>
+            
+            
+            
+            <h:form id="absenceform">
+                <p:dataTable id="absenceid" var="absence" value="#{alleAbwesenheitenBean.absence}" paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                 paginator="true" rows="30" style="margin-bottom:20px">
+
+                    <p:column headerText="Benutzer" sortBy="#{absence.user.username}" filterBy="#{absence.user.username}">
+                        <h:outputText value="#{absence.user.username}"/>
+                    </p:column>
+                    
+                    <p:column headerText="ID">
+                        <h:outputText value="#{absence.absenceID}"/>
+                    </p:column>
+                    
+                    <p:column headerText="Grund">
+                        <h:outputText value="#{absence.reason}"/>
+                    </p:column>
+                    
+                    <p:column headerText="Zugelassen" sortBy="#{absence.acknowledged}">
+                        <h:outputText value="#{absence.acknowledged}"/>
+                    </p:column>
+                    
+                </p:dataTable>
+                
+                <h:commandLink>
+                    <p:graphicImage name="/images/excel-icon.png" style="width: 3%"/>
+                    <p:dataExporter type="xls" target="absenceid" fileName="Abwesenheiten"/>
+                </h:commandLink>
+                
+            </h:form>
+
+
         </h:body>
     </ui:define>
 </ui:composition>
