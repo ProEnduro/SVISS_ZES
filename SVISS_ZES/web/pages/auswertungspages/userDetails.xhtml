@@ -13,13 +13,61 @@ and open the template in the editor.
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="currentAuswertungsIndex" value="2" />
-    
+
     <ui:define name="auswertung">
-        <h:body>
             <h:form>
                 <h1 align="center">Auswertung: User Details</h1>
+                <p:selectOneMenu value="#{userDetailsBean.selectedUser}">
+                    <f:selectItems value="#{userDetailsBean.userAsStringList}"/>
+                    <p:ajax update="selectedDate"/>
+                </p:selectOneMenu>
+
+                <p:selectOneMenu id="selectedDate" value="#{userDetailsBean.selectedDate}">
+                    <f:selectItems value="#{userDetailsBean.dates}" var="date" itemLabel="#{date.label}" itemValue="#{date.value}"/>
+                </p:selectOneMenu>
+                
+                
+                <p:commandButton value="load" actionListener="#{userDetailsBean.loadMonthOverview}" update="timeDataTable"/>
+                 
+                <p:dataTable id="timeDataTable" value="#{userDetailsBean.timerowlist}" var="entry">
+                    
+                    <p:column headerText="Date">
+                        <p:outputLabel value="#{entry.dayOfMonth}"/>
+                    </p:column>
+                    
+                    <p:column headerText="Beginn">
+                        
+                    </p:column>
+                    
+                    <p:column headerText="Ende">
+                        
+                    </p:column>
+                    
+                    <p:column headerText="Pause">
+                        
+                    </p:column>
+                    
+                    <p:column headerText="Sollarbeitszeit">
+                        
+                    </p:column>
+                    
+                    <p:column headerText="Istarbeitszeit">
+                        
+                    </p:column>
+                    
+                    <p:column headerText="Überstunden nach 19 Uhr">
+                        
+                    </p:column>
+                    
+                    <p:column headerText="Bemerkungen">
+                        <p:outputLabel value="#{entry.reason}"/>
+                    </p:column>
+                    
+                    
+                    
+                </p:dataTable>
+                
             </h:form>
-        </h:body>
     </ui:define>
 
 

@@ -17,15 +17,19 @@ and open the template in the editor.
 
     <ui:define name="content">
 
-        <p:tabMenu activeIndex="#{currentAuswertungsIndex}">
-            <p:menuitem value="Overview" url="overview.xhtml"/>
-            <p:menuitem value="Alle User" url="alleUser.xhtml"/>
-            <p:menuitem value="User Details" url="userDetails.xhtml"/>
-            <p:menuitem value="Alle Abwesenheiten" url="alleAbwesenheiten.xhtml"/>
-        </p:tabMenu>
-        
-        
+        <h:form>
+
+            <p:tabMenu activeIndex="#{currentAuswertungsIndex}">
+                <p:menuitem value="Overview" action="#{auswertungsBean.redirectToOverview}"/>
+                <p:menuitem value="Alle User" action="#{auswertungsBean.redirectToAlleUser()}"/>
+                <p:menuitem value="User Details" action="#{auswertungsBean.redirectToUserDetails()}"/>
+                <p:menuitem value="Alle Abwesenheiten" action="#{auswertungsBean.redirectToAlleAbwesenheiten()}"/>
+            </p:tabMenu>
+
+
+        </h:form>
+
         <ui:insert name="auswertung"/>
-        
+
     </ui:define>
 </ui:composition>

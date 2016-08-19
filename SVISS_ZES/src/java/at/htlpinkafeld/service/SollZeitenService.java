@@ -70,5 +70,9 @@ public class SollZeitenService {
         }
         return -1;
     }
+    
+    public static SollZeit getSollZeitByUserAndDayOfWeek(User u, DayOfWeek dow){
+        return SOLL_ZEITEN__DAO.getSollZeitenByUser_DayOfWeek(u, dow);
+    }
 
 }

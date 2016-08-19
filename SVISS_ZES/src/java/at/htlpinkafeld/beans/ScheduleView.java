@@ -387,7 +387,7 @@ public class ScheduleView implements Serializable {
         for (User u : BenutzerverwaltungService.getUserList()) {
             allUsers.add(u.getUsername());
         }
-        
+
         return "/pages/absence_acknowledgement.xhtml?faces-redirect=true";
     }
 
@@ -397,7 +397,7 @@ public class ScheduleView implements Serializable {
 
         verbleibend = currentUser.getWeekTime();
         overtimeleft = currentUser.getOverTimeLeft();
-        
+
         return "/pages/istzeit.xhtml?faces-redirect=true";
     }
 
@@ -522,7 +522,7 @@ public class ScheduleView implements Serializable {
         for (User u : BenutzerverwaltungService.getUserList()) {
             allUsers.add(u.getUsername());
         }
-        
+
         return "/pages/allTime.xhtml?faces-redirect=true";
     }
 
@@ -543,5 +543,25 @@ public class ScheduleView implements Serializable {
 
         this.eventModel.deleteEvent(absenceevent);
         AbsenceService.deleteAbsence(absenceevent.getAbsence());
+    }
+
+    public String redirectToAbwesenheiten() {
+        return "/pages/abwesenheit.xhtml?faces-redirect=true";
+    }
+
+    public String redirectToAccountverwaltung() {
+        return "/pages/benutzerkonto.xhtml?faces-redirect=true";
+    }
+
+    public String redirectToBenutzerverwaltung() {
+        return "/pages/benutzerverwaltung.xhtml?faces-redirect=true";
+    }
+
+    public String redirectToFeiertage() {
+        return "/pages/holidays.xhtml?faces-redirect=true";
+    }
+
+    public String redirectToAllAbwesenheiten() {
+        return "/pages/view_all_abwesenheiten.xhtml?faces-redirect=true";
     }
 }

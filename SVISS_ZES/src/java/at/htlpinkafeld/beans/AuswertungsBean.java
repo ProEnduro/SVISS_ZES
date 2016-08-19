@@ -67,7 +67,7 @@ public class AuswertungsBean {
     public String auswerten() {
         reloadCurrentUser();
         this.createPieModels();
-        
+
         return "/pages/auswertungspages/overview.xhtml?faces-redirect=true";
     }
 
@@ -204,7 +204,7 @@ public class AuswertungsBean {
                 if (b) {
                     testPDF(null);
                     InputStream stream = FacesContext.getCurrentInstance().getExternalContext().getResourceAsStream("/pdfs/test.pdf");
-                    file = new DefaultStreamedContent(stream, "application/pdf", "auswertung_" + this.selectedUser +  ".pdf");
+                    file = new DefaultStreamedContent(stream, "application/pdf", "auswertung_" + this.selectedUser + ".pdf");
                 }
 
             } catch (IOException ex) {
@@ -219,21 +219,19 @@ public class AuswertungsBean {
         String path = serv.getRealPath("/") + "/pdfs/";
 
         BufferedImage img = ImageIO.read(new File(path + "out.png"));
-       
-        
+
 //        function for joining two pictures -> 
 //        BufferedImage joined = joinBufferedImage(one, two);
 //        boolean success = ImageIO.write(joined, "png", new File(path + "joined.png"));
 //        System.out.println("saved success? " + success);
-
         PDDocument doc = new PDDocument();
         PDPage blank = new PDPage();
         doc.addPage(blank);
         PDImageXObject image = JPEGFactory.createFromImage(doc, img);
         PDPageContentStream contentStream = new PDPageContentStream(doc, blank, true, true, true);
 
-        int w = (int) (img.getWidth()/3);
-        int h = (int) (img.getHeight()/3);
+        int w = (int) (img.getWidth() / 3);
+        int h = (int) (img.getHeight() / 3);
 
         contentStream.drawXObject(image, 0, 792 - h, w, h);
         contentStream.close();
@@ -270,6 +268,21 @@ public class AuswertungsBean {
     public void setFile(StreamedContent file) {
         this.file = file;
     }
-    
+
+    public String redirectToOverview() {
+        return "/pages/auswertungspages/overview.xhtml?faces-redirect=true";
+    }
+
+    public String redirectToAlleAbwesenheiten() {
+        return "/pages/auswertungspages/alleAbwesenheiten.xhtml?faces-redirect=true";
+    }
+
+    public String redirectToAlleUser() {
+        return "/pages/auswertungspages/alleUser.xhtml?faces-redirect=true";
+    }
+
+    public String redirectToUserDetails() {
+        return "/pages/auswertungspages/userDetails.xhtml?faces-redirect=true";
+    }
 
 }

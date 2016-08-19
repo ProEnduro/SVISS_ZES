@@ -20,13 +20,13 @@ and open the template in the editor.
 
             <p:menubar id="menubar" styleClass="menu">
                 <p:menuitem value="Ist-Zeiten" rendered="#{masterBean.istZeitenEnabled}" action="#{scheduleView.reloadAbwesenheiten}" style="white-space: nowrap"/>
-                <p:menuitem value="Abwesenheiten eintragen" url="abwesenheit.xhtml" rendered="#{masterBean.abwesenheitenEnabled}" style="white-space: nowrap"/>
-                <p:menuitem value="Accountverwaltung" url="benutzerkonto.xhtml" rendered="#{masterBean.accountVerwaltungEnabled}" style="white-space: nowrap"/>
-                <p:menuitem value="Benutzerverwaltung" url="benutzerverwaltung.xhtml" rendered="#{masterBean.benutzerverwaltungEnabled}" style="white-space: nowrap"/>
+                <p:menuitem value="Abwesenheiten eintragen" action="#{scheduleView.redirectToAbwesenheiten}" rendered="#{masterBean.abwesenheitenEnabled}" style="white-space: nowrap"/>
+                <p:menuitem value="Accountverwaltung" action="#{scheduleView.redirectToAccountverwaltung}" rendered="#{masterBean.accountVerwaltungEnabled}" style="white-space: nowrap"/>
+                <p:menuitem value="Benutzerverwaltung" action="#{scheduleView.redirectToBenutzerverwaltung}" rendered="#{masterBean.benutzerverwaltungEnabled}" style="white-space: nowrap"/>
                 <p:menuitem value="Acknowledgement" rendered="#{masterBean.acknowledgementEnabled}" action="#{scheduleView.reloadAcknowledgements}" style="white-space: nowrap"/>
-                <p:menuitem value="Feiertage" url="holidays.xhtml" rendered="#{masterBean.feiertageEintragenEnabled}" style="white-space: nowrap"/>
+                <p:menuitem value="Feiertage" action="#{scheduleView.redirectToFeiertage}" rendered="#{masterBean.feiertageEintragenEnabled}" style="white-space: nowrap"/>
                 <p:menuitem value="Alle Zeiten" rendered="#{masterBean.alleZeitenEnabled}" action="#{scheduleView.loadAllTimes}" style="white-space: nowrap"/>
-                <p:menuitem value="Alle Abwesenheiten" url="view_all_abwesenheiten.xhtml" rendered="#{masterBean.alleAbwesenheitenEnabled}" style="white-space: nowrap"/>
+                <p:menuitem value="Alle Abwesenheiten" action="#{scheduleView.redirectToAllAbwesenheiten}" rendered="#{masterBean.alleAbwesenheitenEnabled}" style="white-space: nowrap"/>
                 <p:menuitem value="Auswertung" rendered="#{masterBean.auswertungEnabled}" action="#{auswertungsBean.auswerten}" style="white-space: nowrap"/>
                 <p:menuitem value="Logout" action="#{masterBean.logout}" style="white-space: nowrap; background-color: #cc5f59"/>
             </p:menubar>
