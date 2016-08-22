@@ -64,4 +64,10 @@ public class UserHistoryEntry {
         this.vacation = vacation;
     }
 
+    @Override
+    public String toString() {
+        return "UserHistoryEntry{" + "timestamp=" + timestamp + ", user=" + user + ", overtime=" + overtime + ", vacation=" + vacation + '}';
+    }
+
+    
 }

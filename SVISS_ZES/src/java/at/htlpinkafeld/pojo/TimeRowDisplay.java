@@ -20,7 +20,7 @@ public class TimeRowDisplay {
     private static final DateTimeFormatter timeFormatter;
 
     static {
-        timeFormatter = DateTimeFormatter.ofPattern("HH:MM");
+        timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
     }
     
     private final LocalDate date;
@@ -53,6 +53,7 @@ public class TimeRowDisplay {
         sollZeit = String.valueOf(wt.getSollStartTime().until(wt.getSollEndTime(), ChronoUnit.MINUTES) / 60.0);
         workTime = String.valueOf(wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES) / 60.0);
         overTime19plus = String.valueOf(wt.getOvertimeAfter19());
+        reason = "";
     }
 
     public DayOfWeek getDayOfWeek() {
@@ -93,5 +94,10 @@ public class TimeRowDisplay {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    @Override
+    public String toString() {
+        return "TimeRowDisplay{" + "date=" + date + ", workTimeStart=" + workTimeStart + ", workTimeEnd=" + workTimeEnd + ", breakTime=" + breakTime + ", sollZeit=" + sollZeit + ", workTime=" + workTime + ", overTime19plus=" + overTime19plus + ", reason=" + reason + '}';
     }
 }
