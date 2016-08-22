@@ -40,6 +40,17 @@ and open the template in the editor.
                     <p:column headerText="Überstunden nach 19 Uhr">
                         <h:outputText value="#{month.description}"/>
                     </p:column>
+
+                    <f:facet name="footer">
+                        <p:commandLink ajax="false">
+                            <p:graphicImage name="/images/excel-icon.png" style="width: 3%"/>
+                            <p:dataExporter type="XLS" target="data" fileName="Zeiten" encoding="iso-8859-1"/>
+                        </p:commandLink>
+                        <p:commandLink ajax="false">
+                            <p:graphicImage name="/images/excel-icon.png" style="width: 3%"/>
+                            <p:dataExporter type="PDF" target="data" fileName="Zeiten" encoding="iso-8859-1"/>
+                        </p:commandLink>
+                    </f:facet>
                 </p:dataTable>
 
                 <p:remoteCommand update="selectionGrid" action="#{alleUserBean.loadAllUserBean}" autoRun="true"/>

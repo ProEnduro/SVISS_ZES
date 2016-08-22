@@ -70,19 +70,19 @@ public class OvertimeSynchronisationTask implements Runnable {
         List<WorkTime> workTimes = WORK_TIME_DAO.getWorkTimesFromUserBetweenDates(u, startDate, endDate);
         List<SollZeit> sollZeiten = SOLL_ZEITEN_DAO.getSollZeitenByUser(u);
 
-        LocalTime lt19Plus = LocalTime.of(19, 0);
-
-        for (WorkTime wt : workTimes) {
-            if (lt19Plus.isBefore(wt.getEndTime().toLocalTime())) {
-                overtime += wt.getStartTime().until(wt.getEndTime().with(lt19Plus), ChronoUnit.MINUTES);
-                overtime += wt.getEndTime().with(lt19Plus).until(wt.getEndTime(), ChronoUnit.MINUTES) * 1.5;
-            } else {
-                overtime += wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
-            }
-            overtime -= wt.getBreakTime();
-            DayOfWeek sDay = wt.getStartTime().getDayOfWeek();
-
-        }
+//        LocalTime lt19Plus = LocalTime.of(19, 0);
+//
+//        for (WorkTime wt : workTimes) {
+//            if (lt19Plus.isBefore(wt.getEndTime().toLocalTime())) {
+//                overtime += wt.getStartTime().until(wt.getEndTime().with(lt19Plus), ChronoUnit.MINUTES);
+//                overtime += wt.getEndTime().with(lt19Plus).until(wt.getEndTime(), ChronoUnit.MINUTES) * 1.5;
+//            } else {
+//                overtime += wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
+//            }
+//            overtime -= wt.getBreakTime();
+//            DayOfWeek sDay = wt.getStartTime().getDayOfWeek();
+//
+//        }
         LocalDate startDateL = TimeConverterService.convertDateToLocalDate(startDate);
         LocalDate endDateL = TimeConverterService.convertDateToLocalDate(endDate);
 
@@ -94,71 +94,71 @@ public class OvertimeSynchronisationTask implements Runnable {
             }
         }
 //        overtime -= u.getWeekTime() * 60;
-        List<Absence> absences = ABSENCE_DAO.getAbsencesByUser_BetweenDates(u, startDate, endDate);
-
-        for (Absence a : absences) {
-            if (a.getStartTime().isBefore(TimeConverterService.convertDateToLocalDateTime(startDate))) {
-                a.setStartTime(TimeConverterService.convertDateToLocalDateTime(startDate));
-            }
-            if (a.getEndTime().isAfter(TimeConverterService.convertDateToLocalDateTime(endDate))) {
-                a.setEndTime(TimeConverterService.convertDateToLocalDateTime(endDate).minusMinutes(1));
-            }
-            switch (a.getAbsenceType().getAbsenceName()) {
-                case "holiday":
-                    if (!a.isAcknowledged()) {
-                        break;
-                    }
-                    int holidayLength = (a.getEndTime().getDayOfYear() - a.getStartTime().getDayOfYear() + 1);
-                    DayOfWeek hDay = a.getStartTime().getDayOfWeek();
-                    for (int i = 0; i < holidayLength; i++, hDay.plus(1)) {
-                        for (SollZeit sz : sollZeiten) {
-                            if (sz.getDay().equals(hDay)) {
-                                int diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
-                                if (diff > 6 * 60) {
-                                    diff -= 30;
-                                }
-                                overtime += diff;
-                            }
-                        }
-                    }
-                    break;
-                case "time compensation":
-                    if (!a.isAcknowledged()) {
-                        break;
-                    }
-                case "medical leave":
-                    int dayNum = a.getEndTime().getDayOfYear() - a.getStartTime().getDayOfYear() + 1;
-                    DayOfWeek sDay = a.getStartTime().getDayOfWeek();
-                    for (int i = 0; i < dayNum; i++, sDay.plus(1)) {
-                        for (SollZeit sz : sollZeiten) {
-                            if (sz.getDay().equals(sDay)) {
-                                int diff = 0;
-                                if (i == 0 || i == (dayNum - 1)) {
-                                    if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime()) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
-                                        diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
-                                    } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime()) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime())) {
-                                    } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime())) {
-                                        diff = (int) a.getStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
-                                    } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
-                                        diff = (int) sz.getSollStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
-                                    } else {
-                                        diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
-                                    }
-                                } else {
-                                    diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
-                                }
-                                if (diff > 6 * 60) {
-                                    diff -= 30;
-                                }
-                                overtime += diff;
-                            }
-                        }
-                    }
-                    break;
-                case "business-related absence":
-                    break;
-            }
-        }
+//        List<Absence> absences = ABSENCE_DAO.getAbsencesByUser_BetweenDates(u, startDate, endDate);
+//
+//        for (Absence a : absences) {
+//            if (a.getStartTime().isBefore(TimeConverterService.convertDateToLocalDateTime(startDate))) {
+//                a.setStartTime(TimeConverterService.convertDateToLocalDateTime(startDate));
+//            }
+//            if (a.getEndTime().isAfter(TimeConverterService.convertDateToLocalDateTime(endDate))) {
+//                a.setEndTime(TimeConverterService.convertDateToLocalDateTime(endDate).minusMinutes(1));
+//            }
+//            switch (a.getAbsenceType().getAbsenceName()) {
+//                case "holiday":
+//                    if (!a.isAcknowledged()) {
+//                        break;
+//                    }
+//                    int holidayLength = (a.getEndTime().getDayOfYear() - a.getStartTime().getDayOfYear() + 1);
+//                    DayOfWeek hDay = a.getStartTime().getDayOfWeek();
+//                    for (int i = 0; i < holidayLength; i++, hDay.plus(1)) {
+//                        for (SollZeit sz : sollZeiten) {
+//                            if (sz.getDay().equals(hDay)) {
+//                                int diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+//                                if (diff > 6 * 60) {
+//                                    diff -= 30;
+//                                }
+//                                overtime += diff;
+//                            }
+//                        }
+//                    }
+//                    break;
+//                case "time compensation":
+//                    if (!a.isAcknowledged()) {
+//                        break;
+//                    }
+//                case "medical leave":
+//                    int dayNum = a.getEndTime().getDayOfYear() - a.getStartTime().getDayOfYear() + 1;
+//                    DayOfWeek sDay = a.getStartTime().getDayOfWeek();
+//                    for (int i = 0; i < dayNum; i++, sDay.plus(1)) {
+//                        for (SollZeit sz : sollZeiten) {
+//                            if (sz.getDay().equals(sDay)) {
+//                                int diff = 0;
+//                                if (i == 0 || i == (dayNum - 1)) {
+//                                    if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime()) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
+//                                        diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
+//                                    } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime()) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime())) {
+//                                    } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime())) {
+//                                        diff = (int) a.getStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+//                                    } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
+//                                        diff = (int) sz.getSollStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
+//                                    } else {
+//                                        diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+//                                    }
+//                                } else {
+//                                    diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+//                                }
+//                                if (diff > 6 * 60) {
+//                                    diff -= 30;
+//                                }
+//                                overtime += diff;
+//                            }
+//                        }
+//                    }
+//                    break;
+//                case "business-related absence":
+//                    break;
+//            }
+//        }
         return overtime;
     }
 }

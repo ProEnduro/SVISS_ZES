@@ -13,6 +13,7 @@ import at.htlpinkafeld.beans.util.LazyScheduleModels.IstZeitLazyScheduleModel;
 import at.htlpinkafeld.beans.util.WorkTimeEvent;
 import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.AbsenceType;
+import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
 import at.htlpinkafeld.service.AbsenceService;
@@ -20,9 +21,12 @@ import at.htlpinkafeld.service.AccessRightsService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import at.htlpinkafeld.service.EmailService;
 import at.htlpinkafeld.service.IstZeitService;
+import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
 import java.io.Serializable;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
@@ -181,6 +185,7 @@ public class ScheduleView implements Serializable {
     }
 
     public void addIstZeitEvent(ActionEvent actionEvent) {
+        int diff = 0;
         if (event.getId() == null) {
             WorkTimeEvent e = new WorkTimeEvent(this.currentUser.getUsername() + " " + "Ist-Zeit", event.getStartDate(), event.getEndDate(), new WorkTime(currentUser, TimeConverterService.convertDateToLocalDateTime(this.event.getStartDate()), TimeConverterService.convertDateToLocalDateTime(this.event.getEndDate()), 0, "", ""));
 
@@ -197,19 +202,38 @@ public class ScheduleView implements Serializable {
 
             if (event instanceof WorkTimeEvent) {
                 WorkTime time = ((WorkTimeEvent) event).getWorktime();
-
+                LocalTime plus19 = LocalTime.of(19, 0);
+                if (time.getEndTime().toLocalTime().isAfter(plus19)) {
+                    diff -= time.getOvertimeAfter19() * 1.5;
+                    diff -= time.getStartTime().until(plus19, ChronoUnit.MINUTES);
+                } else {
+                    diff -= time.getStartTime().until(time.getEndTime(), ChronoUnit.MINUTES);
+                }
                 time.setStartTime(TimeConverterService.convertDateToLocalDateTime(event.getStartDate()));
                 time.setEndTime(TimeConverterService.convertDateToLocalDateTime(event.getEndDate()));
 
                 IstZeitService.update(time);
             } else if (event instanceof AbsenceEvent) {
 
-                AbsenceService.updateAbsence(((AbsenceEvent) event).getAbsence());
+//                AbsenceService.updateAbsence(((AbsenceEvent) event).getAbsence());
             }
 
             eventModel.updateEvent(event);
         }
+        if (event instanceof WorkTimeEvent) {
 
+            WorkTime wt = ((WorkTimeEvent) event).getWorktime();
+
+            LocalTime plus19 = LocalTime.of(19, 0);
+            if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
+                diff += wt.getOvertimeAfter19() * 1.5;
+                diff += wt.getStartTime().until(plus19, ChronoUnit.MINUTES);
+            } else {
+                diff += wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
+            }
+            wt.getUser().setOverTimeLeft(wt.getUser().getOverTimeLeft() + diff);
+            BenutzerverwaltungService.updateUser(wt.getUser());
+        }
         event = new DefaultScheduleEvent();
     }
 
@@ -219,6 +243,19 @@ public class ScheduleView implements Serializable {
                 eventModel.deleteEvent(event);
                 WorkTimeEvent workevent = (WorkTimeEvent) event;
                 IstZeitService.delete(workevent.getWorktime());
+
+                int diff = 0;
+                WorkTime time = workevent.getWorktime();
+                LocalTime plus19 = LocalTime.of(19, 0);
+                if (time.getEndTime().toLocalTime().isAfter(plus19)) {
+                    diff -= time.getOvertimeAfter19() * 1.5;
+                    diff -= time.getStartTime().until(plus19, ChronoUnit.MINUTES);
+                } else {
+                    diff -= time.getStartTime().until(time.getEndTime(), ChronoUnit.MINUTES);
+                }
+                time.getUser().setOverTimeLeft(time.getUser().getOverTimeLeft() + diff);
+                BenutzerverwaltungService.updateUser(time.getUser());
+
                 event = new DefaultScheduleEvent();
             }
         }
@@ -310,27 +347,12 @@ public class ScheduleView implements Serializable {
             absenceEvent.getAbsence().setAcknowledged(true);
             AbsenceService.updateAbsence(absenceEvent.getAbsence());
 
-            if (absenceEvent.getAbsence().getAbsenceType().getAbsenceTypeID() == 2) {
-                LocalDateTime las = absenceEvent.getAbsence().getStartTime();
-                LocalDateTime lae = absenceEvent.getAbsence().getEndTime();
+            User u = absenceEvent.getAbsence().getUser();
 
-                int days = lae.getDayOfYear() - las.getDayOfYear() + 1;
+            int overtime = calcAbsenceOvertime(absenceEvent.getAbsence());
 
-                User u = absenceEvent.getAbsence().getUser();
-                u.setVacationLeft(u.getVacationLeft() - days);
-                BenutzerverwaltungService.updateUser(u);
-
-            }
-            if (absenceEvent.getAbsence().getAbsenceType().getAbsenceName().equals("time compensation")) {
-                LocalDateTime start = absenceEvent.getAbsence().getStartTime();
-                LocalDateTime end = absenceEvent.getAbsence().getEndTime();
-
-                int min = (int) start.until(end, ChronoUnit.MINUTES);
-
-                User u = absenceEvent.getAbsence().getUser();
-                u.setOverTimeLeft(u.getOverTimeLeft() - min);
-                BenutzerverwaltungService.updateUser(u);
-            }
+            u.setOverTimeLeft(u.getOverTimeLeft() + overtime);
+            BenutzerverwaltungService.updateUser(u);
 
             List<User> otherApprover = absenceEvent.getAbsence().getUser().getApprover();
             otherApprover.remove(currentUser);
@@ -343,6 +365,8 @@ public class ScheduleView implements Serializable {
         absenceEvent = new AbsenceEvent();
     }
 
+
+
     public void deleteAcknowledgement(ActionEvent e) {
         if (absenceEvent.getId() == null) {
 
@@ -350,11 +374,111 @@ public class ScheduleView implements Serializable {
             acknowledgementModel.deleteEvent(absenceEvent);
             AbsenceService.deleteAbsence(absenceEvent.getAbsence());
 
+            if (absenceEvent.getAbsence().isAcknowledged()) {
+                User u = absenceEvent.getAbsence().getUser();
+                int overtime = calcAbsenceOvertime(absenceEvent.getAbsence());
+
+                u.setOverTimeLeft(u.getOverTimeLeft() - overtime);
+                BenutzerverwaltungService.updateUser(u);
+            }
+
             List<User> otherApprover = absenceEvent.getAbsence().getUser().getApprover();
             otherApprover.remove(currentUser);
             EmailService.sendAbsenceDeletedByApprover(absenceEvent.getAbsence(), currentUser, otherApprover);
 
         }
+    }
+    
+        private int calcAbsenceOvertime(Absence a) {
+        int overtime = 0;
+        User u = a.getUser();
+        List<SollZeit> sollZeiten = SollZeitenService.getSollZeitenByUser(u);
+        int days = 0;
+        DayOfWeek sDay;
+
+        switch (absenceEvent.getAbsence().getAbsenceType().getAbsenceName()) {
+            case "holiday":
+                days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
+
+                u.setVacationLeft(u.getVacationLeft() - days);
+                BenutzerverwaltungService.updateUser(u);
+
+                DayOfWeek hDay = a.getStartTime().getDayOfWeek();
+                for (int i = 0; i < days; i++, hDay.plus(1)) {
+                    for (SollZeit sz : sollZeiten) {
+                        if (sz.getDay().equals(hDay)) {
+                            int diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                            if (diff > 6 * 60) {
+                                diff -= 30;
+                            }
+                            overtime += diff;
+                        }
+                    }
+                }
+
+                break;
+            case "time compensation":
+                days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
+                sDay = a.getStartTime().getDayOfWeek();
+
+                for (int i = 0; i < days; i++, sDay.plus(1)) {
+                    for (SollZeit sz : sollZeiten) {
+                        if (sz.getDay().equals(sDay)) {
+                            int diff = 0;
+                            if (i == 0 || i == (days - 1)) {
+                                if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime()) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
+                                    diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
+                                } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime()) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime())) {
+                                } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime())) {
+                                    diff = (int) a.getStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                                } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
+                                    diff = (int) sz.getSollStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
+                                } else {
+                                    diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                                }
+                            } else {
+                                diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                            }
+                            if (diff > 6 * 60) {
+                                diff -= 30;
+                            }
+                            overtime -= diff;
+                        }
+                    }
+                }
+                break;
+            case "medical leave":
+                days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
+                sDay = a.getStartTime().getDayOfWeek();
+
+                for (int i = 0; i < days; i++, sDay.plus(1)) {
+                    for (SollZeit sz : sollZeiten) {
+                        if (sz.getDay().equals(sDay)) {
+                            int diff = 0;
+                            if (i == 0 || i == (days - 1)) {
+                                if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime()) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
+                                    diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
+                                } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime()) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime())) {
+                                } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime())) {
+                                    diff = (int) a.getStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                                } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
+                                    diff = (int) sz.getSollStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
+                                } else {
+                                    diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                                }
+                            } else {
+                                diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                            }
+                            if (diff > 6 * 60) {
+                                diff -= 30;
+                            }
+                            overtime += diff;
+                        }
+                    }
+                }
+                break;
+        }
+        return overtime;
     }
 
     public void onAbsenceSelect(SelectEvent selectEvent) {
