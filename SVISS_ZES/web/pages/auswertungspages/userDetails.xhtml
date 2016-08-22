@@ -15,59 +15,93 @@ and open the template in the editor.
     <ui:param name="currentAuswertungsIndex" value="2" />
 
     <ui:define name="auswertung">
-            <h:form>
-                <h1 align="center">Auswertung: User Details</h1>
-                <p:selectOneMenu value="#{userDetailsBean.selectedUser}">
-                    <f:selectItems value="#{userDetailsBean.userAsStringList}"/>
-                    <p:ajax update="selectedDate"/>
-                </p:selectOneMenu>
+        <h:form>
+            
+            <p:growl autoUpdate="true"/>
+            
+            <h1 align="center">Auswertung: User Details</h1>
+            <p:selectOneMenu value="#{userDetailsBean.selectedUser}">
+                <f:selectItems value="#{userDetailsBean.userAsStringList}"/>
+                <p:ajax update="selectedYear selectedDate"/>
+            </p:selectOneMenu>
 
-                <p:selectOneMenu id="selectedDate" value="#{userDetailsBean.selectedDate}">
-                    <f:selectItems value="#{userDetailsBean.dates}" var="date" itemLabel="#{date.label}" itemValue="#{date.value}"/>
-                </p:selectOneMenu>
-                
-                
-                <p:commandButton value="load" actionListener="#{userDetailsBean.loadMonthOverview}" update="timeDataTable"/>
-                 
-                <p:dataTable id="timeDataTable" value="#{userDetailsBean.timerowlist}" var="entry">
+            <p:selectOneMenu id="selectedYear" value="#{userDetailsBean.selectedYear}">
+                <f:selectItems value="#{userDetailsBean.years}"/>
+                <p:ajax update="selectedDate"/>
+            </p:selectOneMenu>
+            
+            <p:selectOneMenu id="selectedDate" value="#{userDetailsBean.selectedDate}" converter="localDateConverter">
+                <f:selectItems value="#{userDetailsBean.dates}" var="date" itemLabel="#{date.label}" itemValue="#{date.value}"/>
+            </p:selectOneMenu>
+
+
+            <p:commandButton value="load" actionListener="#{userDetailsBean.loadMonthOverview}" update="timeDataTable"/>
+
+            <p:dataTable id="timeDataTable" value="#{userDetailsBean.timerowlist}" var="entry">
+
+                <p:column headerText="Date">
+                    <p:outputLabel value="#{entry.dayOfMonth}"/>
+                </p:column>
+
+                <p:column headerText="Beginn">
+                    <p:outputLabel value="#{entry.workTimeStart}"/>
+                </p:column>
+
+                <p:column headerText="Ende">
+                    <p:outputLabel value="#{entry.workTimeEnd}"/>
+                </p:column>
+
+                <p:column headerText="Pause">
+                    <p:outputLabel value="#{entry.breakTime}"/>
+                </p:column>
+
+                <p:column headerText="Sollarbeitszeit">
+                    <p:outputLabel value="#{entry.sollZeit}"/>
+                </p:column>
+
+                <p:column headerText="Istarbeitszeit">
+                    <p:outputLabel value="#{entry.workTime}"/>
+                </p:column>
+
+                <p:column headerText="Überstunden nach 19 Uhr">
+                    <p:outputLabel value="#{entry.overTime19plus}"/>
+                </p:column>
+
+                <p:column headerText="Bemerkungen">
+                    <p:outputLabel value="#{entry.reason}"/>
+                </p:column>
+
+
+                <f:facet name="footer">
                     
-                    <p:column headerText="Date">
-                        <p:outputLabel value="#{entry.dayOfMonth}"/>
-                    </p:column>
-                    
-                    <p:column headerText="Beginn">
+                    <p:panelGrid columns="2">
+                        <p:outputLabel value="Saldo: "/>
+                        <p:outputLabel value="#{userDetailsBean.saldo}"/>
                         
-                    </p:column>
-                    
-                    <p:column headerText="Ende">
+                        <p:outputLabel value="Überstunden nach 19 Uhr gesamt: "/>
+                        <p:outputLabel value="#{userDetailsBean.überstundenNach19}"/>
                         
-                    </p:column>
-                    
-                    <p:column headerText="Pause">
-                        
-                    </p:column>
-                    
-                    <p:column headerText="Sollarbeitszeit">
-                        
-                    </p:column>
-                    
-                    <p:column headerText="Istarbeitszeit">
-                        
-                    </p:column>
-                    
-                    <p:column headerText="Überstunden nach 19 Uhr">
-                        
-                    </p:column>
-                    
-                    <p:column headerText="Bemerkungen">
-                        <p:outputLabel value="#{entry.reason}"/>
-                    </p:column>
+                        <p:outputLabel value="Urlaubsanspruch am Ende Des Monats: "/>
+                        <p:outputLabel value="#{userDetailsBean.urlaubsanspruch}"/>
+                    </p:panelGrid>
                     
                     
-                    
-                </p:dataTable>
-                
-            </h:form>
+                     <p:commandLink ajax="false">
+                            <p:graphicImage name="/images/excel-icon.png" style="width: 3%"/>
+                            <p:dataExporter type="XLS" target="timeDataTable" fileName="Zeiten" encoding="iso-8859-1"/>
+                            
+                            
+                            
+                        </p:commandLink>
+                        <p:commandLink ajax="false">
+                            <p:graphicImage name="/images/pdf-icon.png" style="width: 3%"/>
+                            <p:dataExporter type="PDF" target="timeDataTable" fileName="Zeiten" encoding="iso-8859-1"/>
+                        </p:commandLink>
+                </f:facet>
+
+            </p:dataTable>
+
+        </h:form>
     </ui:define>
 
 

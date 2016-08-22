@@ -186,55 +186,64 @@ public class ScheduleView implements Serializable {
 
     public void addIstZeitEvent(ActionEvent actionEvent) {
         int diff = 0;
-        if (event.getId() == null) {
-            WorkTimeEvent e = new WorkTimeEvent(this.currentUser.getUsername() + " " + "Ist-Zeit", event.getStartDate(), event.getEndDate(), new WorkTime(currentUser, TimeConverterService.convertDateToLocalDateTime(this.event.getStartDate()), TimeConverterService.convertDateToLocalDateTime(this.event.getEndDate()), 0, "", ""));
 
-            e.getWorktime().setStartComment(startcomment);
-            e.getWorktime().setEndComment(endcomment);
-            e.getWorktime().setBreakTime(breaktime);
-
-            e.setStyleClass("istzeit");
-            IstZeitService.addIstTime(e.getWorktime());
-
-            eventModel.addEvent(e);
-
+        LocalDateTime startDT = TimeConverterService.convertDateToLocalDate(event.getStartDate()).atStartOfDay();
+        List<WorkTime> workTimes = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(currentUser, TimeConverterService.convertLocalDateTimeToDate(startDT), TimeConverterService.convertLocalDateTimeToDate(startDT.plusDays(1)));
+        if (event.getStartDate().after(event.getEndDate())) {
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Endzeitpunkt ist vor Startzeitpunkt!"));
+            FacesContext.getCurrentInstance().validationFailed();
         } else {
 
-            if (event instanceof WorkTimeEvent) {
-                WorkTime time = ((WorkTimeEvent) event).getWorktime();
-                LocalTime plus19 = LocalTime.of(19, 0);
-                if (time.getEndTime().toLocalTime().isAfter(plus19)) {
-                    diff -= time.getOvertimeAfter19() * 1.5;
-                    diff -= time.getStartTime().until(plus19, ChronoUnit.MINUTES);
-                } else {
-                    diff -= time.getStartTime().until(time.getEndTime(), ChronoUnit.MINUTES);
-                }
-                time.setStartTime(TimeConverterService.convertDateToLocalDateTime(event.getStartDate()));
-                time.setEndTime(TimeConverterService.convertDateToLocalDateTime(event.getEndDate()));
+            if (!workTimes.isEmpty() && event.getId() == null) {
+                FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Nur eine Arbeitszeit pro Tag!"));
+                FacesContext.getCurrentInstance().validationFailed();
+            } else if (event.getId() == null) {
+                WorkTimeEvent e = new WorkTimeEvent(this.currentUser.getUsername() + " " + "Ist-Zeit", event.getStartDate(), event.getEndDate(), new WorkTime(currentUser, TimeConverterService.convertDateToLocalDateTime(this.event.getStartDate()), TimeConverterService.convertDateToLocalDateTime(this.event.getEndDate()), 0, "", ""));
 
-                IstZeitService.update(time);
-            } else if (event instanceof AbsenceEvent) {
+                e.getWorktime().setStartComment(startcomment);
+                e.getWorktime().setEndComment(endcomment);
+                e.getWorktime().setBreakTime(breaktime);
+
+                e.setStyleClass("istzeit");
+                IstZeitService.addIstTime(e.getWorktime());
+
+            } else {
+
+                if (event instanceof WorkTimeEvent) {
+                    WorkTime time = ((WorkTimeEvent) event).getWorktime();
+                    LocalTime plus19 = LocalTime.of(19, 0);
+                    if (time.getEndTime().toLocalTime().isAfter(plus19)) {
+                        diff -= time.getOvertimeAfter19() * 1.5;
+                        diff -= time.getStartTime().until(plus19, ChronoUnit.MINUTES);
+                    } else {
+                        diff -= time.getStartTime().until(time.getEndTime(), ChronoUnit.MINUTES);
+                    }
+                    time.setStartTime(TimeConverterService.convertDateToLocalDateTime(event.getStartDate()));
+                    time.setEndTime(TimeConverterService.convertDateToLocalDateTime(event.getEndDate()));
+
+                    IstZeitService.update(time);
+                } else if (event instanceof AbsenceEvent) {
 
 //                AbsenceService.updateAbsence(((AbsenceEvent) event).getAbsence());
+                }
             }
 
-            eventModel.updateEvent(event);
-        }
-        if (event instanceof WorkTimeEvent) {
+            if (event instanceof WorkTimeEvent) {
 
-            WorkTime wt = ((WorkTimeEvent) event).getWorktime();
+                WorkTime wt = ((WorkTimeEvent) event).getWorktime();
 
-            LocalTime plus19 = LocalTime.of(19, 0);
-            if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
-                diff += wt.getOvertimeAfter19() * 1.5;
-                diff += wt.getStartTime().until(plus19, ChronoUnit.MINUTES);
-            } else {
-                diff += wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
+                LocalTime plus19 = LocalTime.of(19, 0);
+                if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
+                    diff += wt.getOvertimeAfter19() * 1.5;
+                    diff += wt.getStartTime().until(plus19, ChronoUnit.MINUTES);
+                } else {
+                    diff += wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
+                }
+                wt.getUser().setOverTimeLeft(wt.getUser().getOverTimeLeft() + diff);
+                BenutzerverwaltungService.updateUser(wt.getUser());
             }
-            wt.getUser().setOverTimeLeft(wt.getUser().getOverTimeLeft() + diff);
-            BenutzerverwaltungService.updateUser(wt.getUser());
+            event = new DefaultScheduleEvent();
         }
-        event = new DefaultScheduleEvent();
     }
 
     public void deleteIstZeitEvent(ActionEvent e) {
@@ -316,7 +325,12 @@ public class ScheduleView implements Serializable {
     }
 
     public void onDateSelect(SelectEvent selectEvent) {
-        event = new DefaultScheduleEvent("", (Date) selectEvent.getObject(), (Date) selectEvent.getObject());
+        Date sDate=(Date) selectEvent.getObject();
+        if(sDate.before(getStartDateToday())|| sDate.after(getEndDateToday())){
+            FacesContext.getCurrentInstance().validationFailed();
+        }
+            
+        event = new DefaultScheduleEvent("", sDate, sDate);
     }
 
     public AbsenceType getType() {
@@ -365,8 +379,6 @@ public class ScheduleView implements Serializable {
         absenceEvent = new AbsenceEvent();
     }
 
-
-
     public void deleteAcknowledgement(ActionEvent e) {
         if (absenceEvent.getId() == null) {
 
@@ -388,8 +400,8 @@ public class ScheduleView implements Serializable {
 
         }
     }
-    
-        private int calcAbsenceOvertime(Absence a) {
+
+    private int calcAbsenceOvertime(Absence a) {
         int overtime = 0;
         User u = a.getUser();
         List<SollZeit> sollZeiten = SollZeitenService.getSollZeitenByUser(u);

@@ -11,16 +11,14 @@ and open the template in the editor.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-
-
-
     <ui:param name="currentIndex" value="3" />
 
     <ui:define name="content">
         <h:form id="tableForm">
+
             <p:panel>
                 <h1 align="center">Benutzerverwaltung</h1>
-
+                <p:growl id="growl"/>
 
                 <p:dataTable id="usertable" var="user" value="#{benutzerverwaltungsBean.userList}" style="margin-top: 1.5%" >
 
@@ -138,7 +136,7 @@ and open the template in the editor.
 
                     <f:facet name="footer">
                         <p:row>
-                            <p:column><p:commandButton value="User speichern" action="#{benutzerverwaltungsBean.saveUser}" update=":tableForm:usertable" onsuccess="PF('userdlg').hide();"/></p:column>
+                            <p:column><p:commandButton value="User speichern" action="#{benutzerverwaltungsBean.saveUser}" update=":tableForm" onsuccess="PF('userdlg').hide();"/></p:column>
                             <p:column><p:commandButton value="Änderung verwerfen" action="#{benutzerverwaltungsBean.discardUserChanges}" oncomplete="PF('userdlg').hide();"/></p:column>
                         </p:row>
                     </f:facet>
@@ -154,9 +152,9 @@ and open the template in the editor.
                                 view="agendaWeek" timeFormat="HH:mm" axisFormat="HH:mm" locale="de"  ignoreTimezone="true" value="#{benutzerverwaltungsBean.timeModel}" 
                                 columnFormat="month:'ddd', week:'dddd', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'">
 
-                        <p:ajax event="dateSelect" listener="#{benutzerverwaltungsBean.onDateSelect}" update=":weekTimeSelectForm:eventDetails sollZeitText" oncomplete="PF('eventDialog').show();" />
+                        <p:ajax event="dateSelect" listener="#{benutzerverwaltungsBean.onDateSelect}" update=":tableForm:growl :weekTimeSelectForm:eventDetails sollZeitText" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('eventDialog').show()" />
                         <p:ajax event="eventSelect" listener="#{benutzerverwaltungsBean.onEventSelect}" update=":weekTimeSelectForm:eventDetails" oncomplete="PF('eventDialog').show();" />
-                        <p:ajax event="eventResize" listener="#{benutzerverwaltungsBean.onEventResize}" update="sollZeitText"/>
+                        <p:ajax event="eventResize" listener="#{benutzerverwaltungsBean.onEventResize}" update=" :tableForm:growl weektimeSchedule sollZeitText"/>
 
                     </p:schedule>
                     <f:facet name="footer">
@@ -165,7 +163,7 @@ and open the template in the editor.
 
                         <p:outputLabel value="Gesamte Sollzeit:" />
                         <p:inputText id="sollZeitText" value="#{benutzerverwaltungsBean.newWeekTime}" />
-                        <p:commandButton value="Zeiten verteilen" action="#{benutzerverwaltungsBean.distributeTimes}" update="weektimeSchedule"/>
+                        <p:commandButton value="Zeiten verteilen" action="#{benutzerverwaltungsBean.distributeTimes}" update="sollZeitText weektimeSchedule"/>
                     </f:facet>
                 </p:panel>            
             </h:form>
@@ -181,8 +179,8 @@ and open the template in the editor.
                     <p:outputLabel for="to" value="To:" />
                     <p:calendar id="to" value="#{benutzerverwaltungsBean.curEvent.endDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"  showOn="button"/>
 
-                    <p:commandButton id="addButton" value="Save" action="#{benutzerverwaltungsBean.addEvent}" update=":weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  onsuccess="PF('eventDialog').hide();" />
-                    <p:commandButton id="delButton" value="Remove" action="#{benutzerverwaltungsBean.removeEvent}" update=":weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  onsuccess="PF('eventDialog').hide();" />
+                    <p:commandButton id="addButton" value="Save" action="#{benutzerverwaltungsBean.addWorkTimeEvent}" update=":tableForm:growl :weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  oncomplete="if (args &amp;&amp; !args.validationFailed) PF('eventDialog').hide()" />
+                    <p:commandButton id="delButton" value="Remove" action="#{benutzerverwaltungsBean.removeWorkTimeEvent}" update=":weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  onsuccess="PF('eventDialog').hide();" />
                     <p:commandButton type="reset" value="Reset" />
                 </h:panelGrid>
             </h:form>
@@ -210,7 +208,7 @@ and open the template in the editor.
                     <p:outputLabel value="Random new Password: "/>
                     <p:inputText value="#{benutzerverwaltungsBean.resetPWString}" required="true" autocomplete="false"/>
 
-                    <p:commandButton id="resetPassword" value="Reset" action="#{benutzerverwaltungsBean.resetPassword}" oncomplete="PF('passwordResetDialog').hide();" />
+                    <p:commandButton id="resetPassword" value="Reset" action="#{benutzerverwaltungsBean.resetPassword}" update=":tableForm:growl" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('passwordResetDialog').hide()"/>
                     <p:commandButton  value="Cancel" oncomplete="PF('passwordResetDialog').hide();"/>
                 </h:panelGrid>
             </h:form>

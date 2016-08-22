@@ -20,6 +20,7 @@ import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
 import at.htlpinkafeld.service.UserHistoryService;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -44,6 +45,13 @@ public class userDetailsBean {
     LocalDate selectedDate;
 
     List<TimeRowDisplay> timerowlist;
+
+    double saldo;
+    double überstundenNach19;
+    int urlaubsanspruch;
+
+    int selectedYear;
+    List<Integer> years;
 
     public List<TimeRowDisplay> getTimerowlist() {
         return timerowlist;
@@ -81,18 +89,27 @@ public class userDetailsBean {
 
         SelectItem si;
 
-//        dates.clear();
+        saldo = 0;
+        überstundenNach19 = 0;
 
-        for (UserHistoryEntry uhe : UserHistoryService.getUserHistoryEntriesForUser(BenutzerverwaltungService.getUserByUsername(selectedUser))) {
-            si = new SelectItem(uhe.getTimestamp().toLocalDate(), uhe.getTimestamp().toLocalDate().format(DateTimeFormatter.ofPattern("MMMM yyyy")));
+        this.selectedDate = null;
 
-            if (this.selectedDate == null) {
-                this.setSelectedDate((LocalDate) si.getValue());
-            }
+        dates.clear();
 
-            this.dates.add(si);
+        List<UserHistoryEntry> uhelist = UserHistoryService.getUserHistoryEntriesForUser(BenutzerverwaltungService.getUserByUsername(selectedUser));
+
+        int firstyear = uhelist.get(0).getTimestamp().getYear();
+        int lastyear = uhelist.get(uhelist.size() - 1).getTimestamp().getYear();
+
+        List<Integer> intlist = new ArrayList<>();
+
+        for (int i = firstyear; i <= lastyear; i++) {
+            intlist.add(i);
         }
 
+        this.setSelectedYear(firstyear);
+
+        this.setYears(intlist);
     }
 
     public List<SelectItem> getDates() {
@@ -109,28 +126,34 @@ public class userDetailsBean {
 
     public void setSelectedDate(LocalDate selectedDate) {
         this.selectedDate = selectedDate;
+
+//        loadMonthOverview(null);
         
-        loadMonthOverview(null);
+        for(UserHistoryEntry uhe: UserHistoryService.getUserHistoryEntriesForUserBetweenDates(BenutzerverwaltungService.getUserByUsername(selectedUser), selectedDate, selectedDate.plusDays(1))){
+            this.urlaubsanspruch = uhe.getVacation();
+        }
+
     }
 
     public void loadMonthOverview(ActionEvent e) {
-
-        System.out.println("command 1");
-        
         this.timerowlist = new ArrayList<>();
 
         TimeRowDisplay trd;
+        
+        saldo = 0;
+        überstundenNach19 = 0;
 
         User currentUser = BenutzerverwaltungService.getUser(selectedUser);
 
         int max = this.selectedDate.lengthOfMonth();
 
         LocalDate temp;
+        temp = selectedDate.withDayOfMonth(1);
 
         for (int i = 0; i < max; i++) {
-            temp = selectedDate.plus(i, ChronoUnit.DAYS);
 
             trd = new TimeRowDisplay(new Holiday(temp, "nicht erschienen!"));
+            trd.setReason("");
 
             Date start = TimeConverterService.convertLocalDateToDate(temp);
             Date end = Date.from(temp.atTime(23, 59).atZone(ZoneId.systemDefault()).toInstant());
@@ -139,18 +162,99 @@ public class userDetailsBean {
             List<Absence> absencelist = AbsenceService.getAbsenceByUserBetweenDates(currentUser, start, end);
             List<Holiday> holidaylist = HolidayService.getHolidayBetweenDates(start, end);
 
+            if (!worklist.isEmpty()) {
+                trd = new TimeRowDisplay(worklist.get(0));
+
+                saldo += Double.parseDouble(trd.getWorkTime()) - Double.parseDouble(trd.getSollZeit());
+                überstundenNach19 += Double.parseDouble(trd.getOverTime19plus());
+
+                if (worklist.size() > 1) {
+                    for (WorkTime w : worklist.subList(1, worklist.size() - 1)) {
+                        trd.setReason(trd.getReason() + " " + worklist.size() + ". Arbeitszeit von " + w.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " bis " + w.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " ");
+                    }
+                }
+            }
+
+            if (!holidaylist.isEmpty()) {
+                trd.setReason(holidaylist.get(0).getHolidayComment() + " ");
+            }
+            if (!absencelist.isEmpty()) {
+                for (Absence a : absencelist) {
+                    trd.setReason(trd.getReason() + a.getAbsenceType().getAbsenceName() + " " + a.getReason() + " ");
+                }
+            }
+
             if (worklist.isEmpty() && absencelist.isEmpty() && holidaylist.isEmpty()) {
                 SollZeit sollzeit = SollZeitenService.getSollZeitByUserAndDayOfWeek(currentUser, temp.getDayOfWeek());
 
                 if (sollzeit == null) {
-                    trd = new TimeRowDisplay(new Holiday(temp, "wird nicht gearbeitet"));
+                    trd = new TimeRowDisplay(new Holiday(temp, ""));
                 }
             }
-
-            System.out.println(trd.getDayOfMonth() + " " + trd.getReason());
             this.timerowlist.add(trd);
+
+            temp = temp.plus(1, ChronoUnit.DAYS);
         }
 
+    }
+
+    public double getSaldo() {
+        return saldo;
+    }
+
+    public void setSaldo(double saldo) {
+        this.saldo = saldo;
+    }
+
+    public double getÜberstundenNach19() {
+        return überstundenNach19;
+    }
+
+    public void setÜberstundenNach19(double überstundenNach19) {
+        this.überstundenNach19 = überstundenNach19;
+    }
+
+    public int getUrlaubsanspruch() {
+        return urlaubsanspruch;
+    }
+
+    public void setUrlaubsanspruch(int urlaubsanspruch) {
+        this.urlaubsanspruch = urlaubsanspruch;
+    }
+
+    public int getSelectedYear() {
+        return selectedYear;
+    }
+
+    public void setSelectedYear(int selectedYear) {
+        this.selectedYear = selectedYear;
+    }
+
+    public List<Integer> getYears() {
+        return years;
+    }
+
+    public void setYears(List<Integer> years) {
+        this.years = years;
+
+        LocalDate start = LocalDate.of(selectedYear, Month.JANUARY, 1);
+        LocalDate end = start.withDayOfYear(start.lengthOfYear());
+
+        SelectItem si;
+
+        this.selectedDate = null;
+
+        for (UserHistoryEntry uhe : UserHistoryService.getUserHistoryEntriesForUserBetweenDates(BenutzerverwaltungService.getUserByUsername(selectedUser), start, end)) {
+
+            si = new SelectItem(uhe.getTimestamp().toLocalDate(), uhe.getTimestamp().toLocalDate().format(DateTimeFormatter.ofPattern("MMMM")));
+
+            if (this.selectedDate == null) {
+                this.setSelectedDate((LocalDate) si.getValue());
+                urlaubsanspruch = uhe.getVacation();
+            }
+
+            this.dates.add(si);
+        }
     }
 
 }

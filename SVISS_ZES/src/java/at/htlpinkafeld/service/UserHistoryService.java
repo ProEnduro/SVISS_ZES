@@ -9,6 +9,7 @@ import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.UserHistory_DAO;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserHistoryEntry;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -25,5 +26,9 @@ public class UserHistoryService {
     
     public static List<UserHistoryEntry> getUserHistoryEntriesForUser(User u){
         return userHistoryDAO.getUserHistoryEntrysByUser(u);
+    }
+    
+    public static List<UserHistoryEntry> getUserHistoryEntriesForUserBetweenDates(User u, LocalDate start, LocalDate end){
+        return userHistoryDAO.getUserHistoryEntrysByUser_BetweenDates(u, start, end);
     }
 }
