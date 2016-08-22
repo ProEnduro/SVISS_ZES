@@ -6,13 +6,12 @@
 package at.htlpinkafeld.dao.dummy;
 
 import at.htlpinkafeld.dao.interf.UserHistory_DAO;
-import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserHistoryEntry;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import sun.nio.cs.HistoricallyNamedCharset;
 
 /**
  *
@@ -39,6 +38,20 @@ class UserHistory_InMemoryDAO extends Base_InMemoryDAO<UserHistoryEntry> impleme
         for (UserHistoryEntry uhe : super.getList()) {
             if (uhe.getUser().equals(u)) {
                 historyEntrys.add(clone(uhe));
+            }
+        }
+        return historyEntrys;
+    }
+
+    @Override
+    public List<UserHistoryEntry> getUserHistoryEntrysByUser_BetweenDates(User user, LocalDate startDate, LocalDate endDate) {
+        List<UserHistoryEntry> historyEntrys = new LinkedList<>();
+        for (UserHistoryEntry uhe : super.getList()) {
+            if (uhe.getUser().equals(user)) {
+                if ((uhe.getTimestamp().toLocalDate().isAfter(startDate) || uhe.getTimestamp().toLocalDate().isEqual(startDate))
+                        && uhe.getTimestamp().toLocalDate().isBefore(endDate)) {
+                    historyEntrys.add(clone(uhe));
+                }
             }
         }
         return historyEntrys;

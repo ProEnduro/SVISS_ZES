@@ -9,10 +9,14 @@ import at.htlpinkafeld.dao.interf.UserHistory_DAO;
 import at.htlpinkafeld.dao.util.WrappedConnection;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserHistoryEntry;
+import at.htlpinkafeld.service.TimeConverterService;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +76,32 @@ class UserHistory_JDBCDAO extends Base_JDBCDAO<UserHistoryEntry> implements User
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                 Statement stmt = con.getConn().createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + u.getUserNr() + " " + SQL_ORDER_BY_LINE)) {
+
+            while (rs.next()) {
+                historyEntrys.add(getEntityFromResultSet(rs));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return historyEntrys;
+    }
+
+    @Override
+    public List<UserHistoryEntry> getUserHistoryEntrysByUser_BetweenDates(User user, LocalDate startDateU, LocalDate endDateU) {
+        List<UserHistoryEntry> historyEntrys = new ArrayList<>();
+
+        Date startDate = new Date(TimeConverterService.convertLocalDateToDate(startDateU).getTime());
+        Date endDate = new Date(TimeConverterService.convertLocalDateToDate(endDateU).getTime());
+
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                PreparedStatement stmt = con.getConn().prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + user.getUserNr() + " AND "
+                        + "(" + MONTHTS_COL + " >= ? AND  " + MONTHTS_COL + " < ? " + SQL_ORDER_BY_LINE)) {
+
+            stmt.setDate(1, startDate);
+            stmt.setDate(2, endDate);
+            ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
                 historyEntrys.add(getEntityFromResultSet(rs));

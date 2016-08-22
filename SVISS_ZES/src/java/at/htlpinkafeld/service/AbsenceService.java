@@ -36,8 +36,8 @@ public class AbsenceService {
     public static List<Absence> getAbsenceByUser(User u) {
         return ABSENCE_DAO.getAbsencesByUser(u);
     }
-    
-    public static List<Absence> getAbsenceByUserBetweenDates(User u, Date start, Date end){
+
+    public static List<Absence> getAbsenceByUserBetweenDates(User u, Date start, Date end) {
         return ABSENCE_DAO.getAbsencesByUser_BetweenDates(u, start, end);
     }
 
@@ -88,6 +88,5 @@ public class AbsenceService {
     public List<Absence> getAbsencesByUserBetweenDates(User user, Date startDateU, Date endDateU) {
         return ABSENCE_DAO.getAbsencesByUser_BetweenDates(user, startDateU, endDateU);
     }
-    
-    
+
 }

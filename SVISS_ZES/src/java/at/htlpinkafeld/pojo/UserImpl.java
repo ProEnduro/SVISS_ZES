@@ -36,6 +36,7 @@ public class UserImpl implements User {
         userNr = -1;
         vacationLeft = 25;
         overTimeLeft = 0;
+        weekTime = 0.0;
     }
 
     public UserImpl(User u) {

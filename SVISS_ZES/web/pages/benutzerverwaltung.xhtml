@@ -210,7 +210,7 @@ and open the template in the editor.
                     <p:outputLabel value="Random new Password: "/>
                     <p:inputText value="#{benutzerverwaltungsBean.resetPWString}" required="true" autocomplete="false"/>
 
-                    <p:commandButton id="resetPassword" value="Reset" action="#{benutzerverwaltungsBean.resetPWString}" oncomplete="PF('passwordResetDialog').hide();" />
+                    <p:commandButton id="resetPassword" value="Reset" action="#{benutzerverwaltungsBean.resetPassword}" oncomplete="PF('passwordResetDialog').hide();" />
                     <p:commandButton  value="Cancel" oncomplete="PF('passwordResetDialog').hide();"/>
                 </h:panelGrid>
             </h:form>

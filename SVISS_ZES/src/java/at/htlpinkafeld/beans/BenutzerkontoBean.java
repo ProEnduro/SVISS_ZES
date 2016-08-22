@@ -55,7 +55,7 @@ public class BenutzerkontoBean implements Validator {
 
     public BenutzerkontoBean() {
         context = FacesContext.getCurrentInstance();
-        MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
+        masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
         user = masterBean.getUser();
     }
 
@@ -135,10 +135,12 @@ public class BenutzerkontoBean implements Validator {
         currentSollZeiten = SollZeitenService.getSollZeitenByUser(user);
 
         for (SollZeit sz : currentSollZeiten) {
-            LocalDate curDate = pointDate.with(TemporalAdjusters.firstInMonth(sz.getDay()));
-            DefaultScheduleEvent de = new DefaultScheduleEvent("", TimeConverterService.convertLocalTimeToDate(curDate, sz.getSollStartTime()),
-                    TimeConverterService.convertLocalDateTimeToDate(LocalDateTime.of(curDate, sz.getSollEndTime())), curDate.getDayOfWeek());
-            sollzeitModel.addEvent(de);
+            if (!sz.getSollStartTime().equals(sz.getSollEndTime())) {
+                LocalDate curDate = pointDate.with(TemporalAdjusters.firstInMonth(sz.getDay()));
+                DefaultScheduleEvent de = new DefaultScheduleEvent("", TimeConverterService.convertLocalTimeToDate(curDate, sz.getSollStartTime()),
+                        TimeConverterService.convertLocalDateTimeToDate(LocalDateTime.of(curDate, sz.getSollEndTime())), curDate.getDayOfWeek());
+                sollzeitModel.addEvent(de);
+            }
         }
     }
 

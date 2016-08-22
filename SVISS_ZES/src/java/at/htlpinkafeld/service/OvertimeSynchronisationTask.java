@@ -16,6 +16,7 @@ import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
@@ -80,13 +81,18 @@ public class OvertimeSynchronisationTask implements Runnable {
             }
             overtime -= wt.getBreakTime();
             DayOfWeek sDay = wt.getStartTime().getDayOfWeek();
+
+        }
+        LocalDate startDateL = TimeConverterService.convertDateToLocalDate(startDate);
+        LocalDate endDateL = TimeConverterService.convertDateToLocalDate(endDate);
+
+        for (LocalDate date = startDateL; startDateL.isBefore(endDateL); date = date.plusDays(1)) {
             for (SollZeit sz : sollZeiten) {
-                if (sz.getDay().equals(sDay)) {
+                if (sz.getDay().equals(date.getDayOfWeek())) {
                     overtime -= sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
                 }
             }
         }
-
 //        overtime -= u.getWeekTime() * 60;
         List<Absence> absences = ABSENCE_DAO.getAbsencesByUser_BetweenDates(u, startDate, endDate);
 
@@ -126,10 +132,11 @@ public class OvertimeSynchronisationTask implements Runnable {
                     for (int i = 0; i < dayNum; i++, sDay.plus(1)) {
                         for (SollZeit sz : sollZeiten) {
                             if (sz.getDay().equals(sDay)) {
-                                int diff;
+                                int diff = 0;
                                 if (i == 0 || i == (dayNum - 1)) {
                                     if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime()) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
                                         diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
+                                    } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime()) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime())) {
                                     } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime())) {
                                         diff = (int) a.getStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
                                     } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {

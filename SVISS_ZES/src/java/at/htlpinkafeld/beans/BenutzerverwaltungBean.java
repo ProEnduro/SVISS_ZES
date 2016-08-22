@@ -59,7 +59,7 @@ public class BenutzerverwaltungBean {
     private LocalDate pointDate;
 
     private Double weekTime;
-    
+
     private String resetPWString;
 
     @PostConstruct
@@ -101,6 +101,10 @@ public class BenutzerverwaltungBean {
 
     public void saveUser() {
         if (selectedUser.getUserNr() == -1) {
+            if (selectedUser.getPass() == null) {
+                resetPWString = getResetPWString();
+                resetPassword();
+            }
             userlist.add(selectedUser);
             BenutzerverwaltungService.insertUser(selectedUser);
         } else {
@@ -110,11 +114,7 @@ public class BenutzerverwaltungBean {
         }
         if (!newSollZeiten.isEmpty()) {
             for (SollZeit sz : newSollZeiten) {
-                if (currentSollZeiten.contains(sz)) {
-                    SollZeitenService.updateZeit(sz);
-                } else {
-                    SollZeitenService.insertZeit(sz);
-                }
+                SollZeitenService.insertZeit(sz);
             }
             for (SollZeit sz : currentSollZeiten) {
                 if (!newSollZeiten.contains(sz)) {
@@ -133,15 +133,16 @@ public class BenutzerverwaltungBean {
         this.resetPWString = resetPWString;
     }
 
+    //TODO: Praktischer machen (neuer User email etc.)
     public void resetPassword() {
         selectedUser.setPass(PasswordEncryptionService.digestPassword(resetPWString));
         if (selectedUser.getUserNr() == -1) {
             userlist.add(selectedUser);
-            BenutzerverwaltungService.insertUser(selectedUser);
+//            BenutzerverwaltungService.insertUser(selectedUser);
         } else {
             userlist.remove(selectedUser);
             userlist.add(selectedUser);
-            BenutzerverwaltungService.updateUser(selectedUser);
+//            BenutzerverwaltungService.updateUser(selectedUser);
         }
         EmailService.sendUserNewPasswordEmail(resetPWString, selectedUser);
     }

@@ -20,12 +20,19 @@ public class UserConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String string) {
-        return UserProxy.fromString(string);
+        if (string != null && !string.contentEquals("")) {
+            return UserProxy.fromString(string);
+        }
+        return null;
     }
 
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object o) {
-        return o.toString();
+        if (o != null) {
+            return o.toString();
+        } else {
+            return null;
+        }
     }
 
 }

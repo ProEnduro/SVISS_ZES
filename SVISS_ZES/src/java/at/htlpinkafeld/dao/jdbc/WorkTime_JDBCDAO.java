@@ -138,7 +138,7 @@ public class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime
 
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                 PreparedStatement stmt = con.getConn().prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + user.getUserNr() + " AND "
-                        + "(" + STARTTIME_COL + " >= ? AND  " + ENDTIME_COL + " < ? " + SQL_ORDER_BY_LINE)) {
+                        + "(" + STARTTIME_COL + " >= ? AND  " + ENDTIME_COL + " < ? )" + SQL_ORDER_BY_LINE)) {
 
             stmt.setDate(1, startDate);
             stmt.setDate(2, endDate);

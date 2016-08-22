@@ -5,9 +5,11 @@
  */
 package at.htlpinkafeld.dao.interf;
 
+import at.htlpinkafeld.dao.util.DAOException;
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -16,7 +18,17 @@ import java.util.List;
  */
 public interface SollZeiten_DAO extends Base_DAO<SollZeit> {
 
+    @Deprecated
+    @Override
+    public void delete(SollZeit o) throws DAOException;
+
+    @Deprecated
+    @Override
+    public void update(SollZeit o) throws DAOException;
+
     public abstract List<SollZeit> getSollZeitenByUser(User u);
-    
+
     public abstract SollZeit getSollZeitenByUser_DayOfWeek(User u, DayOfWeek d);
+
+    public abstract SollZeit getSollZeitenByUser_DayOfWeek_ValidDate(User u, DayOfWeek d, LocalDateTime ldt);
 }

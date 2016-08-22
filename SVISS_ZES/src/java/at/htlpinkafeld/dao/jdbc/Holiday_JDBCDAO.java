@@ -69,9 +69,12 @@ public class Holiday_JDBCDAO extends Base_JDBCDAO<Holiday> implements Holiday_DA
         Date endDate = new Date(endDateU.getTime());
 
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
-                PreparedStatement stmt = con.getConn().prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE " + HOLIDAYDATE_COL + " >= ? AND  " + HOLIDAYDATE_COL + " < ? " + SQL_ORDER_BY_LINE)) {
+                PreparedStatement stmt = con.getConn().prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE (" + HOLIDAYDATE_COL + " >= ? AND  " + HOLIDAYDATE_COL + " < ?) OR ("
+                        + HOLIDAYDATE_COL + " = ? AND " + HOLIDAYDATE_COL + " = ?) " + SQL_ORDER_BY_LINE)) {
             stmt.setDate(1, startDate);
             stmt.setDate(2, endDate);
+            stmt.setDate(3, startDate);
+            stmt.setDate(4, endDate);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 holidays.add(getEntityFromResultSet(rs));
