@@ -42,7 +42,7 @@ public class BenutzerverwaltungService {
 
     public static void insertUser(User u) {
         userdao.insert(u);
-        UHDAO.insert(new UserHistoryEntry(LocalDate.now().withDayOfMonth(1).atStartOfDay().minusNanos(1), u, u.getOverTimeLeft(), u.getVacationLeft()));
+        UHDAO.insert(new UserHistoryEntry(u.getHiredate().atStartOfDay(), u, u.getOverTimeLeft(), u.getVacationLeft()));
     }
 
     public static void updateUser(User u) {
