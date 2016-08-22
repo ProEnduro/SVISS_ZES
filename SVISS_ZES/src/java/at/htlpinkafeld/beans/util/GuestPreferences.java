@@ -99,7 +99,7 @@ public class GuestPreferences implements Serializable {
                     }
                 } else if (prop.containsKey(this.user.getUsername()) == false) {
                     try (FileOutputStream outSF = new FileOutputStream(file)) {
-                        prop.setProperty(this.user.getUsername(), "aristo");
+                        prop.setProperty(this.user.getUsername(), "delta");
                         prop.store(outSF, "Themes_of_user");
                         outSF.close();
                     }
