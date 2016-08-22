@@ -131,7 +131,7 @@
     <managed-bean>
         <managed-bean-name>alleAbwesenheitenBean</managed-bean-name>
         <managed-bean-class>at.htlpinkafeld.beans.alleAbwesenheitenBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
+        <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
     <managed-bean>
         <managed-bean-name>alleUserBean</managed-bean-name>

@@ -19,9 +19,11 @@ and open the template in the editor.
             <h:form>
                 
                 <p:panelGrid columns="2" style="border-style: hidden">
+                   
                     <p:selectOneMenu value="#{alleAbwesenheitenBean.selectedUser}">
                         <f:selectItems value="#{alleAbwesenheitenBean.allUsers}"/>
                     </p:selectOneMenu>
+                    
                     
                     <p:commandButton value="load" actionListener="#{alleAbwesenheitenBean.loadAllAbsenceByUser}" update=":absenceform:absenceid"/>
                 </p:panelGrid>

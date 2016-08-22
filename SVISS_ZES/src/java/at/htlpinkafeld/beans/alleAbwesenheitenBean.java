@@ -18,9 +18,10 @@ import java.util.List;
  *
  * @author msi
  */
+
 public class alleAbwesenheitenBean {
     List<Absence> absence;
- 
+    
     User currentUser;
     
     private String selectedUser;
@@ -28,6 +29,7 @@ public class alleAbwesenheitenBean {
 
     public alleAbwesenheitenBean() {
         absence=AbsenceService.getAllAbsences();
+        
         
         this.loadUserSelect();
         
