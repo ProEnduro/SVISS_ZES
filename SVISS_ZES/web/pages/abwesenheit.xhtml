@@ -16,91 +16,91 @@ and open the template in the editor.
         <ui:param name="currentIndex" value="1" />
 
         <ui:define name="content">
-            <h:form id="abwesenheitForm">
-                <p:panel>
-                    <h1 align="center">Abwesenheiten eintragen</h1>
-                    <p:growl id="messages" showDetail="true"/>
 
+            <p:panel>
+                <h1 align="center">Abwesenheiten eintragen</h1>
+                <p:growl id="messages" showDetail="true"/>
+                <h:form id="abwesenheitScheduleForm">
                     <p:schedule firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.eventModel}" draggable="false" resizable="false" widgetVar="myschedule" timeZone="GMT+2" locale="de" 
                                 columnFormat="month:'ddd', week:'dddd - dd.MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
 
-                        <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
-                        <p:ajax event="eventSelect" listener="#{scheduleView.onEventInAbwesenheitenSelect}" update="eventDetails :absenceDialogForm:absenceDialogID :worktimeDialogForm:worktimeDialogID :feiertagDialogForm:feiertagDialogID" />
+                        <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update=":addAbsenceDlgForm:eventDetails" oncomplete="PF('eventDialog').show();" />
+                        <p:ajax event="eventSelect" listener="#{scheduleView.onEventInAbwesenheitenSelect}" update=":addAbsenceDlgForm:eventDetails :absenceDialogForm:absenceDialogID :worktimeDialogForm:worktimeDialogID :feiertagDialogForm:feiertagDialogID" />
 
                     </p:schedule>
+                </h:form>
+                <script type="text/javascript">
+                    PrimeFaces.locales['de'] = {
+                        month: 'Monat',
+                        week: 'Woche',
+                        day: 'Tag',
+                        firstDay: 1,
+                        monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                        monthNamesShort: ['Jan', 'Feb', 'Mrz', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+                        dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+                        dayNamesShort: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+                        dayNamesMin: ['S', 'M', 'D', 'M ', 'D', 'F ', 'S'],
+                        currentText: 'Heute'
+                    };
+                </script>
 
-                    <script type="text/javascript">
-                        PrimeFaces.locales['de'] = {
-                            month: 'Monat',
-                            week: 'Woche',
-                            day: 'Tag',
-                            firstDay: 1,
-                            monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
-                            monthNamesShort: ['Jan', 'Feb', 'Mrz', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
-                            dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
-                            dayNamesShort: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
-                            dayNamesMin: ['S', 'M', 'D', 'M ', 'D', 'F ', 'S'],
-                            currentText: 'Heute'
-                        };
-                    </script>
-
-                    <style type="text/css">
-                        .value {
-                            width: 1000px;
-                        }
-                        .ui-state-highlight {
-                            background: lightgray !important;
-                        }
-                        .fc-event-inner{
-                            background-color: red;
-                            border-color: red;
-                            color: white;
-                        }
-                        .istzeit .fc-event-inner{
-                            background-color: lightblue;
-                            color: black;
-                        }
-                        .istzeit_acknowledged .fc-event-inner{
-                            background-color: darkblue;
-                            color: black;
-                        }
-                        .holiday .fc-event-inner{
-                            background-color: lightpink;
-                            color: white;
-                        }
-                        .holiday_acknowledged .fc-event-inner{
-                            background-color: darkmagenta;
-                            color: white;
-                        }
-                        .time_compensation .fc-event-inner{
-                            background-color: lightgreen;
-                            color: white;
-                        }
-                        .time_compensation_acknowledged .fc-event-inner{
-                            background-color: darkgreen;
-                            color: white;
-                        }
-                        .medical_leave .fc-event-inner{
-                            background-color: lightcoral;
-                            color: white;
-                        }
-                        .medical_leave_acknowledged .fc-event-inner{
-                            background-color: darkred;
-                            color: white;
-                        }
-                        .business-related_absence .fc-event-inner{
-                            background-color: yellow;
-                            color: black;
-                        }
-                        .business-related_absence_acknowledged .fc-event-inner{
-                            background-color: orange;
-                            color: black;
-                        }
-                        .feiertag .fc-event-inner{
-                            background-color: #33ffcc;
-                        }
-                    </style>
-
+                <style type="text/css">
+                    .value {
+                        width: 1000px;
+                    }
+                    .ui-state-highlight {
+                        background: lightgray !important;
+                    }
+                    .fc-event-inner{
+                        background-color: red;
+                        border-color: red;
+                        color: white;
+                    }
+                    .istzeit .fc-event-inner{
+                        background-color: lightblue;
+                        color: black;
+                    }
+                    .istzeit_acknowledged .fc-event-inner{
+                        background-color: darkblue;
+                        color: black;
+                    }
+                    .holiday .fc-event-inner{
+                        background-color: lightpink;
+                        color: white;
+                    }
+                    .holiday_acknowledged .fc-event-inner{
+                        background-color: darkmagenta;
+                        color: white;
+                    }
+                    .time_compensation .fc-event-inner{
+                        background-color: lightgreen;
+                        color: white;
+                    }
+                    .time_compensation_acknowledged .fc-event-inner{
+                        background-color: darkgreen;
+                        color: white;
+                    }
+                    .medical_leave .fc-event-inner{
+                        background-color: lightcoral;
+                        color: white;
+                    }
+                    .medical_leave_acknowledged .fc-event-inner{
+                        background-color: darkred;
+                        color: white;
+                    }
+                    .business-related_absence .fc-event-inner{
+                        background-color: yellow;
+                        color: black;
+                    }
+                    .business-related_absence_acknowledged .fc-event-inner{
+                        background-color: orange;
+                        color: black;
+                    }
+                    .feiertag .fc-event-inner{
+                        background-color: #33ffcc;
+                    }
+                </style>
+                <h:form id="addAbsenceDlgForm">
                     <p:dialog widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip">
                         <h:panelGrid id="eventDetails" columns="2">
                             <p:outputLabel for="from" value="From:" />
@@ -122,8 +122,9 @@ and open the template in the editor.
                             </p:selectOneRadio>
                         </h:panelGrid>
                     </p:dialog> 
-                </p:panel>
-            </h:form>
+                </h:form>
+            </p:panel>
+
             <h:form id="absenceDialogForm">
 
                 <p:dialog id="absenceDialogID" widgetVar="absenceDialog" header="Absence Details" showEffect="clip" hideEffect="clip" closeOnEscape="true">
@@ -140,7 +141,7 @@ and open the template in the editor.
                         <p:outputLabel for="reason" value="Reason:"/>
                         <p:inputTextarea id="reason" value="#{scheduleView.reason}" readonly="true"/>
 
-                        <p:commandButton value="Delete" actionListener="#{scheduleView.deleteEvent}" oncomplete="PF('absenceDialog').hide();" update=":abwesenheitForm"/>
+                        <p:commandButton value="Delete" actionListener="#{scheduleView.deleteEvent}" oncomplete="PF('absenceDialog').hide();" update=":abwesenheitScheduleForm"/>
                     </h:panelGrid>
                 </p:dialog> 
             </h:form>
