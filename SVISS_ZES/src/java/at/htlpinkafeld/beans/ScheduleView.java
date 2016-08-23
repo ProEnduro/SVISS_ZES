@@ -45,56 +45,56 @@ import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
 
 public class ScheduleView implements Serializable, DAODML_Observer {
-    
+
     AbsenceType type;
     List<AbsenceType> types;
     User currentUser;
-    
+
     private ScheduleModel istZeitEventModel;
-    
+
     private AcknowledgeLazyScheduleModel acknowledgementModel;
     private AllTimeLazyScheduleModel allTimesModel;
     private AlleAbwesenheitenLazyScheduleModel alleAbwesenheitenModel;
-    
+
     private ScheduleEvent event = new DefaultScheduleEvent();
-    
+
     private AbsenceEvent absenceEvent = new AbsenceEvent();
     private WorkTimeEvent worktimeEvent = new WorkTimeEvent();
-    
+
     private String selectedUser;
     private List<String> allUsers;
-    
+
     double verbleibend;
     double overtimeleft;
-    
+
     String startcomment;
     String endcomment;
     String reason;
-    
+
     int breaktime;
-    
+
     @PostConstruct
     public void init() {
-        
+
         BenutzerverwaltungService.addUserObserver(this);
-        
+
         types = AbsenceService.getList();
         type = types.get(0);
-        
+
         FacesContext context = FacesContext.getCurrentInstance();
         MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
         currentUser = masterBean.getUser();
-        
+
         istZeitEventModel = new IstZeitLazyScheduleModel(currentUser);
         acknowledgementModel = new AcknowledgeLazyScheduleModel();
         allTimesModel = new AllTimeLazyScheduleModel();
         alleAbwesenheitenModel = new AlleAbwesenheitenLazyScheduleModel();
-        
+
         this.reloadAbwesenheiten();
     }
-    
+
     public int getBreaktime() {
-        
+
         if (event.getStartDate() != null && event.getEndDate() != null) {
             if (IstZeitService.breakTimeBooleanCalc(event.getStartDate(), event.getEndDate())) {
                 return 30;
@@ -102,49 +102,49 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                 return 0;
             }
         }
-        
+
         return breaktime;
     }
-    
+
     public void setBreaktime(int breaktime) {
         this.breaktime = breaktime;
     }
-    
+
     public ScheduleModel getIstZeitEventModel() {
         return istZeitEventModel;
     }
-    
+
     public ScheduleModel getAcknowlegementModel() {
         return acknowledgementModel;
     }
-    
+
     public ScheduleEvent getEvent() {
         return event;
     }
-    
+
     public void setEvent(ScheduleEvent event) {
         this.event = event;
     }
-    
+
     public void addAbsenceEvent(ActionEvent actionEvent) {
-        
+
         LocalDateTime startDT = TimeConverterService.convertDateToLocalDateTime(event.getStartDate());
         LocalDateTime endDT = TimeConverterService.convertDateToLocalDateTime(event.getEndDate());
-        
+
         if (event.getStartDate().after(event.getEndDate())) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Failed", "Endzeitpunkt ist vor Startzeitpunkt!"));
             FacesContext.getCurrentInstance().validationFailed();
-            
+
         } else {
             if ((!startDT.toLocalDate().equals(endDT.toLocalDate()) && endDT.toLocalTime().equals(LocalTime.MIN)) || startDT.equals(endDT)) {
                 endDT = endDT.with(LocalTime.of(23, 59, 59));
             }
-            
+
             if (event.getId() == null) {
-                
+
                 Absence a = new Absence(this.currentUser, type, startDT, endDT);
                 a.setReason(this.reason);
-                
+
                 AbsenceService.insertAbsence(a);
                 List<User> approverlist = currentUser.getApprover();
                 if (!approverlist.isEmpty()) {
@@ -155,13 +155,13 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             } else if (event instanceof AbsenceEvent) {
                 AbsenceService.updateAbsence(((AbsenceEvent) event).getAbsence());
             }
-            
+
             event = new DefaultScheduleEvent();
         }
     }
-    
+
     public void deleteEvent(ActionEvent actionEvent) {
-        
+
         if (event.getId() != null) {
             if (event instanceof AbsenceEvent) {
                 AbsenceEvent absenceEvent = (AbsenceEvent) event;
@@ -172,20 +172,20 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                     EmailService.sendUserDeletedOwnAbsenceEmail(absenceEvent.getAbsence(), absenceEvent.getAbsence().getUser().getApprover());
                 } else {
                     FacesContext context = FacesContext.getCurrentInstance();
-                    
+
                     context.addMessage(null, new FacesMessage("Failed", "You can't delete acknowledged absences!"));
                 }
             }
         }
-        
+
     }
-    
+
     public void addIstZeitEvent(ActionEvent actionEvent) {
         int diff = 0;
-        
+
         LocalDateTime startDT = TimeConverterService.convertDateToLocalDate(event.getStartDate()).atStartOfDay();
         List<WorkTime> workTimes = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(currentUser, TimeConverterService.convertLocalDateTimeToDate(startDT), TimeConverterService.convertLocalDateTimeToDate(startDT.plusDays(1)));
-        
+
         if (event.getStartDate().after(event.getEndDate())) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Endzeitpunkt ist vor Startzeitpunkt!"));
             FacesContext.getCurrentInstance().validationFailed();
@@ -193,20 +193,20 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Arbeitszeit kann nur an einem Tag eingetragen werden!"));
             FacesContext.getCurrentInstance().validationFailed();
         } else {
-            
+
             if (!workTimes.isEmpty() && event.getId() == null) {
                 FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Nur eine Arbeitszeit pro Tag!"));
                 FacesContext.getCurrentInstance().validationFailed();
             } else if (event.getId() == null) {
                 WorkTimeEvent e = new WorkTimeEvent(this.currentUser.getUsername() + " " + "Ist-Zeit", event.getStartDate(), event.getEndDate(), new WorkTime(currentUser, TimeConverterService.convertDateToLocalDateTime(this.event.getStartDate()), TimeConverterService.convertDateToLocalDateTime(this.event.getEndDate()), 0, "", ""));
-                
+
                 e.getWorktime().setStartComment(startcomment);
                 e.getWorktime().setEndComment(endcomment);
                 e.getWorktime().setBreakTime(breaktime);
-                
+
                 e.setStyleClass("istzeit");
                 IstZeitService.addIstTime(e.getWorktime());
-                
+
             } else if (event instanceof WorkTimeEvent) {
                 WorkTime time = ((WorkTimeEvent) event).getWorktime();
                 LocalTime plus19 = LocalTime.of(19, 0);
@@ -218,17 +218,17 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                 }
                 time.setStartTime(TimeConverterService.convertDateToLocalDateTime(event.getStartDate()));
                 time.setEndTime(TimeConverterService.convertDateToLocalDateTime(event.getEndDate()));
-                
+
                 IstZeitService.update(time);
             } else if (event instanceof AbsenceEvent) {
 
 //                AbsenceService.updateAbsence(((AbsenceEvent) event).getAbsence());
             }
-            
+
             if (event instanceof WorkTimeEvent) {
-                
+
                 WorkTime wt = ((WorkTimeEvent) event).getWorktime();
-                
+
                 LocalTime plus19 = LocalTime.of(19, 0);
                 if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
                     diff += wt.getOvertimeAfter19() * 1.5;
@@ -242,14 +242,14 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             event = new DefaultScheduleEvent();
         }
     }
-    
+
     public void deleteIstZeitEvent(ActionEvent e) {
         if (event.getId() != null) {
             if (event instanceof WorkTimeEvent) {
                 istZeitEventModel.deleteEvent(event);
                 WorkTimeEvent workevent = (WorkTimeEvent) event;
                 IstZeitService.delete(workevent.getWorktime());
-                
+
                 int diff = 0;
                 WorkTime time = workevent.getWorktime();
                 LocalTime plus19 = LocalTime.of(19, 0);
@@ -261,29 +261,29 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                 }
                 time.getUser().setOverTimeLeft(time.getUser().getOverTimeLeft() + diff);
                 BenutzerverwaltungService.updateUser(time.getUser());
-                
+
                 event = new DefaultScheduleEvent();
             }
         }
     }
-    
+
     public void onIstZeitEventSelect(SelectEvent selectEvent) {
         event = (ScheduleEvent) selectEvent.getObject();
-        
+
         startcomment = "";
         endcomment = "";
         breaktime = 0;
         reason = "";
-        
+
         if (event instanceof WorkTimeEvent) {
             event = (WorkTimeEvent) event;
             WorkTimeEvent ev = (WorkTimeEvent) event;
             startcomment = ev.getWorktime().getStartComment();
             endcomment = ev.getWorktime().getEndComment();
             breaktime = ev.getWorktime().getBreakTime();
-            
+
             RequestContext.getCurrentInstance().execute("PF('eventDialog').show();");
-            
+
         } else if (event instanceof AbsenceEvent) {
             event = (AbsenceEvent) event;
             AbsenceEvent ev = (AbsenceEvent) event;
@@ -293,24 +293,24 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             RequestContext.getCurrentInstance().execute("PF('feiertagDialog').show();");
         }
     }
-    
+
     public void onEventInAbwesenheitenSelect(SelectEvent selectEvent) {
         event = (ScheduleEvent) selectEvent.getObject();
-        
+
         startcomment = "";
         endcomment = "";
         breaktime = 0;
         reason = "";
-        
+
         if (event instanceof WorkTimeEvent) {
             event = (WorkTimeEvent) event;
             WorkTimeEvent ev = (WorkTimeEvent) event;
             startcomment = ev.getWorktime().getStartComment();
             endcomment = ev.getWorktime().getEndComment();
             breaktime = ev.getWorktime().getBreakTime();
-            
+
             RequestContext.getCurrentInstance().execute("PF('worktimeDialog').show();");
-            
+
         } else if (event instanceof AbsenceEvent) {
             event = (AbsenceEvent) event;
             AbsenceEvent ev = (AbsenceEvent) event;
@@ -320,114 +320,115 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             RequestContext.getCurrentInstance().execute(("PF('feiertagDialog').show();"));
         }
     }
-    
+
     public void onIstZeitDateSelect(SelectEvent selectEvent) {
         Date sDate = (Date) selectEvent.getObject();
         if (sDate.before(getStartDateToday()) || sDate.after(getEndDateToday())) {
             FacesContext.getCurrentInstance().validationFailed();
-        }
-        
-        LocalDate start = TimeConverterService.convertDateToLocalDate(sDate);
-        
-        SollZeit soll = SollZeitenService.getSollZeitByUserAndDayOfWeek(currentUser, start.getDayOfWeek());
-        
-        if (soll != null) {
-            LocalDateTime s = start.atTime(soll.getSollStartTime());
-            LocalDateTime e = start.atTime(soll.getSollEndTime());
-            
-            event = new DefaultScheduleEvent("", TimeConverterService.convertLocalDateTimeToDate(s), TimeConverterService.convertLocalDateTimeToDate(e));
         } else {
-            event = new DefaultScheduleEvent("", sDate, sDate);
+
+            LocalDate start = TimeConverterService.convertDateToLocalDate(sDate);
+
+            SollZeit soll = SollZeitenService.getSollZeitByUserAndDayOfWeek(currentUser, start.getDayOfWeek());
+
+            if (soll != null) {
+                LocalDateTime s = start.atTime(soll.getSollStartTime());
+                LocalDateTime e = start.atTime(soll.getSollEndTime());
+
+                event = new DefaultScheduleEvent("", TimeConverterService.convertLocalDateTimeToDate(s), TimeConverterService.convertLocalDateTimeToDate(e));
+            } else {
+                event = new DefaultScheduleEvent("", sDate, sDate);
+            }
         }
     }
-    
+
     public void onAbsenceDateSelect(SelectEvent selectEvent) {
         Date sDate = (Date) selectEvent.getObject();
         event = new DefaultScheduleEvent("", sDate, sDate);
     }
-    
+
     public AbsenceType getType() {
         return type;
     }
-    
+
     public void setType(AbsenceType type) {
         this.type = type;
     }
-    
+
     public List<AbsenceType> getTypes() {
         return types;
     }
-    
+
     public void setAcknowledged(ActionEvent actionEvent) {
-        
+
         if (absenceEvent.getId() == null) {
-            
+
         } else if (currentUser.getUsername().equals(absenceEvent.getAbsence().getUser().getUsername())) {
-            
+
             FacesContext context = FacesContext.getCurrentInstance();
             context.addMessage(null, new FacesMessage("Absence-acknowledge failed", "You can't acknowledge your own abscences!"));
-            
+
         } else {
-            
+
             acknowledgementModel.deleteEvent(absenceEvent);
-            
+
             absenceEvent.getAbsence().setAcknowledged(true);
             AbsenceService.updateAbsence(absenceEvent.getAbsence());
-            
+
             User u = absenceEvent.getAbsence().getUser();
-            
+
             int overtime = calcAbsenceOvertime(absenceEvent.getAbsence());
-            
+
             u.setOverTimeLeft(u.getOverTimeLeft() + overtime);
             BenutzerverwaltungService.updateUser(u);
-            
+
             List<User> otherApprover = absenceEvent.getAbsence().getUser().getApprover();
             otherApprover.remove(currentUser);
             EmailService.sendAcknowledgmentEmail(absenceEvent.getAbsence(), currentUser, otherApprover);
-            
+
         }
-        
+
         this.reloadAcknowledgements();
-        
+
         absenceEvent = new AbsenceEvent();
     }
-    
+
     public void deleteAcknowledgement(ActionEvent e) {
         if (absenceEvent.getId() == null) {
-            
+
         } else {
             acknowledgementModel.deleteEvent(absenceEvent);
             AbsenceService.deleteAbsence(absenceEvent.getAbsence());
-            
+
             if (absenceEvent.getAbsence().isAcknowledged()) {
                 User u = absenceEvent.getAbsence().getUser();
                 int overtime = calcAbsenceOvertime(absenceEvent.getAbsence());
-                
+
                 u.setOverTimeLeft(u.getOverTimeLeft() - overtime);
                 BenutzerverwaltungService.updateUser(u);
             }
-            
+
             List<User> otherApprover = absenceEvent.getAbsence().getUser().getApprover();
             otherApprover.remove(currentUser);
             EmailService.sendAbsenceDeletedByApprover(absenceEvent.getAbsence(), currentUser, otherApprover);
-            
+
         }
     }
-    
+
     private int calcAbsenceOvertime(Absence a) {
         int overtime = 0;
         User u = a.getUser();
         List<SollZeit> sollZeiten = SollZeitenService.getSollZeitenByUser(u);
         int days = 0;
         DayOfWeek sDay;
-        
+
         switch (absenceEvent.getAbsence().getAbsenceType().getAbsenceName()) {
             case "holiday":
                 days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
-                
+
                 u.setVacationLeft(u.getVacationLeft() - days);
                 BenutzerverwaltungService.updateUser(u);
-                
+
                 DayOfWeek hDay = a.getStartTime().getDayOfWeek();
                 for (int i = 0; i < days; i++, hDay.plus(1)) {
                     for (SollZeit sz : sollZeiten) {
@@ -440,12 +441,12 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                         }
                     }
                 }
-                
+
                 break;
             case "time compensation":
                 days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
                 sDay = a.getStartTime().getDayOfWeek();
-                
+
                 for (int i = 0; i < days; i++, sDay.plus(1)) {
                     for (SollZeit sz : sollZeiten) {
                         if (sz.getDay().equals(sDay)) {
@@ -475,7 +476,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             case "medical leave":
                 days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
                 sDay = a.getStartTime().getDayOfWeek();
-                
+
                 for (int i = 0; i < days; i++, sDay.plus(1)) {
                     for (SollZeit sz : sollZeiten) {
                         if (sz.getDay().equals(sDay)) {
@@ -505,105 +506,105 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         }
         return overtime;
     }
-    
+
     public void onAbsenceSelect(SelectEvent selectEvent) {
         absenceEvent = (AbsenceEvent) selectEvent.getObject();
-        
+
         reason = "";
-        
+
         if (absenceEvent instanceof AbsenceEvent) {
-            
+
             reason = absenceEvent.getAbsence().getReason();
             RequestContext.getCurrentInstance().execute("PF('eventDialog').show();");
         }
-        
+
     }
-    
+
     public AbsenceEvent getAbsenceEvent() {
         return absenceEvent;
     }
-    
+
     public void setAbsenceEvent(AbsenceEvent event) {
         this.absenceEvent = event;
     }
-    
+
     public String reloadAcknowledgements() {
         this.selectedUser = "All";
         this.allUsers = new ArrayList<>();
-        
+
         allUsers.add("All");
-        
+
         for (User u : BenutzerverwaltungService.getUserList()) {
             allUsers.add(u.getUsername());
         }
-        
+
         return "/pages/absence_acknowledgement.xhtml?faces-redirect=true";
     }
-    
+
     public String reloadAbwesenheiten() {
-        
+
         this.currentUser = BenutzerverwaltungService.getUser(currentUser.getUserNr());
-        
+
         verbleibend = currentUser.getWeekTime();
         overtimeleft = currentUser.getOverTimeLeft();
-        
+
         return "/pages/istzeit.xhtml?faces-redirect=true";
     }
-    
+
     public ScheduleModel getAlleAbwesenheitenModel() {
         return alleAbwesenheitenModel;
     }
-    
+
     public WorkTimeEvent getWorktimeEvent() {
         return worktimeEvent;
     }
-    
+
     public void setWorktimeEvent(WorkTimeEvent worktimeEvent) {
         this.worktimeEvent = worktimeEvent;
     }
-    
+
     public String getSelectedUser() {
         return selectedUser;
     }
-    
+
     public void setSelectedUser(String selectedUser) {
         this.selectedUser = selectedUser;
     }
-    
+
     public List<String> getAllUsers() {
         return allUsers;
     }
-    
+
     public void loadAbwesenheitByUser(ActionEvent ev) {
         this.acknowledgementModel.setSelectedUser(this.selectedUser);
     }
-    
+
     public User getCurrentUser() {
         return currentUser;
     }
-    
+
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
     }
-    
+
     public double getVerbleibend() {
         return verbleibend;
     }
-    
+
     public void setVerbleibend(double verbleibend) {
         this.verbleibend = verbleibend;
     }
-    
+
     public ScheduleModel getAllTimesModel() {
         return allTimesModel;
     }
-    
+
     void setUser(User user) {
         this.currentUser = user;
-        
+
         verbleibend = currentUser.getWeekTime();
     }
-    
+
     public String getPattern() {
         if (type.getAbsenceTypeID() == 2) {
             return "dd/MM/yyyy";
@@ -611,109 +612,109 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             return "dd/MM/yyyy HH:mm";
         }
     }
-    
+
     public String getStartcomment() {
         return startcomment;
     }
-    
+
     public void setStartcomment(String startcomment) {
         this.startcomment = startcomment;
     }
-    
+
     public String getEndcomment() {
         return endcomment;
     }
-    
+
     public void setEndcomment(String endcomment) {
         this.endcomment = endcomment;
     }
-    
+
     public String getReason() {
         return reason;
     }
-    
+
     public void setReason(String reason) {
         this.reason = reason;
     }
-    
+
     public Date getStartDateToday() {
-        
+
         LocalDateTime start = LocalDateTime.now();
-        
+
         start = start.withHour(0).withMinute(0).withSecond(0).minusWeeks(1);
-        
+
         return TimeConverterService.convertLocalDateTimeToDate(start);
     }
-    
+
     public Date getEndDateToday() {
-        
+
         LocalDateTime end = LocalDateTime.now();
-        
+
         end = end.withHour(23).withMinute(59).withSecond(59);
-        
+
         return TimeConverterService.convertLocalDateTimeToDate(end);
     }
-    
+
     public double getOvertimeleft() {
         return overtimeleft;
     }
-    
+
     public void setOvertimeleft(double overtimeleft) {
         this.overtimeleft = overtimeleft;
     }
-    
+
     public String loadAllTimes() {
         this.selectedUser = "All";
         this.allUsers = new ArrayList<>();
-        
+
         allUsers.add("All");
-        
+
         for (User u : BenutzerverwaltungService.getUserList()) {
             allUsers.add(u.getUsername());
         }
-        
+
         return "/pages/allTime.xhtml?faces-redirect=true";
     }
-    
+
     public void loadAllTimesByUser(ActionEvent ev) {
-        
+
         allTimesModel.setSelectedUser(this.getSelectedUser());
     }
-    
+
     public boolean isAcknowledgedAbsence() {
         if (AccessRightsService.checkPermission(this.currentUser.getAccessLevel(), "ALL")) {
             return true;
         }
         return false;
     }
-    
+
     public void deleteEventInAllTime(ActionEvent e) {
         AbsenceEvent absenceevent = (AbsenceEvent) event;
-        
+
         this.istZeitEventModel.deleteEvent(absenceevent);
         AbsenceService.deleteAbsence(absenceevent.getAbsence());
     }
-    
+
     public String redirectToAbwesenheiten() {
         return "/pages/abwesenheit.xhtml?faces-redirect=true";
     }
-    
+
     public String redirectToAccountverwaltung() {
         return "/pages/benutzerkonto.xhtml?faces-redirect=true";
     }
-    
+
     public String redirectToBenutzerverwaltung() {
         return "/pages/benutzerverwaltung.xhtml?faces-redirect=true";
     }
-    
+
     public String redirectToFeiertage() {
         return "/pages/holidays.xhtml?faces-redirect=true";
     }
-    
+
     public String redirectToAllAbwesenheiten() {
         return "/pages/view_all_abwesenheiten.xhtml?faces-redirect=true";
     }
-    
+
     @Override
     public void notifyObserver() {
         currentUser = BenutzerverwaltungService.getUser(currentUser.getUserNr());

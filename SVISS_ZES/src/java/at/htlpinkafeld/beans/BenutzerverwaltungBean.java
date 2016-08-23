@@ -30,7 +30,6 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -40,6 +39,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import org.apache.commons.lang.RandomStringUtils;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
@@ -281,11 +281,12 @@ public class BenutzerverwaltungBean {
     }
 
     public void onEventSelect(SelectEvent selectEvent) {
+        RequestContext.getCurrentInstance().execute("PF('eventDialog').hide();");
         curEvent = (ScheduleEvent) selectEvent.getObject();
     }
 
     public void onDateSelect(SelectEvent selectEvent) {
-
+        RequestContext.getCurrentInstance().execute("PF('eventDialog').hide();");
         Date date = (Date) selectEvent.getObject();
         Calendar c = Calendar.getInstance();
         c.setTime(date);
