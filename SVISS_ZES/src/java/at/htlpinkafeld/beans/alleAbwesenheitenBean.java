@@ -81,8 +81,7 @@ public class alleAbwesenheitenBean {
             absence=AbsenceService.getAllAbsences();
         }else{
             absence=AbsenceService.getAbsenceByUser(currentUser);
-            //absence=AbsenceService.getAbsenceByUserBetweenDates(currentUser, new Date(2016, 01, 01, 00, 00, 00), new Date(2016, 12, 31, 00, 00, 00));
-            
+            //absence=AbsenceService.getAbsenceByUserBetweenDates(currentUser, new Date(2016, 01, 01, 00, 00, 00), new Date(2016, 12, 31, 00, 00, 00));          
         }
     }
 }
