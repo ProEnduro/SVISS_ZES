@@ -68,7 +68,7 @@ public class AuswertungsBean {
         reloadCurrentUser();
         this.createPieModels();
 
-        return "/pages/auswertungspages/overview.xhtml?faces-redirect=true";
+        return "/pages/auswertungspages/jahresübersicht.xhtml?faces-redirect=true";
     }
 
     public boolean isNotUser() {
@@ -278,7 +278,7 @@ public class AuswertungsBean {
     }
 
     public String redirectToAlleUser() {
-        return "/pages/auswertungspages/jahresÜbersicht.xhtml?faces-redirect=true";
+        return "/pages/auswertungspages/jahresübersicht.xhtml?faces-redirect=true";
     }
 
     public String redirectToUserDetails() {

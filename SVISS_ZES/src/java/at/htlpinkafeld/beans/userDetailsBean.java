@@ -51,7 +51,7 @@ public class userDetailsBean {
     double überstundenNach19;
     int urlaubsanspruch;
 
-    int selectedYear;
+    int selectedYear = 0;
     List<Integer> years;
 
     public List<TimeRowDisplay> getTimerowlist() {
@@ -72,8 +72,8 @@ public class userDetailsBean {
         dates = new ArrayList<>();
 
     }
-    
-    public void reloadUsers(){
+
+    public void reloadUsers() {
         userAsStringList = new ArrayList<>();
 
         for (User u : BenutzerverwaltungService.getUserList()) {
@@ -109,18 +109,20 @@ public class userDetailsBean {
 
         List<UserHistoryEntry> uhelist = UserHistoryService.getUserHistoryEntriesForUser(BenutzerverwaltungService.getUserByUsername(selectedUser));
 
-        int firstyear = uhelist.get(0).getTimestamp().getYear();
-        int lastyear = uhelist.get(uhelist.size() - 1).getTimestamp().getYear();
+        if (!uhelist.isEmpty()) {
+            int firstyear = uhelist.get(0).getTimestamp().getYear();
+            int lastyear = uhelist.get(uhelist.size() - 1).getTimestamp().getYear();
 
-        List<Integer> intlist = new ArrayList<>();
+            List<Integer> intlist = new ArrayList<>();
 
-        for (int i = firstyear; i <= lastyear; i++) {
-            intlist.add(i);
+            for (int i = firstyear; i <= lastyear; i++) {
+                intlist.add(i);
+            }
+
+            this.setSelectedYear(firstyear);
+
+            this.setYears(intlist);
         }
-
-        this.setSelectedYear(firstyear);
-
-        this.setYears(intlist);
     }
 
     public List<SelectItem> getDates() {
@@ -139,9 +141,10 @@ public class userDetailsBean {
         this.selectedDate = selectedDate;
 
 //        loadMonthOverview(null);
-        
-        for(UserHistoryEntry uhe: UserHistoryService.getUserHistoryEntriesForUserBetweenDates(BenutzerverwaltungService.getUserByUsername(selectedUser), selectedDate, selectedDate.plusDays(1))){
-            this.urlaubsanspruch = uhe.getVacation();
+        if (this.selectedYear != 0) {
+            for (UserHistoryEntry uhe : UserHistoryService.getUserHistoryEntriesForUserBetweenDates(BenutzerverwaltungService.getUserByUsername(selectedUser), selectedDate, selectedDate.plusDays(1))) {
+                this.urlaubsanspruch = uhe.getVacation();
+            }
         }
 
     }
@@ -150,63 +153,64 @@ public class userDetailsBean {
         this.timerowlist = new ArrayList<>();
 
         TimeRowDisplay trd;
-        
+
         saldo = 0;
         überstundenNach19 = 0;
 
         User currentUser = BenutzerverwaltungService.getUser(selectedUser);
 
-        int max = this.selectedDate.lengthOfMonth();
+        if (selectedDate != null) {
+            int max = this.selectedDate.lengthOfMonth();
 
-        LocalDate temp;
-        temp = selectedDate.withDayOfMonth(1);
+            LocalDate temp;
+            temp = selectedDate.withDayOfMonth(1);
 
-        for (int i = 0; i < max; i++) {
+            for (int i = 0; i < max; i++) {
 
-            trd = new TimeRowDisplay(new Holiday(temp, "nicht erschienen!"));
-            trd.setReason("");
+                trd = new TimeRowDisplay(new Holiday(temp, "nicht erschienen!"));
+                trd.setReason("");
 
-            Date start = TimeConverterService.convertLocalDateToDate(temp);
-            Date end = Date.from(temp.atTime(23, 59).atZone(ZoneId.systemDefault()).toInstant());
+                Date start = TimeConverterService.convertLocalDateToDate(temp);
+                Date end = Date.from(temp.atTime(23, 59).atZone(ZoneId.systemDefault()).toInstant());
 
-            List<WorkTime> worklist = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(currentUser, start, end);
-            List<Absence> absencelist = AbsenceService.getAbsenceByUserBetweenDates(currentUser, start, end);
-            List<Holiday> holidaylist = HolidayService.getHolidayBetweenDates(start, end);
+                List<WorkTime> worklist = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(currentUser, start, end);
+                List<Absence> absencelist = AbsenceService.getAbsenceByUserBetweenDates(currentUser, start, end);
+                List<Holiday> holidaylist = HolidayService.getHolidayBetweenDates(start, end);
 
-            if (!worklist.isEmpty()) {
-                trd = new TimeRowDisplay(worklist.get(0));
+                if (!worklist.isEmpty()) {
+                    trd = new TimeRowDisplay(worklist.get(0));
 
-                saldo += Double.parseDouble(trd.getWorkTime()) - Double.parseDouble(trd.getSollZeit());
-                überstundenNach19 += Double.parseDouble(trd.getOverTime19plus());
+                    saldo += Double.parseDouble(trd.getWorkTime()) - Double.parseDouble(trd.getSollZeit());
+                    überstundenNach19 += Double.parseDouble(trd.getOverTime19plus());
 
-                if (worklist.size() > 1) {
-                    for (WorkTime w : worklist.subList(1, worklist.size() - 1)) {
-                        trd.setReason(trd.getReason() + " " + worklist.size() + ". Arbeitszeit von " + w.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " bis " + w.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " ");
+                    if (worklist.size() > 1) {
+                        for (WorkTime w : worklist.subList(1, worklist.size() - 1)) {
+                            trd.setReason(trd.getReason() + " " + worklist.size() + ". Arbeitszeit von " + w.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " bis " + w.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " ");
+                        }
                     }
                 }
-            }
 
-            if (!holidaylist.isEmpty()) {
-                trd.setReason(holidaylist.get(0).getHolidayComment() + " ");
-            }
-            if (!absencelist.isEmpty()) {
-                for (Absence a : absencelist) {
-                    trd.setReason(trd.getReason() + a.getAbsenceType().getAbsenceName() + " " + a.getReason() + " ");
+                if (!holidaylist.isEmpty()) {
+                    trd.setReason(holidaylist.get(0).getHolidayComment() + " ");
                 }
-            }
-
-            if (worklist.isEmpty() && absencelist.isEmpty() && holidaylist.isEmpty()) {
-                SollZeit sollzeit = SollZeitenService.getSollZeitByUserAndDayOfWeek(currentUser, temp.getDayOfWeek());
-
-                if (sollzeit == null) {
-                    trd = new TimeRowDisplay(new Holiday(temp, ""));
+                if (!absencelist.isEmpty()) {
+                    for (Absence a : absencelist) {
+                        trd.setReason(trd.getReason() + a.getAbsenceType().getAbsenceName() + " " + a.getReason() + " ");
+                    }
                 }
-            }
-            this.timerowlist.add(trd);
 
-            temp = temp.plus(1, ChronoUnit.DAYS);
+                if (worklist.isEmpty() && absencelist.isEmpty() && holidaylist.isEmpty()) {
+                    SollZeit sollzeit = SollZeitenService.getSollZeitByUserAndDayOfWeek(currentUser, temp.getDayOfWeek());
+
+                    if (sollzeit == null) {
+                        trd = new TimeRowDisplay(new Holiday(temp, ""));
+                    }
+                }
+                this.timerowlist.add(trd);
+
+                temp = temp.plus(1, ChronoUnit.DAYS);
+            }
         }
-
     }
 
     public double getSaldo() {

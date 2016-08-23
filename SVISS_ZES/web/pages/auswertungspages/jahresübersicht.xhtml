@@ -12,7 +12,7 @@ and open the template in the editor.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-    <ui:param name="currentAuswertungsIndex" value="1" />
+    <ui:param name="currentAuswertungsIndex" value="0" />
 
     <ui:define name="auswertung">
         <h:body>
@@ -53,7 +53,7 @@ and open the template in the editor.
                     </f:facet>
                 </p:dataTable>
 
-                <p:remoteCommand update="selectionGrid" action="#{jahresübersichtBean.loadJahresÜbersichtBean}" autoRun="true"/>
+                <p:remoteCommand update="selectionGrid" action="#{jahresübersichtBean.loadJahresübersichtBean}" autoRun="true"/>
             </h:form>
         </h:body>
     </ui:define>

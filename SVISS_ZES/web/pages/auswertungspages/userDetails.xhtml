@@ -16,7 +16,7 @@ and open the template in the editor.
 
     <ui:define name="auswertung">
         <h:form>
-            <p:remoteCommand update="selectUser" action="#{userDetailsBean.reloadUsers}" autoRun="true"/>
+            
             
             
             <p:growl autoUpdate="true"/>
@@ -103,6 +103,8 @@ and open the template in the editor.
 
             </p:dataTable>
 
+            
+            <p:remoteCommand update="selectUser" action="#{userDetailsBean.reloadUsers}" autoRun="true"/>
         </h:form>
     </ui:define>
 
