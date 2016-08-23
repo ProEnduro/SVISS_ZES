@@ -18,7 +18,6 @@ import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -43,6 +42,9 @@ public class JahresübersichtBean {
     private LocalDate selectedYear;
 
     private List<SelectItem> months;
+
+    private double overtimeSum;
+    private double overtime19PlusSum;
 
     private final DateTimeFormatter monthFormatter;
 
@@ -104,6 +106,14 @@ public class JahresübersichtBean {
         this.months = months;
     }
 
+    public double getOvertimeSum() {
+        return overtimeSum;
+    }
+
+    public double getOvertime19PlusSum() {
+        return overtime19PlusSum;
+    }
+
     public void loadYears() {
         if (selectedUser != null) {
             years = new ArrayList<>();
@@ -126,10 +136,16 @@ public class JahresübersichtBean {
             for (month = selectedYear; month.isBefore(selectedUser.getHiredate().withDayOfMonth(1)); month = month.plusMonths(1)) {
                 months.add(new SelectItem(" - ", month.format(monthFormatter)));
             }
+            overtimeSum = 0;
+            overtime19PlusSum = 0;
             for (; month.isBefore(today.withDayOfMonth(today.lengthOfMonth())); month = month.plusMonths(1)) {
                 if (today.getMonth() != month.getMonth()) {
-                    months.add(new SelectItem(calcOvertimeMinusPlus19H(selectedUser, month, month.withDayOfMonth(month.lengthOfMonth())) / 60.0,
-                            month.format(monthFormatter), String.valueOf(calcOvertime19Plus(selectedUser, month, month.withDayOfMonth(month.lengthOfMonth())) / 60.0)));
+                    double overtime = calcOvertimeMinusPlus19H(selectedUser, month, month.withDayOfMonth(month.lengthOfMonth())) / 60.0;
+                    double overtime19plus = calcOvertime19Plus(selectedUser, month, month.withDayOfMonth(month.lengthOfMonth())) / 60.0;
+                    months.add(new SelectItem(overtime, month.format(monthFormatter), String.valueOf(overtime19plus)));
+
+                    overtimeSum += overtime;
+                    overtime19PlusSum += overtime19plus;
                 } else {
                     months.add(new SelectItem(calcOvertimeMinusPlus19H(selectedUser, month, today) / 60.0,
                             month.format(monthFormatter), String.valueOf(calcOvertime19Plus(selectedUser, month, today) / 60.0)));

@@ -42,12 +42,17 @@ and open the template in the editor.
                     </p:column>
 
                     <f:facet name="footer">
+                        <p:panelGrid columns="3">
+                            <p:outputLabel value="Überstunden Gesamt: "/>
+                            <p:inputText readonly="true" value="#{jahresübersichtBean.overtimeSum}"/>
+                            <p:inputText readonly="true" value="#{jahresübersichtBean.overtime19PlusSum}"/>
+                        </p:panelGrid>
                         <p:commandLink ajax="false">
-                            <p:graphicImage name="/images/excel-icon.png" style="width: 3%"/>
+                            <p:graphicImage name="/images/excel-icon.png" style="width: 4%; float: left"/>
                             <p:dataExporter type="XLS" target="data" fileName="Zeiten" encoding="iso-8859-1"/>
                         </p:commandLink>
                         <p:commandLink ajax="false">
-                            <p:graphicImage name="/images/pdf-icon.png" style="width: 3%"/>
+                            <p:graphicImage name="/images/pdf-icon.png" style="width: 4%; float: left"/>
                             <p:dataExporter type="PDF" target="data" fileName="Zeiten" encoding="iso-8859-1"/>
                         </p:commandLink>
                     </f:facet>

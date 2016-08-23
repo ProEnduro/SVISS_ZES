@@ -8,11 +8,10 @@ package at.htlpinkafeld.service;
 import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.UserHistory_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
+import at.htlpinkafeld.dao.util.DAODML_Observer;
 import at.htlpinkafeld.pojo.AccessLevel;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserHistoryEntry;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -76,4 +75,13 @@ public class BenutzerverwaltungService {
     public static User getUserByEmail(String email) {
         return userdao.getUserByEmail(email);
     }
+
+    public static void addUserObserver(DAODML_Observer o) {
+        userdao.addObserver(o);
+    }
+
+    public static void deleteUserObserver(DAODML_Observer o) {
+        userdao.deleteObserver(o);
+    }
+
 }

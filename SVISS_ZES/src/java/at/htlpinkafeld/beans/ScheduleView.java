@@ -195,8 +195,12 @@ public class ScheduleView implements Serializable {
 
         LocalDateTime startDT = TimeConverterService.convertDateToLocalDate(event.getStartDate()).atStartOfDay();
         List<WorkTime> workTimes = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(currentUser, TimeConverterService.convertLocalDateTimeToDate(startDT), TimeConverterService.convertLocalDateTimeToDate(startDT.plusDays(1)));
+
         if (event.getStartDate().after(event.getEndDate())) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Endzeitpunkt ist vor Startzeitpunkt!"));
+            FacesContext.getCurrentInstance().validationFailed();
+        } else if (!startDT.toLocalDate().equals(TimeConverterService.convertDateToLocalDate(event.getEndDate()))) {
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Arbeitszeit kann nur an einem Tag eingetragen werden!"));
             FacesContext.getCurrentInstance().validationFailed();
         } else {
 
