@@ -25,6 +25,7 @@ import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
 import java.io.Serializable;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -337,7 +338,18 @@ public class ScheduleView implements Serializable {
             FacesContext.getCurrentInstance().validationFailed();
         }
 
-        event = new DefaultScheduleEvent("", sDate, sDate);
+        LocalDate start = TimeConverterService.convertDateToLocalDate(sDate);
+
+        SollZeit soll = SollZeitenService.getSollZeitByUserAndDayOfWeek(currentUser, start.getDayOfWeek());
+
+        if (soll != null) {
+            LocalDateTime s = start.atTime(soll.getSollStartTime());
+            LocalDateTime e = start.atTime(soll.getSollEndTime());
+
+            event = new DefaultScheduleEvent("", TimeConverterService.convertLocalDateTimeToDate(s), TimeConverterService.convertLocalDateTimeToDate(e));
+        } else {
+            event = new DefaultScheduleEvent("", sDate, sDate);
+        }
     }
 
     public void onAbsenceDateSelect(SelectEvent selectEvent) {
