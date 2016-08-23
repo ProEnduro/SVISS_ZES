@@ -1,4 +1,4 @@
-﻿/*
+/*
  * To selectedUser this license header, choose License Headers in Project Properties.
  * To selectedUser this template file, choose Tools | Templates
  * and open the template in the editor.

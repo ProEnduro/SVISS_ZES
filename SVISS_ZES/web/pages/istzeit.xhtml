@@ -50,8 +50,8 @@ and open the template in the editor.
 
                 <p:schedule draggable="false" resizable="false" firstHour="6" aspectRatio="3" view="agendaWeek" id="schedule" value="#{scheduleView.eventModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" columnFormat="month:'ddd', week:'dddd - dd.MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
 
-                    <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update=":istZeitForm:eventDetails" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('eventDialog').show();" />
-                    <p:ajax event="eventSelect" listener="#{scheduleView.onEventSelect}" update=":istZeitForm:eventDetails :absenceDialogForm:absenceDialogID :feiertagDialogForm:feiertagDialogID" />
+                    <p:ajax event="dateSelect" listener="#{scheduleView.onIstZeitDateSelect}" update=":istZeitForm:eventDetails" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('eventDialog').show();" />
+                    <p:ajax event="eventSelect" listener="#{scheduleView.onIstZeitEventSelect}" update=":istZeitForm:eventDetails :absenceDialogForm:absenceDialogID :feiertagDialogForm:feiertagDialogID" />
                 </p:schedule>
             </h:form>
             <script type="text/javascript">

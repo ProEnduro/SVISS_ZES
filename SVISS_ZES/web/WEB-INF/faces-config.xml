@@ -134,8 +134,8 @@
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
     <managed-bean>
-        <managed-bean-name>alleUserBean</managed-bean-name>
-        <managed-bean-class>at.htlpinkafeld.beans.alleUserBean</managed-bean-class>
+        <managed-bean-name>jahresübersichtBean</managed-bean-name>
+        <managed-bean-class>at.htlpinkafeld.beans.JahresübersichtBean</managed-bean-class>
     
         <managed-bean-scope>session</managed-bean-scope></managed-bean>
     <managed-bean>
