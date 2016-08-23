@@ -164,6 +164,8 @@ public class userDetailsBean {
         if (selectedDate != null) {
             int max = this.selectedDate.lengthOfMonth();
 
+            Double saldotemp = 0.0;
+
             LocalDate temp;
             temp = selectedDate.withDayOfMonth(1);
 
@@ -182,7 +184,12 @@ public class userDetailsBean {
                 if (!worklist.isEmpty()) {
                     trd = new TimeRowDisplay(worklist.get(0));
 
-                    saldo += Double.parseDouble(trd.getWorkTime()) - Double.parseDouble(trd.getSollZeit());
+                    Double worktime = Double.parseDouble(trd.getWorkTime());
+                    Double sollzeit = Double.parseDouble(trd.getSollZeit());
+                    Double breaktime = worklist.get(0).getBreakTime() * 1.0;
+
+                    saldotemp = worktime - sollzeit - breaktime;
+
                     überstundenNach19 += Double.parseDouble(trd.getOverTime19plus());
 
                     if (worklist.size() > 1) {
@@ -198,6 +205,39 @@ public class userDetailsBean {
                 if (!absencelist.isEmpty()) {
                     for (Absence a : absencelist) {
                         trd.setReason(trd.getReason() + a.getAbsenceType().getAbsenceName() + " " + a.getReason() + " ");
+
+                        if (!worklist.isEmpty() && !a.getAbsenceType().getAbsenceName().equals("medical leave")) {
+                            double smax;
+                            double s;
+                            SollZeit sollzeit = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(currentUser, temp.getDayOfWeek(), temp.atStartOfDay());
+
+                            if (sollzeit != null) {
+                                if (a.getStartTime().isBefore(temp.atStartOfDay())) {
+                                    a.setStartTime(temp.atStartOfDay());
+                                }
+                                if (a.getEndTime().isAfter(temp.atTime(23, 59))) {
+                                    a.setEndTime(temp.atTime(23, 59));
+                                }
+                                if (a.getEndTime().isAfter(sollzeit.getSollEndTime().atDate(temp))) {
+                                    a.setEndTime(sollzeit.getSollEndTime().atDate(temp));
+                                }
+                                if (a.getStartTime().isBefore(sollzeit.getSollStartTime().atDate(temp))) {
+                                    a.setStartTime(sollzeit.getSollStartTime().atDate(temp));
+                                }
+
+                                if (a.getStartTime().isBefore(sollzeit.getSollEndTime().atDate(temp))) {
+                                    smax = a.getStartTime().until(sollzeit.getSollEndTime(), ChronoUnit.MINUTES);
+                                    s = a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
+
+                                    if (s > smax) {
+                                        saldo += smax / 60.0;
+                                    } else {
+                                        saldo += s / 60.0;
+                                    }
+                                }
+
+                            }
+                        }
                     }
                 }
 
@@ -209,7 +249,7 @@ public class userDetailsBean {
                     }
                 }
                 this.timerowlist.add(trd);
-
+                saldo += saldotemp;
                 temp = temp.plus(1, ChronoUnit.DAYS);
             }
         }
