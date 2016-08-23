@@ -54,19 +54,23 @@ and open the template in the editor.
                         <h:outputText value="#{absence.acknowledged}" converter="acknowledgeconverter" style="margin-left: 50%"/>
                     </p:column>
                     
+                    <f:facet name="footer">
+                        <h:commandLink>
+                            <p:graphicImage name="/images/excel-icon.png" style="width: 2.5%"/>
+                            <p:dataExporter type="xls" target="absenceid" fileName="Abwesenheiten"/>
+                        </h:commandLink>
+                
+                        <h:commandLink>
+                            <p:graphicImage name="/images/pdf-icon.png" style="width: 2.5%"/>
+                            <p:dataExporter type="pdf" target="absenceid" fileName="Abwesenheiten"/>
+                        </h:commandLink>
+                    </f:facet>
+                    
                 </p:dataTable>
                 
                 
                 
-                <h:commandLink>
-                    <p:graphicImage name="/images/excel-icon.png" style="width: 3%"/>
-                    <p:dataExporter type="xls" target="absenceid" fileName="Abwesenheiten"/>
-                </h:commandLink>
                 
-                <h:commandLink>
-                    <p:graphicImage name="/images/pdf-icon.png" style="width: 3%"/>
-                    <p:dataExporter type="pdf" target="absenceid" fileName="Abwesenheiten"/>
-                </h:commandLink>
                 
             </h:form>
 
