@@ -270,7 +270,7 @@ public class ScheduleView implements Serializable {
         }
     }
 
-    public void onEventSelect(SelectEvent selectEvent) {
+    public void onIstZeitEventSelect(SelectEvent selectEvent) {
         event = (ScheduleEvent) selectEvent.getObject();
 
         startcomment = "";
@@ -324,12 +324,17 @@ public class ScheduleView implements Serializable {
         }
     }
 
-    public void onDateSelect(SelectEvent selectEvent) {
+    public void onIstZeitDateSelect(SelectEvent selectEvent) {
         Date sDate=(Date) selectEvent.getObject();
         if(sDate.before(getStartDateToday())|| sDate.after(getEndDateToday())){
             FacesContext.getCurrentInstance().validationFailed();
         }
             
+        event = new DefaultScheduleEvent("", sDate, sDate);
+    }
+    
+        public void onAbsenceDateSelect(SelectEvent selectEvent) {
+        Date sDate=(Date) selectEvent.getObject();
         event = new DefaultScheduleEvent("", sDate, sDate);
     }
 

@@ -15,6 +15,11 @@ import at.htlpinkafeld.service.EmailService;
 import at.htlpinkafeld.service.PasswordEncryptionService;
 import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -25,13 +30,15 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import javax.annotation.PostConstruct;
+import javax.servlet.ServletContext;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
-import javax.faces.validator.ValidatorException;
 import org.apache.commons.lang.RandomStringUtils;
 import org.primefaces.event.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
@@ -101,8 +108,8 @@ public class BenutzerverwaltungBean {
         selectedUser = new UserProxy((User) e.getComponent().getAttributes().get("user"));
         newSollZeiten = new ArrayList<>();
     }
-    
-    public void saveUser() {
+
+    public void saveUser() throws FileNotFoundException, IOException {
         if (selectedUser.getUserNr() == -1) {
             if (selectedUser.getPass() == null) {
                 resetPWString = getResetPWString();
@@ -125,7 +132,24 @@ public class BenutzerverwaltungBean {
                 }
             }
         }
-        selectedUser = null;
+        
+        ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+        String path = serv.getRealPath("/") + "/resources/";
+        
+        File file = new File(path + "themes.properties");
+        
+        try (FileInputStream inSF = new FileInputStream(file)) {
+            Properties prop = new Properties();
+            prop.load(inSF);
+            
+            try (FileOutputStream outSF = new FileOutputStream(file)) {
+                prop.setProperty(selectedUser.getUsername(), "delta");
+                prop.store(outSF, "Themes_of_user");
+                outSF.close();
+            }
+        inSF.close();
+        }
+       selectedUser = null;
     }
     
     public String getResetPWString() {

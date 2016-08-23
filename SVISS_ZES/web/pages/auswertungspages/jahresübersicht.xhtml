@@ -17,20 +17,20 @@ and open the template in the editor.
     <ui:define name="auswertung">
         <h:body>
             <h:form>
-                <h1 align="center">Auswertung: Alle User</h1>
+                <h1 align="center">Auswertung: Jahresübersicht</h1>
                 <p:panelGrid id="selectionGrid" columns="2" style="border-style: hidden">
-                    <p:selectOneMenu id="userSelector" value="#{alleUserBean.selectedUser}" converter="userConverter">
-                        <p:ajax listener="#{alleUserBean.loadYears}" update="yearSelector data"/>
+                    <p:selectOneMenu id="userSelector" value="#{jahresübersichtBean.selectedUser}" converter="userConverter">
+                        <p:ajax listener="#{jahresübersichtBean.loadYears}" update="yearSelector data"/>
                         <f:selectItem itemLabel="Select a User" itemValue=""/>
-                        <f:selectItems value="#{alleUserBean.users}" var="user" itemLabel="#{user.label}" itemValue="#{user.value}"/>
+                        <f:selectItems value="#{jahresübersichtBean.users}" var="user" itemLabel="#{user.label}" itemValue="#{user.value}"/>
                     </p:selectOneMenu>
-                    <p:selectOneMenu id="yearSelector" value="#{alleUserBean.selectedYear}" converter="localDateConverter">
-                        <p:ajax listener="#{alleUserBean.loadData}"  update="data"/>
-                        <f:selectItems value="#{alleUserBean.years}" var="year" itemLabel="#{year.label}" itemValue="#{year.value}"/>
+                    <p:selectOneMenu id="yearSelector" value="#{jahresübersichtBean.selectedYear}" converter="localDateConverter">
+                        <p:ajax listener="#{jahresübersichtBean.loadData}"  update="data"/>
+                        <f:selectItems value="#{jahresübersichtBean.years}" var="year" itemLabel="#{year.label}" itemValue="#{year.value}"/>
                     </p:selectOneMenu>
                 </p:panelGrid>
 
-                <p:dataTable id="data" value="#{alleUserBean.months}" var="month"  style="width: 60%">
+                <p:dataTable id="data" value="#{jahresübersichtBean.months}" var="month"  style="width: 60%">
                     <p:column headerText="Monat">
                         <h:outputText value="#{month.label}"/>
                     </p:column>
@@ -53,7 +53,7 @@ and open the template in the editor.
                     </f:facet>
                 </p:dataTable>
 
-                <p:remoteCommand update="selectionGrid" action="#{alleUserBean.loadAllUserBean}" autoRun="true"/>
+                <p:remoteCommand update="selectionGrid" action="#{jahresübersichtBean.loadJahresÜbersichtBean}" autoRun="true"/>
             </h:form>
         </h:body>
     </ui:define>

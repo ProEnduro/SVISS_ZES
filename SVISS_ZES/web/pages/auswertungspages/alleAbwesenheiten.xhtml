@@ -40,8 +40,10 @@ and open the template in the editor.
                         <h:outputText value="#{absence.user.username}"/>
                     </p:column>
                     
-                    <p:column headerText="ID">
-                        <h:outputText value="#{absence.absenceID}"/>
+                    <p:column headerText="Datum" sortBy="#{absence.startTime}">
+                        <h:outputText value="#{absence.startTime}" converter="localDateTimeConverter" style="margin-left: 20%"/>
+                        <h:outputText value=" - " style="margin-left: 10%; margin-right: 10%"/>
+                        <h:outputText value="#{absence.endTime}" converter="localDateTimeConverter"/>
                     </p:column>
                     
                     <p:column headerText="Grund">
@@ -49,14 +51,21 @@ and open the template in the editor.
                     </p:column>
                     
                     <p:column headerText="Zugelassen" sortBy="#{absence.acknowledged}">
-                        <h:outputText value="#{absence.acknowledged}"/>
+                        <h:outputText value="#{absence.acknowledged}" converter="acknowledgeconverter" style="margin-left: 50%"/>
                     </p:column>
                     
                 </p:dataTable>
                 
+                
+                
                 <h:commandLink>
                     <p:graphicImage name="/images/excel-icon.png" style="width: 3%"/>
                     <p:dataExporter type="xls" target="absenceid" fileName="Abwesenheiten"/>
+                </h:commandLink>
+                
+                <h:commandLink>
+                    <p:graphicImage name="/images/pdf-icon.png" style="width: 3%"/>
+                    <p:dataExporter type="pdf" target="absenceid" fileName="Abwesenheiten"/>
                 </h:commandLink>
                 
             </h:form>

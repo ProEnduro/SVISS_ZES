@@ -30,7 +30,7 @@ import javax.faces.model.SelectItem;
  *
  * @author msi
  */
-public class alleUserBean {
+public class JahresübersichtBean {
 
     private final WorkTime_DAO workTime_DAO;
     private final Absence_DAO absence_DAO;
@@ -49,14 +49,14 @@ public class alleUserBean {
     /**
      * Creates a new instance of alleUserBean
      */
-    public alleUserBean() {
+    public JahresübersichtBean() {
         monthFormatter = DateTimeFormatter.ofPattern("MMMM");
         workTime_DAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
         absence_DAO = DAOFactory.getDAOFactory().getAbsenceDAO();
         sollZeiten_DAO = DAOFactory.getDAOFactory().getSollZeitenDAO();
     }
 
-    public void loadAllUserBean() {
+    public void loadJahresübersichtBean() {
         List<User> userL = BenutzerverwaltungService.getUserByDisabled(Boolean.FALSE);
         users = new ArrayList<>();
         for (User u : userL) {

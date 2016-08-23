@@ -278,7 +278,7 @@ public class AuswertungsBean {
     }
 
     public String redirectToAlleUser() {
-        return "/pages/auswertungspages/alleUser.xhtml?faces-redirect=true";
+        return "/pages/auswertungspages/jahresÜbersicht.xhtml?faces-redirect=true";
     }
 
     public String redirectToUserDetails() {
