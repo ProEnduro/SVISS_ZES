@@ -104,8 +104,10 @@ public class userDetailsBean {
         überstundenNach19 = 0;
 
         this.selectedDate = null;
+        this.selectedYear = 0;
 
         dates.clear();
+        years = new ArrayList<>();
 
         List<UserHistoryEntry> uhelist = UserHistoryService.getUserHistoryEntriesForUser(BenutzerverwaltungService.getUserByUsername(selectedUser));
 
