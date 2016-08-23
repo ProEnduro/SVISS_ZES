@@ -9,7 +9,7 @@ package at.htlpinkafeld.dao.util;
  *
  * @author Martin Six
  */
-public class DAOException extends RuntimeException{
+public class DAOException extends RuntimeException {
 
     public DAOException(String message) {
         super(message);
@@ -18,5 +18,5 @@ public class DAOException extends RuntimeException{
     public DAOException(Throwable cause) {
         super(cause);
     }
-    
+
 }

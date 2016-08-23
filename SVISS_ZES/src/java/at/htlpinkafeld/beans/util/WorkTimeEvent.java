@@ -21,15 +21,15 @@ public class WorkTimeEvent extends DefaultScheduleEvent {
         super(title, start, end);
 
         super.setStyleClass("istzeit");
-        
+
         worktime = w;
     }
 
     public WorkTimeEvent() {
         super();
     }
-    
-    public WorkTimeEvent(String title, Date start, Date end, String style, WorkTime w){
+
+    public WorkTimeEvent(String title, Date start, Date end, String style, WorkTime w) {
         super(title, start, end, style);
 
         worktime = w;

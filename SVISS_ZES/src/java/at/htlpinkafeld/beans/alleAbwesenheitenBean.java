@@ -13,27 +13,24 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
-
 /**
  *
  * @author msi
  */
-
 public class alleAbwesenheitenBean {
+
     List<Absence> absence;
-    
+
     User currentUser;
-    
+
     private String selectedUser;
     private List<String> allUsers;
 
     public alleAbwesenheitenBean() {
-        absence=AbsenceService.getAllAbsences();
-        
-        
+        absence = AbsenceService.getAllAbsences();
+
         this.loadUserSelect();
-        
+
     }
 
     public List<Absence> getAbsence() {
@@ -60,7 +57,6 @@ public class alleAbwesenheitenBean {
         this.allUsers = allUsers;
     }
 
-    
     public String loadUserSelect() {
         this.selectedUser = "All";
         this.allUsers = new ArrayList<>();
@@ -70,17 +66,17 @@ public class alleAbwesenheitenBean {
         for (User u : BenutzerverwaltungService.getUserList()) {
             allUsers.add(u.getUsername());
         }
-        
+
         return "/pages/alleAbwesenheiten.xhtml?faces-redirect=true";
     }
 
-    public void loadAllAbsenceByUser (){
-        currentUser=BenutzerverwaltungService.getUserByUsername(selectedUser);
-        
-        if(selectedUser.equals("All")){
-            absence=AbsenceService.getAllAbsences();
-        }else{
-            absence=AbsenceService.getAbsenceByUser(currentUser);
+    public void loadAllAbsenceByUser() {
+        currentUser = BenutzerverwaltungService.getUserByUsername(selectedUser);
+
+        if (selectedUser.equals("All")) {
+            absence = AbsenceService.getAllAbsences();
+        } else {
+            absence = AbsenceService.getAbsenceByUser(currentUser);
             //absence=AbsenceService.getAbsenceByUserBetweenDates(currentUser, new Date(2016, 01, 01, 00, 00, 00), new Date(2016, 12, 31, 00, 00, 00));          
         }
     }

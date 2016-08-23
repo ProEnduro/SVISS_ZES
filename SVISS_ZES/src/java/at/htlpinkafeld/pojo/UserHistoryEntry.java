@@ -69,5 +69,4 @@ public class UserHistoryEntry {
         return "UserHistoryEntry{" + "timestamp=" + timestamp + ", user=" + user + ", overtime=" + overtime + ", vacation=" + vacation + '}';
     }
 
-    
 }

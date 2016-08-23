@@ -57,14 +57,14 @@ public class SollZeitenService {
 
     public static SollZeit getSollZeitenByUser_DayOfWeek_ValidDate(User u, DayOfWeek d, LocalDateTime ldt) {
         SollZeit sz = SOLL_ZEITEN__DAO.getSollZeitenByUser_DayOfWeek_ValidDate(u, d, ldt);
-        if (sz==null||sz.getSollStartTime().equals(sz.getSollEndTime())) {
+        if (sz == null || sz.getSollStartTime().equals(sz.getSollEndTime())) {
             return null;
         } else {
             return sz;
         }
     }
-    
-    public static SollZeit getSollZeitByUserAndDayOfWeek(User u, DayOfWeek dow){
+
+    public static SollZeit getSollZeitByUserAndDayOfWeek(User u, DayOfWeek dow) {
         return SOLL_ZEITEN__DAO.getSollZeitenByUser_DayOfWeek(u, dow);
     }
 

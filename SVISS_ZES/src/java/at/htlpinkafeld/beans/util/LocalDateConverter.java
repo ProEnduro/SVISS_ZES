@@ -21,11 +21,18 @@ public class LocalDateConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String string) {
+        if (string.isEmpty()) {
+            return null;
+        }
         return LocalDate.parse(string, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+
     }
 
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object o) {
+        if (o == null || o.toString().isEmpty()) {
+            return "";
+        }
         LocalDate ld = (LocalDate) o;
         return ld.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
     }

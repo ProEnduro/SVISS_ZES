@@ -30,7 +30,7 @@ public interface Absence_DAO extends Base_DAO<Absence> {
     public abstract List<Absence> getAbsencesBetweenDates(Date startDateU, Date endDateU);
 
     public abstract List<Absence> getAbsencesByUser_BetweenDates(User user, Date startDateU, Date endDateU);
-    
+
     public abstract List<Absence> getAbsencesByApprover_Acknowledgment_BetweenDates(User approver, boolean acknowledged, Date startDateU, Date endDateU);
 
     public abstract List<Absence> getAbsencesByAcknowledgment_BetweenDates(boolean acknowledged, Date startDateU, Date endDateU);

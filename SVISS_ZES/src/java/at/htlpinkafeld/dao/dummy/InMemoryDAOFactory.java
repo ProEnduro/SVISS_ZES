@@ -38,7 +38,7 @@ public class InMemoryDAOFactory extends DAOFactory {
         absenceType_DAO = new AbsenceType_InMemoryDAO();
         absence_DAO = new Absence_InMemoryDAO();
         holiday_DAO = new Holiday_InMemoryDAO();
-        userHistory_DAO= new UserHistory_InMemoryDAO();
+        userHistory_DAO = new UserHistory_InMemoryDAO();
     }
 
     @Override

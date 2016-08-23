@@ -81,11 +81,11 @@ public class AbsenceService {
         ABSENCE_DAO.delete(absence);
     }
 
-    public List<Absence> getAbsencesBetweenDates(Date startDateU, Date endDateU) {
+    public static List<Absence> getAbsencesBetweenDates(Date startDateU, Date endDateU) {
         return ABSENCE_DAO.getAbsencesBetweenDates(startDateU, endDateU);
     }
 
-    public List<Absence> getAbsencesByUserBetweenDates(User user, Date startDateU, Date endDateU) {
+    public static List<Absence> getAbsencesByUserBetweenDates(User user, Date startDateU, Date endDateU) {
         return ABSENCE_DAO.getAbsencesByUser_BetweenDates(user, startDateU, endDateU);
     }
 

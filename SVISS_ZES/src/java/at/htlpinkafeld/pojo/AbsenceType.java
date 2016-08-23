@@ -11,7 +11,7 @@ import java.io.Serializable;
  *
  * @author Martin Six
  */
-public class AbsenceType implements Serializable{
+public class AbsenceType implements Serializable {
 
     private int absenceTypeID;
     private String absenceName;

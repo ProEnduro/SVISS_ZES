@@ -40,5 +40,4 @@ public class HolidayService {
         HOLIDAY_DAO.delete(o);
     }
 
-    
 }

@@ -134,14 +134,12 @@ public class AuswertungsBean {
                 workList = IstZeitService.getWorktimeByUser(currentUser);
                 absenceList = AbsenceService.getAbsenceByUserAndAcknowledged(currentUser);
             }
+        } else if (selectedUser.equals("All")) {
+            workList = IstZeitService.getAllWorkTime();
+            absenceList = AbsenceService.getAllAcknowledged();
         } else {
-            if (selectedUser.equals("All")) {
-                workList = IstZeitService.getAllWorkTime();
-                absenceList = AbsenceService.getAllAcknowledged();
-            } else {
-                workList = IstZeitService.getWorktimeByUser(BenutzerverwaltungService.getUser(selectedUser));
-                absenceList = AbsenceService.getAbsenceByUserAndAcknowledged(BenutzerverwaltungService.getUser(selectedUser));
-            }
+            workList = IstZeitService.getWorktimeByUser(BenutzerverwaltungService.getUser(selectedUser));
+            absenceList = AbsenceService.getAbsenceByUserAndAcknowledged(BenutzerverwaltungService.getUser(selectedUser));
         }
 
         for (WorkTime w : workList) {

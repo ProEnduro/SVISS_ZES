@@ -13,65 +13,65 @@ and open the template in the editor.
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="currentAuswertungsIndex" value="2" />
-    
+
     <ui:define name="auswertung">
         <h:body>
             <h:form>
-                
+
                 <p:panelGrid columns="2" style="border-style: hidden">
-                   
+
                     <p:selectOneMenu value="#{alleAbwesenheitenBean.selectedUser}">
                         <f:selectItems value="#{alleAbwesenheitenBean.allUsers}"/>
                     </p:selectOneMenu>
-                    
-                    
+
+
                     <p:commandButton value="load" actionListener="#{alleAbwesenheitenBean.loadAllAbsenceByUser}" update=":absenceform:absenceid"/>
                 </p:panelGrid>
-                
+
             </h:form>
-            
-            
-            
+
+
+
             <h:form id="absenceform">
                 <p:dataTable id="absenceid" var="absence" value="#{alleAbwesenheitenBean.absence}" paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
-                 paginator="true" rows="30" style="margin-bottom:20px">
+                             paginator="true" rows="30" style="margin-bottom:20px">
 
                     <p:column headerText="Benutzer" sortBy="#{absence.user.username}" filterBy="#{absence.user.username}">
                         <h:outputText value="#{absence.user.username}"/>
                     </p:column>
-                    
+
                     <p:column headerText="Datum" sortBy="#{absence.startTime}">
                         <h:outputText value="#{absence.startTime}" converter="localDateTimeConverter" style="margin-left: 20%"/>
                         <h:outputText value=" - " style="margin-left: 10%; margin-right: 10%"/>
                         <h:outputText value="#{absence.endTime}" converter="localDateTimeConverter"/>
                     </p:column>
-                    
+
                     <p:column headerText="Grund">
                         <h:outputText value="#{absence.reason}"/>
                     </p:column>
-                    
+
                     <p:column headerText="Zugelassen" sortBy="#{absence.acknowledged}">
                         <h:outputText value="#{absence.acknowledged}" converter="acknowledgeconverter" style="margin-left: 50%"/>
                     </p:column>
-                    
+
                     <f:facet name="footer">
                         <h:commandLink>
                             <p:graphicImage name="/images/excel-icon.png" style="width: 2.5%"/>
                             <p:dataExporter type="xls" target="absenceid" fileName="Abwesenheiten"/>
                         </h:commandLink>
-                
+
                         <h:commandLink>
                             <p:graphicImage name="/images/pdf-icon.png" style="width: 2.5%"/>
                             <p:dataExporter type="pdf" target="absenceid" fileName="Abwesenheiten"/>
                         </h:commandLink>
                     </f:facet>
-                    
+
                 </p:dataTable>
-                
-                
-                
-                
-                
+
+
+
+
+
             </h:form>
 
 

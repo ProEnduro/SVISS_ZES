@@ -38,7 +38,7 @@ public class JDBCDAOFactory extends DAOFactory {
         absenceType_DAO = new AbsenceType_JDBCDAO();
         absence_DAO = new Absence_JDBCDAO();
         holiday_DAO = new Holiday_JDBCDAO();
-        userHistory_DAO= new UserHistory_JDBCDAO();
+        userHistory_DAO = new UserHistory_JDBCDAO();
     }
 
     @Override

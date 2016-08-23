@@ -16,11 +16,11 @@ and open the template in the editor.
 
     <ui:define name="auswertung">
         <h:form>
-            
-            
-            
+
+
+
             <p:growl autoUpdate="true"/>
-            
+
             <h1 align="center">Auswertung: User Details</h1>
             <p:selectOneMenu id="selectUser" value="#{userDetailsBean.selectedUser}">
                 <f:selectItems value="#{userDetailsBean.userAsStringList}"/>
@@ -31,7 +31,7 @@ and open the template in the editor.
                 <f:selectItems value="#{userDetailsBean.years}"/>
                 <p:ajax update="selectedDate"/>
             </p:selectOneMenu>
-            
+
             <p:selectOneMenu id="selectedDate" value="#{userDetailsBean.selectedDate}" converter="localDateConverter">
                 <f:selectItems value="#{userDetailsBean.dates}" var="date" itemLabel="#{date.label}" itemValue="#{date.value}"/>
             </p:selectOneMenu>
@@ -75,35 +75,35 @@ and open the template in the editor.
 
 
                 <f:facet name="footer">
-                    
+
                     <p:panelGrid columns="2">
                         <p:outputLabel value="Saldo: "/>
                         <p:outputLabel value="#{userDetailsBean.saldo}"/>
-                        
+
                         <p:outputLabel value="Überstunden nach 19 Uhr gesamt: "/>
                         <p:outputLabel value="#{userDetailsBean.überstundenNach19}"/>
-                        
+
                         <p:outputLabel value="Urlaubsanspruch am Ende Des Monats: "/>
                         <p:outputLabel value="#{userDetailsBean.urlaubsanspruch}"/>
                     </p:panelGrid>
-                    
-                    
-                     <p:commandLink ajax="false">
-                            <p:graphicImage name="/images/excel-icon.png" style="width: 3%"/>
-                            <p:dataExporter type="XLS" target="timeDataTable" fileName="Zeiten" encoding="iso-8859-1"/>
-                            
-                            
-                            
-                        </p:commandLink>
-                        <p:commandLink ajax="false">
-                            <p:graphicImage name="/images/pdf-icon.png" style="width: 3%"/>
-                            <p:dataExporter type="PDF" target="timeDataTable" fileName="Zeiten" encoding="iso-8859-1"/>
-                        </p:commandLink>
+
+
+                    <p:commandLink ajax="false">
+                        <p:graphicImage name="/images/excel-icon.png" style="width: 3%"/>
+                        <p:dataExporter type="XLS" target="timeDataTable" fileName="Zeiten" encoding="iso-8859-1"/>
+
+
+
+                    </p:commandLink>
+                    <p:commandLink ajax="false">
+                        <p:graphicImage name="/images/pdf-icon.png" style="width: 3%"/>
+                        <p:dataExporter type="PDF" target="timeDataTable" fileName="Zeiten" encoding="iso-8859-1"/>
+                    </p:commandLink>
                 </f:facet>
 
             </p:dataTable>
 
-            
+
             <p:remoteCommand update="selectUser" action="#{userDetailsBean.reloadUsers}" autoRun="true"/>
         </h:form>
     </ui:define>

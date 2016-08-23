@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author Martin Six
  */
-public class AccessLevel implements Serializable{
+public class AccessLevel implements Serializable {
 
     private int accessLevelID;
     private String accessLevelName;

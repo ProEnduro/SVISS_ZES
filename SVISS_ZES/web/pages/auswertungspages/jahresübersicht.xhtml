@@ -26,6 +26,7 @@ and open the template in the editor.
                     </p:selectOneMenu>
                     <p:selectOneMenu id="yearSelector" value="#{jahresübersichtBean.selectedYear}" converter="localDateConverter">
                         <p:ajax listener="#{jahresübersichtBean.loadData}"  update="data"/>
+                        <f:selectItem itemLabel="Select a year" itemValue=""/>
                         <f:selectItems value="#{jahresübersichtBean.years}" var="year" itemLabel="#{year.label}" itemValue="#{year.value}"/>
                     </p:selectOneMenu>
                 </p:panelGrid>

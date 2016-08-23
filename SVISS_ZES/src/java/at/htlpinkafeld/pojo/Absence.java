@@ -13,7 +13,7 @@ import java.util.Objects;
  *
  * @author Martin Six
  */
-public class Absence implements Serializable{
+public class Absence implements Serializable {
 
     private int absenceID;
     private User user;

@@ -32,7 +32,7 @@ public class BenutzerverwaltungService {
         return userdao.getUserByUsername(selectedUser);
     }
 
-    public BenutzerverwaltungService() {
+    private BenutzerverwaltungService() {
     }
 
     public static List<User> getUserList() {

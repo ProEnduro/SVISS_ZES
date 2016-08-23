@@ -40,7 +40,7 @@ public class IstZeitService {
             if (sz != null) {
                 t.setSollStartTime(sz.getSollStartTime());
                 t.setSollEndTime(sz.getSollEndTime());
-            }else{
+            } else {
                 t.setSollStartTime(LocalTime.MIN);
                 t.setSollEndTime(LocalTime.MIN);
             }

@@ -13,26 +13,25 @@ import org.primefaces.model.DefaultScheduleEvent;
  *
  * @author msi
  */
-public class AbsenceEvent extends DefaultScheduleEvent{
+public class AbsenceEvent extends DefaultScheduleEvent {
+
     private Absence absence;
 
     public AbsenceEvent(String title, Date start, Date end, Absence a) {
         super(title, start, end);
-        
+
         absence = a;
     }
 
     public AbsenceEvent() {
         super();
     }
-    
-    
-    
-    public Absence getAbsence(){
+
+    public Absence getAbsence() {
         return absence;
     }
-    
-    public void setAbsence(Absence a){
+
+    public void setAbsence(Absence a) {
         absence = a;
     }
 }

@@ -21,7 +21,7 @@ and open the template in the editor.
                 <h1 align="center">Abwesenheiten eintragen</h1>
                 <p:growl id="messages" showDetail="true"/>
                 <h:form id="abwesenheitScheduleForm">
-                    <p:schedule firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.eventModel}" draggable="false" resizable="false" widgetVar="myschedule" timeZone="GMT+2" locale="de" 
+                    <p:schedule firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.istZeitEventModel}" draggable="false" resizable="false" widgetVar="myschedule" timeZone="GMT+2" locale="de" 
                                 columnFormat="month:'ddd', week:'dddd - dd.MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
 
                         <p:ajax event="dateSelect" listener="#{scheduleView.onAbsenceDateSelect}" update=":addAbsenceDlgForm:eventDetails" oncomplete="PF('eventDialog').show();" />

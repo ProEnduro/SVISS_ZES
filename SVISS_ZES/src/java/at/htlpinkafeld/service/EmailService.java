@@ -26,12 +26,12 @@ public class EmailService {
 
     private static final DateTimeFormatter dayFormatter;
     private static final DateTimeFormatter dayTimeFormatter;
-    
-    private static final String SERVER_EMAILADDRESS = "admin@sviss.at";
+
+    private static final String SERVER_EMAILADDRESS = "noreply@sviss.at";
 
     static {
         dayFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        dayTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:MM");
+        dayTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     }
 
     private static void sendEmail(String subject, String body, User from, List<User> to) {
@@ -105,7 +105,7 @@ public class EmailService {
                 break;
         }
 
-        sendEmail(subject, body, sender, approver);
+        sendEmail(subject, body, null, approver);
     }
 
     public static void sendAcknowledgmentEmail(Absence a, User approver, List<User> otherApprover) {
@@ -134,8 +134,8 @@ public class EmailService {
         List<User> senderL = new ArrayList<>();
         senderL.add(sender);
 
-        sendEmail(subject, bodyApprover, approver, otherApprover);
-        sendEmail(subject, bodySender, approver, senderL);
+        sendEmail(subject, bodyApprover, null, otherApprover);
+        sendEmail(subject, bodySender, null, senderL);
     }
 
     public static void sendAbsenceDeletedByApprover(Absence a, User approver, List<User> otherApprover) {
@@ -164,8 +164,8 @@ public class EmailService {
         List<User> senderL = new ArrayList<>();
         senderL.add(sender);
 
-        sendEmail(subject, bodyApprover, approver, otherApprover);
-        sendEmail(subject, bodySender, approver, senderL);
+        sendEmail(subject, bodyApprover, null, otherApprover);
+        sendEmail(subject, bodySender, null, senderL);
     }
 
     public static void sendUserDeletedOwnAbsenceEmail(Absence a, List<User> approver) {
@@ -192,7 +192,7 @@ public class EmailService {
                 break;
         }
 
-        sendEmail(subject, body, sender, approver);
+        sendEmail(subject, body, null, approver);
     }
 
     public static void sendUserForgotPasswordEmail(User sender, List<User> admins) {

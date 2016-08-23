@@ -13,7 +13,10 @@ import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
+import at.htlpinkafeld.service.AbsenceService;
+import at.htlpinkafeld.service.AccessRightsService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
+import at.htlpinkafeld.service.IstZeitService;
 import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
 import java.time.DayOfWeek;
@@ -23,6 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 /**
@@ -31,9 +35,7 @@ import javax.faces.model.SelectItem;
  */
 public class JahresübersichtBean {
 
-    private final WorkTime_DAO workTime_DAO;
-    private final Absence_DAO absence_DAO;
-    private final SollZeiten_DAO sollZeiten_DAO;
+    private MasterBean masterBean;
 
     private List<SelectItem> users;
     private User selectedUser;
@@ -53,17 +55,25 @@ public class JahresübersichtBean {
      */
     public JahresübersichtBean() {
         monthFormatter = DateTimeFormatter.ofPattern("MMMM");
-        workTime_DAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
-        absence_DAO = DAOFactory.getDAOFactory().getAbsenceDAO();
-        sollZeiten_DAO = DAOFactory.getDAOFactory().getSollZeitenDAO();
+
+        FacesContext context = FacesContext.getCurrentInstance();
+        masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
+
     }
 
     public void loadJahresübersichtBean() {
-        List<User> userL = BenutzerverwaltungService.getUserByDisabled(Boolean.FALSE);
+
+        User currentUser = masterBean.getUser();
         users = new ArrayList<>();
-        for (User u : userL) {
-            users.add(new SelectItem(u, u.getPersName()));
+        if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "ALL")) {
+            List<User> userL = BenutzerverwaltungService.getUserByDisabled(Boolean.FALSE);
+            for (User u : userL) {
+                users.add(new SelectItem(u, u.getPersName()));
+            }
+        } else {
+            users.add(new SelectItem(currentUser, currentUser.getPersName()));
         }
+
     }
 
     public List<SelectItem> getUsers() {
@@ -126,9 +136,8 @@ public class JahresübersichtBean {
         }
     }
 
-//TODO: User History auf Service von DAO 
     public void loadData() {
-        if (selectedYear != null) {
+        if (selectedYear != null && selectedUser != null) {
             months = new ArrayList<>();
 
             LocalDate month;
@@ -160,7 +169,7 @@ public class JahresübersichtBean {
     public int calcOvertimeMinusPlus19H(User u, LocalDate startDate, LocalDate endDate) {
         int overtime = 0;
 
-        List<WorkTime> workTimes = workTime_DAO.getWorkTimesFromUserBetweenDates(u, TimeConverterService.convertLocalDateToDate(startDate), TimeConverterService.convertLocalDateToDate(endDate));
+        List<WorkTime> workTimes = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(u, TimeConverterService.convertLocalDateToDate(startDate), TimeConverterService.convertLocalDateToDate(endDate));
 
         LocalTime lt19Plus = LocalTime.of(19, 0);
 
@@ -181,7 +190,7 @@ public class JahresübersichtBean {
         }
 
 //        overtime -= u.getWeekTime() * 60;
-        List<Absence> absences = absence_DAO.getAbsencesByUser_BetweenDates(u, TimeConverterService.convertLocalDateToDate(startDate), TimeConverterService.convertLocalDateToDate(endDate));
+        List<Absence> absences = AbsenceService.getAbsencesByUserBetweenDates(u, TimeConverterService.convertLocalDateToDate(startDate), TimeConverterService.convertLocalDateToDate(endDate));
 
         for (Absence a : absences) {
             if (a.getStartTime().isBefore(startDate.atStartOfDay())) {
@@ -221,6 +230,7 @@ public class JahresübersichtBean {
                                 if (i == 0 || i == (dayNum - 1)) {
                                     if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime()) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
                                         diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
+                                    } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime()) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime())) {
                                     } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime())) {
                                         diff = (int) a.getStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
                                     } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
@@ -278,7 +288,7 @@ public class JahresübersichtBean {
     public int calcOvertime19Plus(User u, LocalDate startDate, LocalDate endDate) {
         int overtime = 0;
 
-        List<WorkTime> workTimes = workTime_DAO.getWorkTimesFromUserBetweenDates(u, TimeConverterService.convertLocalDateToDate(startDate), TimeConverterService.convertLocalDateToDate(endDate));
+        List<WorkTime> workTimes = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(u, TimeConverterService.convertLocalDateToDate(startDate), TimeConverterService.convertLocalDateToDate(endDate));
         LocalTime lt19Plus = LocalTime.of(19, 0);
 
         for (WorkTime wt : workTimes) {

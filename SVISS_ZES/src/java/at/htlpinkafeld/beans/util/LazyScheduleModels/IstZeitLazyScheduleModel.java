@@ -14,16 +14,9 @@ import at.htlpinkafeld.pojo.WorkTime;
 import at.htlpinkafeld.service.AbsenceService;
 import at.htlpinkafeld.service.HolidayService;
 import at.htlpinkafeld.service.IstZeitService;
-import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.WeekFields;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.LazyScheduleModel;
 
@@ -33,10 +26,18 @@ import org.primefaces.model.LazyScheduleModel;
  */
 public class IstZeitLazyScheduleModel extends LazyScheduleModel {
 
-    User currentUser;
+    private User currentUser;
 
     public IstZeitLazyScheduleModel(User u) {
         currentUser = u;
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
     }
 
     @Override
@@ -44,7 +45,7 @@ public class IstZeitLazyScheduleModel extends LazyScheduleModel {
         super.loadEvents(start, end); //To change body of generated methods, choose Tools | Templates.
 
         DefaultScheduleEvent e;
-        
+
         for (Holiday h : HolidayService.getHolidayBetweenDates(start, end)) {
             e = new DefaultScheduleEvent(h.getHolidayComment(), TimeConverterService.convertLocalDateToDate(h.getHolidayDate()), TimeConverterService.convertLocalDateToDate(h.getHolidayDate()));
             e.setAllDay(true);
@@ -52,10 +53,8 @@ public class IstZeitLazyScheduleModel extends LazyScheduleModel {
 
             this.addEvent(e);
         }
-        
-        
+
         List<Absence> absenceList = AbsenceService.getAbsenceByUserBetweenDates(currentUser, start, end);
-        
 
         for (Absence a : absenceList) {
             e = new AbsenceEvent(currentUser.getUsername() + " " + a.getAbsenceType().getAbsenceName(), TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);
@@ -101,7 +100,6 @@ public class IstZeitLazyScheduleModel extends LazyScheduleModel {
             this.addEvent(new WorkTimeEvent(currentUser.getUsername() + " Ist-Zeit", TimeConverterService.convertLocalDateTimeToDate(w.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(w.getEndTime()), "istzeit", w));
         }
 
-        
     }
 
 }

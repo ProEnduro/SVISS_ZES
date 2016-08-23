@@ -16,7 +16,7 @@ import java.util.Objects;
  *
  * @author Martin Six
  */
-public class SollZeit implements Serializable{
+public class SollZeit implements Serializable {
 
     private DayOfWeek day;
     private User user;

@@ -17,18 +17,18 @@ import java.util.List;
  * @author msi
  */
 public class UserHistoryService {
-    
+
     private static UserHistory_DAO userHistoryDAO;
-    
-    static{
+
+    static {
         userHistoryDAO = DAOFactory.getDAOFactory().getUserHistoryDAO();
     }
-    
-    public static List<UserHistoryEntry> getUserHistoryEntriesForUser(User u){
+
+    public static List<UserHistoryEntry> getUserHistoryEntriesForUser(User u) {
         return userHistoryDAO.getUserHistoryEntrysByUser(u);
     }
-    
-    public static List<UserHistoryEntry> getUserHistoryEntriesForUserBetweenDates(User u, LocalDate start, LocalDate end){
+
+    public static List<UserHistoryEntry> getUserHistoryEntriesForUserBetweenDates(User u, LocalDate start, LocalDate end) {
         return userHistoryDAO.getUserHistoryEntrysByUser_BetweenDates(u, start, end);
     }
 }

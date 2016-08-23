@@ -53,25 +53,25 @@ import org.primefaces.model.ScheduleModel;
  * @author msi
  */
 public class BenutzerverwaltungBean {
-    
+
     private List<User> userlist;
-    
+
     private User selectedUser;
-    
+
     private DualListModel<User> approverModel;
-    
+
     private List<SollZeit> currentSollZeiten;
     private List<SollZeit> newSollZeiten;
-    
+
     private ScheduleModel timeModel;
     private ScheduleEvent curEvent;
-    
+
     private LocalDate pointDate;
-    
+
     private Double weekTime;
-    
+
     private String resetPWString;
-    
+
     @PostConstruct
     public void init() {
         timeModel = new DefaultScheduleModel();
@@ -83,27 +83,27 @@ public class BenutzerverwaltungBean {
      */
     public BenutzerverwaltungBean() {
     }
-    
+
     public void onLoad() {
         userlist = BenutzerverwaltungService.getUserList();
     }
-    
+
     public ScheduleModel getTimeModel() {
         return timeModel;
     }
-    
+
     public List<User> getUserList() {
 //        if (userlist == null) {
 //            userlist = BenutzerverwaltungService.getUserList();
 //        }
         return userlist;
     }
-    
+
     public void newUser() {
         selectedUser = new UserProxy();
         newSollZeiten = new ArrayList<>();
     }
-    
+
     public void editUser(ActionEvent e) {
         selectedUser = new UserProxy((User) e.getComponent().getAttributes().get("user"));
         newSollZeiten = new ArrayList<>();
@@ -132,30 +132,30 @@ public class BenutzerverwaltungBean {
                 }
             }
         }
-        
+
         ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
         String path = serv.getRealPath("/") + "/resources/";
-        
+
         File file = new File(path + "themes.properties");
-        
+
         try (FileInputStream inSF = new FileInputStream(file)) {
             Properties prop = new Properties();
             prop.load(inSF);
-            
+
             try (FileOutputStream outSF = new FileOutputStream(file)) {
                 prop.setProperty(selectedUser.getUsername(), "delta");
                 prop.store(outSF, "Themes_of_user");
                 outSF.close();
             }
-        inSF.close();
+            inSF.close();
         }
-       selectedUser = null;
+        selectedUser = null;
     }
-    
+
     public String getResetPWString() {
         return RandomStringUtils.randomAlphanumeric(10);
     }
-    
+
     public void setResetPWString(String resetPWString) {
         this.resetPWString = resetPWString;
     }
@@ -195,23 +195,23 @@ public class BenutzerverwaltungBean {
 //            }
 //        }
     }
-    
+
     public void discardTimes() {
         newSollZeiten = new ArrayList<>();
     }
-    
+
     public void discardUserChanges() {
         selectedUser = new UserProxy();
     }
-    
+
     public User getSelectedUser() {
         return selectedUser;
     }
-    
+
     public void setSelectedUser(User selectedUser) {
         this.selectedUser = selectedUser;
     }
-    
+
     public List<AccessLevel> getAccessGroups() {
         return AccessRightsService.AccessGroups;
     }
@@ -220,15 +220,15 @@ public class BenutzerverwaltungBean {
     public Date getPointDate() {
         return TimeConverterService.convertLocalDateTimeToDate(pointDate.atStartOfDay());
     }
-    
+
     public ScheduleEvent getCurEvent() {
         return curEvent;
     }
-    
+
     public void setCurEvent(ScheduleEvent curEvent) {
         this.curEvent = curEvent;
     }
-    
+
     public Double getNewWeekTime() {
         Double wt = 0.0;
         Double dayTime;
@@ -241,11 +241,11 @@ public class BenutzerverwaltungBean {
         }
         return wt;
     }
-    
+
     public void setNewWeekTime(Double weekTime) {
         this.weekTime = Math.abs(weekTime);
     }
-    
+
     public void distributeTimes() {
         timeModel.clear();
         discardTimes();
@@ -256,7 +256,7 @@ public class BenutzerverwaltungBean {
         } else {
             endTime = startTime.plusMinutes((long) ((weekTime / 5) * 60));
         }
-        
+
         for (int i = 0; i < 5; i++) {
             LocalDateTime sDateTime = LocalDateTime.of(pointDate.plusDays(i), startTime);
             curEvent = new DefaultScheduleEvent("", TimeConverterService.convertLocalDateTimeToDate(sDateTime), TimeConverterService.convertLocalDateTimeToDate(sDateTime.with(endTime)));
@@ -265,7 +265,7 @@ public class BenutzerverwaltungBean {
             newSollZeiten.add(sz);
         }
     }
-    
+
     public void loadSollZeiten() {
         timeModel.clear();
         currentSollZeiten = SollZeitenService.getSollZeitenByUser(selectedUser);
@@ -279,45 +279,45 @@ public class BenutzerverwaltungBean {
                     TimeConverterService.convertLocalDateTimeToDate(LocalDateTime.of(curDate, sz.getSollEndTime())), curDate.getDayOfWeek()));
         }
     }
-    
+
     public void onEventSelect(SelectEvent selectEvent) {
         curEvent = (ScheduleEvent) selectEvent.getObject();
     }
-    
+
     public void onDateSelect(SelectEvent selectEvent) {
-        
+
         Date date = (Date) selectEvent.getObject();
         Calendar c = Calendar.getInstance();
         c.setTime(date);
-        
+
         for (SollZeit sz : newSollZeiten) {
             if (TimeConverterService.convertDateToLocalDate(date).getDayOfWeek().equals(sz.getDay())) {
                 FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Nur eine Arbeitszeit pro Tag!"));
                 FacesContext.getCurrentInstance().validationFailed();
             }
         }
-        
+
         if (!FacesContext.getCurrentInstance().isValidationFailed()) {
             c.add(Calendar.HOUR_OF_DAY, 2);
             curEvent = new DefaultScheduleEvent("", date, c.getTime(), TimeConverterService.convertDateToLocalDateTime(date).getDayOfWeek());
         }
     }
-    
+
     public Object addWorkTimeEvent() {
         LocalDateTime sDateTime = LocalDateTime.of(pointDate.with(TemporalAdjusters.firstInMonth((DayOfWeek) curEvent.getData())), TimeConverterService.convertDateToLocalTime(curEvent.getStartDate()));
-        
+
         Date endDate = TimeConverterService.convertLocalDateTimeToDate(sDateTime.plus(Duration.ofMillis(curEvent.getEndDate().getTime() - curEvent.getStartDate().getTime())));
         Date startDate = TimeConverterService.convertLocalDateTimeToDate(sDateTime);
-        
+
         if (startDate.after(endDate)) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Endzeitpunkt ist vor Startzeitpunkt!"));
             FacesContext.getCurrentInstance().validationFailed();
             return null;
         }
-        
+
         ((DefaultScheduleEvent) curEvent).setEndDate(endDate);
         ((DefaultScheduleEvent) curEvent).setStartDate(startDate);
-        
+
         SollZeit sz = new SollZeit(sDateTime.getDayOfWeek(), selectedUser, sDateTime.toLocalTime(), TimeConverterService.convertDateToLocalTime(curEvent.getEndDate()));
         if (curEvent.getId() == null) {
             timeModel.addEvent(curEvent);
@@ -329,14 +329,14 @@ public class BenutzerverwaltungBean {
         curEvent = new DefaultScheduleEvent();
         return null;
     }
-    
+
     public void removeWorkTimeEvent() {
         if (curEvent.getId() != null) {
             SollZeit sz = new SollZeit((DayOfWeek) curEvent.getData(), selectedUser, null, null);
             newSollZeiten.remove(sz);
         }
     }
-    
+
     public void onEventResize(ScheduleEntryResizeEvent event) {
         LocalDateTime startDateTime = TimeConverterService.convertDateToLocalDateTime(event.getScheduleEvent().getStartDate());
         LocalTime endTime = TimeConverterService.convertDateToLocalTime(event.getScheduleEvent().getEndDate());
@@ -360,7 +360,7 @@ public class BenutzerverwaltungBean {
 
     //Approver Stuff from here on
     public void editApprover(ActionEvent e) {
-        
+
         selectedUser = (User) e.getComponent().getAttributes().get("user");
         List<User> source = new LinkedList<>();
         for (AccessLevel al : AccessRightsService.AccessGroups) {
@@ -369,26 +369,26 @@ public class BenutzerverwaltungBean {
             }
         }
         source.remove(selectedUser);
-        
+
         List<User> target = new LinkedList<>();
         for (User appr : selectedUser.getApprover()) {
             target.add(appr);
         }
         approverModel = new DualListModel<>(source, target);
     }
-    
+
     public DualListModel<User> getApproverModel() {
         return approverModel;
     }
-    
+
     public void setApproverModel(DualListModel<User> approverModel) {
         this.approverModel = approverModel;
     }
-    
+
     public void saveApprover() {
         selectedUser.setApprover(approverModel.getTarget());
         BenutzerverwaltungService.updateApproverOfUser(selectedUser);
         selectedUser = null;
     }
-    
+
 }

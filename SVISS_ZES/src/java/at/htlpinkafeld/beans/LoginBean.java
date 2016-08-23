@@ -60,11 +60,11 @@ public class LoginBean {
         User_DAO user_dao = DAOFactory.getDAOFactory().getUserDAO();
 
         User u = user_dao.getUserByUsername(userString);
-        
-        if(u == null){
+
+        if (u == null) {
             FacesContext context = FacesContext.getCurrentInstance();
             context.addMessage(null, new FacesMessage("Invalid User!"));
-            
+
             return "failure";
         }
 
