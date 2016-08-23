@@ -12,13 +12,15 @@
             <h:form  id="scheduleForm">
                 <p:panel>
                     <h1 align="center">Feiertage</h1>
-                    <p:fileUpload id="loadICSBut" widgetVar="loadICSBut" value="load ICS" fileUploadListener="#{feiertageBean.loadEventsFromICS}"  update="feiertagSchedule"  allowTypes="/(\.|\/)(ics)$/" fileLimit="1" auto="true"/>
                     <p:schedule id="feiertagSchedule" value="#{feiertageBean.timeModel}" aspectRatio="3" resizable="false" timeZone="GMT+2" locale="de" timeFormat="" axisFormat="HH:mm" ignoreTimezone="true" allDaySlot="false" rightHeaderTemplate="">
                         <p:ajax event="dateSelect" listener="#{feiertageBean.onDateSelect}" update=":eventForm:eventDetails" oncomplete="PF('eventDialog').show();" />
                         <p:ajax event="eventSelect" listener="#{feiertageBean.onEventSelect}" update=":eventForm:eventDetails" oncomplete="PF('eventDialog').show();" />
                         <p:ajax event="eventMove" listener="#{feiertageBean.onEventMove}"/>
 
                     </p:schedule>
+
+                    <p:fileUpload id="loadICSBut" widgetVar="loadICSBut" value="load ICS" fileUploadListener="#{feiertageBean.loadEventsFromICS}" label="ICS Kalendar hochladen" update="feiertagSchedule"  allowTypes="/(\.|\/)(ics)$/" fileLimit="1" auto="true"/>
+
                 </p:panel>
             </h:form>
 

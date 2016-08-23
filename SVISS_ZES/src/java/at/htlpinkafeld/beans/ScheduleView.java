@@ -122,46 +122,52 @@ public class ScheduleView implements Serializable {
         this.event = event;
     }
 
-    public void addEvent(ActionEvent actionEvent) {
-        if (event.getId() == null) {
-            DefaultScheduleEvent e = (DefaultScheduleEvent) event;
+    public void addAbsenceEvent(ActionEvent actionEvent) {
 
-            Absence a = new Absence(this.currentUser, type, TimeConverterService.convertDateToLocalDateTime(e.getStartDate()), TimeConverterService.convertDateToLocalDateTime(e.getEndDate()));
-            a.setReason(this.reason);
-
-            AbsenceEvent ev = new AbsenceEvent(currentUser.getUsername() + " " + type.getAbsenceName() + (a.isAcknowledged() ? "" : " (unacknowledged)"), event.getStartDate(), event.getEndDate(), a);
-
-            switch (this.type.getAbsenceTypeID()) {
-                case 1:
-                    ev.setStyleClass("medical_leave");
-                    break;
-                case 2:
-                    ev.setStyleClass("holiday");
-                    ev.setAllDay(true);
-                    break;
-                case 3:
-                    ev.setStyleClass("time_compensation");
-                    break;
-                case 4:
-                    ev.setStyleClass("business-related_absence");
-                    break;
-            }
-            AbsenceService.insertAbsence(a);
-            List<User> approverlist = currentUser.getApprover();
-            if (!approverlist.isEmpty()) {
-                EmailService.sendUserEnteredAbsenceEmail(a, approverlist);
-            }
-            eventModel.addEvent(ev);
+        if (event.getStartDate().after(event.getEndDate())) {
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Failed", "Endzeitpunkt ist vor Startzeitpunkt!"));
+            FacesContext.getCurrentInstance().validationFailed();
         } else {
-            if (event instanceof WorkTimeEvent) {
-                IstZeitService.update(((WorkTimeEvent) event).getWorktime());
-            } else if (event instanceof AbsenceEvent) {
-                AbsenceService.updateAbsence(((AbsenceEvent) event).getAbsence());
-            }
-            eventModel.updateEvent(event);
-        }
+            if (event.getId() == null) {
+                DefaultScheduleEvent e = (DefaultScheduleEvent) event;
 
-        event = new DefaultScheduleEvent();
+                Absence a = new Absence(this.currentUser, type, TimeConverterService.convertDateToLocalDateTime(e.getStartDate()), TimeConverterService.convertDateToLocalDateTime(e.getEndDate()));
+                a.setReason(this.reason);
+
+                AbsenceEvent ev = new AbsenceEvent(currentUser.getUsername() + " " + type.getAbsenceName() + (a.isAcknowledged() ? "" : " (unacknowledged)"), event.getStartDate(), event.getEndDate(), a);
+
+                switch (this.type.getAbsenceTypeID()) {
+                    case 1:
+                        ev.setStyleClass("medical_leave");
+                        break;
+                    case 2:
+                        ev.setStyleClass("holiday");
+                        ev.setAllDay(true);
+                        break;
+                    case 3:
+                        ev.setStyleClass("time_compensation");
+                        break;
+                    case 4:
+                        ev.setStyleClass("business-related_absence");
+                        break;
+                }
+                AbsenceService.insertAbsence(a);
+                List<User> approverlist = currentUser.getApprover();
+                if (!approverlist.isEmpty()) {
+                    EmailService.sendUserEnteredAbsenceEmail(a, approverlist);
+                }
+                eventModel.addEvent(ev);
+            } else {
+                if (event instanceof WorkTimeEvent) {
+                    IstZeitService.update(((WorkTimeEvent) event).getWorktime());
+                } else if (event instanceof AbsenceEvent) {
+                    AbsenceService.updateAbsence(((AbsenceEvent) event).getAbsence());
+                }
+                eventModel.updateEvent(event);
+            }
+
+            event = new DefaultScheduleEvent();
+        }
     }
 
     public void deleteEvent(ActionEvent actionEvent) {
@@ -207,25 +213,22 @@ public class ScheduleView implements Serializable {
                 e.setStyleClass("istzeit");
                 IstZeitService.addIstTime(e.getWorktime());
 
-            } else {
+            } else if (event instanceof WorkTimeEvent) {
+                WorkTime time = ((WorkTimeEvent) event).getWorktime();
+                LocalTime plus19 = LocalTime.of(19, 0);
+                if (time.getEndTime().toLocalTime().isAfter(plus19)) {
+                    diff -= time.getOvertimeAfter19() * 1.5;
+                    diff -= time.getStartTime().until(plus19, ChronoUnit.MINUTES);
+                } else {
+                    diff -= time.getStartTime().until(time.getEndTime(), ChronoUnit.MINUTES);
+                }
+                time.setStartTime(TimeConverterService.convertDateToLocalDateTime(event.getStartDate()));
+                time.setEndTime(TimeConverterService.convertDateToLocalDateTime(event.getEndDate()));
 
-                if (event instanceof WorkTimeEvent) {
-                    WorkTime time = ((WorkTimeEvent) event).getWorktime();
-                    LocalTime plus19 = LocalTime.of(19, 0);
-                    if (time.getEndTime().toLocalTime().isAfter(plus19)) {
-                        diff -= time.getOvertimeAfter19() * 1.5;
-                        diff -= time.getStartTime().until(plus19, ChronoUnit.MINUTES);
-                    } else {
-                        diff -= time.getStartTime().until(time.getEndTime(), ChronoUnit.MINUTES);
-                    }
-                    time.setStartTime(TimeConverterService.convertDateToLocalDateTime(event.getStartDate()));
-                    time.setEndTime(TimeConverterService.convertDateToLocalDateTime(event.getEndDate()));
-
-                    IstZeitService.update(time);
-                } else if (event instanceof AbsenceEvent) {
+                IstZeitService.update(time);
+            } else if (event instanceof AbsenceEvent) {
 
 //                AbsenceService.updateAbsence(((AbsenceEvent) event).getAbsence());
-                }
             }
 
             if (event instanceof WorkTimeEvent) {
@@ -325,16 +328,16 @@ public class ScheduleView implements Serializable {
     }
 
     public void onIstZeitDateSelect(SelectEvent selectEvent) {
-        Date sDate=(Date) selectEvent.getObject();
-        if(sDate.before(getStartDateToday())|| sDate.after(getEndDateToday())){
+        Date sDate = (Date) selectEvent.getObject();
+        if (sDate.before(getStartDateToday()) || sDate.after(getEndDateToday())) {
             FacesContext.getCurrentInstance().validationFailed();
         }
-            
+
         event = new DefaultScheduleEvent("", sDate, sDate);
     }
-    
-        public void onAbsenceDateSelect(SelectEvent selectEvent) {
-        Date sDate=(Date) selectEvent.getObject();
+
+    public void onAbsenceDateSelect(SelectEvent selectEvent) {
+        Date sDate = (Date) selectEvent.getObject();
         event = new DefaultScheduleEvent("", sDate, sDate);
     }
 

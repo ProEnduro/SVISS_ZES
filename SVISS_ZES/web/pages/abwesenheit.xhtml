@@ -114,7 +114,7 @@ and open the template in the editor.
                             <p:inputTextarea id="reason" value="#{scheduleView.reason}"/>
 
                             <p:commandButton type="reset" value="Reset" />
-                            <p:commandButton id="addButton" value="Save" actionListener="#{scheduleView.addEvent}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" />
+                            <p:commandButton id="addButton" value="Save" update=":messages" actionListener="#{scheduleView.addAbsenceEvent}" oncomplete="PF('myschedule').update();if (args &amp;&amp; !args.validationFailed) PF('eventDialog').hide();" />
 
                             <p:selectOneRadio id="type" value="#{scheduleView.type}" converter="absenceTypeConv">
                                 <f:selectItems var="t" itemLabel="#{t.absenceName}" value="#{scheduleView.types}" itemValue="#{t}"/>
