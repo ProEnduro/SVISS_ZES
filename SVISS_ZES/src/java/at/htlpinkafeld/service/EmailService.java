@@ -27,7 +27,7 @@ public class EmailService {
     private static final DateTimeFormatter dayFormatter;
     private static final DateTimeFormatter dayTimeFormatter;
     
-    private static final String SERVER_EMAILADDRESS = "admin@noplan.at";
+    private static final String SERVER_EMAILADDRESS = "admin@sviss.at";
 
     static {
         dayFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");

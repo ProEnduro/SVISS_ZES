@@ -57,7 +57,7 @@ class UserHistory_JDBCDAO extends Base_JDBCDAO<UserHistoryEntry> implements User
     @Override
     protected UserHistoryEntry getEntityFromResultSet(ResultSet rs) {
         try {
-            return new UserHistoryEntry(rs.getTimestamp(TABLE_NAME).toLocalDateTime(), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), rs.getInt(OVERTIME_COL), rs.getInt(VACATION_COL));
+            return new UserHistoryEntry(rs.getTimestamp(MONTHTS_COL).toLocalDateTime(), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), rs.getInt(OVERTIME_COL), rs.getInt(VACATION_COL));
         } catch (SQLException ex) {
             Logger.getLogger(SollZeiten_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -97,7 +97,7 @@ class UserHistory_JDBCDAO extends Base_JDBCDAO<UserHistoryEntry> implements User
 
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                 PreparedStatement stmt = con.getConn().prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + user.getUserNr() + " AND "
-                        + "(" + MONTHTS_COL + " >= ? AND  " + MONTHTS_COL + " < ? " + SQL_ORDER_BY_LINE)) {
+                        + "(" + MONTHTS_COL + " >= ? AND  " + MONTHTS_COL + " < ? )" + SQL_ORDER_BY_LINE)) {
 
             stmt.setDate(1, startDate);
             stmt.setDate(2, endDate);

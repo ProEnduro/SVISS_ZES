@@ -10,8 +10,6 @@ import at.htlpinkafeld.dao.util.DAOException;
 import at.htlpinkafeld.dao.util.WrappedConnection;
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
-import at.htlpinkafeld.service.TimeConverterService;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,7 +17,6 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -168,12 +165,8 @@ public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeit> implements SollZe
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                 PreparedStatement stmt = con.getConn().prepareStatement("SELECT * FROM " + TABLE_NAME + " sz1 WHERE sz1." + USERNR_COL + " = " + u.getUserNr()
                         + " AND sz1." + DAYID_COL + " = '" + SollZeit.getDBShortFromDayOfWeek(d) + "' AND sz1." + INSERTED_COL
-                        + " =  ( select MAX( " + INSERTED_COL + ")  from " + TABLE_NAME + " sz2 where  sz1." + DAYID_COL + " = sz2." + DAYID_COL 
+                        + " =  ( select MAX( " + INSERTED_COL + ")  from " + TABLE_NAME + " sz2 where  sz1." + DAYID_COL + " = sz2." + DAYID_COL
                         + " AND sz1." + USERNR_COL + " = sz2." + USERNR_COL + " AND sz2." + INSERTED_COL + " <= ? " + " ) " + SQL_ORDER_BY_LINE)) {
-            System.out.println("SELECT * FROM " + TABLE_NAME + " sz1 WHERE sz1." + USERNR_COL + " = " + u.getUserNr()
-                        + " AND sz1." + DAYID_COL + " = '" + SollZeit.getDBShortFromDayOfWeek(d) + "' AND sz1." + INSERTED_COL
-                        + " =  ( select MAX( " + INSERTED_COL + ")  from " + TABLE_NAME + " sz2 where  sz1." + DAYID_COL + " = sz2." + DAYID_COL 
-                        + " AND sz1." + USERNR_COL + " = sz2." + USERNR_COL + " AND sz2." + INSERTED_COL + " <= ? " + " ) " + SQL_ORDER_BY_LINE);
             stmt.setTimestamp(1, Timestamp.valueOf(ldt));
             ResultSet rs = stmt.executeQuery();
 

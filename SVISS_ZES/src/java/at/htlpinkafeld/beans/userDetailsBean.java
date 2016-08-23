@@ -202,7 +202,7 @@ public class userDetailsBean {
                 }
 
                 if (worklist.isEmpty() && absencelist.isEmpty() && holidaylist.isEmpty()) {
-                    SollZeit sollzeit = SollZeitenService.getSollZeitByUserAndDayOfWeek(currentUser, temp.getDayOfWeek());
+                    SollZeit sollzeit = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(currentUser, temp.getDayOfWeek(), temp.atStartOfDay());
 
                     if (sollzeit == null) {
                         trd = new TimeRowDisplay(new Holiday(temp, ""));
