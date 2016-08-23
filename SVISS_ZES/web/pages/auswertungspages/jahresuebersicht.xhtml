@@ -19,19 +19,19 @@ and open the template in the editor.
             <h:form>
                 <h1 align="center">Auswertung: Jahresübersicht</h1>
                 <p:panelGrid id="selectionGrid" columns="2" style="border-style: hidden">
-                    <p:selectOneMenu id="userSelector" value="#{jahresübersichtBean.selectedUser}" converter="userConverter">
-                        <p:ajax listener="#{jahresübersichtBean.loadYears}" update="yearSelector data"/>
+                    <p:selectOneMenu id="userSelector" value="#{jahresuebersichtBean.selectedUser}" converter="userConverter">
+                        <p:ajax listener="#{jahresuebersichtBean.loadYears}" update="yearSelector data"/>
                         <f:selectItem itemLabel="Select a User" itemValue=""/>
-                        <f:selectItems value="#{jahresübersichtBean.users}" var="user" itemLabel="#{user.label}" itemValue="#{user.value}"/>
+                        <f:selectItems value="#{jahresuebersichtBean.users}" var="user" itemLabel="#{user.label}" itemValue="#{user.value}"/>
                     </p:selectOneMenu>
-                    <p:selectOneMenu id="yearSelector" value="#{jahresübersichtBean.selectedYear}" converter="localDateConverter">
-                        <p:ajax listener="#{jahresübersichtBean.loadData}"  update="data"/>
+                    <p:selectOneMenu id="yearSelector" value="#{jahresuebersichtBean.selectedYear}" converter="localDateConverter">
+                        <p:ajax listener="#{jahresuebersichtBean.loadData}"  update="data"/>
                         <f:selectItem itemLabel="Select a year" itemValue=""/>
-                        <f:selectItems value="#{jahresübersichtBean.years}" var="year" itemLabel="#{year.label}" itemValue="#{year.value}"/>
+                        <f:selectItems value="#{jahresuebersichtBean.years}" var="year" itemLabel="#{year.label}" itemValue="#{year.value}"/>
                     </p:selectOneMenu>
                 </p:panelGrid>
 
-                <p:dataTable id="data" value="#{jahresübersichtBean.months}" var="month"  style="width: 60%">
+                <p:dataTable id="data" value="#{jahresuebersichtBean.months}" var="month"  style="width: 60%">
                     <p:column headerText="Monat">
                         <h:outputText value="#{month.label}"/>
                     </p:column>
@@ -45,8 +45,8 @@ and open the template in the editor.
                     <f:facet name="footer">
                         <p:panelGrid columns="3">
                             <p:outputLabel value="Überstunden Gesamt: "/>
-                            <p:inputText readonly="true" value="#{jahresübersichtBean.overtimeSum}"/>
-                            <p:inputText readonly="true" value="#{jahresübersichtBean.overtime19PlusSum}"/>
+                            <p:inputText readonly="true" value="#{jahresuebersichtBean.overtimeSum}"/>
+                            <p:inputText readonly="true" value="#{jahresuebersichtBean.overtime19PlusSum}"/>
                         </p:panelGrid>
                         <p:commandLink ajax="false">
                             <p:graphicImage name="/images/excel-icon.png" style="width: 4%; float: left"/>
@@ -59,7 +59,7 @@ and open the template in the editor.
                     </f:facet>
                 </p:dataTable>
 
-                <p:remoteCommand update="selectionGrid" action="#{jahresübersichtBean.loadJahresübersichtBean}" autoRun="true"/>
+                <p:remoteCommand update="selectionGrid" action="#{jahresuebersichtBean.loadJahresübersichtBean}" autoRun="true"/>
             </h:form>
         </h:body>
     </ui:define>

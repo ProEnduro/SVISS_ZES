@@ -5,11 +5,14 @@
  */
 package at.htlpinkafeld.dao.jdbc;
 
+import at.htlpinkafeld.dao.util.DAOException;
 import at.htlpinkafeld.dao.util.WrappedConnection;
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.context.FacesContext;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -29,19 +32,20 @@ public class ConnectionManager {
     private WrappedConnection testConnection = null;
 
     protected ConnectionManager() throws SQLException {
-        try {
-            if (!test) {
-                Context ctx;
-
-                ctx = new javax.naming.InitialContext();
-                ds = (DataSource) ctx.lookup("java:comp/env/" + DATASOURCE);
-            } else {
-                testConnection = new WrappedConnection(DriverManager.getConnection("jdbc:mysql://localhost:3306/" + "zes_sviss?useSSL=false", "root", "admin"), false);
-                testConnection.getConn().setAutoCommit(false);
-            }
-        } catch (NamingException ex) {
-            Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
+        if (!test) {
+            Context ctx;
+            MysqlDataSource mysqlds = new MysqlDataSource();
+//                ctx = new javax.naming.InitialContext();
+//                ds = (DataSource) ctx.lookup("java:comp/env/" + DATASOURCE);
+            mysqlds.setURL("jdbc:mysql://localhost:3306/ZES_SVISS");
+            mysqlds.setUser("root");
+            mysqlds.setPassword("Burgenland2016#");
+            ds = mysqlds;
+        } else {
+            testConnection = new WrappedConnection(DriverManager.getConnection("jdbc:mysql://localhost:3306/" + "ZES_SVISS?useSSL=false", "root", "Burgenland2016#"), false);
+            testConnection.getConn().setAutoCommit(false);
         }
+
     }
 
     /**
@@ -71,6 +75,7 @@ public class ConnectionManager {
             }
         } catch (SQLException ex) {
             Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
+            throw new DAOException(ex);
         }
 
         return retVal;

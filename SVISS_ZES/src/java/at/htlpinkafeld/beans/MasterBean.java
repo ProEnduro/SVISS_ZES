@@ -11,6 +11,7 @@ import at.htlpinkafeld.service.AccessRightsService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.context.FacesContext;
 
@@ -32,6 +33,11 @@ public class MasterBean implements DAODML_Observer {
 //        FacesContext context = FacesContext.getCurrentInstance();
 //        LoginBean loginbean = (LoginBean) context.getApplication().evaluateExpressionGet(context, "#{loginBean}", LoginBean.class);
 //        setUser(loginbean.getUser());
+
+    }
+
+    @PostConstruct
+    public void onConstruct() {
         BenutzerverwaltungService.addUserObserver(this);
     }
 

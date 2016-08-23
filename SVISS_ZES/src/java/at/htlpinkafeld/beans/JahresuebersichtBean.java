@@ -33,7 +33,7 @@ import javax.faces.model.SelectItem;
  *
  * @author msi
  */
-public class JahresübersichtBean {
+public class JahresuebersichtBean {
 
     private MasterBean masterBean;
 
@@ -53,7 +53,7 @@ public class JahresübersichtBean {
     /**
      * Creates a new instance of alleUserBean
      */
-    public JahresübersichtBean() {
+    public JahresuebersichtBean() {
         monthFormatter = DateTimeFormatter.ofPattern("MMMM");
 
         FacesContext context = FacesContext.getCurrentInstance();
