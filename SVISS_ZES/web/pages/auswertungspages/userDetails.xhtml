@@ -12,15 +12,17 @@ and open the template in the editor.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-    <ui:param name="currentAuswertungsIndex" value="2" />
+    <ui:param name="currentAuswertungsIndex" value="1" />
 
     <ui:define name="auswertung">
         <h:form>
+            <p:remoteCommand update="selectUser" action="#{userDetailsBean.reloadUsers}" autoRun="true"/>
+            
             
             <p:growl autoUpdate="true"/>
             
             <h1 align="center">Auswertung: User Details</h1>
-            <p:selectOneMenu value="#{userDetailsBean.selectedUser}">
+            <p:selectOneMenu id="selectUser" value="#{userDetailsBean.selectedUser}">
                 <f:selectItems value="#{userDetailsBean.userAsStringList}"/>
                 <p:ajax update="selectedYear selectedDate"/>
             </p:selectOneMenu>

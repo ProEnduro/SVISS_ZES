@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.ComponentSystemEvent;
 import javax.faces.model.SelectItem;
 
 /**
@@ -70,6 +71,16 @@ public class userDetailsBean {
 
         dates = new ArrayList<>();
 
+    }
+    
+    public void reloadUsers(){
+        userAsStringList = new ArrayList<>();
+
+        for (User u : BenutzerverwaltungService.getUserList()) {
+            userAsStringList.add(u.getUsername());
+        }
+
+        dates = new ArrayList<>();
     }
 
     public List<String> getUserAsStringList() {
