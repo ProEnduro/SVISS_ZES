@@ -89,39 +89,63 @@ public class MasterBean implements DAODML_Observer {
     }
 
     public boolean isIstZeitenEnabled() {
-        return AccessRightsService.checkPermission(user.getAccessLevel(), "INPUT_TIME");
+        if (user != null) {
+            return AccessRightsService.checkPermission(user.getAccessLevel(), "INPUT_TIME");
+        }
+        return false;
     }
 
     public boolean isAbwesenheitenEnabled() {
-        return AccessRightsService.checkPermission(user.getAccessLevel(), "INPUT_TIME");
+        if (user != null) {
+            return AccessRightsService.checkPermission(user.getAccessLevel(), "INPUT_TIME");
+        }
+        return false;
     }
 
     public boolean isAccountVerwaltungEnabled() {
-        return AccessRightsService.checkPermission(user.getAccessLevel(), "EDIT_ACCOUNT");
+        if (user != null) {
+            return AccessRightsService.checkPermission(user.getAccessLevel(), "EDIT_ACCOUNT");
+        }
+        return false;
     }
 
     public boolean isBenutzerverwaltungEnabled() {
-        return AccessRightsService.checkPermission(user.getAccessLevel(), "VIEW_USERS");
+        if (user != null) {
+            return AccessRightsService.checkPermission(user.getAccessLevel(), "VIEW_USERS");
+        }
+        return false;
     }
 
     public boolean isAcknowledgementEnabled() {
-        return AccessRightsService.checkPermission(user.getAccessLevel(), "ACKNOWLEDGE_USERS");
+        if (user != null) {
+            return AccessRightsService.checkPermission(user.getAccessLevel(), "ACKNOWLEDGE_USERS");
+        }
+        return false;
     }
 
     public boolean isAlleZeitenEnabled() {
-        return AccessRightsService.checkPermission(user.getAccessLevel(), "VIEW_ALL_TIMES");
+        if (user != null) {
+            return AccessRightsService.checkPermission(user.getAccessLevel(), "VIEW_ALL_TIMES");
+        }
+        return false;
     }
 
     public boolean isAlleAbwesenheitenEnabled() {
-        return AccessRightsService.checkPermission(user.getAccessLevel(), "VIEW_ALL_ABSENCES");
+        if (user != null) {
+            return AccessRightsService.checkPermission(user.getAccessLevel(), "VIEW_ALL_ABSENCES");
+        }
+        return false;
     }
 
     public boolean isFeiertageEintragenEnabled() {
-        return AccessRightsService.checkPermission(user.getAccessLevel(), "EDIT_HOLIDAY");
+        if (user != null) {
+            return AccessRightsService.checkPermission(user.getAccessLevel(), "EDIT_HOLIDAY");
+        }
+        return false;
     }
 
     public boolean isAuswertungEnabled() {
-        return true;
+        return user != null;
     }
 
     public String getPage() {
@@ -147,6 +171,7 @@ public class MasterBean implements DAODML_Observer {
     public Object logout() {
         FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
         return "/index.xhtml?faces-redirect=true";
+//        return null;
     }
 
     @PreDestroy

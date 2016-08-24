@@ -120,7 +120,7 @@ and open the template in the editor.
                         <p:outputLabel for="reason" value="Reason:"/>
                         <p:inputTextarea id="reason" value="#{scheduleView.reason}" readonly="true"/>
 
-                        <p:commandButton value="Delete" actionListener="#{scheduleView.deleteEventInAllTime}" rendered="#{scheduleView.acknowledgedAbsence}" oncomplete="PF('myschedule').update();PF('absenceDialog').hide();"/>
+                        <p:commandButton value="Delete" action="#{scheduleView.deleteAcknowledgedAbsenceFromOverviews}" rendered="#{scheduleView.ableToDeleteAbsence}" oncomplete="PF('myschedule').update();PF('absenceDialog').hide();"/>
                     </h:panelGrid>
                 </p:dialog> 
             </h:form>

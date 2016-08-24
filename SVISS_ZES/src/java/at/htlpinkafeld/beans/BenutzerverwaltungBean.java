@@ -48,7 +48,6 @@ import org.primefaces.model.DualListModel;
 import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
 
-
 /**
  *
  * @author msi
@@ -111,46 +110,55 @@ public class BenutzerverwaltungBean {
     }
 
     public void saveUser() throws FileNotFoundException, IOException {
-        if (selectedUser.getUserNr() == -1) {
-            if (selectedUser.getPass() == null) {
-                resetPWString = getResetPWString();
-                resetPassword();
-            }
-            userlist.add(selectedUser);
-            BenutzerverwaltungService.insertUser(selectedUser);
+        if (isEmailUnavailable(selectedUser.getEmail())) {
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Diese Email wurde bereits vergeben!"));
+            FacesContext.getCurrentInstance().validationFailed();
+        } else if (isUsernameUnavailable(selectedUser.getUsername())) {
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Diese Benutzername wurde bereits vergeben!"));
+            FacesContext.getCurrentInstance().validationFailed();
         } else {
-            userlist.remove(selectedUser);
-            userlist.add(selectedUser);
-            BenutzerverwaltungService.updateUser(selectedUser);
-        }
-        if (!newSollZeiten.isEmpty()) {
-            for (SollZeit sz : newSollZeiten) {
-                SollZeitenService.insertZeit(sz);
+            if (selectedUser.getUserNr() == -1) {
+                if (selectedUser.getPass() == null) {
+                    resetPWString = getResetPWString();
+                    resetPassword();
+                }
+                userlist.add(selectedUser);
+                BenutzerverwaltungService.insertUser(selectedUser);
+            } else {
+                userlist.remove(selectedUser);
+                userlist.add(selectedUser);
+                BenutzerverwaltungService.updateUser(selectedUser);
             }
-            for (SollZeit sz : currentSollZeiten) {
-                if (!newSollZeiten.contains(sz)) {
-                    SollZeitenService.deleteZeit(sz);
+
+            if (!newSollZeiten.isEmpty()) {
+                for (SollZeit sz : newSollZeiten) {
+                    SollZeitenService.insertZeit(sz);
+                }
+                for (SollZeit sz : currentSollZeiten) {
+                    if (!newSollZeiten.contains(sz)) {
+                        SollZeitenService.deleteZeit(sz);
+                    }
                 }
             }
-        }
 
-        ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
-        String path = serv.getRealPath("/") + "/resources/";
+            ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+            String path = serv.getRealPath("/") + "/resources/";
 
-        File file = new File(path + "themes.properties");
+            File file = new File(path + "themes.properties");
 
-        try (FileInputStream inSF = new FileInputStream(file)) {
-            Properties prop = new Properties();
-            prop.load(inSF);
+            try (FileInputStream inSF = new FileInputStream(file)) {
+                Properties prop = new Properties();
+                prop.load(inSF);
 
-            try (FileOutputStream outSF = new FileOutputStream(file)) {
-                prop.setProperty(selectedUser.getUsername(), "delta");
-                prop.store(outSF, "Themes_of_user");
-                outSF.close();
+                try (FileOutputStream outSF = new FileOutputStream(file)) {
+                    prop.setProperty(selectedUser.getUsername(), "delta");
+                    prop.store(outSF, "Themes_of_user");
+                    outSF.close();
+                }
+                inSF.close();
             }
-            inSF.close();
+            selectedUser = null;
         }
-        selectedUser = null;
     }
 
     public String getResetPWString() {
@@ -178,6 +186,32 @@ public class BenutzerverwaltungBean {
             }
             EmailService.sendUserNewPasswordEmail(resetPWString, selectedUser);
         }
+    }
+
+    public boolean isUsernameUnavailable(String username) {
+        boolean b = false;
+        for (User u : userlist) {
+            if (!u.equals(selectedUser)) {
+                if (u.getUsername().contentEquals(username)) {
+                    b = true;
+                    break;
+                }
+            }
+        }
+        return b;
+    }
+
+    public boolean isEmailUnavailable(String email) {
+        boolean b = false;
+        for (User u : userlist) {
+            if (!u.equals(selectedUser)) {
+                if (u.getEmail().contentEquals(email)) {
+                    b = true;
+                    break;
+                }
+            }
+        }
+        return b;
     }
 
     //WeekTime Stuff

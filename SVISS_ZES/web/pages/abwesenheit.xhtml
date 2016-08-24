@@ -104,10 +104,10 @@ and open the template in the editor.
                     <p:dialog widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip">
                         <h:panelGrid id="eventDetails" columns="2">
                             <p:outputLabel for="from" value="From:" />
-                            <p:calendar id="from" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="#{scheduleView.pattern}" showOn="button" mask="true" readonlyInput="true"/>
+                            <p:calendar id="from" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="#{scheduleView.pattern}" showOn="button" mask="true"/>
 
                             <p:outputLabel for="to" value="To:" />
-                            <p:calendar id="to" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="#{scheduleView.pattern}" showOn="button" mask="true" readonlyInput="true"/>
+                            <p:calendar id="to" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="#{scheduleView.pattern}" showOn="button" mask="true" />
 
 
                             <p:outputLabel for="reason" value="Reason:"/>
@@ -133,15 +133,16 @@ and open the template in the editor.
                         <p:inputText id="absencetitle" value="#{scheduleView.event.title}" readonly="true"/>
 
                         <p:outputLabel for="absencefrom" value="From:" />
-                        <p:calendar id="absencefrom" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" readonly="true"/>
+                        <p:calendar id="absencefrom" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="#{scheduleView.pattern}" showOn="button" mask="true"/>
 
                         <p:outputLabel for="absenceto" value="To:" />
-                        <p:calendar id="absenceto" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" readonly="true"/>
+                        <p:calendar id="absenceto" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="#{scheduleView.pattern}" showOn="button" mask="true"/>
 
                         <p:outputLabel for="reason" value="Reason:"/>
-                        <p:inputTextarea id="reason" value="#{scheduleView.reason}" readonly="true"/>
+                        <p:inputTextarea id="reason" value="#{scheduleView.reason}"/>
 
-                        <p:commandButton value="Delete" actionListener="#{scheduleView.deleteEvent}" oncomplete="PF('absenceDialog').hide();" update=":abwesenheitScheduleForm"/>
+                        <p:commandButton id="saveButton" value="Save" update=":messages" actionListener="#{scheduleView.addAbsenceEvent}" oncomplete="PF('myschedule').update();if (args &amp;&amp; !args.validationFailed) PF('absenceDialog').hide();" />
+                        <p:commandButton value="Delete" actionListener="#{scheduleView.deleteAbsenceEvent}" oncomplete="PF('absenceDialog').hide();" update=":abwesenheitScheduleForm"/>
                     </h:panelGrid>
                 </p:dialog> 
             </h:form>

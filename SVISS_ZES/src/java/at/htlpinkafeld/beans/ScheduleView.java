@@ -76,21 +76,22 @@ public class ScheduleView implements Serializable, DAODML_Observer {
     @PostConstruct
     public void init() {
 
-        BenutzerverwaltungService.addUserObserver(this);
-
-        types = AbsenceService.getList();
-        type = types.get(0);
-
         FacesContext context = FacesContext.getCurrentInstance();
         MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
         currentUser = masterBean.getUser();
+        if (currentUser != null) {
+            BenutzerverwaltungService.addUserObserver(this);
 
-        istZeitEventModel = new IstZeitLazyScheduleModel(currentUser);
-        acknowledgementModel = new AcknowledgeLazyScheduleModel();
-        allTimesModel = new AllTimeLazyScheduleModel();
-        alleAbwesenheitenModel = new AlleAbwesenheitenLazyScheduleModel();
+            types = AbsenceService.getList();
+            type = types.get(0);
 
-        this.reloadAbwesenheiten();
+            istZeitEventModel = new IstZeitLazyScheduleModel(currentUser);
+            acknowledgementModel = new AcknowledgeLazyScheduleModel();
+            allTimesModel = new AllTimeLazyScheduleModel();
+            alleAbwesenheitenModel = new AlleAbwesenheitenLazyScheduleModel();
+
+            this.reloadAbwesenheiten();
+        }
     }
 
     public int getBreaktime() {
@@ -153,14 +154,22 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             } else if (event instanceof WorkTimeEvent) {
                 IstZeitService.update(((WorkTimeEvent) event).getWorktime());
             } else if (event instanceof AbsenceEvent) {
-                AbsenceService.updateAbsence(((AbsenceEvent) event).getAbsence());
+                Absence a = ((AbsenceEvent) event).getAbsence();
+                a.setReason(reason);
+                a.setStartTime(startDT);
+                a.setEndTime(endDT);
+                AbsenceService.updateAbsence(a);
             }
 
             event = new DefaultScheduleEvent();
         }
     }
 
-    public void deleteEvent(ActionEvent actionEvent) {
+    public boolean isAbleToDeleteAbsence() {
+        return AccessRightsService.checkPermission(currentUser.getAccessLevel(), "ALL");
+    }
+
+    public void deleteAbsenceEvent(ActionEvent actionEvent) {
 
         if (event.getId() != null) {
             if (event instanceof AbsenceEvent) {
@@ -191,6 +200,10 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             FacesContext.getCurrentInstance().validationFailed();
         } else if (!startDT.toLocalDate().equals(TimeConverterService.convertDateToLocalDate(event.getEndDate()))) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Arbeitszeit kann nur an einem Tag eingetragen werden!"));
+            FacesContext.getCurrentInstance().validationFailed();
+        } else if (event.getStartDate().before(getStartDateToday()) || event.getEndDate().before(getStartDateToday())
+                || event.getEndDate().after(getEndDateToday()) || event.getStartDate().after(getEndDateToday())) {
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Die eingebene Zeit ist nicht erlaubt!"));
             FacesContext.getCurrentInstance().validationFailed();
         } else {
 
@@ -393,7 +406,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         absenceEvent = new AbsenceEvent();
     }
 
-    public void deleteAcknowledgement(ActionEvent e) {
+    public void deleteAcknowledgement() {
         if (absenceEvent.getId() == null) {
 
         } else {
@@ -411,6 +424,28 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             List<User> otherApprover = absenceEvent.getAbsence().getUser().getApprover();
             otherApprover.remove(currentUser);
             EmailService.sendAbsenceDeletedByApprover(absenceEvent.getAbsence(), currentUser, otherApprover);
+
+        }
+    }
+
+    public void deleteAcknowledgedAbsenceFromOverviews() {
+        if (event.getId() == null) {
+
+        } else {
+            Absence a = ((AbsenceEvent) event).getAbsence();
+            AbsenceService.deleteAbsence(a);
+
+            if (a.isAcknowledged()) {
+                User u = a.getUser();
+                int overtime = calcAbsenceOvertime(a);
+
+                u.setOverTimeLeft(u.getOverTimeLeft() - overtime);
+                BenutzerverwaltungService.updateUser(u);
+            }
+
+            List<User> otherApprover = a.getUser().getApprover();
+            otherApprover.remove(currentUser);
+            EmailService.sendAbsenceDeletedByApprover(a, currentUser, otherApprover);
 
         }
     }
