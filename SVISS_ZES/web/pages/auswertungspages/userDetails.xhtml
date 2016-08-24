@@ -22,6 +22,7 @@ and open the template in the editor.
             <p:growl autoUpdate="true"/>
 
             <h1 align="center">Auswertung: User Details</h1>
+            <p:panelGrid columns="4">
             <p:selectOneMenu id="selectUser" value="#{userDetailsBean.selectedUser}">
                 <f:selectItems value="#{userDetailsBean.userAsStringList}"/>
                 <p:ajax update="selectedYear selectedDate"/>
@@ -38,61 +39,59 @@ and open the template in the editor.
 
 
             <p:commandButton value="load" actionListener="#{userDetailsBean.loadMonthOverview}" update="timeDataTable"/>
+            </p:panelGrid>
 
-            <p:dataTable id="timeDataTable" value="#{userDetailsBean.timerowlist}" var="entry">
+            <p:dataTable id="timeDataTable" value="#{userDetailsBean.timerowlist}" var="entry" resizableColumns="true" liveResize="true" style="text-align: center">
 
-                <p:column headerText="Date">
+                <p:column headerText="Date" width="5%" >
                     <p:outputLabel value="#{entry.dayOfMonth}"/>
                 </p:column>
 
-                <p:column headerText="Beginn">
+                <p:column headerText="Beginn" width="7%">
                     <p:outputLabel value="#{entry.workTimeStart}"/>
                 </p:column>
 
-                <p:column headerText="Ende">
+                <p:column headerText="Ende" width="8%">
                     <p:outputLabel value="#{entry.workTimeEnd}"/>
                 </p:column>
 
-                <p:column headerText="Pause">
+                <p:column headerText="Pause" width="5%">
                     <p:outputLabel value="#{entry.breakTime}"/>
                 </p:column>
 
-                <p:column headerText="Sollarbeitszeit">
+                <p:column headerText="Sollarbeitszeit" width="10%">
                     <p:outputLabel value="#{entry.sollZeit}"/>
                 </p:column>
 
-                <p:column headerText="Istarbeitszeit">
+                <p:column headerText="Istarbeitszeit" width="10%">
                     <p:outputLabel value="#{entry.workTime}"/>
+
+                    <f:facet name="footer">
+                        <p:outputLabel value="Saldo: #{userDetailsBean.saldo}"/>
+                    </f:facet>
                 </p:column>
 
-                <p:column headerText="Überstunden nach 19 Uhr">
+                <p:column headerText="Überstunden nach 19 Uhr" width="15%">
                     <p:outputLabel value="#{entry.overTime19plus}"/>
+
+                    <f:facet name="footer">
+                        <p:outputLabel value="Gesamt: #{userDetailsBean.überstundenNach19}"/>
+                    </f:facet>
                 </p:column>
 
                 <p:column headerText="Bemerkungen">
                     <p:outputLabel value="#{entry.reason}"/>
+
+                    <f:facet name="footer">
+                        <p:outputLabel value="Verbleibender Urlaub am Ende des Monats: #{userDetailsBean.urlaubsanspruch} Tage"/>
+                    </f:facet>
                 </p:column>
 
 
                 <f:facet name="footer">
-
-                    <p:panelGrid columns="2">
-                        <p:outputLabel value="Saldo: "/>
-                        <p:outputLabel value="#{userDetailsBean.saldo}"/>
-
-                        <p:outputLabel value="Überstunden nach 19 Uhr gesamt: "/>
-                        <p:outputLabel value="#{userDetailsBean.überstundenNach19}"/>
-
-                        <p:outputLabel value="Urlaubsanspruch am Ende Des Monats: "/>
-                        <p:outputLabel value="#{userDetailsBean.urlaubsanspruch}"/>
-                    </p:panelGrid>
-
-
                     <p:commandLink ajax="false">
                         <p:graphicImage name="/images/excel-icon.png" style="width: 3%"/>
-                        <p:dataExporter type="XLS" target="timeDataTable" fileName="Zeiten" encoding="iso-8859-1"/>
-
-
+                        <p:dataExporter   type="XLS" target="timeDataTable" fileName="Zeiten" encoding="iso-8859-1"/>
 
                     </p:commandLink>
                     <p:commandLink ajax="false">
@@ -104,7 +103,7 @@ and open the template in the editor.
             </p:dataTable>
 
 
-            <p:remoteCommand update="selectUser" action="#{userDetailsBean.reloadUsers}" autoRun="true"/>
+            <p:remoteCommand update="selectUser selectedYear selectedDate timeDataTable" action="#{userDetailsBean.reloadUsers}" autoRun="true"/>
         </h:form>
     </ui:define>
 
