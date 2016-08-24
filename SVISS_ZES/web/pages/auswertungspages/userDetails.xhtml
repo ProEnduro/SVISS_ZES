@@ -43,8 +43,8 @@ and open the template in the editor.
 
             <p:dataTable id="timeDataTable" value="#{userDetailsBean.timerowlist}" var="entry" resizableColumns="true" liveResize="true" style="text-align: center">
 
-                <p:column headerText="Date" width="5%" >
-                    <p:outputLabel value="#{entry.dayOfMonth}"/>
+                <p:column headerText="Date" width="7%" >
+                    <p:outputLabel value="#{entry.date}"/>
                 </p:column>
 
                 <p:column headerText="Beginn" width="7%">

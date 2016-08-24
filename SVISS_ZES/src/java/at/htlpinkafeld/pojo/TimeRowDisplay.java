@@ -63,6 +63,14 @@ public class TimeRowDisplay {
     public int getDayOfMonth() {
         return date.getDayOfMonth();
     }
+    
+    public int getMonth(){
+        return date.getMonthValue();
+    }
+    
+    public String getDate(){
+        return date.format(DateTimeFormatter.ofPattern("eee - dd.MM"));
+    }
 
     public String getWorkTimeStart() {
         return workTimeStart;
