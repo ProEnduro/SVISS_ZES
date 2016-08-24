@@ -7,6 +7,7 @@ package at.htlpinkafeld.beans.util;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -21,11 +22,15 @@ public class LocalDateConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String string) {
-        if (string.isEmpty()) {
-            return null;
+        try {
+            if (string.isEmpty()) {
+                return null;
+            }
+            return LocalDate.parse(string, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().validationFailed();
         }
-        return LocalDate.parse(string, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-
+        return null;
     }
 
     @Override

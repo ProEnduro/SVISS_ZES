@@ -22,7 +22,12 @@ public class LocalDateTimeConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        return LocalDate.parse(value);
+        try {
+            return LocalDate.parse(value);
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().validationFailed();
+        }
+        return null;
     }
 
     @Override

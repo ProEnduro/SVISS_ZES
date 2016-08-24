@@ -69,9 +69,10 @@ and open the template in the editor.
                         </p:commandButton>
                     </p:column>
 
+                    <f:facet id="newUserF" name="footer">
+                        <p:commandButton id="newUserBut" value="New User" action="#{benutzerverwaltungsBean.newUser}" update=":userDialogForm:userDlgGrid :weekDialogForm:weekDlgPanel"  oncomplete="PF('userdlg').show();"/>
+                    </f:facet>
                 </p:dataTable>
-
-                <p:commandButton id="newUserBut" value="New User" action="#{benutzerverwaltungsBean.newUser}" update=":userDialogForm:userDlgGrid :weekDialogForm:weekDlgPanel"  oncomplete="PF('userdlg').show();"/>
 
                 <p:remoteCommand update="usertable" action="#{benutzerverwaltungsBean.onLoad}" autoRun="true"/>
             </p:panel>
