@@ -38,7 +38,7 @@ import javax.servlet.ServletContext;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
@@ -47,6 +47,7 @@ import org.primefaces.model.DefaultScheduleModel;
 import org.primefaces.model.DualListModel;
 import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
+
 
 /**
  *
@@ -259,7 +260,7 @@ public class BenutzerverwaltungBean {
 
         for (int i = 0; i < 5; i++) {
             LocalDateTime sDateTime = LocalDateTime.of(pointDate.plusDays(i), startTime);
-            curEvent = new DefaultScheduleEvent("", TimeConverterService.convertLocalDateTimeToDate(sDateTime), TimeConverterService.convertLocalDateTimeToDate(sDateTime.with(endTime)));
+            curEvent = new DefaultScheduleEvent("", TimeConverterService.convertLocalDateTimeToDate(sDateTime), TimeConverterService.convertLocalDateTimeToDate(sDateTime.with(endTime)), sDateTime.getDayOfWeek());
             SollZeit sz = new SollZeit(sDateTime.getDayOfWeek(), selectedUser, startTime, endTime);
             timeModel.addEvent(curEvent);
             newSollZeiten.add(sz);

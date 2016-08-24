@@ -5,10 +5,6 @@
  */
 package at.htlpinkafeld.beans;
 
-import at.htlpinkafeld.dao.factory.DAOFactory;
-import at.htlpinkafeld.dao.interf.Absence_DAO;
-import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
-import at.htlpinkafeld.dao.interf.WorkTime_DAO;
 import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
@@ -28,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import org.apache.poi.ss.usermodel.Workbook;
 
 /**
  *
@@ -135,6 +132,13 @@ public class JahresuebersichtBean {
             loadData();
         }
     }
+    
+    public void postProcessXls(Object document) {
+    if (document instanceof Workbook) {
+        Workbook doc=(Workbook) document;
+        
+    }
+}
 
     public void loadData() {
         if (selectedYear != null && selectedUser != null) {
@@ -143,7 +147,7 @@ public class JahresuebersichtBean {
             LocalDate month;
             LocalDate today = LocalDate.now();
             for (month = selectedYear; month.isBefore(selectedUser.getHiredate().withDayOfMonth(1)); month = month.plusMonths(1)) {
-                months.add(new SelectItem(" - ", month.format(monthFormatter)));
+                months.add(new SelectItem(" - ", month.format(monthFormatter), "-"));
             }
             overtimeSum = 0;
             overtime19PlusSum = 0;
@@ -161,7 +165,7 @@ public class JahresuebersichtBean {
                 }
             }
             for (; month.isBefore(selectedYear.plusYears(1)); month = month.plusMonths(1)) {
-                months.add(new SelectItem(" - ", month.format(monthFormatter)));
+                months.add(new SelectItem(" - ", month.format(monthFormatter), "-"));
             }
         }
     }

@@ -10,7 +10,8 @@ and open the template in the editor.
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions">
 
     <ui:param name="currentAuswertungsIndex" value="0" />
 
@@ -34,30 +35,34 @@ and open the template in the editor.
                 <p:dataTable id="data" value="#{jahresuebersichtBean.months}" var="month"  style="width: 60%">
                     <p:column headerText="Monat">
                         <h:outputText value="#{month.label}"/>
+
+                        <f:facet name="footer">
+                            <p:outputLabel value="Überstunden Gesamt: "/>
+                        </f:facet>
                     </p:column>
                     <p:column headerText="Überstunden"> 
                         <h:outputText value="#{month.value}"/>
+
+                        <f:facet name="footer">
+                            <p:inputText readonly="true" value="#{jahresuebersichtBean.overtimeSum}"/>
+                        </f:facet>
                     </p:column>
                     <p:column headerText="Überstunden nach 19 Uhr">
                         <h:outputText value="#{month.description}"/>
-                    </p:column>
 
-                    <f:facet name="footer">
-                        <p:panelGrid columns="3">
-                            <p:outputLabel value="Überstunden Gesamt: "/>
-                            <p:inputText readonly="true" value="#{jahresuebersichtBean.overtimeSum}"/>
+                        <f:facet name="footer">
                             <p:inputText readonly="true" value="#{jahresuebersichtBean.overtime19PlusSum}"/>
-                        </p:panelGrid>
-                        <p:commandLink ajax="false">
-                            <p:graphicImage name="/images/excel-icon.png" style="width: 4%; float: left"/>
-                            <p:dataExporter type="XLS" target="data" fileName="Zeiten" encoding="iso-8859-1"/>
-                        </p:commandLink>
-                        <p:commandLink ajax="false">
-                            <p:graphicImage name="/images/pdf-icon.png" style="width: 4%; float: left"/>
-                            <p:dataExporter type="PDF" target="data" fileName="Zeiten" encoding="iso-8859-1"/>
-                        </p:commandLink>
-                    </f:facet>
+                        </f:facet>
+                    </p:column>
                 </p:dataTable>
+                <p:commandLink ajax="false">
+                    <p:graphicImage name="/images/excel-icon.png" style="width: 4%; float: left"/>
+                    <p:dataExporter type="xls" target="data" fileName="Zeiten" encoding="iso-8859-1"/>
+                </p:commandLink>
+                <p:commandLink ajax="false">
+                    <p:graphicImage name="/images/pdf-icon.png" style="width: 4%; float: left"/>
+                    <p:dataExporter type="pdf" target="data" fileName="Zeiten" encoding="iso-8859-1"/>
+                </p:commandLink>
 
                 <p:remoteCommand update="selectionGrid" action="#{jahresuebersichtBean.loadJahresübersichtBean}" autoRun="true"/>
             </h:form>

@@ -20,17 +20,17 @@ and open the template in the editor.
                 <h1 align="center">Benutzerverwaltung</h1>
                 <p:growl id="growl"/>
 
-                <p:dataTable id="usertable" var="user" value="#{benutzerverwaltungsBean.userList}" style="margin-top: 1.5%" >
+                <p:dataTable id="usertable" var="user" value="#{benutzerverwaltungsBean.userList}" style="margin-top: 1.5%; text-align: center" >
 
                     <p:column headerText="Username" sortBy="#{user.username}" filterBy="#{user.username}">
-                        <h:outputText value="#{user.username}"/>
+                        <h:outputText value="#{user.username}" style="center"/>
                     </p:column>
 
                     <p:column headerText="Name" sortBy="#{user.persName}" filterBy="#{user.persName}">
                         <h:outputText value="#{user.persName}"/>
                     </p:column>
 
-                    <p:column headerText="Berechtigungsstufe"  sortBy="#{user.accessLevel.accessLevelName}" filterBy="#{user.accessLevel.accessLevelName}">
+                    <p:column headerText="Berechtigungsstufe"  sortBy="#{user.accessLevel.accessLevelName}" filterBy="#{user.accessLevel.accessLevelName}" width="10%">
                         <h:outputText value="#{user.accessLevel}">
                             <f:converter converterId="accesslevelconv"/>
                         </h:outputText>
@@ -40,31 +40,31 @@ and open the template in the editor.
                         <h:outputText value="#{user.email}"/>
                     </p:column>
 
-                    <p:column headerText="Overtime Left"  sortBy="#{user.overTimeLeft}">
+                    <p:column headerText="Overtime Left"  sortBy="#{user.overTimeLeft}" width="8%">
                         <h:outputText value="#{user.overTimeLeft}">
                             <f:converter converterId="minuteHourConverter"/>
                         </h:outputText>
                     </p:column>
 
-                    <p:column headerText="Vacation Left"  sortBy="#{user.vacationLeft}">
+                    <p:column headerText="Vacation Left"  sortBy="#{user.vacationLeft}" width="8%">
                         <h:outputText value="#{user.vacationLeft}"/>
                     </p:column>
 
-                    <p:column headerText="WeekTime"  sortBy="#{user.weekTime}" filterBy="#{user.weekTime}">
+                    <p:column headerText="WeekTime"  sortBy="#{user.weekTime}" filterBy="#{user.weekTime}" width="8%">
                         <h:outputText value="#{user.weekTime}"/>
                     </p:column>
 
-                    <p:column headerText="Enabled"  sortBy="#{user.disabled}">
+                    <p:column headerText="Enabled"  sortBy="#{user.disabled}" width="7%">
                         <h:outputText value="#{user.disabledString}"/>
                     </p:column>
 
-                    <p:column headerText="Freigeber ändern">
+                    <p:column headerText="Freigeber ändern" width="8%">
                         <p:commandButton id="editApproverBut" value="edit" actionListener="#{benutzerverwaltungsBean.editApprover}" update=":approverForm" oncomplete="PF('approverDialog').show();">
                             <f:attribute name="user" value="#{user}"/>
                         </p:commandButton>
                     </p:column>
 
-                    <p:column headerText="User ändern">
+                    <p:column headerText="User ändern" width="6%">
                         <p:commandButton id="editUserBut" value="edit User" actionListener="#{benutzerverwaltungsBean.editUser}" update=":userDialogForm:userDlgGrid" oncomplete="PF('userdlg').show();">
                             <f:attribute name="user" value="#{user}"/>
                         </p:commandButton>
@@ -112,7 +112,7 @@ and open the template in the editor.
                     <p:row>
                         <p:column><p:outputLabel value="Hiredate: "/></p:column>
                         <p:column><p:calendar value="#{benutzerverwaltungsBean.selectedUser.hiredate}" mask="true" pattern="dd.MM.yyyy" converter="localDateConverter" showOn="button"
-                                              required="true" autocomplete="false" readonlyInput="true" showWeek="true"/></p:column>
+                                              required="true" autocomplete="false" showWeek="true"/></p:column>
                     </p:row>
 
                     <p:row>
@@ -174,10 +174,10 @@ and open the template in the editor.
                 <h:panelGrid id="eventDetails" columns="2">
 
                     <p:outputLabel for="from" value="From:" />
-                    <p:calendar id="from" value="#{benutzerverwaltungsBean.curEvent.startDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"  showOn="button"/>
+                    <p:calendar id="from" value="#{benutzerverwaltungsBean.curEvent.startDate}" mask="99:99" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"  showOn="button"/>
 
                     <p:outputLabel for="to" value="To:" />
-                    <p:calendar id="to" value="#{benutzerverwaltungsBean.curEvent.endDate}" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"  showOn="button"/>
+                    <p:calendar id="to" value="#{benutzerverwaltungsBean.curEvent.endDate}" mask="99:99" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"  showOn="button"/>
 
                     <p:commandButton id="addButton" value="Save" action="#{benutzerverwaltungsBean.addWorkTimeEvent}" update=":tableForm:growl :weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  oncomplete="if (args &amp;&amp; !args.validationFailed) PF('eventDialog').hide()" />
                     <p:commandButton id="delButton" value="Remove" action="#{benutzerverwaltungsBean.removeWorkTimeEvent}" update=":weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  onsuccess="PF('eventDialog').hide();" />
@@ -213,6 +213,12 @@ and open the template in the editor.
                 </h:panelGrid>
             </h:form>
         </p:dialog> 
+
+        <style type="text/css">
+            .myTable {  
+                text-align: center;
+            }
+        </style>
 
         <script type="text/javascript">
             PrimeFaces.locales['de'] = {
