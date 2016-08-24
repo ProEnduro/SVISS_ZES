@@ -96,7 +96,7 @@ and open the template in the editor.
                     </p:commandLink>
                     <p:commandLink ajax="false">
                         <p:graphicImage name="/images/pdf-icon.png" style="width: 3%"/>
-                        <p:dataExporter type="PDF" target="timeDataTable" fileName="Zeiten" encoding="iso-8859-1"/>
+                        <p:dataExporter type="PDF" target="timeDataTable" fileName="Zeiten" encoding="iso-8859-1" preProcessor="#{userDetailsBean.preProcessPDF}" />
                     </p:commandLink>
                 </f:facet>
 

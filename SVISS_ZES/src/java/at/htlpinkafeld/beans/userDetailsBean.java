@@ -19,6 +19,8 @@ import at.htlpinkafeld.service.IstZeitService;
 import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
 import at.htlpinkafeld.service.UserHistoryService;
+import com.lowagie.text.Document;
+import com.lowagie.text.PageSize;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneId;
@@ -28,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.faces.event.ActionEvent;
-import javax.faces.event.ComponentSystemEvent;
 import javax.faces.model.SelectItem;
 
 /**
@@ -81,7 +82,7 @@ public class userDetailsBean {
         }
 
         dates = new ArrayList<>();
-        
+
         this.setSelectedUser(userAsStringList.get(0));
         this.loadMonthOverview(null);
     }
@@ -315,6 +316,11 @@ public class userDetailsBean {
 
             this.dates.add(si);
         }
+    }
+
+    public void preProcessPDF(Object document) {
+        Document doc = (Document) document;
+        doc.setPageSize(PageSize.A4.rotate());
     }
 
 }
