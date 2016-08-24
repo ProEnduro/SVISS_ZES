@@ -67,7 +67,7 @@ and open the template in the editor.
                     <p:outputLabel value="#{entry.workTime}"/>
 
                     <f:facet name="footer">
-                        <p:outputLabel value="Saldo: #{userDetailsBean.saldo}"/>
+                        <p:outputLabel value="Saldo: #{userDetailsBean.plusOrMinus}#{userDetailsBean.saldo}"/>
                     </f:facet>
                 </p:column>
 

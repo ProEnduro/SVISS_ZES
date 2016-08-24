@@ -99,6 +99,10 @@ and open the template in the editor.
             </p:row>
         </p:panelGrid>
 
+        <h:form>
+            <p:fileUpload label="Upload AZM"  fileLimit="1" auto="true" fileUploadListener="#{benutzerkontoBean.loadFromExcel}" allowTypes="/(\.|\/)(xlsx)$/"/>
+        </h:form>
+
         <p:dialog widgetVar="eventDialog" closeOnEscape="true" resizable="false" dynamic="true" header="Soll Zeit">
             <h:form id="weekTimeSelectForm">
                 <h:panelGrid id="eventDetails" columns="2">

@@ -192,7 +192,7 @@ public class userDetailsBean {
                     Double sollzeit = Double.parseDouble(trd.getSollZeit());
                     Double breaktime = worklist.get(0).getBreakTime() * 1.0;
 
-                    saldotemp = worktime - sollzeit - breaktime;
+                    saldotemp = worktime - sollzeit;
 
                     überstundenNach19 += Double.parseDouble(trd.getOverTime19plus());
 
@@ -205,6 +205,7 @@ public class userDetailsBean {
 
                 if (!holidaylist.isEmpty()) {
                     trd.setReason(holidaylist.get(0).getHolidayComment() + " ");
+                    saldotemp = 0.0;
                 }
                 if (!absencelist.isEmpty()) {
                     for (Absence a : absencelist) {
@@ -249,7 +250,8 @@ public class userDetailsBean {
                     SollZeit sollzeit = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(currentUser, temp.getDayOfWeek(), temp.atStartOfDay());
 
                     if (sollzeit == null) {
-                        trd = new TimeRowDisplay(new Holiday(temp, ""));
+                        trd = new TimeRowDisplay(new Holiday(temp, "(frei)"));
+                        saldotemp = 0.0;
                     }
                 }
                 this.timerowlist.add(trd);
@@ -321,6 +323,15 @@ public class userDetailsBean {
     public void preProcessPDF(Object document) {
         Document doc = (Document) document;
         doc.setPageSize(PageSize.A4.rotate());
+    }
+
+    public String getPlusOrMinus() {
+        if (this.saldo > 0) {
+            return "+";
+        } else if (saldo < 0) {
+            return "-";
+        }
+        return "";
     }
 
 }

@@ -7,13 +7,19 @@ package at.htlpinkafeld.beans;
 
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
+import at.htlpinkafeld.pojo.WorkTime;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import at.htlpinkafeld.service.IstZeitService;
 import at.htlpinkafeld.service.PasswordEncryptionService;
 import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +30,14 @@ import javax.faces.context.FacesContext;
 import javax.faces.validator.FacesValidator;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
+import net.fortuna.ical4j.data.ParserException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.DefaultScheduleModel;
@@ -158,4 +172,81 @@ public class BenutzerkontoBean implements Validator {
             throw new ValidatorException(new FacesMessage("Altes Passwort stimmt nicht"));
         }
     }
+
+    public void loadFromExcel(FileUploadEvent event) throws FileNotFoundException, IOException, ParserException {
+
+        FileInputStream fis = (FileInputStream) event.getFile().getInputstream();
+
+        XSSFWorkbook workbook = new XSSFWorkbook(fis);
+
+        for (int i = 1; i <= 12; i++) {
+            int min = 5;
+            LocalDate date = LocalDate.of(2016, i, 1);
+            int max = min + date.lengthOfMonth() - 1;
+
+            XSSFSheet sheet = workbook.getSheetAt(i);
+
+            for (int j = min; j <= max; j++) {
+                Row row = sheet.getRow(j);
+                LocalDateTime start = null;
+                LocalDateTime end = null;
+
+                LocalDate day = date.withDayOfMonth((int) row.getCell(1).getNumericCellValue());
+
+//                DataFormatter formatter = new DataFormatter();
+//                System.out.println(formatter.formatCellValue(row.getCell(2)));
+                FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+                Cell cell = row.getCell(2);
+
+                //for endtime = row 2
+                if (cell != null) {
+                    CellValue cellValue = evaluator.evaluate(cell);
+                    if (cellValue != null) {
+                        double time = cellValue.getNumberValue() * 24;
+
+                        String time2;
+                        DecimalFormat df = new DecimalFormat("00.00");
+                        time2 = df.format(time);
+                        time2 = time2.replace(',', ':');  
+                        LocalTime localtime = LocalTime.parse(time2);
+                        start = LocalDateTime.of(day, localtime);
+                    }
+                }
+                cell = row.getCell(3);
+                
+                //for endtime = row 3
+                if (cell != null) {
+                    CellValue cellValue = evaluator.evaluate(cell);
+                    if (cellValue != null) {
+                        double time = cellValue.getNumberValue() * 24;
+
+                        String time2;
+                        DecimalFormat df = new DecimalFormat("00.00");
+                        time2 = df.format(time);
+                        time2 = time2.replace(',', ':');  
+                        LocalTime localtime = LocalTime.parse(time2);
+                        end = LocalDateTime.of(day, localtime);
+                    }
+                }
+                
+                int breaktime = 0;
+                cell = row.getCell(4);
+                if(cell != null){
+                    CellValue cellValue = evaluator.evaluate(cell);
+                    if(cellValue != null){
+                        double tempbreaktime = cellValue.getNumberValue()*24*60;
+                        breaktime = (int)tempbreaktime;
+                    }
+                }
+                
+                
+                if (start != null && end != null) {
+                    WorkTime worktime = new WorkTime(user, start, end, breaktime, "", "");
+                    IstZeitService.addIstTime(worktime);
+                }
+
+            }
+        }
+    }
+
 }
