@@ -81,6 +81,9 @@ public class userDetailsBean {
         }
 
         dates = new ArrayList<>();
+        
+        this.setSelectedUser(userAsStringList.get(0));
+        this.loadMonthOverview(null);
     }
 
     public List<String> getUserAsStringList() {
