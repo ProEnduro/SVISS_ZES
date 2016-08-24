@@ -5,12 +5,14 @@
  */
 package at.htlpinkafeld.beans;
 
-import at.htlpinkafeld.dao.util.DAOException;
 import at.htlpinkafeld.pojo.Holiday;
 import at.htlpinkafeld.service.HolidayService;
 import at.htlpinkafeld.service.TimeConverterService;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -20,6 +22,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Component;
@@ -31,6 +34,7 @@ import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.LazyScheduleModel;
 import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
+import org.primefaces.model.UploadedFile;
 
 /**
  *
@@ -41,6 +45,7 @@ public class FeiertageBean {
     private ScheduleModel timeModel;
     private ScheduleEvent curEvent;
     private Boolean dateDisabled = false;
+    private UploadedFile file;
 
     @PostConstruct
     public void init() {
@@ -59,13 +64,38 @@ public class FeiertageBean {
         };
     }
 
-    public void loadEventsFromICS(FileUploadEvent event) throws FileNotFoundException, IOException, ParserException {
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check0"));
+    public void loadEventsFromICS(FileUploadEvent event) {
+        try {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check0"));
+            CalendarBuilder builder = new CalendarBuilder();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check1"));
+            net.fortuna.ical4j.model.Calendar calendar = builder.build(event.getFile().getInputstream());
+            for (Iterator i = calendar.getComponents().iterator(); i.hasNext();) {
+//            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check2"));
+
+                Component component = (Component) i.next();
+                String name = component.getProperty("SUMMARY").getValue();
+                LocalDate date = LocalDate.parse(component.getProperty("DTSTART").getValue(), DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+                HolidayService.insert(new Holiday(date, name));
+//                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check3"));
+
+            }
+        } catch (Exception ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(ex.getMessage()));
+        }
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Feiertage wurden geladen"));
+    }
+
+    public void load() throws FileNotFoundException, ParserException, IOException {
+        ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+        String path = serv.getRealPath("/") + "/resources/";
+        File file = new File(path + "Feiertageoesterreich.ics");
         CalendarBuilder builder = new CalendarBuilder();
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check1"));
-        net.fortuna.ical4j.model.Calendar calendar = builder.build(event.getFile().getInputstream());
+        net.fortuna.ical4j.model.Calendar calendar = builder.build(new FileInputStream(file));
         for (Iterator i = calendar.getComponents().iterator(); i.hasNext();) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check2"));
+//            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check2"));
 
             try {
                 Component component = (Component) i.next();
@@ -73,7 +103,7 @@ public class FeiertageBean {
                 LocalDate date = LocalDate.parse(component.getProperty("DTSTART").getValue(), DateTimeFormatter.ofPattern("yyyyMMdd"));
 
                 HolidayService.insert(new Holiday(date, name));
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check3"));
+//                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check3"));
 
             } catch (Exception ex) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(ex.getMessage()));
