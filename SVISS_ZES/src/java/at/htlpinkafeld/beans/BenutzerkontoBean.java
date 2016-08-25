@@ -213,85 +213,155 @@ public class BenutzerkontoBean implements Validator {
 //                System.out.println(formatter.formatCellValue(row.getCell(2)));
                     FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 
-                    Cell urlaub = row.getCell(10);
+                    Cell soll = row.getCell(5);
+                    Cell ist = row.getCell(6);
 
-                    if (urlaub != null && urlaub.getCellType() != Cell.CELL_TYPE_BLANK && urlaub.getNumericCellValue() != 1.0) {
+                    CellValue sollValue = null;
+                    CellValue istValue = null;
 
-                        Cell cell = row.getCell(2);
+                    if (soll != null && ist != null) {
+                        sollValue = evaluator.evaluate(soll);
+                        istValue = evaluator.evaluate(ist);
+                    }
 
-                        //for endtime = row 2
-                        if (cell != null) {
-                            CellValue cellValue = evaluator.evaluate(cell);
-                            if (cellValue != null) {
-                                double time = cellValue.getNumberValue() * 24;
+                    if (sollValue != null && istValue != null) {
+                        double dif = sollValue.getNumberValue() - istValue.getNumberValue();
 
-                                String time2;
-                                DecimalFormat df = new DecimalFormat("00.00");
-                                time2 = df.format(time);
-                                time2 = time2.replace(',', ':');
-                                LocalTime localtime = LocalTime.parse(time2);
-                                start = LocalDateTime.of(day, localtime);
-                            }
-                        }
-                        cell = row.getCell(3);
+                        if (istValue.getNumberValue() != 0.0) {
 
-                        //for endtime = row 3
-                        if (cell != null) {
-                            CellValue cellValue = evaluator.evaluate(cell);
-                            if (cellValue != null) {
-                                double time = cellValue.getNumberValue() * 24;
+                            Cell urlaub = row.getCell(10);
 
-                                String time2;
-                                DecimalFormat df = new DecimalFormat("00.00");
-                                time2 = df.format(time);
-                                time2 = time2.replace(',', ':');
-                                LocalTime localtime = LocalTime.parse(time2);
-                                end = LocalDateTime.of(day, localtime);
-                            }
-                        }
+                            if (urlaub != null && urlaub.getCellType() != Cell.CELL_TYPE_BLANK && urlaub.getNumericCellValue() != 1.0) {
 
-                        int breaktime = 0;
-                        cell = row.getCell(4);
-                        if (cell != null) {
-                            CellValue cellValue = evaluator.evaluate(cell);
-                            if (cellValue != null) {
-                                double tempbreaktime = cellValue.getNumberValue() * 24 * 60;
-                                breaktime = (int) tempbreaktime;
-                            }
-                        }
+                                Cell cell = row.getCell(2);
 
-                        String bemerkung = "";
-                        Cell comment = row.getCell(11);
-                        if (comment != null) {
-                            CellValue value = evaluator.evaluate(comment);
+                                //for endtime = row 2
+                                if (cell != null) {
+                                    CellValue cellValue = evaluator.evaluate(cell);
+                                    if (cellValue != null) {
+                                        double time = cellValue.getNumberValue() * 24;
 
-                            if (value != null) {
-                                bemerkung = value.formatAsString();
-                                double d;
-                                try {
-                                    d = Double.valueOf(bemerkung);
-                                    if (BigDecimal.valueOf(d).scale() > 2) {
-                                        d = d * 24 * 60;
-                                        LocalTime lt = LocalTime.MIN.plusMinutes((int) (d + 0.5));
-                                        bemerkung = lt.format(DateTimeFormatter.ofPattern("HH:mm"));
+                                        String time2;
+                                        DecimalFormat df = new DecimalFormat("00.00");
+                                        time2 = df.format(time);
+                                        time2 = time2.replace(',', ':');
+                                        LocalTime localtime = LocalTime.parse(time2);
+                                        start = LocalDateTime.of(day, localtime);
                                     }
-                                } catch (Exception e) {
-                                    //Value is not castable to double and will be ignored -> best case scenario
+                                }
+                                cell = row.getCell(3);
+
+                                //for endtime = row 3
+                                if (cell != null) {
+                                    CellValue cellValue = evaluator.evaluate(cell);
+                                    if (cellValue != null) {
+                                        double time = cellValue.getNumberValue() * 24;
+
+                                        String time2;
+                                        DecimalFormat df = new DecimalFormat("00.00");
+                                        time2 = df.format(time);
+                                        time2 = time2.replace(',', ':');
+                                        LocalTime localtime = LocalTime.parse(time2);
+                                        end = LocalDateTime.of(day, localtime);
+                                    }
+                                }
+
+                                int breaktime = 0;
+                                cell = row.getCell(4);
+                                if (cell != null) {
+                                    CellValue cellValue = evaluator.evaluate(cell);
+                                    if (cellValue != null) {
+                                        double tempbreaktime = cellValue.getNumberValue() * 24 * 60;
+                                        breaktime = (int) tempbreaktime;
+                                    }
+                                }
+
+                                String bemerkung = "";
+                                Cell comment = row.getCell(11);
+                                if (comment != null) {
+                                    CellValue value = evaluator.evaluate(comment);
+
+                                    if (value != null) {
+                                        bemerkung = value.formatAsString();
+                                        double d;
+                                        try {
+                                            d = Double.valueOf(bemerkung);
+                                            if (BigDecimal.valueOf(d).scale() > 2) {
+                                                d = d * 24 * 60;
+                                                LocalTime lt = LocalTime.MIN.plusMinutes((int) (d + 0.5));
+                                                bemerkung = lt.format(DateTimeFormatter.ofPattern("HH:mm"));
+                                            }
+                                        } catch (Exception e) {
+                                            //Value is not castable to double and will be ignored -> best case scenario
+                                        }
+                                    }
+                                }
+
+                                if (start != null && end != null) {
+                                    WorkTime worktime = new WorkTime(user, start, end, breaktime, bemerkung, "");
+                                    IstZeitService.addIstTime(worktime);
+
+                                    if (dif > 0.0) {
+                                        LocalDateTime absenceend = end.plusMinutes((int) ((dif * 24 * 60) + 0.5));
+                                        Absence a = new Absence(user, AbsenceService.getAbsenceTypeByID(3), end, absenceend, bemerkung);
+                                        a.setAcknowledged(true);
+                                        AbsenceService.insertAbsence(a);
+                                    }
+                                }
+                            } else if (urlaub.getCellType() != Cell.CELL_TYPE_BLANK && urlaub.getNumericCellValue() == 1.0) {
+
+                                start = LocalDateTime.of(day, LocalTime.MIN);
+                                end = start;
+
+                                Absence a = new Absence(user, AbsenceService.getAbsenceTypeByID(2), start, end);
+                                a.setAcknowledged(true);
+                                AbsenceService.insertAbsence(a);
+                            }
+                        } else {
+                            Cell cell = row.getCell(2);
+
+                            //for endtime = row 2
+                            if (cell != null) {
+                                CellValue cellValue = evaluator.evaluate(cell);
+                                if (cellValue != null) {
+                                    double time = cellValue.getNumberValue() * 24;
+
+                                    String time2;
+                                    DecimalFormat df = new DecimalFormat("00.00");
+                                    time2 = df.format(time);
+                                    time2 = time2.replace(',', ':');
+                                    LocalTime localtime = LocalTime.parse(time2);
+                                    start = LocalDateTime.of(day, localtime);
                                 }
                             }
+                            cell = row.getCell(3);
+
+                            //for endtime = row 3
+                            if (cell != null) {
+                                CellValue cellValue = evaluator.evaluate(cell);
+                                if (cellValue != null) {
+                                    double time = cellValue.getNumberValue() * 24;
+
+                                    String time2;
+                                    DecimalFormat df = new DecimalFormat("00.00");
+                                    time2 = df.format(time);
+                                    time2 = time2.replace(',', ':');
+                                    LocalTime localtime = LocalTime.parse(time2);
+                                    end = LocalDateTime.of(day, localtime);
+                                }
+                            }
+                            String bemerkung = "";
+                            Cell comment = row.getCell(11);
+                            if (comment != null) {
+                                CellValue value = evaluator.evaluate(comment);
+                                if (value != null) {
+                                    bemerkung = value.formatAsString();
+                                }
+                            }
+                            Absence a = new Absence(user, AbsenceService.getAbsenceTypeByID(3), start, end, bemerkung);
+                            a.setAcknowledged(true);
+                            AbsenceService.insertAbsence(a);
                         }
-
-                        if (start != null && end != null) {
-                            WorkTime worktime = new WorkTime(user, start, end, breaktime, bemerkung, "");
-                            IstZeitService.addIstTime(worktime);
-                        }
-                    } else if (urlaub.getCellType() != Cell.CELL_TYPE_BLANK && urlaub.getNumericCellValue() == 1.0) {
-
-                        start = LocalDateTime.of(day, LocalTime.MIN);
-                        end = start;
-
-                        Absence a = new Absence(user, AbsenceService.getAbsenceTypeByID(2), start, end);
-                        AbsenceService.insertAbsence(a);
                     }
                 }
             }
