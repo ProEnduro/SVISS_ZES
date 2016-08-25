@@ -53,7 +53,7 @@ public class TimeRowDisplay {
         sollZeit = String.valueOf(wt.getSollStartTime().until(wt.getSollEndTime(), ChronoUnit.MINUTES) / 60.0);
         workTime = String.valueOf(wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES) / 60.0);
         overTime19plus = String.valueOf(wt.getOvertimeAfter19());
-        reason = "";
+        reason = wt.getStartComment() + "   " + wt.getEndComment();
     }
 
     public DayOfWeek getDayOfWeek() {
