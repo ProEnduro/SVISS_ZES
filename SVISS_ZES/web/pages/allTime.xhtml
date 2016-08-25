@@ -29,7 +29,7 @@ and open the template in the editor.
                         <p:commandButton value="load" actionListener="#{scheduleView.loadAllTimesByUser}" update="schedule"/>
                     </p:panelGrid>
 
-                    <p:schedule draggable="false" resizable="false" firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.allTimesModel}" widgetVar="myschedule" timeZone="GMT+2" locale="de" 
+                    <p:schedule draggable="false" resizable="false" firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.allTimesModel}" widgetVar="myschedule" timeZone="Europe/Vienna" locale="de" 
                                 columnFormat="month:'ddd',  week:'dddd - dd.MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
                         <p:ajax event="eventSelect" listener="#{scheduleView.onEventInAbwesenheitenSelect}" update=":absenceDialogForm:absenceDialogID :worktimeDialogForm:worktimeDialogID :feiertagDialogForm:feiertagDialogID" />
                     </p:schedule>
@@ -112,10 +112,10 @@ and open the template in the editor.
                         <p:inputText id="absencetitle" value="#{scheduleView.event.title}" readonly="true"/>
 
                         <p:outputLabel for="absencefrom" value="From:" />
-                        <p:calendar id="absencefrom" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" showOn="" readonly="true"/>
+                        <p:calendar id="absencefrom" value="#{scheduleView.event.startDate}" pattern="dd.MM.yyyy HH:mm" showOn="" readonly="true"/>
 
                         <p:outputLabel for="absenceto" value="To:" />
-                        <p:calendar id="absenceto" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" showOn="" readonly="true"/>
+                        <p:calendar id="absenceto" value="#{scheduleView.event.endDate}" pattern="dd.MM.yyyy HH:mm" showOn="" readonly="true"/>
 
                         <p:outputLabel for="reason" value="Reason:"/>
                         <p:inputTextarea id="reason" value="#{scheduleView.reason}" readonly="true"/>
@@ -133,10 +133,10 @@ and open the template in the editor.
                         <p:inputText id="worktitle" value="#{scheduleView.event.title}" readonly="true"/>
 
                         <p:outputLabel for="workfrom" value="From:" />
-                        <p:calendar id="workfrom" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" showOn="" readonly="true"/>
+                        <p:calendar id="workfrom" value="#{scheduleView.event.startDate}" pattern="dd.MM.yyyy HH:mm" showOn="" readonly="true"/>
 
                         <p:outputLabel for="workto" value="To:" />
-                        <p:calendar id="workto" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" showOn="" readonly="true"/>
+                        <p:calendar id="workto" value="#{scheduleView.event.endDate}" pattern="dd.MM.yyyy HH:mm" showOn="" readonly="true"/>
 
                         <p:outputLabel for="startcomment" value="Start Comment:"/>
                         <p:inputTextarea id="startcomment" value="#{scheduleView.startcomment}" readonly="true"/>
@@ -158,7 +158,7 @@ and open the template in the editor.
                         <p:inputText id="feiertagtitle" value="#{scheduleView.event.title}" disabled="true"/>
 
                         <p:outputLabel for="feiertagfrom" value="Date:" />
-                        <p:calendar id="feiertagfrom" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy" showOn="" readonly="true"/>
+                        <p:calendar id="feiertagfrom" value="#{scheduleView.event.startDate}" pattern="dd.MM.yyyy" showOn="" readonly="true"/>
 
                     </h:panelGrid>
                 </p:dialog> 

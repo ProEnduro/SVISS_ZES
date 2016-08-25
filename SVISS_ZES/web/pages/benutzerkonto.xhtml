@@ -88,7 +88,7 @@ and open the template in the editor.
                 <p:column>
                     <h:form>
                         <p:outputLabel for="weektimeScheduleS" value="Soll Zeiten: " style="font-weight: bold"  /> 
-                        <p:schedule minTime="7" maxTime="20" id="weektimeScheduleS" initialDate="#{benutzerkontoBean.pointDate}" timeZone="GMT+2"  draggable="false" allDaySlot="false"  aspectRatio="0"  showHeader="false" 
+                        <p:schedule minTime="7" maxTime="20" id="weektimeScheduleS" initialDate="#{benutzerkontoBean.pointDate}" timeZone="Europe/Vienna"  draggable="false" allDaySlot="false"  aspectRatio="0"  showHeader="false" 
                                     view="agendaWeek" timeFormat="HH:mm" axisFormat="HH:mm" locale="de"  ignoreTimezone="true" value="#{benutzerkontoBean.sollzeitModel}"  resizable="false" slotMinutes="90"
                                     columnFormat="month:'ddd', week:'dddd', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'">
                             <p:ajax event="eventSelect" listener="#{benutzerkontoBean.onEventSelect}" update=":weekTimeSelectForm:eventDetails" oncomplete="PF('eventDialog').show();" />

@@ -13,6 +13,7 @@ import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserHistoryEntry;
 import at.htlpinkafeld.pojo.WorkTime;
 import at.htlpinkafeld.service.AbsenceService;
+import at.htlpinkafeld.service.AccessRightsService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import at.htlpinkafeld.service.HolidayService;
 import at.htlpinkafeld.service.IstZeitService;
@@ -73,11 +74,11 @@ public class userDetailsBean {
         MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
         currentUser = masterBean.getUser();
 
-        if (!currentUser.getAccessLevel().getAccessLevelName().equals("user")) {
+        if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_ALL")) {
             for (User u : BenutzerverwaltungService.getUserList()) {
                 userAsStringList.add(u.getUsername());
             }
-        } else {
+        } else if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_SELF"))  {
             userAsStringList.add(currentUser.getUsername());
         }
 
@@ -88,11 +89,11 @@ public class userDetailsBean {
     public void reloadUsers() {
         userAsStringList = new ArrayList<>();
 
-        if (!currentUser.getAccessLevel().getAccessLevelName().equals("User")) {
+        if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_ALL")) {
             for (User u : BenutzerverwaltungService.getUserList()) {
                 userAsStringList.add(u.getUsername());
             }
-        } else {
+        } else if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_SELF"))  {
             userAsStringList.add(currentUser.getUsername());
         }
 

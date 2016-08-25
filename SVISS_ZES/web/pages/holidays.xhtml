@@ -17,7 +17,7 @@
                 <h1 align="center">Feiertage</h1>
 
                 <h:form  id="scheduleForm">
-                    <p:schedule id="feiertagSchedule" value="#{feiertageBean.timeModel}" aspectRatio="3" resizable="false" timeZone="GMT+2" locale="de" timeFormat="" axisFormat="HH:mm" ignoreTimezone="true" allDaySlot="false" rightHeaderTemplate="">
+                    <p:schedule id="feiertagSchedule" value="#{feiertageBean.timeModel}" aspectRatio="3" resizable="false" timeZone="Europe/Vienna" locale="de" timeFormat="" axisFormat="HH:mm" ignoreTimezone="true" allDaySlot="false" rightHeaderTemplate="">
                         <p:ajax event="dateSelect" listener="#{feiertageBean.onDateSelect}" update=":eventForm:eventDetails" oncomplete="PF('eventDialog').show();" />
                         <p:ajax event="eventSelect" listener="#{feiertageBean.onEventSelect}" update=":eventForm:eventDetails" oncomplete="PF('eventDialog').show();" />
                         <p:ajax event="eventMove" listener="#{feiertageBean.onEventMove}"/>
@@ -39,7 +39,7 @@
                         <p:inputText id="bezeichnung" value="#{feiertageBean.curEvent.title}" required="true"/>
 
                         <p:outputLabel for="date" value="Date:" />
-                        <p:calendar id="date" value="#{feiertageBean.curEvent.startDate}" disabled="#{feiertageBean.dateDisabled}" pattern="dd/MM/yyyy"   locale="de" required="true" readonlyInput="true"/>
+                        <p:calendar id="date" value="#{feiertageBean.curEvent.startDate}" disabled="#{feiertageBean.dateDisabled}" pattern="dd.MM.yyyy"   locale="de" required="true" readonlyInput="true"/>
 
                         <f:facet name="footer">
                             <p:commandButton id="addButton" value="Save" action="#{feiertageBean.addEvent}" update=":scheduleForm"   onsuccess="PF('eventDialog').hide();" />

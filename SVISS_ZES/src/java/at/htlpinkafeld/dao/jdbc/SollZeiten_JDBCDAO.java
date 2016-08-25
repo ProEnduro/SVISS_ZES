@@ -143,10 +143,9 @@ public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeit> implements SollZe
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                 Statement stmt = con.getConn().createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " sz1 WHERE sz1." + USERNR_COL + " = " + u.getUserNr()
-                        + " AND sz1." + DAYID_COL + " = '" + SollZeit.getDBShortFromDayOfWeek(d) + "' AND sz1." + INSERTED_COL + " AND sz1." + USERNR_COL
+                        + " AND sz1." + DAYID_COL + " = '" + SollZeit.getDBShortFromDayOfWeek(d) + "' AND sz1." + INSERTED_COL 
                         + " =  ( select MAX( " + INSERTED_COL + ")  from " + TABLE_NAME + " sz2 where  sz1." + DAYID_COL + " = sz2." + DAYID_COL
                         + " AND sz1." + USERNR_COL + " = sz2." + USERNR_COL + " ) " + SQL_ORDER_BY_LINE)) {
-
             if (rs.next()) {
                 sollZeit = getEntityFromResultSet(rs);
             }

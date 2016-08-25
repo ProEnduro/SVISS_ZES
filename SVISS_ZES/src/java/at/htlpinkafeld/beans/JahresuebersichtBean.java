@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import org.apache.poi.ss.usermodel.Workbook;
 
 /**
  *
@@ -64,12 +63,12 @@ public class JahresuebersichtBean {
 
         User currentUser = masterBean.getUser();
         users = new ArrayList<>();
-        if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "ALL")) {
+        if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_ALL")) {
             List<User> userL = BenutzerverwaltungService.getUserByDisabled(Boolean.FALSE);
             for (User u : userL) {
                 users.add(new SelectItem(u, u.getPersName()));
             }
-        } else {
+        } else if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_SELF"))  {
             users.add(new SelectItem(currentUser, currentUser.getPersName()));
         }
 
