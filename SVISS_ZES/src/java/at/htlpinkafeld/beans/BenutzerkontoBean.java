@@ -182,7 +182,7 @@ public class BenutzerkontoBean implements Validator {
     public void loadFromExcel(ActionEvent action) throws FileNotFoundException, IOException, ParserException {
         if (excel != null) {
 
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Sucessful", excel.getFileName() + " is upliaded."));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Successful", excel.getFileName() + " successfully uploaded!."));
 
             XSSFWorkbook workbook = new XSSFWorkbook(excel.getInputstream());
 
