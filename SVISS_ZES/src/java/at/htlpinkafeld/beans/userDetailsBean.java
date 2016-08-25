@@ -29,6 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
@@ -55,6 +56,8 @@ public class userDetailsBean {
     int selectedYear = 0;
     List<Integer> years;
 
+    User currentUser;
+
     public List<TimeRowDisplay> getTimerowlist() {
         return timerowlist;
     }
@@ -66,8 +69,16 @@ public class userDetailsBean {
     public userDetailsBean() {
         userAsStringList = new ArrayList<>();
 
-        for (User u : BenutzerverwaltungService.getUserList()) {
-            userAsStringList.add(u.getUsername());
+        FacesContext context = FacesContext.getCurrentInstance();
+        MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
+        currentUser = masterBean.getUser();
+
+        if (!currentUser.getAccessLevel().getAccessLevelName().equals("user")) {
+            for (User u : BenutzerverwaltungService.getUserList()) {
+                userAsStringList.add(u.getUsername());
+            }
+        } else {
+            userAsStringList.add(currentUser.getUsername());
         }
 
         dates = new ArrayList<>();
@@ -77,8 +88,12 @@ public class userDetailsBean {
     public void reloadUsers() {
         userAsStringList = new ArrayList<>();
 
-        for (User u : BenutzerverwaltungService.getUserList()) {
-            userAsStringList.add(u.getUsername());
+        if (!currentUser.getAccessLevel().getAccessLevelName().equals("User")) {
+            for (User u : BenutzerverwaltungService.getUserList()) {
+                userAsStringList.add(u.getUsername());
+            }
+        } else {
+            userAsStringList.add(currentUser.getUsername());
         }
 
         dates = new ArrayList<>();
