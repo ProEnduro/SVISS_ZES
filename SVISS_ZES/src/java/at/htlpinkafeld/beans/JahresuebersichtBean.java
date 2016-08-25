@@ -130,15 +130,6 @@ public class JahresuebersichtBean {
             for (LocalDate year = hireyear; year.isBefore(LocalDate.now().withDayOfYear(1)) || year.isEqual(LocalDate.now().withDayOfYear(1)); year = year.plusYears(1)) {
                 years.add(new SelectItem(year, String.valueOf(year.getYear())));
             }
-            selectedYear = (LocalDate) years.get(0).getValue();
-            loadData();
-        }
-    }
-
-    public void postProcessXls(Object document) {
-        if (document instanceof Workbook) {
-            Workbook doc = (Workbook) document;
-
         }
     }
 

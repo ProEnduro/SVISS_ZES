@@ -11,8 +11,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -27,7 +29,7 @@ public class EmailService {
     private static final DateTimeFormatter dayFormatter;
     private static final DateTimeFormatter dayTimeFormatter;
 
-    private static final String SERVER_EMAILADDRESS = "noreply@sviss.at";
+    private static final String SERVER_EMAILADDRESS = "zes@sviss.co.at";
 
     static {
         dayFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -36,16 +38,24 @@ public class EmailService {
 
     private static void sendEmail(String subject, String body, User from, List<User> to) {
         // Assuming you are sending email from localhost
-        String host = "localhost";
+        String host = "smtp.world4you.com";
 
         // Get system properties
         Properties properties = System.getProperties();
 
         // Setup mail server
         properties.setProperty("mail.smtp.host", host);
+        properties.setProperty("mail.smtp.port", "25");
+        properties.setProperty("mail.smtp.auth", "true");
+        properties.setProperty("mail.smtp.starttls.enable", "true");
 
         // Get the default Session object.
-        Session session = Session.getDefaultInstance(properties);
+        Session session = Session.getDefaultInstance(properties, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(SERVER_EMAILADDRESS, "wLichanda=");
+            }
+        });
 
         try {
             // Create a default MimeMessage object.
@@ -72,7 +82,7 @@ public class EmailService {
             // Send message
             Transport.send(message);
         } catch (MessagingException mex) {
-            mex.printStackTrace();
+            throw new RuntimeException(mex);
         }
     }
 
