@@ -3,33 +3,12 @@
               xmlns="http://xmlns.jcp.org/xml/ns/javaee"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
-    <managed-bean>
-        <managed-bean-name>dBBean</managed-bean-name>
-        <managed-bean-class>at.htlpinkafeld.beans.DBBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-    <managed-bean>
-        <managed-bean-name>loginBean</managed-bean-name>
-        <managed-bean-class>at.htlpinkafeld.beans.LoginBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-    <managed-bean>
-        <managed-bean-name>masterBean</managed-bean-name>
-        <managed-bean-class>at.htlpinkafeld.beans.MasterBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
     
-    <managed-bean>
-        <managed-bean-name>benutzerverwaltungsBean</managed-bean-name>
-        <managed-bean-class>at.htlpinkafeld.beans.BenutzerverwaltungBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
     
-     <managed-bean>
-        <managed-bean-name>scheduleView</managed-bean-name>
-        <managed-bean-class>at.htlpinkafeld.beans.ScheduleView</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    <converter>
+        <converter-id>theme</converter-id>
+        <converter-class>at.htlpinkafeld.beans.util.ThemeConverter</converter-class>
+    </converter>
     
     <navigation-rule>
         <from-view-id>/*</from-view-id>
@@ -85,56 +64,83 @@
             <to-view-id>/pages/istzeit.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
+    
+    
+    <managed-bean>
+        <managed-bean-name>loginBean</managed-bean-name>
+        <managed-bean-class>at.htlpinkafeld.beans.LoginBean</managed-bean-class>
+        <managed-bean-scope>view</managed-bean-scope>
+    </managed-bean>
+    
+    <managed-bean>
+        <managed-bean-name>masterBean</managed-bean-name>
+        <managed-bean-class>at.htlpinkafeld.beans.MasterBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    
+    <managed-bean>
+        <managed-bean-name>benutzerverwaltungsBean</managed-bean-name>
+        <managed-bean-class>at.htlpinkafeld.beans.BenutzerverwaltungBean</managed-bean-class>
+        <managed-bean-scope>view</managed-bean-scope>
+    </managed-bean>
+    
+    <managed-bean>
+        <managed-bean-name>scheduleView</managed-bean-name>
+        <managed-bean-class>at.htlpinkafeld.beans.ScheduleView</managed-bean-class>
+    </managed-bean>
+    
     <managed-bean>
         <managed-bean-name>benutzerkontoBean</managed-bean-name>
         <managed-bean-class>at.htlpinkafeld.beans.BenutzerkontoBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
+        <managed-bean-scope>view</managed-bean-scope>
     </managed-bean>
+    
     <managed-bean>
         <managed-bean-name>themeService</managed-bean-name>
         <managed-bean-class>at.htlpinkafeld.beans.ThemeService</managed-bean-class>
         <managed-bean-scope>application</managed-bean-scope>
     </managed-bean>
+    
     <managed-bean>
         <managed-bean-name>guestPreferences</managed-bean-name>
         <managed-bean-class>at.htlpinkafeld.beans.util.GuestPreferences</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
+        <managed-bean-scope>view</managed-bean-scope>
     </managed-bean>
+    
     <managed-bean>
         <managed-bean-name>theme</managed-bean-name>
         <managed-bean-class>at.htlpinkafeld.beans.util.Theme</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
+        <managed-bean-scope>view</managed-bean-scope>
     </managed-bean>
-    
-    <converter>
-        <converter-id>theme</converter-id>
-        <converter-class>at.htlpinkafeld.beans.util.ThemeConverter</converter-class>
-    </converter>
     
     <managed-bean>
         <managed-bean-name>auswertungsBean</managed-bean-name>
         <managed-bean-class>at.htlpinkafeld.beans.AuswertungsBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
+        <managed-bean-scope>view</managed-bean-scope>
     </managed-bean>
     
     <managed-bean>
         <managed-bean-name>feiertageBean</managed-bean-name>
         <managed-bean-class>at.htlpinkafeld.beans.FeiertageBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
+        <managed-bean-scope>view</managed-bean-scope>
     </managed-bean>
+    
     <managed-bean>
         <managed-bean-name>alleAbwesenheitenBean</managed-bean-name>
-        <managed-bean-class>at.htlpinkafeld.beans.alleAbwesenheitenBean</managed-bean-class>
-        <managed-bean-scope>request</managed-bean-scope>
+        <managed-bean-class>at.htlpinkafeld.beans.AlleAbwesenheitenBean</managed-bean-class>
+        <managed-bean-scope>view</managed-bean-scope>
     </managed-bean>
+    
     <managed-bean>
         <managed-bean-name>jahresuebersichtBean</managed-bean-name>
         <managed-bean-class>at.htlpinkafeld.beans.JahresuebersichtBean</managed-bean-class>
+        <managed-bean-scope>view</managed-bean-scope>
+    </managed-bean>
     
-        <managed-bean-scope>session</managed-bean-scope></managed-bean>
     <managed-bean>
         <managed-bean-name>userDetailsBean</managed-bean-name>
-        <managed-bean-class>at.htlpinkafeld.beans.userDetailsBean</managed-bean-class>
-    
-        <managed-bean-scope>session</managed-bean-scope></managed-bean>
+        <managed-bean-class>at.htlpinkafeld.beans.UserDetailsBean</managed-bean-class>
+        <managed-bean-scope>view</managed-bean-scope>
+    </managed-bean>
+   
 </faces-config>
