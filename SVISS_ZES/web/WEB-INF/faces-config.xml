@@ -4,7 +4,6 @@
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
     
-    
     <converter>
         <converter-id>theme</converter-id>
         <converter-class>at.htlpinkafeld.beans.util.ThemeConverter</converter-class>
@@ -87,6 +86,7 @@
     <managed-bean>
         <managed-bean-name>scheduleView</managed-bean-name>
         <managed-bean-class>at.htlpinkafeld.beans.ScheduleView</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
     
     <managed-bean>

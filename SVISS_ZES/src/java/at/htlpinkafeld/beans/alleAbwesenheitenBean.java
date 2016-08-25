@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author msi
  */
-public class alleAbwesenheitenBean {
+public class AlleAbwesenheitenBean {
 
     List<Absence> absence;
 
@@ -26,7 +26,7 @@ public class alleAbwesenheitenBean {
     private String selectedUser;
     private List<String> allUsers;
 
-    public alleAbwesenheitenBean() {
+    public AlleAbwesenheitenBean() {
         absence = AbsenceService.getAllAbsences();
 
         this.loadUserSelect();

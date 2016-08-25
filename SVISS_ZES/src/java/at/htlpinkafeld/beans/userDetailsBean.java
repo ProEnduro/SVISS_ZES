@@ -38,10 +38,10 @@ import javax.faces.model.SelectItem;
  *
  * @author msi
  */
-public class userDetailsBean {
+public class UserDetailsBean {
 
     /**
-     * Creates a new instance of userDetailsBean
+     * Creates a new instance of UserDetailsBean
      */
     List<String> userAsStringList;
     String selectedUser;
@@ -67,7 +67,7 @@ public class userDetailsBean {
         this.timerowlist = timerowlist;
     }
 
-    public userDetailsBean() {
+    public UserDetailsBean() {
         userAsStringList = new ArrayList<>();
 
         FacesContext context = FacesContext.getCurrentInstance();
