@@ -114,10 +114,10 @@ public class BenutzerkontoBean implements Validator {
 
     public void savePassword() {
         if (newPw.length() < 6) {
-            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Das Passwort muss mindestens 6 Zeichen beinhalten"));
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Das Passwort muss mindestens 6 Zeichen beinhalten"));
             FacesContext.getCurrentInstance().validationFailed();
         } else if (!newPw.contentEquals(newPw2)) {
-            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Die neuen Passwörter stimmen nicht überein"));
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Die neuen Passwörter stimmen nicht überein"));
             FacesContext.getCurrentInstance().validationFailed();
         } else {
             user.setPass(PasswordEncryptionService.digestPassword(newPw));
@@ -169,7 +169,7 @@ public class BenutzerkontoBean implements Validator {
     @Override
     public void validate(FacesContext fc, UIComponent uic, Object o) throws ValidatorException {
         if (!PasswordEncryptionService.digestPassword(o.toString()).contentEquals(user.getPass())) {
-            throw new ValidatorException(new FacesMessage("Altes Passwort stimmt nicht"));
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Altes Passwort stimmt nicht"));
         }
     }
 
@@ -207,13 +207,13 @@ public class BenutzerkontoBean implements Validator {
                         String time2;
                         DecimalFormat df = new DecimalFormat("00.00");
                         time2 = df.format(time);
-                        time2 = time2.replace(',', ':');  
+                        time2 = time2.replace(',', ':');
                         LocalTime localtime = LocalTime.parse(time2);
                         start = LocalDateTime.of(day, localtime);
                     }
                 }
                 cell = row.getCell(3);
-                
+
                 //for endtime = row 3
                 if (cell != null) {
                     CellValue cellValue = evaluator.evaluate(cell);
@@ -223,23 +223,22 @@ public class BenutzerkontoBean implements Validator {
                         String time2;
                         DecimalFormat df = new DecimalFormat("00.00");
                         time2 = df.format(time);
-                        time2 = time2.replace(',', ':');  
+                        time2 = time2.replace(',', ':');
                         LocalTime localtime = LocalTime.parse(time2);
                         end = LocalDateTime.of(day, localtime);
                     }
                 }
-                
+
                 int breaktime = 0;
                 cell = row.getCell(4);
-                if(cell != null){
+                if (cell != null) {
                     CellValue cellValue = evaluator.evaluate(cell);
-                    if(cellValue != null){
-                        double tempbreaktime = cellValue.getNumberValue()*24*60;
-                        breaktime = (int)tempbreaktime;
+                    if (cellValue != null) {
+                        double tempbreaktime = cellValue.getNumberValue() * 24 * 60;
+                        breaktime = (int) tempbreaktime;
                     }
                 }
-                
-                
+
                 if (start != null && end != null) {
                     WorkTime worktime = new WorkTime(user, start, end, breaktime, "", "");
                     IstZeitService.addIstTime(worktime);

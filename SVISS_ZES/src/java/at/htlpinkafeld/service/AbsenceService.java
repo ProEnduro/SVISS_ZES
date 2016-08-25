@@ -37,10 +37,6 @@ public class AbsenceService {
         return ABSENCE_DAO.getAbsencesByUser(u);
     }
 
-    public static List<Absence> getAbsenceByUserBetweenDates(User u, Date start, Date end) {
-        return ABSENCE_DAO.getAbsencesByUser_BetweenDates(u, start, end);
-    }
-
     public static void insertAbsence(Absence o) throws DAOException {
         ABSENCE_DAO.insert(o);
     }

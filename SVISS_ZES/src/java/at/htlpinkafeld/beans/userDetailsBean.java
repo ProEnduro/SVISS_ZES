@@ -182,7 +182,7 @@ public class userDetailsBean {
                 Date end = Date.from(temp.atTime(23, 59).atZone(ZoneId.systemDefault()).toInstant());
 
                 List<WorkTime> worklist = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(currentUser, start, end);
-                List<Absence> absencelist = AbsenceService.getAbsenceByUserBetweenDates(currentUser, start, end);
+                List<Absence> absencelist = AbsenceService.getAbsencesByUserBetweenDates(currentUser, start, end);
                 List<Holiday> holidaylist = HolidayService.getHolidayBetweenDates(start, end);
 
                 if (!worklist.isEmpty()) {

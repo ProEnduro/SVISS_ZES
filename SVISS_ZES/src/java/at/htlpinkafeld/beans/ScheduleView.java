@@ -14,6 +14,7 @@ import at.htlpinkafeld.beans.util.WorkTimeEvent;
 import at.htlpinkafeld.dao.util.DAODML_Observer;
 import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.AbsenceType;
+import at.htlpinkafeld.pojo.Holiday;
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
@@ -21,6 +22,7 @@ import at.htlpinkafeld.service.AbsenceService;
 import at.htlpinkafeld.service.AccessRightsService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import at.htlpinkafeld.service.EmailService;
+import at.htlpinkafeld.service.HolidayService;
 import at.htlpinkafeld.service.IstZeitService;
 import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
@@ -31,6 +33,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -132,18 +135,25 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         LocalDateTime startDT = TimeConverterService.convertDateToLocalDateTime(event.getStartDate());
         LocalDateTime endDT = TimeConverterService.convertDateToLocalDateTime(event.getEndDate());
 
+        if ((!startDT.toLocalDate().equals(endDT.toLocalDate()) && endDT.toLocalTime().equals(LocalTime.MIN)) || startDT.equals(endDT)) {
+            startDT = startDT.with(LocalTime.MIN);
+            endDT = endDT.with(LocalTime.of(23, 59, 59));
+        }
+
         if (event.getStartDate().after(event.getEndDate())) {
-            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Failed", "Endzeitpunkt ist vor Startzeitpunkt!"));
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Endzeitpunkt ist vor Startzeitpunkt!"));
             FacesContext.getCurrentInstance().validationFailed();
-
+        } else if (!checkAvailableTime(TimeConverterService.convertLocalDateTimeToDate(startDT), TimeConverterService.convertLocalDateTimeToDate(endDT), true)) {
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Ein Eintrag für diese Urzeit ist bereits vorhanden!"));
+            FacesContext.getCurrentInstance().validationFailed();
         } else {
-            if ((!startDT.toLocalDate().equals(endDT.toLocalDate()) && endDT.toLocalTime().equals(LocalTime.MIN)) || startDT.equals(endDT)) {
-                endDT = endDT.with(LocalTime.of(23, 59, 59));
-            }
 
-            if (event.getId() == null) {
+            if (event instanceof AbsenceEvent && event.getId() == null) {
 
-                Absence a = new Absence(this.currentUser, type, startDT, endDT);
+                Absence a = ((AbsenceEvent) event).getAbsence();
+                a.setStartTime(startDT);
+                a.setEndTime(endDT);
+                a.setAbsenceType(type);
                 a.setReason(this.reason);
 
                 AbsenceService.insertAbsence(a);
@@ -182,7 +192,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                 } else {
                     FacesContext context = FacesContext.getCurrentInstance();
 
-                    context.addMessage(null, new FacesMessage("Failed", "You can't delete acknowledged absences!"));
+                    context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "You can't delete acknowledged absences!"));
                 }
             }
         }
@@ -192,60 +202,59 @@ public class ScheduleView implements Serializable, DAODML_Observer {
     public void addIstZeitEvent(ActionEvent actionEvent) {
         int diff = 0;
 
-        LocalDateTime startDT = TimeConverterService.convertDateToLocalDate(event.getStartDate()).atStartOfDay();
-        List<WorkTime> workTimes = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(currentUser, TimeConverterService.convertLocalDateTimeToDate(startDT), TimeConverterService.convertLocalDateTimeToDate(startDT.plusDays(1)));
+        LocalDateTime startDT = TimeConverterService.convertDateToLocalDateTime(event.getStartDate());
+        LocalDateTime endDT = TimeConverterService.convertDateToLocalDateTime(event.getEndDate());
+
+        WorkTime wt = null;
+
+        List<WorkTime> workTimes = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(currentUser, TimeConverterService.convertLocalDateTimeToDate(startDT.with(LocalTime.MIN)), TimeConverterService.convertLocalDateTimeToDate(startDT.with(LocalTime.MIN).plusDays(1)));
 
         if (event.getStartDate().after(event.getEndDate())) {
-            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Endzeitpunkt ist vor Startzeitpunkt!"));
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Endzeitpunkt ist vor Startzeitpunkt!"));
             FacesContext.getCurrentInstance().validationFailed();
-        } else if (!startDT.toLocalDate().equals(TimeConverterService.convertDateToLocalDate(event.getEndDate()))) {
-            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Arbeitszeit kann nur an einem Tag eingetragen werden!"));
+        } else if (!startDT.toLocalDate().equals(endDT.toLocalDate())) {
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Arbeitszeit kann nur an einem Tag eingetragen werden!"));
             FacesContext.getCurrentInstance().validationFailed();
         } else if (event.getStartDate().before(getStartDateToday()) || event.getEndDate().before(getStartDateToday())
                 || event.getEndDate().after(getEndDateToday()) || event.getStartDate().after(getEndDateToday())) {
-            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Die eingebene Zeit ist nicht erlaubt!"));
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Die eingebene Zeit ist nicht erlaubt!"));
+            FacesContext.getCurrentInstance().validationFailed();
+        } else if (!workTimes.isEmpty() && event.getId() == null) {
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Nur eine Arbeitszeit pro Tag!"));
+            FacesContext.getCurrentInstance().validationFailed();
+        } else if (!checkAvailableTime(event.getStartDate(), event.getEndDate(), false)) {
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Ein Eintrag für diese Urzeit ist bereits vorhanden!"));
             FacesContext.getCurrentInstance().validationFailed();
         } else {
+            if (event.getId() == null) {
+                wt = new WorkTime(currentUser, startDT, endDT, 0, "", "");
 
-            if (!workTimes.isEmpty() && event.getId() == null) {
-                FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Nur eine Arbeitszeit pro Tag!"));
-                FacesContext.getCurrentInstance().validationFailed();
-            } else if (event.getId() == null) {
-                WorkTimeEvent e = new WorkTimeEvent(this.currentUser.getUsername() + " " + "Ist-Zeit", event.getStartDate(), event.getEndDate(), new WorkTime(currentUser, TimeConverterService.convertDateToLocalDateTime(this.event.getStartDate()), TimeConverterService.convertDateToLocalDateTime(this.event.getEndDate()), 0, "", ""));
-
-                e.getWorktime().setStartComment(startcomment);
-                e.getWorktime().setEndComment(endcomment);
-                e.getWorktime().setBreakTime(breaktime);
-
-                e.setStyleClass("istzeit");
-                IstZeitService.addIstTime(e.getWorktime());
+                IstZeitService.addIstTime(wt);
 
             } else if (event instanceof WorkTimeEvent) {
-                WorkTime time = ((WorkTimeEvent) event).getWorktime();
+                wt = ((WorkTimeEvent) event).getWorktime();
                 LocalTime plus19 = LocalTime.of(19, 0);
-                if (time.getEndTime().toLocalTime().isAfter(plus19)) {
-                    diff -= time.getOvertimeAfter19() * 1.5;
-                    diff -= time.getStartTime().until(plus19, ChronoUnit.MINUTES);
+                if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
+                    diff -= wt.getOvertimeAfter19() * 1.5;
+                    diff -= wt.getStartTime().toLocalTime().until(plus19, ChronoUnit.MINUTES);
                 } else {
-                    diff -= time.getStartTime().until(time.getEndTime(), ChronoUnit.MINUTES);
+                    diff -= wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
                 }
-                time.setStartTime(TimeConverterService.convertDateToLocalDateTime(event.getStartDate()));
-                time.setEndTime(TimeConverterService.convertDateToLocalDateTime(event.getEndDate()));
+                wt.setStartTime(startDT);
+                wt.setEndTime(endDT);
 
-                IstZeitService.update(time);
+                IstZeitService.update(wt);
             } else if (event instanceof AbsenceEvent) {
 
 //                AbsenceService.updateAbsence(((AbsenceEvent) event).getAbsence());
             }
 
-            if (event instanceof WorkTimeEvent) {
-
-                WorkTime wt = ((WorkTimeEvent) event).getWorktime();
+            if (event instanceof WorkTimeEvent && wt != null) {
 
                 LocalTime plus19 = LocalTime.of(19, 0);
                 if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
                     diff += wt.getOvertimeAfter19() * 1.5;
-                    diff += wt.getStartTime().until(plus19, ChronoUnit.MINUTES);
+                    diff += wt.getStartTime().toLocalTime().until(plus19, ChronoUnit.MINUTES);
                 } else {
                     diff += wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
                 }
@@ -254,6 +263,52 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             }
             event = new DefaultScheduleEvent();
         }
+    }
+
+    public boolean checkAvailableTime(Date startD, Date endD, boolean checkWorkTime) {
+        boolean retVal = true;
+
+        if (event instanceof AbsenceEvent && type.getAbsenceName().contentEquals("business-related absence")) {
+        } else {
+            LocalDateTime startDT = TimeConverterService.convertDateToLocalDateTime(startD);
+            LocalDateTime endDT = TimeConverterService.convertDateToLocalDateTime(endD);
+
+            List<Holiday> holList = HolidayService.getHolidayBetweenDates(TimeConverterService.convertLocalDateTimeToDate(startDT.with(LocalTime.MIN)), TimeConverterService.convertLocalDateTimeToDate(endDT.plusDays(1).with(LocalTime.MIN)));
+
+            if (checkWorkTime) {
+                List<WorkTime> wtList = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(currentUser, TimeConverterService.convertLocalDateTimeToDate(startDT.with(LocalTime.MIN)), TimeConverterService.convertLocalDateTimeToDate(endDT.plusDays(1).with(LocalTime.MIN)));
+
+                for (WorkTime wt : wtList) {
+                    Date startWT = TimeConverterService.convertLocalDateTimeToDate(wt.getStartTime());
+                    Date endWT = TimeConverterService.convertLocalDateTimeToDate(wt.getEndTime());
+                    if (startD.after(startWT) && startD.before(endWT) || endD.after(startWT) && endD.before(endWT) || startD.before(startWT) && endD.after(endWT)) {
+                        retVal = false;
+                    }
+                }
+            }
+            List<Absence> absList = AbsenceService.getAbsencesByUserBetweenDates(currentUser, startD, endD);
+
+            for (Absence a : absList) {
+                if (!a.getAbsenceType().getAbsenceName().contentEquals("business-related absence")) {
+                    if (!startD.equals(TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()))) {
+                        if (event instanceof AbsenceEvent) {
+                            if (((AbsenceEvent) event).getAbsence() != null && !((AbsenceEvent) event).getAbsence().equals(a)) {
+                                retVal = false;
+                            }
+                        } else {
+                            retVal = false;
+                        }
+                    }
+                }
+
+            }
+
+            if (!holList.isEmpty()) {
+                retVal = false;
+            }
+        }
+        return retVal;
+
     }
 
     public void deleteIstZeitEvent(ActionEvent e) {
@@ -357,7 +412,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
     public void onAbsenceDateSelect(SelectEvent selectEvent) {
         Date sDate = (Date) selectEvent.getObject();
-        event = new DefaultScheduleEvent("", sDate, sDate);
+        event = new AbsenceEvent("", sDate, sDate, new Absence(this.currentUser, type, null, null));
     }
 
     public AbsenceType getType() {
@@ -379,7 +434,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         } else if (currentUser.getUsername().equals(absenceEvent.getAbsence().getUser().getUsername())) {
 
             FacesContext context = FacesContext.getCurrentInstance();
-            context.addMessage(null, new FacesMessage("Absence-acknowledge failed", "You can't acknowledge your own abscences!"));
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "You can't acknowledge your own abscences!"));
 
         } else {
 

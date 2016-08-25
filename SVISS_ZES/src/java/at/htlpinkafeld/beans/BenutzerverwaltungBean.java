@@ -111,10 +111,10 @@ public class BenutzerverwaltungBean {
 
     public void saveUser() throws FileNotFoundException, IOException {
         if (isEmailUnavailable(selectedUser.getEmail())) {
-            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Diese Email wurde bereits vergeben!"));
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Action failed", "Diese Email wurde bereits vergeben!"));
             FacesContext.getCurrentInstance().validationFailed();
         } else if (isUsernameUnavailable(selectedUser.getUsername())) {
-            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Diese Benutzername wurde bereits vergeben!"));
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Action failed", "Dieser Benutzername wurde bereits vergeben!"));
             FacesContext.getCurrentInstance().validationFailed();
         } else {
             if (selectedUser.getUserNr() == -1) {
@@ -172,7 +172,7 @@ public class BenutzerverwaltungBean {
     //TODO: Praktischer machen (neuer User email etc.)
     public void resetPassword() {
         if (resetPWString.length() < 6) {
-            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Passwort muss mindestens 6 Zeichen haben!"));
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_WARN, "Action failed", "Passwort muss mindestens 6 Zeichen haben!"));
             FacesContext.getCurrentInstance().validationFailed();
         } else {
             selectedUser.setPass(PasswordEncryptionService.digestPassword(resetPWString));
@@ -328,7 +328,7 @@ public class BenutzerverwaltungBean {
 
         for (SollZeit sz : newSollZeiten) {
             if (TimeConverterService.convertDateToLocalDate(date).getDayOfWeek().equals(sz.getDay())) {
-                FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Nur eine Arbeitszeit pro Tag!"));
+                FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Action failed", "Nur eine Arbeitszeit pro Tag!"));
                 FacesContext.getCurrentInstance().validationFailed();
             }
         }
@@ -346,7 +346,7 @@ public class BenutzerverwaltungBean {
         Date startDate = TimeConverterService.convertLocalDateTimeToDate(sDateTime);
 
         if (startDate.after(endDate)) {
-            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Endzeitpunkt ist vor Startzeitpunkt!"));
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Action failed", "Endzeitpunkt ist vor Startzeitpunkt!"));
             FacesContext.getCurrentInstance().validationFailed();
             return null;
         }
@@ -377,7 +377,7 @@ public class BenutzerverwaltungBean {
         LocalDateTime startDateTime = TimeConverterService.convertDateToLocalDateTime(event.getScheduleEvent().getStartDate());
         LocalTime endTime = TimeConverterService.convertDateToLocalTime(event.getScheduleEvent().getEndDate());
         if (endTime.isBefore(startDateTime.toLocalTime())) {
-            FacesContext.getCurrentInstance().addMessage("", new FacesMessage("Zeit ist über mehr als einen Tag eingetragen!"));
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Action failed", "Zeit ist über mehr als einen Tag eingetragen!"));
             FacesContext.getCurrentInstance().validationFailed();
             Calendar c = Calendar.getInstance();
             c.setTime(event.getScheduleEvent().getEndDate());

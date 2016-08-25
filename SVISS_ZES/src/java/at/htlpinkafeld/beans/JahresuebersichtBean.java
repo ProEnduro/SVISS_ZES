@@ -6,12 +6,14 @@
 package at.htlpinkafeld.beans;
 
 import at.htlpinkafeld.pojo.Absence;
+import at.htlpinkafeld.pojo.Holiday;
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
 import at.htlpinkafeld.service.AbsenceService;
 import at.htlpinkafeld.service.AccessRightsService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
+import at.htlpinkafeld.service.HolidayService;
 import at.htlpinkafeld.service.IstZeitService;
 import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
@@ -132,20 +134,26 @@ public class JahresuebersichtBean {
             loadData();
         }
     }
-    
+
     public void postProcessXls(Object document) {
-    if (document instanceof Workbook) {
-        Workbook doc=(Workbook) document;
-        
+        if (document instanceof Workbook) {
+            Workbook doc = (Workbook) document;
+
+        }
     }
-}
 
     public void loadData() {
         if (selectedYear != null && selectedUser != null) {
             months = new ArrayList<>();
 
             LocalDate month;
-            LocalDate today = LocalDate.now();
+            LocalDate today;
+            if (selectedYear.getYear() == LocalDate.now().getYear()) {
+                today = LocalDate.now();
+            } else {
+                today = selectedYear.plusYears(1).minusDays(1);
+            }
+
             for (month = selectedYear; month.isBefore(selectedUser.getHiredate().withDayOfMonth(1)); month = month.plusMonths(1)) {
                 months.add(new SelectItem(" - ", month.format(monthFormatter), "-"));
             }
@@ -286,6 +294,15 @@ public class JahresuebersichtBean {
                     break;
             }
         }
+
+        List<Holiday> holidays = HolidayService.getHolidayBetweenDates(TimeConverterService.convertLocalDateToDate(startDate), TimeConverterService.convertLocalDateToDate(endDate));
+        for (Holiday h : holidays) {
+            SollZeit sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, h.getHolidayDate().getDayOfWeek(), h.getHolidayDate().atStartOfDay());
+            if (sz != null) {
+                overtime += sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+            }
+        }
+
         return overtime;
     }
 

@@ -24,6 +24,8 @@
 
                     </p:schedule>
                 </h:form>
+                <h:form id="uploadForm" enctype="multipart-data">
+                    <p:fileUpload  id="loadICSBut"  fileUploadListener="#{feiertageBean.loadEventsFromICS}" auto="true" label="ICS Kalendar hochladen" update=":growl :scheduleForm:feiertagSchedule"  allowTypes="/(\.|\/)(ics)$/"  fileLimit="1"/>
                 </h:form>
             </p:panel>
 
@@ -33,8 +35,8 @@
                 <h:form id="eventForm">
                     <h:panelGrid id="eventDetails" columns="2">
 
-                        <p:outputLabel for="comment" value="Comment:" />
-                        <p:inputText id="comment" value="#{feiertageBean.curEvent.title}" required="true"/>
+                        <p:outputLabel for="bezeichnung" value="Bezeichnung" />
+                        <p:inputText id="bezeichnung" value="#{feiertageBean.curEvent.title}" required="true"/>
 
                         <p:outputLabel for="date" value="Date:" />
                         <p:calendar id="date" value="#{feiertageBean.curEvent.startDate}" disabled="#{feiertageBean.dateDisabled}" pattern="dd/MM/yyyy"   locale="de" required="true" readonlyInput="true"/>

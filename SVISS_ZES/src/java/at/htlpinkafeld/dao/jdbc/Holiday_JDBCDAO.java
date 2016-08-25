@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,16 +66,16 @@ public class Holiday_JDBCDAO extends Base_JDBCDAO<Holiday> implements Holiday_DA
     public List<Holiday> getHolidayBetweenDates(java.util.Date startDateU, java.util.Date endDateU) {
         List<Holiday> holidays = new ArrayList<>();
 
-        Date startDate = new Date(startDateU.getTime());
-        Date endDate = new Date(endDateU.getTime());
+        Timestamp startDate = new Timestamp(startDateU.getTime());
+        Timestamp endDate = new Timestamp(endDateU.getTime());
 
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                 PreparedStatement stmt = con.getConn().prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE (" + HOLIDAYDATE_COL + " >= ? AND  " + HOLIDAYDATE_COL + " < ?) OR ("
                         + HOLIDAYDATE_COL + " = ? AND " + HOLIDAYDATE_COL + " = ?) " + SQL_ORDER_BY_LINE)) {
-            stmt.setDate(1, startDate);
-            stmt.setDate(2, endDate);
-            stmt.setDate(3, startDate);
-            stmt.setDate(4, endDate);
+            stmt.setTimestamp(1, startDate);
+            stmt.setTimestamp(2, endDate);
+            stmt.setTimestamp(3, startDate);
+            stmt.setTimestamp(4, endDate);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 holidays.add(getEntityFromResultSet(rs));

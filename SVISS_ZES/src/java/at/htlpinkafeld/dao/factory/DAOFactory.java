@@ -31,7 +31,7 @@ public abstract class DAOFactory {
 
     public static synchronized DAOFactory getDAOFactory() {
         if (daof == null) {
-            daoType = DUMMY_DAO;
+            daoType = JDBCDAO;
             switch (daoType) {
                 case JDBCDAO:
                     daof = new JDBCDAOFactory();
@@ -47,7 +47,7 @@ public abstract class DAOFactory {
     }
 
     /**
-     * Set and recreate DAOFactory only constants JDBCDAO and DUMMY_DAO should
+     * Set and recreate DAOFactory. only constants JDBCDAO and DUMMY_DAO should
      * be used
      *
      * @param daoType

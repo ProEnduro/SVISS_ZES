@@ -101,7 +101,7 @@ and open the template in the editor.
                     }
                 </style>
                 <h:form id="addAbsenceDlgForm">
-                    <p:dialog widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip">
+                    <p:dialog widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip" modal="true">
                         <h:panelGrid id="eventDetails" columns="2">
                             <p:outputLabel for="from" value="From:" />
                             <p:calendar id="from" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="#{scheduleView.pattern}" showOn="button" mask="true"/>
@@ -127,7 +127,7 @@ and open the template in the editor.
 
             <h:form id="absenceDialogForm">
 
-                <p:dialog id="absenceDialogID" widgetVar="absenceDialog" header="Absence Details" showEffect="clip" hideEffect="clip" closeOnEscape="true">
+                <p:dialog id="absenceDialogID" widgetVar="absenceDialog" header="Absence Details" showEffect="clip" hideEffect="clip" closeOnEscape="true" modal="true">
                     <h:panelGrid id="absenceDetails" columns="2">
                         <p:outputLabel for="absencetitle" value="Titles:" />
                         <p:inputText id="absencetitle" value="#{scheduleView.event.title}" readonly="true"/>

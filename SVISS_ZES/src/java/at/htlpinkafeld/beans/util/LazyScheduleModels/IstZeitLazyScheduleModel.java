@@ -54,7 +54,7 @@ public class IstZeitLazyScheduleModel extends LazyScheduleModel {
             this.addEvent(e);
         }
 
-        List<Absence> absenceList = AbsenceService.getAbsenceByUserBetweenDates(currentUser, start, end);
+        List<Absence> absenceList = AbsenceService.getAbsencesByUserBetweenDates(currentUser, start, end);
 
         for (Absence a : absenceList) {
             e = new AbsenceEvent(currentUser.getUsername() + " " + a.getAbsenceType().getAbsenceName(), TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);

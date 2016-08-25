@@ -17,7 +17,7 @@ and open the template in the editor.
         <ui:param name="currentIndex" value="0" />
 
         <ui:define name="content">
-            <p:growl id="growl" />
+            <p:growl id="growl" showDetail="true"/>
             <h:form id="scheduleForm">
                 <h1 align="center">Ist-Zeiten</h1>
 
@@ -121,7 +121,7 @@ and open the template in the editor.
                 }
             </style>
             <h:form id="istZeitForm">
-                <p:dialog id="evDialog" widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip" closeOnEscape="true">
+                <p:dialog id="evDialog" widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip" closeOnEscape="true" modal="true">
                     <h:panelGrid id="eventDetails" columns="2" style="vertical-align:middle">
                         <p:outputLabel for="title" value="Titles:" />
                         <p:inputText id="title" value="#{scheduleView.event.title}" disabled="true"/>

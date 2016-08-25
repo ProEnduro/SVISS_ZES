@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//http://www.feiertage-oesterreich.at/kalender-download/
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:b41da1c0c7a8eb5ccc9dd3392b4a0802@feiertage-oesterreich.at
+DTSTAMP:20160816T102727Z
+LOCATION:
+DESCRIPTION:Feiertag im Sinne des Bundesgesetzes und somit ein arbeitsfreier Tag für gesamt Österreich.
+URL;VALUE=URI:http://www.feiertage-oesterreich.at/neujahr-1-jaenner/
+SUMMARY:Neujahr (§)
+DTSTART;VALUE=DATE:20000101
+DTEND;VALUE=DATE:20000101
+END:VEVENT
+END:VCALENDAR
