@@ -19,7 +19,7 @@ and open the template in the editor.
             <p:panel>
                 <h1 align="center">Benutzerverwaltung</h1>
 
-                <p:dataTable id="usertable" var="user" value="#{benutzerverwaltungsBean.userList}" style="margin-top: 1.5%; text-align: center" >
+                <p:dataTable id="usertable" var="user" value="#{benutzerverwaltungsBean.userList}" style="margin-top: 1.5%; text-align: center"  sortMode="multiple" >
 
                     <p:column headerText="Username" sortBy="#{user.username}" filterBy="#{user.username}">
                         <h:outputText value="#{user.username}" style="center"/>

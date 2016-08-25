@@ -50,6 +50,8 @@ public class WorkTime_JDBCDAOTest {
     public void testInsertAndGetList() throws SQLException {
         List<WorkTime> expResult = workTime_DAO.getList();
         WorkTime wt = new WorkTime(DAOFactory.getDAOFactory().getUserDAO().getUser(1), LocalDateTime.of(2016, 3, 14, 8, 0), LocalDateTime.of(2016, 3, 14, 16, 30), 30, "Start Test", "End Test");
+        wt.setSollStartTime(wt.getStartTime().toLocalTime());
+        wt.setSollEndTime(wt.getEndTime().toLocalTime());
         workTime_DAO.insert(wt);
         expResult.add(wt);
         List result = workTime_DAO.getList();
@@ -67,6 +69,9 @@ public class WorkTime_JDBCDAOTest {
         User u = DAOFactory.getDAOFactory().getUserDAO().getUser(1);
         List<WorkTime> expResult = workTime_DAO.getWorkTimesByUser(u);
         WorkTime wt = new WorkTime(u, LocalDateTime.of(2016, 3, 14, 8, 0), LocalDateTime.of(2016, 3, 14, 16, 30), 30, "Start Test", "End Test");
+        wt.setSollStartTime(wt.getStartTime().toLocalTime());
+        wt.setSollEndTime(wt.getEndTime().toLocalTime());
+
         workTime_DAO.insert(wt);
         expResult.add(wt);
         List result = workTime_DAO.getWorkTimesByUser(u);
@@ -79,6 +84,9 @@ public class WorkTime_JDBCDAOTest {
     @Test
     public void testInsertAndUpdate() {
         WorkTime wt = new WorkTime(DAOFactory.getDAOFactory().getUserDAO().getUser(1), LocalDateTime.of(2016, 3, 14, 8, 0), LocalDateTime.of(2016, 3, 14, 16, 30), 30, "Start Test", "End Test");
+        wt.setSollStartTime(wt.getStartTime().toLocalTime());
+        wt.setSollEndTime(wt.getEndTime().toLocalTime());
+
         workTime_DAO.insert(wt);
         wt.setBreakTime(50);
         wt.setEndComment("Updated Test Test");
@@ -95,6 +103,9 @@ public class WorkTime_JDBCDAOTest {
     @Test
     public void testInsertAndDelete() {
         WorkTime wt = new WorkTime(DAOFactory.getDAOFactory().getUserDAO().getUser(1), LocalDateTime.of(2016, 3, 14, 8, 0), LocalDateTime.of(2016, 3, 14, 16, 30), 30, "Start Test", "End Test");
+        wt.setSollStartTime(wt.getStartTime().toLocalTime());
+        wt.setSollEndTime(wt.getEndTime().toLocalTime());
+
         workTime_DAO.insert(wt);
         List<WorkTime> result = workTime_DAO.getList();
         assertTrue(result.contains(wt));
