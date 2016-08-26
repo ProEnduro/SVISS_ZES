@@ -16,18 +16,18 @@ and open the template in the editor.
         <ui:param name="currentIndex" value="7" />
 
         <ui:define name="content">
-            
-             <h1 align="center">Alle Abwesenheiten</h1>
+
+            <h1 align="center">Alle Abwesenheiten</h1>
             <p:growl id="messages" showDetail="true"/>
 
             <h:form id="absenceScheduleForm">
                 <p:panel>
-                   
+
                     <p:schedule draggable="false" resizable="false" firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.alleAbwesenheitenModel}" widgetVar="myschedule" timeZone="Europe/Vienna" 
-                                locale="de" columnFormat="month:'ddd',  week:'dddd - dd.MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
+                                locale="de" columnFormat="month:'ddd',  week:'dddd - dd.MM', day:'dd.MM.yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
                         <p:ajax event="eventSelect" listener="#{scheduleView.onEventInAbwesenheitenSelect}" update=":absenceDialogForm:absenceDialog :feiertagDialogForm:feiertagDialogID" />
                     </p:schedule>
-                    
+
                 </p:panel>
             </h:form>
             <script type="text/javascript">
@@ -116,7 +116,7 @@ and open the template in the editor.
                         <p:outputLabel for="reason" value="Reason:"/>
                         <p:inputTextarea id="reason" value="#{scheduleView.reason}" readonly="true"/>
 
-                        <p:commandButton value="Delete" rendered="#{scheduleView.ableToDeleteAbsence}" update=":absenceScheduleForm" action="#{scheduleView.deleteAcknowledgement}"/>
+                        <p:commandButton value="Delete" rendered="#{scheduleView.ableToDeleteAbsence}" update=":absenceScheduleForm" action="#{scheduleView.deleteAcknowledgedAbsenceFromOverviews}" oncomplete="PF('absenceDialog').hide();"/>
                     </h:panelGrid>
                 </p:dialog> 
             </h:form>

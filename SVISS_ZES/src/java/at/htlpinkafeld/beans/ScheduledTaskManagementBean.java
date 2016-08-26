@@ -36,21 +36,21 @@ public class ScheduledTaskManagementBean {
         ZoneId currentZone = ZoneId.systemDefault();
         ZonedDateTime zonedNow = ZonedDateTime.of(localNow, currentZone);
         ZonedDateTime zonedNext0;
-        zonedNext0 = zonedNow.withHour(0).withMinute(0).withSecond(0);
+        zonedNext0 = zonedNow.withHour(3).withMinute(0).withSecond(0);
         if (zonedNow.compareTo(zonedNext0) > 0) {
             zonedNext0 = zonedNext0.plusDays(1);
         }
 
         Duration duration = Duration.between(zonedNow, zonedNext0);
-        long initalDelayHoliday = duration.getSeconds();
-//        zonedNext0.with(DayOfWeek.MONDAY);
-//        duration = Duration.between(zonedNow, zonedNext0);
         long initalDelayOvertime = duration.getSeconds();
+        zonedNext0.withHour(10);
+        duration = Duration.between(zonedNow, zonedNext0);
+        long initalDelayEmail = duration.getSeconds();
         try {
             scheduler = Executors.newSingleThreadScheduledExecutor();
-            scheduler.scheduleAtFixedRate(new HolidaySynchronisationTask(), initalDelayHoliday, 24 * 60 * 60, TimeUnit.SECONDS);
+            scheduler.scheduleAtFixedRate(new HolidaySynchronisationTask(), initalDelayOvertime, 24 * 60 * 60, TimeUnit.SECONDS);
             scheduler.scheduleAtFixedRate(new OvertimeSynchronisationTask(), initalDelayOvertime, 24 * 60 * 60, TimeUnit.SECONDS);
-            scheduler.scheduleAtFixedRate(new AbsenceCleaningTask(), initalDelayOvertime, 24 * 60 * 60, TimeUnit.SECONDS);
+            scheduler.scheduleAtFixedRate(new AbsenceCleaningTask(), initalDelayEmail, 24 * 60 * 60, TimeUnit.SECONDS);
             scheduler.scheduleAtFixedRate(new UpdateUserHistoryTask(), initalDelayOvertime, 24 * 60 * 60, TimeUnit.SECONDS);
         } catch (Exception e) {
             e.printStackTrace();

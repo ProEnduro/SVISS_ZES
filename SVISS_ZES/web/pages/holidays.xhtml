@@ -17,7 +17,8 @@
                 <h1 align="center">Feiertage</h1>
 
                 <h:form  id="scheduleForm">
-                    <p:schedule id="feiertagSchedule" value="#{feiertageBean.timeModel}" aspectRatio="3" resizable="false" timeZone="Europe/Vienna" locale="de" timeFormat="" axisFormat="HH:mm" ignoreTimezone="true" allDaySlot="false" rightHeaderTemplate="">
+                    <p:schedule id="feiertagSchedule" value="#{feiertageBean.timeModel}" aspectRatio="3" resizable="false" timeZone="Europe/Vienna" locale="de"
+                                timeFormat="" axisFormat="HH:mm" ignoreTimezone="true" allDaySlot="false" rightHeaderTemplate="">
                         <p:ajax event="dateSelect" listener="#{feiertageBean.onDateSelect}" update=":eventForm:eventDetails" oncomplete="PF('eventDialog').show();" />
                         <p:ajax event="eventSelect" listener="#{feiertageBean.onEventSelect}" update=":eventForm:eventDetails" oncomplete="PF('eventDialog').show();" />
                         <p:ajax event="eventMove" listener="#{feiertageBean.onEventMove}"/>

@@ -37,7 +37,6 @@ public class EmailService {
     }
 
     private static void sendEmail(String subject, String body, User from, List<User> to) {
-        // Assuming you are sending email from localhost
         String host = "smtp.world4you.com";
 
         // Get system properties

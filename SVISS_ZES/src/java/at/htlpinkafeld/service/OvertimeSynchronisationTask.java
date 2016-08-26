@@ -67,7 +67,6 @@ public class OvertimeSynchronisationTask implements Runnable {
     public static int calcOvertime(User u, Date startDate, Date endDate) {
         int overtime = 0;
 
-        List<WorkTime> workTimes = WORK_TIME_DAO.getWorkTimesFromUserBetweenDates(u, startDate, endDate);
         List<SollZeit> sollZeiten = SOLL_ZEITEN_DAO.getSollZeitenByUser(u);
 
 //        LocalTime lt19Plus = LocalTime.of(19, 0);

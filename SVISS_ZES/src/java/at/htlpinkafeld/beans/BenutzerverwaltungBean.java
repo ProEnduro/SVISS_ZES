@@ -169,7 +169,6 @@ public class BenutzerverwaltungBean {
         this.resetPWString = resetPWString;
     }
 
-    //TODO: Praktischer machen (neuer User email etc.)
     public void resetPassword() {
         if (resetPWString.length() < 6) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_WARN, "Action failed", "Passwort muss mindestens 6 Zeichen haben!"));
@@ -410,6 +409,7 @@ public class BenutzerverwaltungBean {
         for (User appr : selectedUser.getApprover()) {
             target.add(appr);
         }
+        source.removeAll(selectedUser.getApprover());
         approverModel = new DualListModel<>(source, target);
     }
 

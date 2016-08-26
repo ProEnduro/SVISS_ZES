@@ -440,10 +440,10 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
             acknowledgementModel.deleteEvent(absenceEvent);
 
+            User u = absenceEvent.getAbsence().getUser();
+
             absenceEvent.getAbsence().setAcknowledged(true);
             AbsenceService.updateAbsence(absenceEvent.getAbsence());
-
-            User u = absenceEvent.getAbsence().getUser();
 
             int overtime = calcAbsenceOvertime(absenceEvent.getAbsence());
 
@@ -470,6 +470,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
             if (absenceEvent.getAbsence().isAcknowledged()) {
                 User u = absenceEvent.getAbsence().getUser();
+                absenceEvent.getAbsence().setAcknowledged(false);
                 int overtime = calcAbsenceOvertime(absenceEvent.getAbsence());
 
                 u.setOverTimeLeft(u.getOverTimeLeft() - overtime);
@@ -491,6 +492,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             AbsenceService.deleteAbsence(a);
 
             if (a.isAcknowledged()) {
+                a.setAcknowledged(false);
                 User u = a.getUser();
                 int overtime = calcAbsenceOvertime(a);
 
@@ -505,6 +507,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         }
     }
 
+// Wenn eine angenommene Abwesenheit übergeben wird, wird der Urlaub dazugerechnet sonst wird sie abgezogen 
     private int calcAbsenceOvertime(Absence a) {
         int overtime = 0;
         User u = a.getUser();
@@ -512,11 +515,16 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         int days = 0;
         DayOfWeek sDay;
 
-        switch (absenceEvent.getAbsence().getAbsenceType().getAbsenceName()) {
+        switch (a.getAbsenceType().getAbsenceName()) {
             case "holiday":
                 days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
 
-                u.setVacationLeft(u.getVacationLeft() - days);
+                if (a.isAcknowledged()) {
+                    u.setVacationLeft(u.getVacationLeft() - days);
+                } else {
+                    u.setVacationLeft(u.getVacationLeft() + days);
+                }
+
                 BenutzerverwaltungService.updateUser(u);
 
                 DayOfWeek hDay = a.getStartTime().getDayOfWeek();

@@ -78,7 +78,7 @@ public class UserDetailsBean {
             for (User u : BenutzerverwaltungService.getUserList()) {
                 userAsStringList.add(u.getUsername());
             }
-        } else if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_SELF"))  {
+        } else if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_SELF")) {
             userAsStringList.add(currentUser.getUsername());
         }
 
@@ -93,7 +93,7 @@ public class UserDetailsBean {
             for (User u : BenutzerverwaltungService.getUserList()) {
                 userAsStringList.add(u.getUsername());
             }
-        } else if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_SELF"))  {
+        } else if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_SELF")) {
             userAsStringList.add(currentUser.getUsername());
         }
 

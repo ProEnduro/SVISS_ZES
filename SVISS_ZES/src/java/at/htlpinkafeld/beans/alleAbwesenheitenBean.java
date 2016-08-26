@@ -10,7 +10,6 @@ import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.service.AbsenceService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**

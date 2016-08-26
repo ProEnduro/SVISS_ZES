@@ -30,7 +30,7 @@ and open the template in the editor.
                     </p:panelGrid>
 
                     <p:schedule draggable="false" resizable="false" firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.allTimesModel}" widgetVar="myschedule" timeZone="Europe/Vienna" locale="de" 
-                                columnFormat="month:'ddd',  week:'dddd - dd.MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
+                                columnFormat="month:'ddd',  week:'dddd - dd.MM', day:'dd.MM.yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
                         <p:ajax event="eventSelect" listener="#{scheduleView.onEventInAbwesenheitenSelect}" update=":absenceDialogForm:absenceDialogID :worktimeDialogForm:worktimeDialogID :feiertagDialogForm:feiertagDialogID" />
                     </p:schedule>
 
