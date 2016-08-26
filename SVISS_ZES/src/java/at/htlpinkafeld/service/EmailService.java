@@ -69,7 +69,9 @@ public class EmailService {
 
             // Set To: header field of the header.
             for (User u : to) {
-                message.addRecipient(Message.RecipientType.TO, new InternetAddress(u.getEmail()));
+                if (!u.getEmail().isEmpty()) {
+                    message.addRecipient(Message.RecipientType.TO, new InternetAddress(u.getEmail()));
+                }
             }
 
             // Set Subject: header field
@@ -208,10 +210,10 @@ public class EmailService {
         String subject;
         String body;
 
-        subject = sender.getUsername() + " vergaß das Passwort";
+        subject = sender.getUsername() + "  sendet Anfrage für Passwortzurücksetzung";
         body = sender.getPersName() + " hat das Passwort vergessen und fordert ein neues an.";
 
-        sendEmail(subject, body, sender, admins);
+        sendEmail(subject, body, null, admins);
     }
 
     public static void sendUserNewPasswordEmail(String newPassword, User user) {
@@ -219,7 +221,7 @@ public class EmailService {
         String body;
 
         subject = "Passwort wurde zurückgesetzt";
-        body = "Hallo, dein neues Passwort lautet " + newPassword + " !";
+        body = "Das neue Passwort für den User " + user.getUsername() + " lautet: " + newPassword;
 
         List<User> userL = new ArrayList<>();
         userL.add(user);

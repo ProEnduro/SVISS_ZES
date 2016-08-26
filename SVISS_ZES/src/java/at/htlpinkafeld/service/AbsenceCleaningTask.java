@@ -11,7 +11,6 @@ import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.pojo.Absence;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
@@ -32,6 +31,7 @@ public class AbsenceCleaningTask implements Runnable {
     @Override
     public void run() {
         LocalDateTime ldtstart = LocalDate.now().minusWeeks(1).atStartOfDay();
+        LocalDateTime ldtend = ldtstart.plusDays(1);
         List<Absence> absences = ABSENCE_DAO.getAbsencesByAcknowledgment_BetweenDates(false, TimeConverterService.convertLocalDateTimeToDate(ldtstart), TimeConverterService.convertLocalDateTimeToDate(ldtend));
         for (Absence a : absences) //Email verschicken
         {
