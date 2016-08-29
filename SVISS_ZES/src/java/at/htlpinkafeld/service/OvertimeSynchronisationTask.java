@@ -59,6 +59,7 @@ public class OvertimeSynchronisationTask implements Runnable {
             for (User u : users) {
                 int overtime = calcOvertime(u, startDate, endDate);
                 u.setOverTimeLeft(u.getOverTimeLeft() + overtime);
+                BenutzerverwaltungService.updateUser(u);
             }
         }
     }
@@ -85,10 +86,17 @@ public class OvertimeSynchronisationTask implements Runnable {
         LocalDate startDateL = TimeConverterService.convertDateToLocalDate(startDate);
         LocalDate endDateL = TimeConverterService.convertDateToLocalDate(endDate);
 
-        for (LocalDate date = startDateL; startDateL.isBefore(endDateL); date = date.plusDays(1)) {
-            for (SollZeit sz : sollZeiten) {
-                if (sz.getDay().equals(date.getDayOfWeek())) {
-                    overtime -= sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+        for (LocalDate date = startDateL; date.isBefore(endDateL); date = date.plusDays(1)) {
+            List<WorkTime> workTimes = WORK_TIME_DAO.getWorkTimesFromUserBetweenDates(u, TimeConverterService.convertLocalDateToDate(date), TimeConverterService.convertLocalDateToDate(date.plusDays(1)));
+            if (workTimes.isEmpty()) {
+                for (SollZeit sz : sollZeiten) {
+                    if (sz.getDay().equals(date.getDayOfWeek())) {
+                        overtime -= sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+
+                        if (overtime >= 360) {//Default Breaktime 
+                            overtime += 30;
+                        }
+                    }
                 }
             }
         }

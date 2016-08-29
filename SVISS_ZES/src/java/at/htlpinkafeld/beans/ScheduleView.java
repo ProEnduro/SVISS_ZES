@@ -227,19 +227,24 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             FacesContext.getCurrentInstance().validationFailed();
         } else {
             if (event.getId() == null) {
-                wt = new WorkTime(currentUser, startDT, endDT, 0, "", "");
+                wt = new WorkTime(currentUser, startDT, endDT, breaktime, startcomment, endcomment);
 
                 IstZeitService.addIstTime(wt);
 
             } else if (event instanceof WorkTimeEvent) {
                 wt = ((WorkTimeEvent) event).getWorktime();
                 LocalTime plus19 = LocalTime.of(19, 0);
+                diff -= wt.getStartTime().toLocalTime().until(wt.getSollStartTime(), ChronoUnit.MINUTES);
                 if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
                     diff -= wt.getOvertimeAfter19() * 1.5;
-                    diff -= wt.getStartTime().toLocalTime().until(plus19, ChronoUnit.MINUTES);
+                    diff -= wt.getSollEndTime().until(plus19, ChronoUnit.MINUTES);
                 } else {
-                    diff -= wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
+                    diff -= wt.getSollEndTime().until(wt.getEndTime().toLocalTime(), ChronoUnit.MINUTES);
                 }
+
+                wt.setBreakTime(breaktime);
+                wt.setStartComment(startcomment);
+                wt.setEndComment(endcomment);
                 wt.setStartTime(startDT);
                 wt.setEndTime(endDT);
 
@@ -249,14 +254,15 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 //                AbsenceService.updateAbsence(((AbsenceEvent) event).getAbsence());
             }
 
-            if (event instanceof WorkTimeEvent && wt != null) {
+            if (wt != null) {
 
                 LocalTime plus19 = LocalTime.of(19, 0);
+                diff += wt.getStartTime().toLocalTime().until(wt.getSollStartTime(), ChronoUnit.MINUTES);
                 if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
                     diff += wt.getOvertimeAfter19() * 1.5;
-                    diff += wt.getStartTime().toLocalTime().until(plus19, ChronoUnit.MINUTES);
+                    diff += wt.getSollEndTime().until(plus19, ChronoUnit.MINUTES);
                 } else {
-                    diff += wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
+                    diff += wt.getSollEndTime().until(wt.getEndTime().toLocalTime(), ChronoUnit.MINUTES);
                 }
                 wt.getUser().setOverTimeLeft(wt.getUser().getOverTimeLeft() + diff);
                 BenutzerverwaltungService.updateUser(wt.getUser());
@@ -319,16 +325,17 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                 IstZeitService.delete(workevent.getWorktime());
 
                 int diff = 0;
-                WorkTime time = workevent.getWorktime();
+                WorkTime wt = workevent.getWorktime();
                 LocalTime plus19 = LocalTime.of(19, 0);
-                if (time.getEndTime().toLocalTime().isAfter(plus19)) {
-                    diff -= time.getOvertimeAfter19() * 1.5;
-                    diff -= time.getStartTime().until(plus19, ChronoUnit.MINUTES);
+                diff -= wt.getStartTime().toLocalTime().until(wt.getSollStartTime(), ChronoUnit.MINUTES);
+                if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
+                    diff -= wt.getOvertimeAfter19() * 1.5;
+                    diff -= wt.getSollEndTime().until(plus19, ChronoUnit.MINUTES);
                 } else {
-                    diff -= time.getStartTime().until(time.getEndTime(), ChronoUnit.MINUTES);
+                    diff -= wt.getSollEndTime().until(wt.getEndTime().toLocalTime(), ChronoUnit.MINUTES);
                 }
-                time.getUser().setOverTimeLeft(time.getUser().getOverTimeLeft() + diff);
-                BenutzerverwaltungService.updateUser(time.getUser());
+                wt.getUser().setOverTimeLeft(wt.getUser().getOverTimeLeft() + diff);
+                BenutzerverwaltungService.updateUser(wt.getUser());
 
                 event = new DefaultScheduleEvent();
             }
@@ -403,9 +410,9 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                 LocalDateTime s = start.atTime(soll.getSollStartTime());
                 LocalDateTime e = start.atTime(soll.getSollEndTime());
 
-                event = new DefaultScheduleEvent("", TimeConverterService.convertLocalDateTimeToDate(s), TimeConverterService.convertLocalDateTimeToDate(e));
+                event = new WorkTimeEvent("", TimeConverterService.convertLocalDateTimeToDate(s), TimeConverterService.convertLocalDateTimeToDate(e), null);
             } else {
-                event = new DefaultScheduleEvent("", sDate, sDate);
+                event = new WorkTimeEvent("", sDate, sDate, null);
             }
         }
     }
@@ -754,7 +761,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
     }
 
     public double getOvertimeleft() {
-        return overtimeleft;
+        return currentUser.getOverTimeLeft();
     }
 
     public void setOvertimeleft(double overtimeleft) {

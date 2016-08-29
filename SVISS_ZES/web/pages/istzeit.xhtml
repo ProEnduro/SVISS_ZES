@@ -21,7 +21,7 @@ and open the template in the editor.
             <h:form id="scheduleForm">
                 <h1 align="center">Ist-Zeiten</h1>
 
-                <p:panelGrid id="verbleibend" columns="6">
+                <p:panelGrid id="weekDetails" columns="6">
                     <p:column>
                         <p:outputLabel value="Urlaubstage:"/>
                     </p:column>
@@ -153,8 +153,8 @@ and open the template in the editor.
                         <p:inputText  type="number" id="breaktime" value="#{scheduleView.breaktime}"/>
 
                         <p:commandButton type="reset" value="Reset" />
-                        <p:commandButton update=":growl :scheduleForm:verbleibend :scheduleForm:schedule" id="addButton" value="Save" actionListener="#{scheduleView.addIstZeitEvent}" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('eventDialog').hide();" />
-                        <p:commandButton value="Delete" actionListener="#{scheduleView.deleteIstZeitEvent}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" />
+                        <p:commandButton update=":growl :scheduleForm" id="addButton" value="Save" actionListener="#{scheduleView.addIstZeitEvent}" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('eventDialog').hide();" />
+                        <p:commandButton value="Delete" actionListener="#{scheduleView.deleteIstZeitEvent}" update=":scheduleForm" oncomplete="PF('eventDialog').hide();" />
                     </h:panelGrid>
                 </p:dialog> 
 
