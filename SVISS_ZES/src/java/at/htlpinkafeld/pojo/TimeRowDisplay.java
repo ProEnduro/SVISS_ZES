@@ -50,8 +50,13 @@ public class TimeRowDisplay {
         workTimeStart = wt.getStartTime().format(timeFormatter);
         workTimeEnd = wt.getEndTime().format(timeFormatter);
         breakTime = wt.getBreakTime();
-        sollZeit = String.valueOf(wt.getSollStartTime().until(wt.getSollEndTime(), ChronoUnit.MINUTES) / 60.0);
-        workTime = String.valueOf(wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES) / 60.0);
+        double temp = wt.getSollStartTime().until(wt.getSollEndTime(), ChronoUnit.MINUTES) / 60.0;
+        if (temp >= 6.0) {
+            sollZeit = String.valueOf(temp - 0.5);
+        } else {
+            sollZeit = String.valueOf(temp);
+        }
+        workTime = String.valueOf(wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES) / 60.0 - (breakTime / 60.0));
         overTime19plus = String.valueOf(wt.getOvertimeAfter19());
         reason = wt.getStartComment() + "   " + wt.getEndComment();
     }
@@ -63,12 +68,12 @@ public class TimeRowDisplay {
     public int getDayOfMonth() {
         return date.getDayOfMonth();
     }
-    
-    public int getMonth(){
+
+    public int getMonth() {
         return date.getMonthValue();
     }
-    
-    public String getDate(){
+
+    public String getDate() {
         return date.format(DateTimeFormatter.ofPattern("eee - dd.MM"));
     }
 
