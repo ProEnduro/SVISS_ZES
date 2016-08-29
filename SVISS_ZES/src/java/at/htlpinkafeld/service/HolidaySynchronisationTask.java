@@ -29,10 +29,8 @@ public class HolidaySynchronisationTask implements Runnable {
     public void run() {
         Date today = new Date();
         List<User> users = user_DAO.getUserByDisabled(Boolean.FALSE);
-        System.out.println("Holiday");
         for (User u : users) {
             try {
-
                 SimpleDateFormat fmt = new SimpleDateFormat("MMdd");
                 String t = fmt.format(today);
                 String h = u.getHiredate().format(DateTimeFormatter.ofPattern("MMdd"));

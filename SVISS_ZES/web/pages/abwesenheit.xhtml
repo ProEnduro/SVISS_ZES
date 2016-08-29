@@ -142,7 +142,7 @@ and open the template in the editor.
                         <p:inputTextarea id="reason" value="#{scheduleView.reason}"/>
 
                         <p:commandButton id="saveButton" value="Save" update=":messages" actionListener="#{scheduleView.addAbsenceEvent}" oncomplete="PF('myschedule').update();if (args &amp;&amp; !args.validationFailed) PF('absenceDialog').hide();" />
-                        <p:commandButton value="Delete" actionListener="#{scheduleView.deleteAbsenceEvent}" oncomplete="PF('absenceDialog').hide();" update=":abwesenheitScheduleForm"/>
+                        <p:commandButton value="Delete" action="#{scheduleView.deleteAbsenceEvent}" oncomplete="PF('absenceDialog').hide();" update=":abwesenheitScheduleForm"/>
                     </h:panelGrid>
                 </p:dialog> 
             </h:form>

@@ -48,42 +48,45 @@ public class EmailService {
         properties.setProperty("mail.smtp.auth", "true");
         properties.setProperty("mail.smtp.starttls.enable", "true");
 
-        // Get the default Session object.
-        Session session = Session.getDefaultInstance(properties, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(SERVER_EMAILADDRESS, "wLichanda=");
-            }
-        });
+        if (!to.isEmpty()) {
 
-        try {
-            // Create a default MimeMessage object.
-            MimeMessage message = new MimeMessage(session);
-
-            // Set From: header field of the header.
-            if (from != null) {
-                message.setFrom(new InternetAddress(from.getEmail()));
-            } else {
-                message.setFrom(new InternetAddress(SERVER_EMAILADDRESS));
-            }
-
-            // Set To: header field of the header.
-            for (User u : to) {
-                if (!u.getEmail().isEmpty()) {
-                    message.addRecipient(Message.RecipientType.TO, new InternetAddress(u.getEmail()));
+            // Get the default Session object.
+            Session session = Session.getDefaultInstance(properties, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(SERVER_EMAILADDRESS, "wLichanda=");
                 }
+            });
+
+            try {
+                // Create a default MimeMessage object.
+                MimeMessage message = new MimeMessage(session);
+
+                // Set From: header field of the header.
+                if (from != null) {
+                    message.setFrom(new InternetAddress(from.getEmail()));
+                } else {
+                    message.setFrom(new InternetAddress(SERVER_EMAILADDRESS));
+                }
+
+                // Set To: header field of the header.
+                for (User u : to) {
+                    if (!u.getEmail().isEmpty()) {
+                        message.addRecipient(Message.RecipientType.TO, new InternetAddress(u.getEmail()));
+                    }
+                }
+
+                // Set Subject: header field
+                message.setSubject(subject, "utf-8");
+
+                // Now set the actual message
+                message.setText(body, "utf-8", "html");
+
+                // Send message
+                Transport.send(message);
+            } catch (MessagingException mex) {
+                throw new RuntimeException(mex);
             }
-
-            // Set Subject: header field
-            message.setSubject(subject, "utf-8");
-
-            // Now set the actual message
-            message.setText(body, "utf-8", "html");
-
-            // Send message
-            Transport.send(message);
-        } catch (MessagingException mex) {
-            throw new RuntimeException(mex);
         }
     }
 

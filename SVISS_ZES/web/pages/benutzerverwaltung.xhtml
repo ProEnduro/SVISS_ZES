@@ -177,7 +177,7 @@ and open the template in the editor.
                     <p:calendar id="from" value="#{benutzerverwaltungsBean.curEvent.startDate}" mask="99:99" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"  showOn="button"/>
 
                     <p:outputLabel for="to" value="To:" />
-                    <p:calendar id="to" value="#{benutzerverwaltungsBean.curEvent.endDate}" mask="99:99" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"  showOn="button"/>
+                    <p:calendar id="to" value="#{benutzerverwaltungsBean.curEvent.endDate}"  mask="99:99" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"  showOn="button"/>
 
                     <p:commandButton id="addButton" value="Save" action="#{benutzerverwaltungsBean.addWorkTimeEvent}" update=":growl :weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  oncomplete="if (args &amp;&amp; !args.validationFailed) PF('eventDialog').hide()" />
                     <p:commandButton id="delButton" value="Remove" action="#{benutzerverwaltungsBean.removeWorkTimeEvent}" update=":weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  onsuccess="PF('eventDialog').hide();" />

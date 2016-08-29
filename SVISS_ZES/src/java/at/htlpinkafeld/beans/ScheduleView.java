@@ -179,15 +179,15 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         return AccessRightsService.checkPermission(currentUser.getAccessLevel(), "ALL");
     }
 
-    public void deleteAbsenceEvent(ActionEvent actionEvent) {
+    public void deleteAbsenceEvent() {
 
         if (event.getId() != null) {
             if (event instanceof AbsenceEvent) {
                 AbsenceEvent absenceEvent = (AbsenceEvent) event;
                 if (absenceEvent.getAbsence().isAcknowledged() == false) {
                     AbsenceService.removeAbsence(absenceEvent.getAbsence());
-                    istZeitEventModel.deleteEvent(event);
-                    event = new DefaultScheduleEvent();
+//                    istZeitEventModel.deleteEvent(event);
+//                    event = new DefaultScheduleEvent();
                     EmailService.sendUserDeletedOwnAbsenceEmail(absenceEvent.getAbsence(), absenceEvent.getAbsence().getUser().getApprover());
                 } else {
                     FacesContext context = FacesContext.getCurrentInstance();
