@@ -23,22 +23,22 @@ and open the template in the editor.
 
             <h1 align="center">Auswertung: User Details</h1>
             <p:panelGrid columns="4">
-            <p:selectOneMenu id="selectUser" value="#{userDetailsBean.selectedUser}">
-                <f:selectItems value="#{userDetailsBean.userAsStringList}"/>
-                <p:ajax update="selectedYear selectedDate"/>
-            </p:selectOneMenu>
+                <p:selectOneMenu id="selectUser" value="#{userDetailsBean.selectedUser}">
+                    <f:selectItems value="#{userDetailsBean.userAsStringList}"/>
+                    <p:ajax update="selectedYear selectedDate"/>
+                </p:selectOneMenu>
 
-            <p:selectOneMenu id="selectedYear" value="#{userDetailsBean.selectedYear}">
-                <f:selectItems value="#{userDetailsBean.years}"/>
-                <p:ajax update="selectedDate"/>
-            </p:selectOneMenu>
+                <p:selectOneMenu id="selectedYear" value="#{userDetailsBean.selectedYear}">
+                    <f:selectItems value="#{userDetailsBean.years}"/>
+                    <p:ajax update="selectedDate"/>
+                </p:selectOneMenu>
 
-            <p:selectOneMenu id="selectedDate" value="#{userDetailsBean.selectedDate}" converter="localDateConverter">
-                <f:selectItems value="#{userDetailsBean.dates}" var="date" itemLabel="#{date.label}" itemValue="#{date.value}"/>
-            </p:selectOneMenu>
+                <p:selectOneMenu id="selectedDate" value="#{userDetailsBean.selectedDate}" converter="localDateConverter">
+                    <f:selectItems value="#{userDetailsBean.dates}" var="date" itemLabel="#{date.label}" itemValue="#{date.value}"/>
+                </p:selectOneMenu>
 
 
-            <p:commandButton value="load" actionListener="#{userDetailsBean.loadMonthOverview}" update="timeDataTable"/>
+                <p:commandButton value="load" actionListener="#{userDetailsBean.loadMonthOverview}" update="timeDataTable"/>
             </p:panelGrid>
 
             <p:dataTable id="timeDataTable" value="#{userDetailsBean.timerowlist}" var="entry" resizableColumns="true" liveResize="true" style="text-align: center">

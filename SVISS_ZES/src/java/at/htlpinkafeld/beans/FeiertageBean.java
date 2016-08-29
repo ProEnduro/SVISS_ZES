@@ -66,9 +66,7 @@ public class FeiertageBean {
 
     public void loadEventsFromICS(FileUploadEvent event) {
         try {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check0"));
             CalendarBuilder builder = new CalendarBuilder();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check1"));
             net.fortuna.ical4j.model.Calendar calendar = builder.build(event.getFile().getInputstream());
             for (Iterator i = calendar.getComponents().iterator(); i.hasNext();) {
 //            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check2"));
@@ -77,9 +75,12 @@ public class FeiertageBean {
                 String name = component.getProperty("SUMMARY").getValue();
                 LocalDate date = LocalDate.parse(component.getProperty("DTSTART").getValue(), DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-                HolidayService.insert(new Holiday(date, name));
-//                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check3"));
-
+                try {
+                    HolidayService.insert(new Holiday(date, name));
+                    //                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check3"));
+                } catch (Exception ex) {
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(ex.getMessage()));
+                }
             }
         } catch (Exception ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(ex.getMessage()));

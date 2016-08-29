@@ -24,7 +24,6 @@ import com.lowagie.text.Document;
 import com.lowagie.text.PageSize;
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -195,7 +194,7 @@ public class UserDetailsBean {
                 trd.setReason("");
 
                 Date start = TimeConverterService.convertLocalDateToDate(temp);
-                Date end = Date.from(temp.atTime(23, 59).atZone(ZoneId.systemDefault()).toInstant());
+                Date end = TimeConverterService.convertLocalDateToDate(temp.plusDays(1));
 
                 List<WorkTime> worklist = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(currentUser, start, end);
                 List<Absence> absencelist = AbsenceService.getAbsencesByUserBetweenDates(currentUser, start, end);

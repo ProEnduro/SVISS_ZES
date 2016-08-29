@@ -68,7 +68,7 @@ public class JahresuebersichtBean {
             for (User u : userL) {
                 users.add(new SelectItem(u, u.getPersName()));
             }
-        } else if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_SELF"))  {
+        } else if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_SELF")) {
             users.add(new SelectItem(currentUser, currentUser.getPersName()));
         }
 
@@ -151,8 +151,8 @@ public class JahresuebersichtBean {
             overtime19PlusSum = 0;
             for (; month.isBefore(today.withDayOfMonth(today.lengthOfMonth())); month = month.plusMonths(1)) {
                 if (today.getMonth() != month.getMonth()) {
-                    double overtime = calcOvertimeMinusPlus19H(selectedUser, month, month.withDayOfMonth(month.lengthOfMonth())) / 60.0;
-                    double overtime19plus = calcOvertime19Plus(selectedUser, month, month.withDayOfMonth(month.lengthOfMonth())) / 60.0;
+                    double overtime = calcOvertimeMinusPlus19H(selectedUser, month, month.plusMonths(1)) / 60.0;
+                    double overtime19plus = calcOvertime19Plus(selectedUser, month, month.plusMonths(1)) / 60.0;
                     months.add(new SelectItem(overtime, month.format(monthFormatter), String.valueOf(overtime19plus)));
 
                     overtimeSum += overtime;
@@ -187,7 +187,11 @@ public class JahresuebersichtBean {
         for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
             SollZeit sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, date.getDayOfWeek(), date.atStartOfDay());
             if (sz != null) {
-                overtime -= sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                long diff = sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                if (diff >= 6 * 60) {
+                    diff -= 30;
+                }
+                overtime -= diff;
             }
         }
 
@@ -286,10 +290,21 @@ public class JahresuebersichtBean {
         }
 
         List<Holiday> holidays = HolidayService.getHolidayBetweenDates(TimeConverterService.convertLocalDateToDate(startDate), TimeConverterService.convertLocalDateToDate(endDate));
+        LocalDate hDate = null;
         for (Holiday h : holidays) {
-            SollZeit sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, h.getHolidayDate().getDayOfWeek(), h.getHolidayDate().atStartOfDay());
+            SollZeit sz = null;
+            if (hDate == null) {
+                sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, h.getHolidayDate().getDayOfWeek(), h.getHolidayDate().atStartOfDay());
+            } else if (!hDate.equals(h.getHolidayDate())) {
+                sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, h.getHolidayDate().getDayOfWeek(), hDate.atStartOfDay());
+            }
+            hDate = h.getHolidayDate();
             if (sz != null) {
-                overtime += sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                long diff = sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                if (diff >= 6 * 60) {
+                    diff -= 30;
+                }
+                overtime += diff;
             }
         }
 
