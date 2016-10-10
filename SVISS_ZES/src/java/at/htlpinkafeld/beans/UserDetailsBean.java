@@ -21,7 +21,12 @@ import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
 import at.htlpinkafeld.service.UserHistoryService;
 import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
 import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
@@ -335,11 +340,6 @@ public class UserDetailsBean {
         }
     }
 
-    public void preProcessPDF(Object document) {
-        Document doc = (Document) document;
-        doc.setPageSize(PageSize.A4.rotate());
-    }
-
     public String getPlusOrMinus() {
         if (this.saldo > 0) {
             return "+";
@@ -347,6 +347,36 @@ public class UserDetailsBean {
             return "-";
         }
         return "";
+    }
+
+    public void preProcessPDF(Object document) throws DocumentException {
+        Document pdf = (Document) document;
+        pdf.setPageSize(PageSize.A4.rotate());
+        pdf.open();
+
+        PdfPTable table = new PdfPTable(3);
+        table.setWidthPercentage(100);
+        table.addCell(getCell("Monatsübersicht - " + selectedDate.format(DateTimeFormatter.ofPattern("MM.yyyy")), PdfPCell.ALIGN_LEFT));
+        table.addCell(getCell("", PdfPCell.ALIGN_CENTER));
+        table.addCell(getCell("von " + selectedUser, PdfPCell.ALIGN_RIGHT));
+        pdf.add(table);
+
+        pdf.add(new Paragraph("\n"));
+    }
+
+    private PdfPCell getCell(String text, int alignment) {
+        PdfPCell cell = new PdfPCell(new Phrase(text));
+        cell.setPadding(0);
+        cell.setHorizontalAlignment(alignment);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        return cell;
+    }
+
+    public void postProcessPDF(Object document) throws DocumentException {
+        Document pdf = (Document) document;
+
+        pdf.add(new Paragraph("\nStand: " + LocalDate.now()));
+        pdf.close();
     }
 
 }

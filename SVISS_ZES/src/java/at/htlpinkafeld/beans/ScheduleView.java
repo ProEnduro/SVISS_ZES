@@ -32,8 +32,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -146,9 +146,20 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         } else if (!checkAvailableTime(TimeConverterService.convertLocalDateTimeToDate(startDT), TimeConverterService.convertLocalDateTimeToDate(endDT), true)) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Ein Eintrag für diese Urzeit ist bereits vorhanden!"));
             FacesContext.getCurrentInstance().validationFailed();
-        } else {
-
-            if (event instanceof AbsenceEvent && event.getId() == null) {
+        } else if (type.getAbsenceName().equals("holiday")) {
+            int days = 0;
+            List<SollZeit> sollZeiten = SollZeitenService.getSollZeitenByUser(currentUser);
+            for (LocalDate ld = startDT.toLocalDate(); ld.atStartOfDay().isBefore(endDT); ld = ld.plusDays(1)) {
+                for (SollZeit sz : sollZeiten) {
+                    if (sz.getDay().equals(ld.getDayOfWeek())) {
+                        days++;
+                    }
+                }
+            }
+            if (days > currentUser.getVacationLeft()) {
+                FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Sie haben nicht genug Urlaub übrig!"));
+                FacesContext.getCurrentInstance().validationFailed();
+            } else if (event instanceof AbsenceEvent && event.getId() == null) {
 
                 Absence a = ((AbsenceEvent) event).getAbsence();
                 a.setStartTime(startDT);
@@ -451,11 +462,13 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
             absenceEvent.getAbsence().setAcknowledged(true);
             AbsenceService.updateAbsence(absenceEvent.getAbsence());
-
-            int overtime = calcAbsenceOvertime(absenceEvent.getAbsence());
-
-            u.setOverTimeLeft(u.getOverTimeLeft() + overtime);
-            BenutzerverwaltungService.updateUser(u);
+            if (absenceEvent.getAbsence().getAbsenceType().getAbsenceName().contentEquals("holiday")) {
+                setHolidayAndIstZeiten(absenceEvent.getAbsence());
+            } else {
+                int overtime = calcAbsenceOvertime(absenceEvent.getAbsence());
+                u.setOverTimeLeft(u.getOverTimeLeft() + overtime);
+                BenutzerverwaltungService.updateUser(u);
+            }
 
             List<User> otherApprover = absenceEvent.getAbsence().getUser().getApprover();
             otherApprover.remove(currentUser);
@@ -476,12 +489,16 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             AbsenceService.deleteAbsence(absenceEvent.getAbsence());
 
             if (absenceEvent.getAbsence().isAcknowledged()) {
-                User u = absenceEvent.getAbsence().getUser();
-                absenceEvent.getAbsence().setAcknowledged(false);
-                int overtime = calcAbsenceOvertime(absenceEvent.getAbsence());
+                if (absenceEvent.getAbsence().getAbsenceType().getAbsenceName().equals("holiday")) {
+                    removeHolidayAndIstZeiten(absenceEvent.getAbsence());
+                } else {
+                    User u = absenceEvent.getAbsence().getUser();
+                    absenceEvent.getAbsence().setAcknowledged(false);
+                    int overtime = calcAbsenceOvertime(absenceEvent.getAbsence());
 
-                u.setOverTimeLeft(u.getOverTimeLeft() - overtime);
-                BenutzerverwaltungService.updateUser(u);
+                    u.setOverTimeLeft(u.getOverTimeLeft() - overtime);
+                    BenutzerverwaltungService.updateUser(u);
+                }
             }
 
             List<User> otherApprover = absenceEvent.getAbsence().getUser().getApprover();
@@ -499,18 +516,66 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             AbsenceService.deleteAbsence(a);
 
             if (a.isAcknowledged()) {
-                a.setAcknowledged(false);
-                User u = a.getUser();
-                int overtime = calcAbsenceOvertime(a);
+                if (a.getAbsenceType().getAbsenceName().equals("holiday")) {
+                    removeHolidayAndIstZeiten(a);
+                } else {
 
-                u.setOverTimeLeft(u.getOverTimeLeft() - overtime);
-                BenutzerverwaltungService.updateUser(u);
+                    a.setAcknowledged(false);
+                    User u = a.getUser();
+                    int overtime = calcAbsenceOvertime(a);
+
+                    u.setOverTimeLeft(u.getOverTimeLeft() - overtime);
+                    BenutzerverwaltungService.updateUser(u);
+                }
             }
 
             List<User> otherApprover = a.getUser().getApprover();
             otherApprover.remove(currentUser);
             EmailService.sendAbsenceDeletedByApprover(a, currentUser, otherApprover);
 
+        }
+    }
+    
+    //adds Worktimes and removes Vacation if Absence is aknowledged
+    private void setHolidayAndIstZeiten(Absence a) {
+        User u = a.getUser();
+        List<SollZeit> sollZeiten = SollZeitenService.getSollZeitenByUser(u);
+        int days = 0;
+        if (a.getAbsenceType().getAbsenceName().contentEquals("holiday") && a.isAcknowledged()) {
+            days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
+
+            u.setVacationLeft(u.getVacationLeft() - days);
+            BenutzerverwaltungService.updateUser(u);
+
+            LocalDateTime day = a.getStartTime();
+            for (int i = 0; i < days; i++, day = day.plusDays(1)) {
+                for (SollZeit sz : sollZeiten) {
+                    if (sz.getDay().equals(day.getDayOfWeek())) {
+                        int breaktime = 0;
+                        if (sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.HOURS) >= 6) {
+                            breaktime = 30;
+                        }
+                        IstZeitService.addIstTime(new WorkTime(u, day.with(sz.getSollStartTime()), day.with(sz.getSollEndTime()), breaktime, "Urlaub", "Urlaub"));
+                    }
+                }
+            }
+        }
+    }
+    
+    //removes Worktimes and adds Vacation if Absence is aknowledged
+    private void removeHolidayAndIstZeiten(Absence a) {
+        User u = a.getUser();
+        int days = 0;
+        if (a.getAbsenceType().getAbsenceName().contentEquals("holiday") && a.isAcknowledged()) {
+            days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
+
+            u.setVacationLeft(u.getVacationLeft() + days);
+            BenutzerverwaltungService.updateUser(u);
+
+            List<WorkTime> workTimes = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(u, TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime().toLocalDate().plusDays(1).atStartOfDay()));
+            for (WorkTime wt : workTimes) {
+                IstZeitService.delete(wt);
+            }
         }
     }
 
@@ -524,29 +589,6 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
         switch (a.getAbsenceType().getAbsenceName()) {
             case "holiday":
-                days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
-
-                if (a.isAcknowledged()) {
-                    u.setVacationLeft(u.getVacationLeft() - days);
-                } else {
-                    u.setVacationLeft(u.getVacationLeft() + days);
-                }
-
-                BenutzerverwaltungService.updateUser(u);
-
-                DayOfWeek hDay = a.getStartTime().getDayOfWeek();
-                for (int i = 0; i < days; i++, hDay.plus(1)) {
-                    for (SollZeit sz : sollZeiten) {
-                        if (sz.getDay().equals(hDay)) {
-                            int diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
-                            if (diff > 6 * 60) {
-                                diff -= 30;
-                            }
-                            overtime += diff;
-                        }
-                    }
-                }
-
                 break;
             case "time compensation":
                 days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
@@ -711,10 +753,10 @@ public class ScheduleView implements Serializable, DAODML_Observer {
     }
 
     public String getPattern() {
-        if (type.getAbsenceTypeID() == 2) {
-            return "dd/MM/yyyy";
+        if (type.getAbsenceName().equals("holiday")) {
+            return "dd.MM.yyyy";
         } else {
-            return "dd/MM/yyyy HH:mm";
+            return "dd.MM.yyyy HH:mm";
         }
     }
 

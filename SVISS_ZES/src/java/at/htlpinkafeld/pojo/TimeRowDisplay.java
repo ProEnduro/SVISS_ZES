@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.pojo;
 
+import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -50,14 +51,16 @@ public class TimeRowDisplay {
         workTimeStart = wt.getStartTime().format(timeFormatter);
         workTimeEnd = wt.getEndTime().format(timeFormatter);
         breakTime = wt.getBreakTime();
+
+        DecimalFormat df = new DecimalFormat("#.##");
         double temp = wt.getSollStartTime().until(wt.getSollEndTime(), ChronoUnit.MINUTES) / 60.0;
         if (temp >= 6.0) {
-            sollZeit = String.valueOf(temp - 0.5);
+            sollZeit = df.format(temp - 0.5);
         } else {
-            sollZeit = String.valueOf(temp);
+            sollZeit = df.format(temp);
         }
-        workTime = String.valueOf(wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES) / 60.0 - (breakTime / 60.0));
-        overTime19plus = String.valueOf(wt.getOvertimeAfter19());
+        workTime = df.format(wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES) / 60.0 - (breakTime / 60.0));
+        overTime19plus = df.format(wt.getOvertimeAfter19());
         reason = wt.getStartComment() + "   " + wt.getEndComment();
     }
 

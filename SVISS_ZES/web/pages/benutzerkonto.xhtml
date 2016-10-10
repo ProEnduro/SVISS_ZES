@@ -102,8 +102,8 @@ and open the template in the editor.
         <h:form enctype="multipart/form-data">
             <p:growl id="messages" showDetail="true" />
             
-            <p:fileUpload mode="simple" value="#{benutzerkontoBean.excel}" allowTypes="/(\.|\/)(xlsx)$/" />
-            <p:commandButton value="Submit" ajax="false" actionListener="#{benutzerkontoBean.loadFromExcel}" />
+            <p:fileUpload rendered="false" mode="simple" value="#{benutzerkontoBean.excel}" allowTypes="/(\.|\/)(xlsx)$/" />
+            <p:commandButton rendered="false" value="Submit" ajax="false" actionListener="#{benutzerkontoBean.loadFromExcel}" />
         </h:form>
 
         <p:dialog widgetVar="eventDialog" closeOnEscape="true" resizable="false" dynamic="true" header="Soll Zeit">

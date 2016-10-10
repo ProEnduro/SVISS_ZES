@@ -62,7 +62,7 @@ and open the template in the editor.
 
                         <h:commandLink>
                             <p:graphicImage name="/images/pdf-icon.png" style="width: 2.5%"/>
-                            <p:dataExporter type="pdf" target="absenceid" fileName="Abwesenheiten"/>
+                            <p:dataExporter type="pdf" target="absenceid" fileName="Abwesenheiten" postProcessor="#{alleAbwesenheitenBean.postProcessPDF}"/>
                         </h:commandLink>
                     </f:facet>
 

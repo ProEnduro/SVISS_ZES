@@ -43,7 +43,7 @@ public class ScheduledTaskManagementBean {
 
         Duration duration = Duration.between(zonedNow, zonedNext0);
         long initalDelayOvertime = duration.getSeconds();
-        zonedNext0=zonedNext0.withHour(10);
+        zonedNext0 = zonedNext0.withHour(10);
         duration = Duration.between(zonedNow, zonedNext0);
         long initalDelayEmail = duration.getSeconds();
         try {

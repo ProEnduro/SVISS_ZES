@@ -43,23 +43,23 @@ and open the template in the editor.
 
             <p:dataTable id="timeDataTable" value="#{userDetailsBean.timerowlist}" var="entry" resizableColumns="true" liveResize="true" style="text-align: center">
 
-                <p:column headerText="Date" width="7%" >
+                <p:column headerText="Date" width="7%" footerText="" >
                     <p:outputLabel value="#{entry.date}"/>
                 </p:column>
 
-                <p:column headerText="Beginn" width="7%">
+                <p:column headerText="Beginn" width="7%" footerText="">
                     <p:outputLabel value="#{entry.workTimeStart}"/>
                 </p:column>
 
-                <p:column headerText="Ende" width="8%">
+                <p:column headerText="Ende" width="8%" footerText="">
                     <p:outputLabel value="#{entry.workTimeEnd}"/>
                 </p:column>
 
-                <p:column headerText="Pause" width="5%">
+                <p:column headerText="Pause" width="5%" footerText="">
                     <p:outputLabel value="#{entry.breakTime}"/>
                 </p:column>
 
-                <p:column headerText="Sollarbeitszeit" width="10%">
+                <p:column headerText="Sollarbeitszeit" width="10%" footerText="">
                     <p:outputLabel value="#{entry.sollZeit}"/>
                 </p:column>
 
@@ -96,7 +96,7 @@ and open the template in the editor.
                     </p:commandLink>
                     <p:commandLink ajax="false">
                         <p:graphicImage name="/images/pdf-icon.png" style="width: 3%"/>
-                        <p:dataExporter type="PDF" target="timeDataTable" fileName="Zeiten" encoding="iso-8859-1" preProcessor="#{userDetailsBean.preProcessPDF}" />
+                        <p:dataExporter type="PDF" target="timeDataTable" fileName="Zeiten" encoding="iso-8859-1" preProcessor="#{userDetailsBean.preProcessPDF}" postProcessor="#{userDetailsBean.postProcessPDF}"/>
                     </p:commandLink>
                 </f:facet>
 

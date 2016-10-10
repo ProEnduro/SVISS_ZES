@@ -15,10 +15,7 @@ import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,7 +41,7 @@ public class OvertimeSynchronisationTask implements Runnable {
         HOLIDAY_DAO = DAOFactory.getDAOFactory().getHolidayDAO();
     }
 
-    private boolean holiday = false;
+    private boolean noHoliday = true;
 
     @Override
     public void run() {
@@ -54,16 +51,16 @@ public class OvertimeSynchronisationTask implements Runnable {
         c.setTime(nextDate);
         c.add(Calendar.DAY_OF_YEAR, -1);
         Date startDate = c.getTime();
-        holiday = !HOLIDAY_DAO.getHolidayBetweenDates(startDate, nextDate).isEmpty();
-        if (!holiday) {
+        noHoliday = HOLIDAY_DAO.getHolidayBetweenDates(startDate, nextDate).isEmpty();
+        if (noHoliday) {
             for (User u : users) {
-                addDefaultTime(u, startDate, nextDate);
+                addDefaultTimeAndUpdateOvertime(u, startDate, nextDate);
             }
         }
     }
 
     //endDate has to be the start of the next day
-    public static void addDefaultTime(User u, Date startDate, Date nextDate) {
+    public static void addDefaultTimeAndUpdateOvertime(User u, Date startDate, Date nextDate) {
         LocalDate startLd = TimeConverterService.convertDateToLocalDate(startDate);
         SollZeit sz = SOLL_ZEITEN_DAO.getSollZeitenByUser_DayOfWeek(u, startLd.getDayOfWeek());
         List<WorkTime> workTimes = WORK_TIME_DAO.getWorkTimesFromUserBetweenDates(u, startDate, nextDate);
@@ -79,7 +76,7 @@ public class OvertimeSynchronisationTask implements Runnable {
             } else {
                 int diff = 0;
                 for (Absence a : absences) {
-                    if (a.getAbsenceType().getAbsenceName().contentEquals("medical leave") || a.getAbsenceType().getAbsenceName().contentEquals("time compensation") || a.getAbsenceType().getAbsenceName().contentEquals("holiday")) {
+                    if (a.getAbsenceType().getAbsenceName().contentEquals("medical leave") || a.getAbsenceType().getAbsenceName().contentEquals("time compensation")) {
                         if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime()) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
                             diff += (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
                         } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime()) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime())) {

@@ -17,6 +17,16 @@ import at.htlpinkafeld.service.HolidayService;
 import at.htlpinkafeld.service.IstZeitService;
 import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.draw.VerticalPositionMark;
+import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -149,17 +159,19 @@ public class JahresuebersichtBean {
             }
             overtimeSum = 0;
             overtime19PlusSum = 0;
+            DecimalFormat df = new DecimalFormat("#.##");
             for (; month.isBefore(today.withDayOfMonth(today.lengthOfMonth())); month = month.plusMonths(1)) {
                 if (today.getMonth() != month.getMonth()) {
-                    double overtime = calcOvertimeMinusPlus19H(selectedUser, month, month.plusMonths(1)) / 60.0;
-                    double overtime19plus = calcOvertime19Plus(selectedUser, month, month.plusMonths(1)) / 60.0;
+
+                    double overtime = Double.parseDouble(df.format(calcOvertimeMinusPlus19H(selectedUser, month, month.plusMonths(1)) / 60.0));
+                    double overtime19plus = Double.parseDouble(df.format(calcOvertime19Plus(selectedUser, month, month.plusMonths(1)) / 60.0));
                     months.add(new SelectItem(overtime, month.format(monthFormatter), String.valueOf(overtime19plus)));
 
                     overtimeSum += overtime;
                     overtime19PlusSum += overtime19plus;
                 } else {
-                    months.add(new SelectItem(calcOvertimeMinusPlus19H(selectedUser, month, today) / 60.0,
-                            month.format(monthFormatter), String.valueOf(calcOvertime19Plus(selectedUser, month, today) / 60.0)));
+                    months.add(new SelectItem(Double.parseDouble(df.format(calcOvertimeMinusPlus19H(selectedUser, month, today) / 60.0)),
+                            month.format(monthFormatter), String.valueOf(Double.parseDouble(df.format(calcOvertime19Plus(selectedUser, month, today) / 60.0)))));
                 }
             }
             for (; month.isBefore(selectedYear.plusYears(1)); month = month.plusMonths(1)) {
@@ -325,4 +337,34 @@ public class JahresuebersichtBean {
         }
         return overtime;
     }
+
+    public void preProcessPDF(Object document) throws DocumentException {
+        Document pdf = (Document) document;
+        pdf.open();
+        pdf.setPageSize(PageSize.A4);
+
+        PdfPTable table = new PdfPTable(3);
+        table.setWidthPercentage(100);
+        table.addCell(getCell("Jahresübersicht - " + selectedYear.getYear(), PdfPCell.ALIGN_LEFT));
+        table.addCell(getCell("", PdfPCell.ALIGN_CENTER));
+        table.addCell(getCell("von " + selectedUser.getPersName(), PdfPCell.ALIGN_RIGHT));
+        pdf.add(table);
+
+        pdf.add(new Paragraph("\n"));
+    }
+
+    private PdfPCell getCell(String text, int alignment) {
+        PdfPCell cell = new PdfPCell(new Phrase(text));
+        cell.setPadding(0);
+        cell.setHorizontalAlignment(alignment);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        return cell;
+    }
+
+    public void postProcessPDF(Object document) throws DocumentException {
+        Document pdf = (Document) document;
+        pdf.add(new Paragraph("\n\n\n\nStand: " + LocalDate.now()));
+        pdf.close();
+    }
+
 }

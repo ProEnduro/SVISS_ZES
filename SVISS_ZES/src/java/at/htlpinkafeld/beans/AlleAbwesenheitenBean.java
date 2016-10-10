@@ -9,6 +9,10 @@ import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.service.AbsenceService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Paragraph;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,5 +82,12 @@ public class AlleAbwesenheitenBean {
             absence = AbsenceService.getAbsenceByUser(currentUser);
             //absence=AbsenceService.getAbsencesByUserBetweenDates(currentUser, new Date(2016, 01, 01, 00, 00, 00), new Date(2016, 12, 31, 00, 00, 00));          
         }
+    }
+
+    public void postProcessPDF(Object document) throws DocumentException {
+        Document pdf = (Document) document;
+
+        pdf.add(new Paragraph("\n\n\n\nStand: " + LocalDate.now()));
+        pdf.close();
     }
 }

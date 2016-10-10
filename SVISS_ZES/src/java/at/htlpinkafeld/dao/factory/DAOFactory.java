@@ -31,7 +31,7 @@ public abstract class DAOFactory {
 
     public static synchronized DAOFactory getDAOFactory() {
         if (daof == null) {
-            daoType =  JDBCDAO;
+            daoType = JDBCDAO;
             switch (daoType) {
                 case JDBCDAO:
                     daof = new JDBCDAOFactory();

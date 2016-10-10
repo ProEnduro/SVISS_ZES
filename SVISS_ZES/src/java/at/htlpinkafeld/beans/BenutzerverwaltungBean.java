@@ -183,7 +183,11 @@ public class BenutzerverwaltungBean {
                 userlist.add(selectedUser);
 //            BenutzerverwaltungService.updateUser(selectedUser);
             }
-            EmailService.sendUserNewPasswordEmail(resetPWString, selectedUser);
+            try {
+                EmailService.sendUserNewPasswordEmail(resetPWString, selectedUser);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
