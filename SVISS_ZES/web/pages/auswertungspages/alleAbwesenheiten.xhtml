@@ -57,7 +57,7 @@ and open the template in the editor.
                     <f:facet name="footer">
                         <h:commandLink>
                             <p:graphicImage name="/images/excel-icon.png" style="width: 2.5%"/>
-                            <p:dataExporter type="xls" target="absenceid" fileName="Abwesenheiten"/>
+                            <p:dataExporter type="xls" target="absenceid" fileName="Abwesenheiten" postProcessor="#{alleAbwesenheitenBean.postProcessXLS}"/>
                         </h:commandLink>
 
                         <h:commandLink>

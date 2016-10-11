@@ -17,7 +17,6 @@ import at.htlpinkafeld.service.HolidayService;
 import at.htlpinkafeld.service.IstZeitService;
 import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
-import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.PageSize;
@@ -25,7 +24,6 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.draw.VerticalPositionMark;
 import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -36,6 +34,13 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.util.CellRangeAddress;
 
 /**
  *
@@ -363,8 +368,42 @@ public class JahresuebersichtBean {
 
     public void postProcessPDF(Object document) throws DocumentException {
         Document pdf = (Document) document;
-        pdf.add(new Paragraph("\n\n\n\nStand: " + LocalDate.now()));
+        pdf.add(new Paragraph("\nStand: " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
         pdf.close();
+    }
+
+    public void postProcessXLS(Object document) {
+        HSSFWorkbook wb = (HSSFWorkbook) document;
+        HSSFSheet sheet = wb.getSheetAt(0);
+
+        HSSFRow topRow = sheet.createRow(0);
+
+        topRow.createCell(0).setCellValue("Jahresübersicht - " + selectedYear.getYear());
+        topRow.createCell(3).setCellValue("von " + selectedUser.getPersName());
+        sheet.createRow(1).createCell(0).setCellValue(" ");
+
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 2));
+
+        HSSFRow header = sheet.getRow(2);
+        HSSFRow footer = sheet.getRow(sheet.getLastRowNum());
+
+        HSSFCellStyle cellStyle = wb.createCellStyle();
+        cellStyle.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
+        cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+
+        for (int i = 0; i < header.getPhysicalNumberOfCells(); i++) {
+            HSSFCell cell = header.getCell(i);
+            cell.setCellStyle(cellStyle);
+
+            cell = footer.getCell(i);
+            cell.setCellStyle(cellStyle);
+
+            sheet.autoSizeColumn(i);
+        }
+
+        HSSFRow bottomRow = sheet.createRow(sheet.getLastRowNum() + 2);
+        bottomRow.createCell(0).setCellValue("Stand: " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+
     }
 
 }

@@ -91,12 +91,12 @@ and open the template in the editor.
                 <f:facet name="footer">
                     <p:commandLink ajax="false">
                         <p:graphicImage name="/images/excel-icon.png" style="width: 3%"/>
-                        <p:dataExporter   type="XLS" target="timeDataTable" fileName="Zeiten" encoding="iso-8859-1"/>
+                        <p:dataExporter   type="XLS" target="timeDataTable" fileName="Monatszeiten" encoding="iso-8859-1" postProcessor="#{userDetailsBean.postProcessXLS}"/>
 
                     </p:commandLink>
-                    <p:commandLink ajax="false">
+                    <p:commandLink ajax="false" action="#{userDetailsBean.createPDF}">
                         <p:graphicImage name="/images/pdf-icon.png" style="width: 3%"/>
-                        <p:dataExporter type="PDF" target="timeDataTable" fileName="Zeiten" encoding="iso-8859-1" preProcessor="#{userDetailsBean.preProcessPDF}" postProcessor="#{userDetailsBean.postProcessPDF}"/>
+
                     </p:commandLink>
                 </f:facet>
 

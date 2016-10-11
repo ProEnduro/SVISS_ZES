@@ -57,11 +57,11 @@ and open the template in the editor.
                 </p:dataTable>
                 <p:commandLink ajax="false">
                     <p:graphicImage name="/images/excel-icon.png" style="width: 4%; float: left"/>
-                    <p:dataExporter type="xls" target="data" fileName="Zeiten" encoding="iso-8859-1" />
+                    <p:dataExporter type="xls" target="data" fileName="Jahresuebersicht" encoding="iso-8859-1" postProcessor="#{jahresuebersichtBean.postProcessXLS}"/>
                 </p:commandLink>
                 <p:commandLink ajax="false">
                     <p:graphicImage name="/images/pdf-icon.png" style="width: 4%; float: left"/>
-                    <p:dataExporter type="pdf" target="data" fileName="Zeiten" encoding="iso-8859-1" preProcessor="#{jahresuebersichtBean.preProcessPDF}" postProcessor="#{jahresuebersichtBean.postProcessPDF}"/>
+                    <p:dataExporter type="pdf" target="data" fileName="Jahresuebersicht" encoding="iso-8859-1" preProcessor="#{jahresuebersichtBean.preProcessPDF}" postProcessor="#{jahresuebersichtBean.postProcessPDF}"/>
                 </p:commandLink>
 
                 <p:remoteCommand update="selectionGrid" action="#{jahresuebersichtBean.loadJahresübersichtBean}" autoRun="true"/>
