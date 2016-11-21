@@ -26,7 +26,7 @@
                     </p:schedule>
                 </h:form>
                 <h:form id="uploadForm" enctype="multipart-data">
-                    <p:fileUpload   id="loadICSBut"  fileUploadListener="#{feiertageBean.loadEventsFromICS}" auto="true" label="ICS Kalendar hochladen" update=":growl :scheduleForm:feiertagSchedule"  allowTypes="/(\.|\/)(ics)$/"  fileLimit="1"/>
+                    <p:fileUpload rendered="false"   id="loadICSBut"  fileUploadListener="#{feiertageBean.loadEventsFromICS}" auto="true" label="ICS Kalendar hochladen" update=":growl :scheduleForm:feiertagSchedule"  allowTypes="/(\.|\/)(ics)$/"  fileLimit="1"/>
                 </h:form>
             </p:panel>
 

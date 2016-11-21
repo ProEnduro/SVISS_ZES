@@ -150,6 +150,7 @@ public class FeiertageBean {
     }
 
     public void onDateSelect(SelectEvent selectEvent) {
+        dateDisabled = false;
         Date date = (Date) selectEvent.getObject();
         Calendar c = Calendar.getInstance();
         c.setTime(date);

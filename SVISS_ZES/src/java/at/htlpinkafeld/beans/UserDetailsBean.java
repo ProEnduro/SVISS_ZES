@@ -33,6 +33,8 @@ import com.lowagie.text.pdf.PdfWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
@@ -479,7 +481,7 @@ public class UserDetailsBean {
             Logger.getLogger(UserDetailsBean.class.getName()).log(Level.SEVERE, null, e);
         }
         Font font = new Font(helvetica, 9, Font.BOLD);
-        pdfTable.addCell(new Paragraph("Date", font));
+        pdfTable.addCell(new Paragraph("Datum", font));
         pdfTable.addCell(new Paragraph("Beginn", font));
         pdfTable.addCell(new Paragraph("Ende", font));
         pdfTable.addCell(new Paragraph("Pause", font));
@@ -504,6 +506,19 @@ public class UserDetailsBean {
             pdfTable.addCell(new Paragraph(trd.getOverTime19plus(), font));
             pdfTable.addCell(new Paragraph(trd.getReason(), font));
         }
+
+        font = new Font(helvetica, 9, Font.BOLD);
+        pdfTable.addCell(new Paragraph(" ", font));
+        pdfTable.addCell(new Paragraph(" ", font));
+        pdfTable.addCell(new Paragraph(" ", font));
+        pdfTable.addCell(new Paragraph(" ", font));
+        pdfTable.addCell(new Paragraph(" ", font));
+
+        DecimalFormat df = new DecimalFormat("#.#");
+        pdfTable.addCell(new Paragraph("Saldo: " + getPlusOrMinus() + df.format(saldo), font));
+        pdfTable.addCell(new Paragraph("Gesamt:" + überstundenNach19, font));
+        pdfTable.addCell(new Paragraph("Verbleibender Urlaub am Ende des Monats: " + urlaubsanspruch + " Tage", font));
+
         return pdfTable;
     }
 

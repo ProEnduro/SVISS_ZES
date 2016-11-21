@@ -32,7 +32,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -139,14 +138,14 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             startDT = startDT.with(LocalTime.MIN);
             endDT = endDT.with(LocalTime.of(23, 59, 59));
         }
-
+        //Validation
         if (event.getStartDate().after(event.getEndDate())) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Endzeitpunkt ist vor Startzeitpunkt!"));
             FacesContext.getCurrentInstance().validationFailed();
         } else if (!checkAvailableTime(TimeConverterService.convertLocalDateTimeToDate(startDT), TimeConverterService.convertLocalDateTimeToDate(endDT), true)) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Ein Eintrag für diese Urzeit ist bereits vorhanden!"));
             FacesContext.getCurrentInstance().validationFailed();
-        } else if (type.getAbsenceName().equals("holiday")) {
+        } else if (!FacesContext.getCurrentInstance().isValidationFailed() && type.getAbsenceName().equals("holiday")) {
             int days = 0;
             List<SollZeit> sollZeiten = SollZeitenService.getSollZeitenByUser(currentUser);
             for (LocalDate ld = startDT.toLocalDate(); ld.atStartOfDay().isBefore(endDT); ld = ld.plusDays(1)) {
@@ -159,31 +158,33 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             if (days > currentUser.getVacationLeft()) {
                 FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Sie haben nicht genug Urlaub übrig!"));
                 FacesContext.getCurrentInstance().validationFailed();
-            } else if (event instanceof AbsenceEvent && event.getId() == null) {
-
-                Absence a = ((AbsenceEvent) event).getAbsence();
-                a.setStartTime(startDT);
-                a.setEndTime(endDT);
-                a.setAbsenceType(type);
-                a.setReason(this.reason);
-
-                AbsenceService.insertAbsence(a);
-                List<User> approverlist = currentUser.getApprover();
-                if (!approverlist.isEmpty()) {
-                    EmailService.sendUserEnteredAbsenceEmail(a, approverlist);
-                }
-            } else if (event instanceof WorkTimeEvent) {
-                IstZeitService.update(((WorkTimeEvent) event).getWorktime());
-            } else if (event instanceof AbsenceEvent) {
-                Absence a = ((AbsenceEvent) event).getAbsence();
-                a.setReason(reason);
-                a.setStartTime(startDT);
-                a.setEndTime(endDT);
-                AbsenceService.updateAbsence(a);
             }
-
-            event = new DefaultScheduleEvent();
         }
+        //Inserts or updates
+        if (!FacesContext.getCurrentInstance().isValidationFailed() && event instanceof AbsenceEvent && event.getId() == null) {
+
+            Absence a = ((AbsenceEvent) event).getAbsence();
+            a.setStartTime(startDT);
+            a.setEndTime(endDT);
+            a.setAbsenceType(type);
+            a.setReason(this.reason);
+
+            AbsenceService.insertAbsence(a);
+            List<User> approverlist = currentUser.getApprover();
+            if (!approverlist.isEmpty()) {
+                EmailService.sendUserEnteredAbsenceEmail(a, approverlist);
+            }
+        } else if (event instanceof WorkTimeEvent) {
+            IstZeitService.update(((WorkTimeEvent) event).getWorktime());
+        } else if (event instanceof AbsenceEvent) {
+            Absence a = ((AbsenceEvent) event).getAbsence();
+            a.setReason(reason);
+            a.setStartTime(startDT);
+            a.setEndTime(endDT);
+            AbsenceService.updateAbsence(a);
+        }
+
+        event = new DefaultScheduleEvent();
     }
 
     public boolean isAbleToDeleteAbsence() {
@@ -237,7 +238,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Ein Eintrag für diese Urzeit ist bereits vorhanden!"));
             FacesContext.getCurrentInstance().validationFailed();
         } else {
-            if (event.getId() == null) {
+            if (!FacesContext.getCurrentInstance().isValidationFailed() && event.getId() == null) {
                 wt = new WorkTime(currentUser, startDT, endDT, breaktime, startcomment, endcomment);
 
                 IstZeitService.addIstTime(wt);
@@ -535,7 +536,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
         }
     }
-    
+
     //adds Worktimes and removes Vacation if Absence is aknowledged
     private void setHolidayAndIstZeiten(Absence a) {
         User u = a.getUser();
@@ -561,7 +562,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             }
         }
     }
-    
+
     //removes Worktimes and adds Vacation if Absence is aknowledged
     private void removeHolidayAndIstZeiten(Absence a) {
         User u = a.getUser();

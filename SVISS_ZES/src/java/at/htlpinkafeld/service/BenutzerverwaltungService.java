@@ -12,6 +12,8 @@ import at.htlpinkafeld.dao.util.DAODML_Observer;
 import at.htlpinkafeld.pojo.AccessLevel;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserHistoryEntry;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -41,7 +43,12 @@ public class BenutzerverwaltungService {
 
     public static void insertUser(User u) {
         userdao.insert(u);
-        UHDAO.insert(new UserHistoryEntry(u.getHiredate().atStartOfDay(), u, u.getOverTimeLeft(), u.getVacationLeft()));
+        LocalDateTime ldt = u.getHiredate().atStartOfDay();
+        UHDAO.insert(new UserHistoryEntry(ldt, u, u.getOverTimeLeft(), u.getVacationLeft()));
+        ldt = ldt.withDayOfMonth(1).plusMonths(2).with(LocalTime.MIN).minusSeconds(1);
+        for (LocalDateTime now = LocalDateTime.now(); ldt.isBefore(now); ldt = ldt.plusMonths(1)) {
+            UHDAO.insert(new UserHistoryEntry(ldt, u, u.getOverTimeLeft(), u.getVacationLeft()));
+        }
     }
 
     public static void updateUser(User u) {
