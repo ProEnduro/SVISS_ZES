@@ -5,65 +5,69 @@
  */
 package at.htlpinkafeld.pojo;
 
-import java.io.Serializable;
+import at.htlpinkafeld.mobileInterface.service.util.LocalDateAdapter;
 import java.time.LocalDate;
 import java.util.List;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  *
  * @author Martin Six
  */
-public interface User extends Serializable {
+public interface User {
+
+    Boolean ApproverInitialized();
 
     AccessLevel getAccessLevel();
+
+    List<User> getApprover();
 
     String getDisabledString();
 
     String getEmail();
 
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     LocalDate getHiredate();
 
-    int getOverTimeLeft();
+    Integer getOverTimeLeft();
 
     String getPass();
 
     String getPersName();
 
-    int getUserNr();
+    Integer getUserNr();
 
     String getUsername();
 
-    int getVacationLeft();
+    Integer getVacationLeft();
 
     Double getWeekTime();
-
-    List<User> getApprover();
 
     boolean isDisabled();
 
     void setAccessLevel(AccessLevel accessLevel);
 
+    void setApprover(List<User> approver);
+
     void setDisabled(boolean disabled);
 
     void setEmail(String email);
 
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     void setHiredate(LocalDate hiredate);
 
-    void setOverTimeLeft(int overTimeLeft);
+    void setOverTimeLeft(Integer overTimeLeft);
 
     void setPass(String pass);
 
     void setPersName(String PersName);
 
-    void setUserNr(int userNr);
+    void setUserNr(Integer userNr);
 
     void setUsername(String username);
 
-    void setVacationLeft(int vacationLeft);
+    void setVacationLeft(Integer vacationLeft);
 
     void setWeekTime(Double weekTime);
-
-    void setApprover(List<User> approver);
-
-    boolean ApproverInitialized();
+    
 }

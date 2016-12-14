@@ -40,8 +40,9 @@ public class HolidayFacadeREST extends AbstractFacade<Holiday> {
     @Secured
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Holiday entity) {
-        super.create(entity);
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Holiday create(Holiday entity) {
+        return super.create(entity);
     }
 
     @PUT
@@ -71,6 +72,21 @@ public class HolidayFacadeREST extends AbstractFacade<Holiday> {
     @Override
     protected Base_DAO getDAO() {
         return dao;
+    }
+
+    @Override
+    public Holiday create(String jsonEntity) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void edit(String jsonEntity) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void remove(String jsonEntity) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

@@ -10,12 +10,14 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Used for displaying different Pojos in the Datatable
  *
  * @author Martin Six
  */
+@XmlRootElement
 public class TimeRowDisplay {
 
     private static final DateTimeFormatter timeFormatter;

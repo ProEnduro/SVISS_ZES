@@ -230,7 +230,7 @@ public class UserDetailsBean {
                     Double sollzeit = Double.parseDouble(trd.getSollZeit());
                     Double breaktime = worklist.get(0).getBreakTime() * 1.0;
 
-                    saldotemp = worktime - sollzeit;
+                    saldotemp = worktime - sollzeit;                    
 
                     überstundenNach19 += Double.parseDouble(trd.getOverTime19plus());
 

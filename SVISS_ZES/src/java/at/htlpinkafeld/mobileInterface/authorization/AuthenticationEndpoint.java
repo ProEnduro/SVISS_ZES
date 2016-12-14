@@ -14,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 
 /**
@@ -29,7 +30,7 @@ public class AuthenticationEndpoint {
     public Response authenticateUser(final Credentials credentials) {
 
         String username = credentials.getUsername();
-        String password = credentials.getPassword();
+        String password = DigestUtils.sha512Hex(credentials.getPassword());
 
         try {
 

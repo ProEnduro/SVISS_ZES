@@ -12,9 +12,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.context.FacesContext;
 import javax.naming.Context;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 /**
@@ -54,8 +52,18 @@ public class ConnectionManager {
      *
      * @param testing
      */
-    protected static synchronized void setDebugInstance(boolean testing) {
+    public static synchronized void setDebugInstance(boolean testing) {
         test = testing;
+    }
+
+    public static synchronized void rollback() {
+        if (test) {
+            try {
+                getInstance().getWrappedConnection().getConn().rollback();
+            } catch (SQLException ex) {
+                Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     protected static synchronized ConnectionManager getInstance() throws SQLException {

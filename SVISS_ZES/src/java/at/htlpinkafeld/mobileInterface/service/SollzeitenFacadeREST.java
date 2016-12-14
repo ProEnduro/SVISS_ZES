@@ -40,8 +40,9 @@ public class SollzeitenFacadeREST extends AbstractFacade<SollZeit> {
     @Secured
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(SollZeit entity) {
-        super.create(entity);
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public SollZeit create(SollZeit entity) {
+        return super.create(entity);
     }
 
     @PUT
@@ -61,7 +62,7 @@ public class SollzeitenFacadeREST extends AbstractFacade<SollZeit> {
     }
 
     @GET
-    @Secured
+//    @Secured
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<SollZeit> findAll() {
@@ -72,6 +73,21 @@ public class SollzeitenFacadeREST extends AbstractFacade<SollZeit> {
     @Override
     protected Base_DAO getDAO() {
         return dao;
+    }
+
+    @Override
+    public SollZeit create(String jsonEntity) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void edit(String jsonEntity) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void remove(String jsonEntity) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

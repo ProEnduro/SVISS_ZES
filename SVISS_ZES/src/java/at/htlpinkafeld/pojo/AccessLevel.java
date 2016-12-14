@@ -7,14 +7,16 @@ package at.htlpinkafeld.pojo;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Martin Six
  */
+@XmlRootElement
 public class AccessLevel implements Serializable {
 
-    private int accessLevelID;
+    private Integer accessLevelID;
     private String accessLevelName;
     private List<String> permissions;
 

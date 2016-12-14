@@ -8,7 +8,6 @@ package at.htlpinkafeld.mobileInterface.authorization;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.After;
@@ -46,7 +45,7 @@ public class AuthenticationEndpointTest {
     @Test
     public void testAuthenticateUser() {
         System.out.println("authenticateUser");
-        Credentials credentials = new Credentials("admin", DigestUtils.sha512Hex("admin"));
+        Credentials credentials = new Credentials("admin", "admin");
         Response result;
 
         result = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(Entity.xml(credentials), Response.class);

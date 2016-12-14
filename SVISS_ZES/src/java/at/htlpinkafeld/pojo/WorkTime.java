@@ -10,11 +10,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Martin Six
  */
+@XmlRootElement
 public class WorkTime implements Serializable {
 
     private int timeID;

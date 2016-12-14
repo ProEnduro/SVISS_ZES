@@ -7,14 +7,19 @@ package at.htlpinkafeld.pojo;
 
 import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.User_DAO;
+import at.htlpinkafeld.mobileInterface.service.util.LocalDateAdapter;
 import at.htlpinkafeld.service.AccessRightsService;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  *
  * @author Martin Six
  */
+@XmlRootElement
 public class UserProxy implements User {
 
     private static final User_DAO USER_DAO;
@@ -36,11 +41,11 @@ public class UserProxy implements User {
     }
 
     @Deprecated
-    public UserProxy(int userNr, AccessLevel accessLevel, String PersName, int vacationLeft, int overTimeLeft, String username, String email, LocalDate hiredate, String pass, Double weekTime, boolean disabled) {
+    public UserProxy(Integer userNr, AccessLevel accessLevel, String PersName, Integer vacationLeft, Integer overTimeLeft, String username, String email, LocalDate hiredate, String pass, Double weekTime, boolean disabled) {
         user = new UserImpl(userNr, accessLevel, PersName, vacationLeft, overTimeLeft, username, email, hiredate, pass, weekTime, disabled);
     }
 
-    public UserProxy(AccessLevel accessLevel, String PersName, int vacationLeft, int overTimeLeft, String username, String email, LocalDate hiredate, String pass, Double weekTime) {
+    public UserProxy(AccessLevel accessLevel, String PersName, Integer vacationLeft, Integer overTimeLeft, String username, String email, LocalDate hiredate, String pass, Double weekTime) {
         user = new UserImpl(accessLevel, PersName, vacationLeft, overTimeLeft, username, email, hiredate, pass, weekTime);
     }
 
@@ -64,12 +69,13 @@ public class UserProxy implements User {
     }
 
     @Override
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
     public LocalDate getHiredate() {
         return user.getHiredate();
     }
 
     @Override
-    public int getOverTimeLeft() {
+    public Integer getOverTimeLeft() {
         return user.getOverTimeLeft();
     }
 
@@ -84,7 +90,7 @@ public class UserProxy implements User {
     }
 
     @Override
-    public int getUserNr() {
+    public Integer getUserNr() {
         return user.getUserNr();
     }
 
@@ -94,7 +100,7 @@ public class UserProxy implements User {
     }
 
     @Override
-    public int getVacationLeft() {
+    public Integer getVacationLeft() {
         return user.getVacationLeft();
     }
 
@@ -124,12 +130,13 @@ public class UserProxy implements User {
     }
 
     @Override
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
     public void setHiredate(LocalDate hiredate) {
         user.setHiredate(hiredate);
     }
 
     @Override
-    public void setOverTimeLeft(int overTimeLeft) {
+    public void setOverTimeLeft(Integer overTimeLeft) {
         user.setOverTimeLeft(overTimeLeft);
     }
 
@@ -144,7 +151,7 @@ public class UserProxy implements User {
     }
 
     @Override
-    public void setUserNr(int userNr) {
+    public void setUserNr(Integer userNr) {
         user.setUserNr(userNr);
     }
 
@@ -154,7 +161,7 @@ public class UserProxy implements User {
     }
 
     @Override
-    public void setVacationLeft(int vacationLeft) {
+    public void setVacationLeft(Integer vacationLeft) {
         user.setVacationLeft(vacationLeft);
     }
 
@@ -177,7 +184,7 @@ public class UserProxy implements User {
     }
 
     @Override
-    public boolean ApproverInitialized() {
+    public Boolean ApproverInitialized() {
         return user.ApproverInitialized();
     }
 

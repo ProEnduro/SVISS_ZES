@@ -8,20 +8,22 @@ package at.htlpinkafeld.pojo;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Martin Six
  */
+@XmlRootElement
 public class Absence implements Serializable {
 
-    private int absenceID;
+    private Integer absenceID;
     private User user;
     private AbsenceType absenceType;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String reason;
-    private boolean acknowledged;
+    private Boolean acknowledged;
 
     public Absence() {
         absenceID = -1;
@@ -51,7 +53,7 @@ public class Absence implements Serializable {
      * @deprecated
      */
     @Deprecated
-    public Absence(int absenceID, User user, AbsenceType absenceType, LocalDateTime startTime, LocalDateTime endTime, String reason, boolean acknowledged) {
+    public Absence(Integer absenceID, User user, AbsenceType absenceType, LocalDateTime startTime, LocalDateTime endTime, String reason, Boolean acknowledged) {
         this.absenceID = absenceID;
         this.user = user;
         this.absenceType = absenceType;
@@ -81,11 +83,11 @@ public class Absence implements Serializable {
         acknowledged = false;
     }
 
-    public int getAbsenceID() {
+    public Integer getAbsenceID() {
         return absenceID;
     }
 
-    public void setAbsenceID(int absenceID) {
+    public void setAbsenceID(Integer absenceID) {
         this.absenceID = absenceID;
     }
 
@@ -129,11 +131,11 @@ public class Absence implements Serializable {
         this.reason = reason;
     }
 
-    public boolean isAcknowledged() {
+    public Boolean isAcknowledged() {
         return acknowledged;
     }
 
-    public void setAcknowledged(boolean acknowledged) {
+    public void setAcknowledged(Boolean acknowledged) {
         this.acknowledged = acknowledged;
     }
 

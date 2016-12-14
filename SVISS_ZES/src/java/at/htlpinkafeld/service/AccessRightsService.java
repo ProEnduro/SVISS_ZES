@@ -59,7 +59,7 @@ public class AccessRightsService implements DAODML_Observer {
 
     public static AccessLevel getAccessLevelFromName(String accessLevelString) {
         for (AccessLevel al : AccessGroups) {
-            if (al.getAccessLevelName().contentEquals(accessLevelString)) {
+            if (al.getAccessLevelName().toLowerCase().contentEquals(accessLevelString.toLowerCase())) {
                 return al;
             }
         }

@@ -5,23 +5,26 @@
  */
 package at.htlpinkafeld.pojo;
 
-import at.htlpinkafeld.service.AccessRightsService;
+import at.htlpinkafeld.mobileInterface.service.util.LocalDateAdapter;
 import java.time.LocalDate;
 import java.util.List;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  *
  * @author Martin Six
  */
-public class UserImpl implements User {
+@XmlRootElement
+public class UserImpl implements User  {
 
-    private int userNr;
+    private Integer userNr;
     private AccessLevel accessLevel;
     private String PersName;
     //in days
-    private int vacationLeft;
+    private Integer vacationLeft;
     //in minutes
-    private int overTimeLeft;
+    private Integer overTimeLeft;
     private String username;
     private String email;
     private LocalDate hiredate;
@@ -54,7 +57,7 @@ public class UserImpl implements User {
     }
 
     @Deprecated
-    public UserImpl(int userNr, AccessLevel accessLevel, String PersName, int vacationLeft, int overTimeLeft, String username, String email, LocalDate hiredate, String pass, Double weekTime, boolean disabled) {
+    public UserImpl(Integer userNr, AccessLevel accessLevel, String PersName, Integer vacationLeft, Integer overTimeLeft, String username, String email, LocalDate hiredate, String pass, Double weekTime, Boolean disabled) {
         this.userNr = userNr;
         this.accessLevel = accessLevel;
         this.PersName = PersName;
@@ -68,7 +71,7 @@ public class UserImpl implements User {
         this.disabled = disabled;
     }
 
-    public UserImpl(AccessLevel accessLevel, String PersName, int vacationLeft, int overTimeLeft, String username, String email, LocalDate hiredate, String pass, Double weekTime) {
+    public UserImpl(AccessLevel accessLevel, String PersName, Integer vacationLeft, Integer overTimeLeft, String username, String email, LocalDate hiredate, String pass, Double weekTime) {
         this();
         this.accessLevel = accessLevel;
         this.PersName = PersName;
@@ -93,12 +96,12 @@ public class UserImpl implements User {
     }
 
     @Override
-    public int getUserNr() {
+    public Integer getUserNr() {
         return userNr;
     }
 
     @Override
-    public void setUserNr(int userNr) {
+    public void setUserNr(Integer userNr) {
         this.userNr = userNr;
     }
 
@@ -123,22 +126,22 @@ public class UserImpl implements User {
     }
 
     @Override
-    public int getVacationLeft() {
+    public Integer getVacationLeft() {
         return vacationLeft;
     }
 
     @Override
-    public void setVacationLeft(int vacationLeft) {
+    public void setVacationLeft(Integer vacationLeft) {
         this.vacationLeft = vacationLeft;
     }
 
     @Override
-    public int getOverTimeLeft() {
+    public Integer getOverTimeLeft() {
         return overTimeLeft;
     }
 
     @Override
-    public void setOverTimeLeft(int overTimeLeft) {
+    public void setOverTimeLeft(Integer overTimeLeft) {
         this.overTimeLeft = overTimeLeft;
     }
 
@@ -163,6 +166,7 @@ public class UserImpl implements User {
     }
 
     @Override
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
     public LocalDate getHiredate() {
         return hiredate;
     }
@@ -173,6 +177,7 @@ public class UserImpl implements User {
     }
 
     @Override
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
     public void setHiredate(LocalDate hiredate) {
         this.hiredate = hiredate;
     }
@@ -253,7 +258,7 @@ public class UserImpl implements User {
     }
 
     @Override
-    public boolean ApproverInitialized() {
+    public Boolean ApproverInitialized() {
         return approver != null;
     }
 

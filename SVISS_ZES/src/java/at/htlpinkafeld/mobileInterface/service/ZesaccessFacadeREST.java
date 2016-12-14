@@ -40,8 +40,9 @@ public class ZesaccessFacadeREST extends AbstractFacade<AccessLevel> {
     @Secured
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(AccessLevel entity) {
-        super.create(entity);
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public AccessLevel create(AccessLevel entity) {
+        return super.create(entity);
     }
 
     @PUT
@@ -61,7 +62,7 @@ public class ZesaccessFacadeREST extends AbstractFacade<AccessLevel> {
     }
 
     @GET
-    @Secured
+//    @Secured
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<AccessLevel> findAll() {
@@ -71,6 +72,21 @@ public class ZesaccessFacadeREST extends AbstractFacade<AccessLevel> {
     @Override
     protected Base_DAO getDAO() {
         return dao;
+    }
+
+    @Override
+    public AccessLevel create(String jsonEntity) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void edit(String jsonEntity) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void remove(String jsonEntity) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

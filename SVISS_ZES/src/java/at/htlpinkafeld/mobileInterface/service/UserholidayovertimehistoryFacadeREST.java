@@ -40,8 +40,9 @@ public class UserholidayovertimehistoryFacadeREST extends AbstractFacade<UserHis
     @Secured
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(UserHistoryEntry entity) {
-        super.create(entity);
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public UserHistoryEntry create(UserHistoryEntry entity) {
+        return super.create(entity);
     }
 
     @PUT
@@ -71,6 +72,21 @@ public class UserholidayovertimehistoryFacadeREST extends AbstractFacade<UserHis
     @Override
     protected Base_DAO getDAO() {
         return dao;
+    }
+
+    @Override
+    public UserHistoryEntry create(String jsonEntity) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void edit(String jsonEntity) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void remove(String jsonEntity) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

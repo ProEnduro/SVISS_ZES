@@ -7,11 +7,13 @@ package at.htlpinkafeld.pojo;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Martin Six
  */
+@XmlRootElement
 public class Holiday {
 
     private LocalDate holidayDate;

@@ -11,11 +11,13 @@ import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Martin Six
  */
+@XmlRootElement
 public class SollZeit implements Serializable {
 
     private DayOfWeek day;

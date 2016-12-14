@@ -48,7 +48,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
  */
 public class JahresuebersichtBean {
 
-    private MasterBean masterBean;
+    private final MasterBean masterBean;
 
     private List<SelectItem> users;
     private User selectedUser;

@@ -6,11 +6,13 @@
 package at.htlpinkafeld.pojo;
 
 import java.time.LocalDateTime;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Martin Six
  */
+@XmlRootElement
 public class UserHistoryEntry {
 
     private LocalDateTime timestamp;

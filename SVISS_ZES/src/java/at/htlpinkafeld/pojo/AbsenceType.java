@@ -6,14 +6,16 @@
 package at.htlpinkafeld.pojo;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Martin Six
  */
+@XmlRootElement
 public class AbsenceType implements Serializable {
 
-    private int absenceTypeID;
+    private Integer absenceTypeID;
     private String absenceName;
 
     public AbsenceType() {
@@ -31,16 +33,16 @@ public class AbsenceType implements Serializable {
     }
 
     @Deprecated
-    public AbsenceType(int absenceID, String absenceName) {
+    public AbsenceType(Integer absenceID, String absenceName) {
         this.absenceTypeID = absenceID;
         this.absenceName = absenceName;
     }
 
-    public int getAbsenceTypeID() {
+    public Integer getAbsenceTypeID() {
         return absenceTypeID;
     }
 
-    public void setAbsenceTypeID(int absenceTypeID) {
+    public void setAbsenceTypeID(Integer absenceTypeID) {
         this.absenceTypeID = absenceTypeID;
     }
 
