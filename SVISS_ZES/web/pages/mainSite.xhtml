@@ -9,14 +9,16 @@ and open the template in the editor.
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:ui="http://java.sun.com/jsf/facelets">
     <h:head>
         <title>SVISS ZES</title>
         <link rel="shortcut icon" type="image/x-icon" href="#{resource['images/faviconSV.ico']}"/>
     </h:head>
     <h:body>
         <h:form>
+
+            <p:remoteCommand actionListener="#{masterBean.refreshIfNoCurrentUser}" immediate="true" autoRun="true" />
+            <p:poll listener="#{masterBean.refreshIfNoCurrentUser}" interval="10"  immediate="true" partialSubmit="true"/>
 
             <p:menubar id="menubar" styleClass="menu">
                 <p:menuitem value="Ist-Zeiten" rendered="#{masterBean.istZeitenEnabled}" action="#{scheduleView.reloadAbwesenheiten}" style="white-space: nowrap"/>

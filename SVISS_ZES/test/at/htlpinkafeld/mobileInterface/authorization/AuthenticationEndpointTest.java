@@ -9,8 +9,8 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,10 +49,9 @@ public class AuthenticationEndpointTest {
         Response result;
 
         result = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(Entity.xml(credentials), Response.class);
-        System.out.println(result.readEntity(String.class));
-
+        Assert.assertFalse(result.readEntity(String.class).isEmpty());
         result = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(credentials, javax.ws.rs.core.MediaType.APPLICATION_JSON), Response.class);
-        System.out.println(result.readEntity(String.class));
+        Assert.assertFalse(result.readEntity(String.class).isEmpty());
     }
 
 }

@@ -7,12 +7,12 @@ package at.htlpinkafeld.mobileInterface.service;
 
 import at.htlpinkafeld.dao.jdbc.ConnectionManager;
 import at.htlpinkafeld.mobileInterface.authorization.Credentials;
-import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.User;
-import at.htlpinkafeld.service.AbsenceService;
+import at.htlpinkafeld.pojo.UserHistoryEntry;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -30,14 +30,14 @@ import org.junit.Test;
  *
  * @author Martin Six
  */
-public class AbsenceFacadeRESTTest {
+public class UserholidayovertimehistoryFacadeRESTTest {
 
     private WebTarget webTarget;
     private Client client;
     private String token;
     private static final String BASE_URI = "http://localhost:8084/SVISS_ZES/webresources";
 
-    public AbsenceFacadeRESTTest() {
+    public UserholidayovertimehistoryFacadeRESTTest() {
         ConnectionManager.setDebugInstance(true);
     }
 
@@ -54,7 +54,7 @@ public class AbsenceFacadeRESTTest {
         Credentials credentials = new Credentials("admin", "admin");
         token = authTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(credentials, javax.ws.rs.core.MediaType.APPLICATION_JSON), Response.class).readEntity(String.class);
 
-        webTarget = client.target(BASE_URI).path("absence");
+        webTarget = client.target(BASE_URI).path("userholidayovertimehistory");
     }
 
     @After
@@ -64,16 +64,16 @@ public class AbsenceFacadeRESTTest {
     }
 
     /**
-     * Test of findAll method, of class AbsenceFacadeREST.
+     * Test of findAll method, of class UserholidayovertimehistoryFacadeREST.
      */
     @Test
     public void testFindAll() {
         System.out.println("findAll");
         Response result;
-        List<Absence> l;
+        List<UserHistoryEntry> l;
 
         result = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
-        l = (List<Absence>) result.readEntity(new GenericType<List<Absence>>() {
+        l = (List<UserHistoryEntry>) result.readEntity(new GenericType<List<UserHistoryEntry>>() {
         });
 
         Assert.assertFalse("Check for getList being empty", l.isEmpty());
@@ -84,44 +84,45 @@ public class AbsenceFacadeRESTTest {
     }
 
     /**
-     * Test of various methods, of class AbsenceFacadeREST.
+     * Test of various methods, of class UserholidayovertimehistoryFacadeREST.
      */
     @Test
     public void testCreateEditRemove() {
         System.out.println("create");
-        Absence result;
+        UserHistoryEntry result;
         Response response;
-        List<Absence> absenceL;
-        Absence a = new Absence(new User(BenutzerverwaltungService.getUserList().get(0)), AbsenceService.getList().get(0), LocalDateTime.of(1800, 7, 9, 0, 0), LocalDateTime.of(1800, 7, 12, 0, 0));
-        Response res = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).post(Entity.json(a));
-        result = res.readEntity(Absence.class);
-        Assert.assertNotEquals("Check create and the auto-created key", a.getAbsenceID(), result.getAbsenceID());
+        List<UserHistoryEntry> historyEntrys;
+        User u = new User(BenutzerverwaltungService.getUserList().get(0));
+        UserHistoryEntry uhe = new UserHistoryEntry(LocalDateTime.now(), u, u.getOverTimeLeft(), u.getVacationLeft());
+        Response res = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).post(Entity.json(uhe));
+        result = res.readEntity(UserHistoryEntry.class);
+        Assert.assertEquals("Check create ", uhe.getTimestamp(), result.getTimestamp());
 
-        a = new Absence(result);
-        a.setUser(new User(a.getUser()));
-        a.setReason("%&?$§!NoPlan%&?$§!%&?$§!");
+        uhe = new UserHistoryEntry(result);
+        uhe.setUser(new User(uhe.getUser()));
+        uhe.setOvertime(7979);
 
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).put(Entity.json(a));
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).put(Entity.json(uhe));
 
         response = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
-        absenceL = (List<Absence>) response.readEntity((GenericType) new GenericType<List<Absence>>() {
+        historyEntrys = (List<UserHistoryEntry>) response.readEntity((GenericType) new GenericType<List<UserHistoryEntry>>() {
         });
 
-        for (Absence absence : absenceL) {
-            if (absence.getReason().equals(a.getReason())) {
-                result = absence;
+        for (UserHistoryEntry historyEntry : historyEntrys) {
+            if (Objects.equals(historyEntry.getOvertime(), uhe.getOvertime())) {
+                result = historyEntry;
             }
         }
 
-        Assert.assertEquals("Check if edit works", a, result);
+        Assert.assertNotEquals("Check if edit doesn't works", uhe, result);
 
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).build("PATCH", Entity.json(a)).invoke();
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).build("PATCH", Entity.json(uhe)).invoke();
 
         response = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
-        absenceL = (List<Absence>) response.readEntity((GenericType) new GenericType<List<Absence>>() {
+        historyEntrys = (List<UserHistoryEntry>) response.readEntity((GenericType) new GenericType<List<UserHistoryEntry>>() {
         });
 
-        Assert.assertFalse("Check if the remove worked via get", absenceL.contains(a));
+        Assert.assertFalse("Check if the remove worked via get", historyEntrys.contains(uhe));
     }
 
 }

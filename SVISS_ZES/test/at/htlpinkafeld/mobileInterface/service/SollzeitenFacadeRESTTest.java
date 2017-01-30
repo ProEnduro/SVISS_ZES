@@ -7,11 +7,11 @@ package at.htlpinkafeld.mobileInterface.service;
 
 import at.htlpinkafeld.dao.jdbc.ConnectionManager;
 import at.htlpinkafeld.mobileInterface.authorization.Credentials;
-import at.htlpinkafeld.pojo.Absence;
+import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
-import at.htlpinkafeld.service.AbsenceService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
-import java.time.LocalDateTime;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.List;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -30,14 +30,14 @@ import org.junit.Test;
  *
  * @author Martin Six
  */
-public class AbsenceFacadeRESTTest {
+public class SollzeitenFacadeRESTTest {
 
     private WebTarget webTarget;
     private Client client;
     private String token;
     private static final String BASE_URI = "http://localhost:8084/SVISS_ZES/webresources";
 
-    public AbsenceFacadeRESTTest() {
+    public SollzeitenFacadeRESTTest() {
         ConnectionManager.setDebugInstance(true);
     }
 
@@ -54,7 +54,7 @@ public class AbsenceFacadeRESTTest {
         Credentials credentials = new Credentials("admin", "admin");
         token = authTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(credentials, javax.ws.rs.core.MediaType.APPLICATION_JSON), Response.class).readEntity(String.class);
 
-        webTarget = client.target(BASE_URI).path("absence");
+        webTarget = client.target(BASE_URI).path("sollzeiten");
     }
 
     @After
@@ -70,15 +70,15 @@ public class AbsenceFacadeRESTTest {
     public void testFindAll() {
         System.out.println("findAll");
         Response result;
-        List<Absence> l;
+        List<SollZeit> szs;
 
         result = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
-        l = (List<Absence>) result.readEntity(new GenericType<List<Absence>>() {
+        szs = (List<SollZeit>) result.readEntity(new GenericType<List<SollZeit>>() {
         });
 
-        Assert.assertFalse("Check for getList being empty", l.isEmpty());
+        Assert.assertFalse("Check if getList is working", szs.isEmpty());
 
-        for (Object o : l) {
+        for (Object o : szs) {
             o.toString();
         }
     }
@@ -89,39 +89,38 @@ public class AbsenceFacadeRESTTest {
     @Test
     public void testCreateEditRemove() {
         System.out.println("create");
-        Absence result;
+        SollZeit result;
         Response response;
-        List<Absence> absenceL;
-        Absence a = new Absence(new User(BenutzerverwaltungService.getUserList().get(0)), AbsenceService.getList().get(0), LocalDateTime.of(1800, 7, 9, 0, 0), LocalDateTime.of(1800, 7, 12, 0, 0));
-        Response res = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).post(Entity.json(a));
-        result = res.readEntity(Absence.class);
-        Assert.assertNotEquals("Check create and the auto-created key", a.getAbsenceID(), result.getAbsenceID());
+        List<SollZeit> szs;
+        SollZeit sz = new SollZeit(DayOfWeek.SUNDAY, new User(BenutzerverwaltungService.getUserList().get(0)), LocalTime.of(9, 0), LocalTime.of(12, 0));
+        Response res = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).post(Entity.json(sz));
+        result = res.readEntity(SollZeit.class);
+        Assert.assertEquals("Check if there is an Error in the create", sz.getDay(), result.getDay());
 
-        a = new Absence(result);
-        a.setUser(new User(a.getUser()));
-        a.setReason("%&?$§!NoPlan%&?$§!%&?$§!");
+        sz = new SollZeit(result);
+        sz.setUser(new User(sz.getUser()));
+        sz.setSollEndTime(LocalTime.of(14, 0));
 
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).put(Entity.json(a));
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).put(Entity.json(sz));
 
         response = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
-        absenceL = (List<Absence>) response.readEntity((GenericType) new GenericType<List<Absence>>() {
+        szs = (List<SollZeit>) response.readEntity((GenericType) new GenericType<List<SollZeit>>() {
         });
 
-        for (Absence absence : absenceL) {
-            if (absence.getReason().equals(a.getReason())) {
-                result = absence;
+        for (SollZeit sollZeit : szs) {
+            if (sollZeit.getDay().equals(sz.getDay()) && sollZeit.getUser().equals(sz.getUser())) {
+                result = sollZeit;
             }
         }
 
-        Assert.assertEquals("Check if edit works", a, result);
+        Assert.assertEquals("Check if edit works", result.getSollEndTime(), sz.getSollEndTime());
 
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).build("PATCH", Entity.json(a)).invoke();
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).build("PATCH", Entity.json(sz)).invoke();
 
         response = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
-        absenceL = (List<Absence>) response.readEntity((GenericType) new GenericType<List<Absence>>() {
+        szs = (List<SollZeit>) response.readEntity((GenericType) new GenericType<List<SollZeit>>() {
         });
 
-        Assert.assertFalse("Check if the remove worked via get", absenceL.contains(a));
+        Assert.assertFalse("Check if the remove worked via get", szs.contains(sz));
     }
-
 }

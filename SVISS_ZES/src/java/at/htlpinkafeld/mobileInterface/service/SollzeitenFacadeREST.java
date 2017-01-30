@@ -8,11 +8,14 @@ package at.htlpinkafeld.mobileInterface.service;
 import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.Base_DAO;
 import at.htlpinkafeld.mobileInterface.authorization.Secured;
+import at.htlpinkafeld.mobileInterface.service.util.PATCH;
+import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.SollZeit;
+import at.htlpinkafeld.pojo.User;
+import java.time.LocalTime;
 import java.util.List;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -50,23 +53,34 @@ public class SollzeitenFacadeREST extends AbstractFacade<SollZeit> {
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(SollZeit entity) {
-        super.edit(entity);
+        super.create(entity);
     }
 
-    @DELETE
+    @PATCH
     @Secured
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void remove(SollZeit entity) {
-        super.remove(entity);
+        entity.setSollEndTime(LocalTime.MIN);
+        entity.setSollStartTime(LocalTime.MIN);
+        super.create(entity);
     }
 
+    /**
+     * Returns the List of Sollzeiten in the Database. no Approver are in the
+     * new Object
+     *
+     * @return
+     */
     @GET
-//    @Secured
+    @Secured
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<SollZeit> findAll() {
         List<SollZeit> sollZeiten = super.findAll();
+        for (SollZeit sz : sollZeiten) {
+            sz.setUser(new User(sz.getUser()));
+        }
         return sollZeiten;
     }
 
@@ -74,20 +88,4 @@ public class SollzeitenFacadeREST extends AbstractFacade<SollZeit> {
     protected Base_DAO getDAO() {
         return dao;
     }
-
-    @Override
-    public SollZeit create(String jsonEntity) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void edit(String jsonEntity) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void remove(String jsonEntity) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
 }

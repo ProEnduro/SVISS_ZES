@@ -14,8 +14,12 @@ and open the template in the editor.
     <ui:param name="currentIndex" value="3" />
 
     <ui:define name="content">
+
+
         <p:growl id="growl" showDetail="true" showSummary="false"/>
         <h:form id="tableForm">
+            <p:poll interval="30" update="usertable" listener="#{benutzerverwaltungsBean.onLoad}"/>
+
             <p:panel>
                 <h1 align="center">Benutzerverwaltung</h1>
 

@@ -5,10 +5,12 @@
  */
 package at.htlpinkafeld.pojo;
 
+import at.htlpinkafeld.mobileInterface.service.util.LocalDateTimeAdapter;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  *
@@ -23,7 +25,7 @@ public class Absence implements Serializable {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String reason;
-    private Boolean acknowledged;
+    private boolean acknowledged;
 
     public Absence() {
         absenceID = -1;
@@ -107,18 +109,22 @@ public class Absence implements Serializable {
         this.absenceType = absenceType;
     }
 
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     public LocalDateTime getStartTime() {
         return startTime;
     }
 
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     public LocalDateTime getEndTime() {
         return endTime;
     }
 
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
@@ -131,11 +137,11 @@ public class Absence implements Serializable {
         this.reason = reason;
     }
 
-    public Boolean isAcknowledged() {
+    public boolean isAcknowledged() {
         return acknowledged;
     }
 
-    public void setAcknowledged(Boolean acknowledged) {
+    public void setAcknowledged(boolean acknowledged) {
         this.acknowledged = acknowledged;
     }
 
@@ -164,7 +170,7 @@ public class Absence implements Serializable {
             return false;
         }
         final Absence other = (Absence) obj;
-        if (this.absenceID != other.absenceID) {
+        if (!Objects.equals(this.absenceID, other.absenceID)) {
             return false;
         }
         if (!Objects.equals(this.user, other.user)) {

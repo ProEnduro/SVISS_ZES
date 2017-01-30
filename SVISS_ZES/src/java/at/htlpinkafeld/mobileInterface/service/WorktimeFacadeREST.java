@@ -8,11 +8,13 @@ package at.htlpinkafeld.mobileInterface.service;
 import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.Base_DAO;
 import at.htlpinkafeld.mobileInterface.authorization.Secured;
+import at.htlpinkafeld.mobileInterface.service.util.PATCH;
+import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
+import at.htlpinkafeld.service.IstZeitService;
 import java.util.List;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -42,7 +44,9 @@ public class WorktimeFacadeREST extends AbstractFacade<WorkTime> {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public WorkTime create(WorkTime entity) {
-        return super.create(entity);
+        IstZeitService.addIstTime(entity);
+
+        return entity;
     }
 
     @PUT
@@ -53,7 +57,7 @@ public class WorktimeFacadeREST extends AbstractFacade<WorkTime> {
         super.edit(entity);
     }
 
-    @DELETE
+    @PATCH
     @Secured
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -66,27 +70,15 @@ public class WorktimeFacadeREST extends AbstractFacade<WorkTime> {
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<WorkTime> findAll() {
-        return super.findAll();
+        List<WorkTime> workTimes = super.findAll();
+        for (WorkTime wt : workTimes) {
+            wt.setUser(new User(wt.getUser()));
+        }
+        return workTimes;
     }
 
     @Override
     protected Base_DAO getDAO() {
         return dao;
     }
-
-    @Override
-    public WorkTime create(String jsonEntity) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void edit(String jsonEntity) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void remove(String jsonEntity) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
 }

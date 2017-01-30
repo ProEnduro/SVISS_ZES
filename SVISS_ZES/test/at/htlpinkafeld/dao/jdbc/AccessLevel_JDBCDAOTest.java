@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -27,6 +28,11 @@ public class AccessLevel_JDBCDAOTest {
     public AccessLevel_JDBCDAOTest() {
         accessLevel_DAO = JDBCDAOFactory.getDAOFactory().getAccessLevelDAO();
         ConnectionManager.setDebugInstance(true);
+    }
+
+    @AfterClass
+    public static void setUpClass() throws Exception {
+        ConnectionManager.setDebugInstance(false);
     }
 
     @After

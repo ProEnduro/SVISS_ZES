@@ -34,7 +34,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
@@ -96,12 +95,14 @@ public class UserDetailsBean {
         MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
         currentUser = masterBean.getUser();
 
-        if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_ALL")) {
-            for (User u : BenutzerverwaltungService.getUserList()) {
-                userAsStringList.add(u.getUsername());
+        if (currentUser != null) {
+            if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_ALL")) {
+                for (User u : BenutzerverwaltungService.getUserList()) {
+                    userAsStringList.add(u.getUsername());
+                }
+            } else if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_SELF")) {
+                userAsStringList.add(currentUser.getUsername());
             }
-        } else if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_SELF")) {
-            userAsStringList.add(currentUser.getUsername());
         }
 
         dates = new ArrayList<>();
@@ -141,9 +142,6 @@ public class UserDetailsBean {
         this.selectedUser = selectedUser;
 
         SelectItem si;
-
-        saldo = 0;
-        überstundenNach19 = 0;
 
         this.selectedDate = null;
         this.selectedYear = 0;
@@ -230,7 +228,7 @@ public class UserDetailsBean {
                     Double sollzeit = Double.parseDouble(trd.getSollZeit());
                     Double breaktime = worklist.get(0).getBreakTime() * 1.0;
 
-                    saldotemp = worktime - sollzeit;                    
+                    saldotemp = worktime - sollzeit;
 
                     überstundenNach19 += Double.parseDouble(trd.getOverTime19plus());
 
@@ -401,6 +399,8 @@ public class UserDetailsBean {
         HSSFWorkbook wb = (HSSFWorkbook) document;
         HSSFSheet sheet = wb.getSheetAt(0);
 
+        sheet.shiftRows(0, sheet.getLastRowNum(), 2);
+
         HSSFRow topRow = sheet.createRow(0);
 
         topRow.createCell(0).setCellValue("Monatsübersicht - " + selectedDate.format(DateTimeFormatter.ofPattern("MM.yyyy")));
@@ -516,7 +516,7 @@ public class UserDetailsBean {
 
         DecimalFormat df = new DecimalFormat("#.#");
         pdfTable.addCell(new Paragraph("Saldo: " + getPlusOrMinus() + df.format(saldo), font));
-        pdfTable.addCell(new Paragraph("Gesamt:" + überstundenNach19, font));
+        pdfTable.addCell(new Paragraph("Gesamt: " + überstundenNach19, font));
         pdfTable.addCell(new Paragraph("Verbleibender Urlaub am Ende des Monats: " + urlaubsanspruch + " Tage", font));
 
         return pdfTable;

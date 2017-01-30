@@ -128,7 +128,7 @@ and open the template in the editor.
 
                         <p:outputLabel for="from" value="From:" />
                         <p:calendar id="from" value="#{scheduleView.event.startDate}"  pattern="dd.MM.yyyy HH:mm" showOn="button" mask="true"
-                                    mindate="#{scheduleView.startDateToday}" maxdate="#{scheduleView.endDateToday}">
+                                    mindate="#{scheduleView.allowedStartDateToday}" maxdate="#{scheduleView.allowedEndDateToday}">
 
                             <p:ajax event="dateSelect" process="from" update="breaktime" partialSubmit="true"/>
                             <p:ajax event="valueChange" process="from" update="breaktime" partialSubmit="true"/>
@@ -137,7 +137,7 @@ and open the template in the editor.
 
                         <p:outputLabel for="to" value="To:" />
                         <p:calendar id="to" value="#{scheduleView.event.endDate}"  pattern="dd.MM.yyyy HH:mm" showOn="button" mask="true"
-                                    mindate="#{scheduleView.startDateToday}" maxdate="#{scheduleView.endDateToday}" >
+                                    mindate="#{scheduleView.allowedStartDateToday}" maxdate="#{scheduleView.allowedEndDateToday}" >
 
                             <p:ajax event="dateSelect" process="to" update="breaktime" partialSubmit="true"/>
                             <p:ajax event="valueChange" process="to" update="breaktime" partialSubmit="true"/>

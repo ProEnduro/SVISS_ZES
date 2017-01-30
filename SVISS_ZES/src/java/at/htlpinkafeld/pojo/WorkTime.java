@@ -5,12 +5,15 @@
  */
 package at.htlpinkafeld.pojo;
 
+import at.htlpinkafeld.mobileInterface.service.util.LocalDateTimeAdapter;
+import at.htlpinkafeld.mobileInterface.service.util.LocalTimeAdapter;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  *
@@ -19,14 +22,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class WorkTime implements Serializable {
 
-    private int timeID;
+    private Integer timeID;
     private User user;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private LocalTime sollStartTime;
     private LocalTime sollEndTime;
     //Break Time in minutes
-    private int breakTime;
+    private Integer breakTime;
     private String startComment;
     private String endComment;
 
@@ -47,7 +50,7 @@ public class WorkTime implements Serializable {
     }
 
     @Deprecated
-    public WorkTime(int timeID, User user, LocalDateTime startTime, LocalDateTime endTime, LocalTime sollStartTime, LocalTime sollEndTime, int breakTime, String startComment, String endComment) {
+    public WorkTime(Integer timeID, User user, LocalDateTime startTime, LocalDateTime endTime, LocalTime sollStartTime, LocalTime sollEndTime, Integer breakTime, String startComment, String endComment) {
         this.timeID = timeID;
         this.user = user;
         this.startTime = startTime;
@@ -59,7 +62,7 @@ public class WorkTime implements Serializable {
         this.endComment = endComment;
     }
 
-    public WorkTime(User user, LocalDateTime startTime, LocalDateTime endTime, int breakTime, String startComment, String endComment) {
+    public WorkTime(User user, LocalDateTime startTime, LocalDateTime endTime, Integer breakTime, String startComment, String endComment) {
         this();
         this.user = user;
         this.startTime = startTime;
@@ -75,11 +78,11 @@ public class WorkTime implements Serializable {
         this.startTime = startTime;
     }
 
-    public int getTimeID() {
+    public Integer getTimeID() {
         return timeID;
     }
 
-    public void setTimeID(int timeID) {
+    public void setTimeID(Integer timeID) {
         this.timeID = timeID;
     }
 
@@ -91,43 +94,51 @@ public class WorkTime implements Serializable {
         this.user = user;
     }
 
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     public LocalDateTime getStartTime() {
         return startTime;
     }
 
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     public LocalDateTime getEndTime() {
         return endTime;
     }
 
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
 
+    @XmlJavaTypeAdapter(LocalTimeAdapter.class)
     public LocalTime getSollStartTime() {
         return sollStartTime;
     }
 
+    @XmlJavaTypeAdapter(LocalTimeAdapter.class)
     public void setSollStartTime(LocalTime sollStartTime) {
         this.sollStartTime = sollStartTime;
     }
 
+    @XmlJavaTypeAdapter(LocalTimeAdapter.class)
     public LocalTime getSollEndTime() {
         return sollEndTime;
     }
 
+    @XmlJavaTypeAdapter(LocalTimeAdapter.class)
     public void setSollEndTime(LocalTime sollEndTime) {
         this.sollEndTime = sollEndTime;
     }
 
-    public int getBreakTime() {
+    public Integer getBreakTime() {
         return breakTime;
     }
 
-    public void setBreakTime(int breakTime) {
+    public void setBreakTime(Integer breakTime) {
         this.breakTime = breakTime;
     }
 
@@ -147,10 +158,14 @@ public class WorkTime implements Serializable {
         this.endComment = endComment;
     }
 
-    public int getOvertimeAfter19() {
+    /**
+     *
+     * @return WorkTime after 19:00 in Minutes
+     */
+    public double getOvertimeAfter19() {
         long ot = LocalTime.of(19, 0).until(endTime, ChronoUnit.MINUTES);
         if (ot >= 0) {
-            return (int) ot;
+            return ot;
         } else {
             return 0;
         }

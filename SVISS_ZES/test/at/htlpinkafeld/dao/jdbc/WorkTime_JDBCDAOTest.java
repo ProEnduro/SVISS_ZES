@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -30,6 +31,11 @@ public class WorkTime_JDBCDAOTest {
     public WorkTime_JDBCDAOTest() {
         workTime_DAO = JDBCDAOFactory.getDAOFactory().getWorkTimeDAO();
         ConnectionManager.setDebugInstance(true);
+    }
+
+    @AfterClass
+    public static void setUpClass() throws Exception {
+        ConnectionManager.setDebugInstance(false);
     }
 
     @After

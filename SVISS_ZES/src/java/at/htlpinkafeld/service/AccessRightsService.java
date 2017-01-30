@@ -54,7 +54,7 @@ public class AccessRightsService implements DAODML_Observer {
     }
 
     public static boolean checkPermission(AccessLevel al, String neededPermission) {
-        return al.containsPermission(neededPermission) || al.containsPermission("ALL");
+        return al.containsPermission(neededPermission.toUpperCase()) || al.containsPermission("ALL");
     }
 
     public static AccessLevel getAccessLevelFromName(String accessLevelString) {

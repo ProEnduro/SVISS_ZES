@@ -43,11 +43,11 @@ public class AccessLevel implements Serializable {
         this.permissions = permissions;
     }
 
-    public int getAccessLevelID() {
+    public Integer getAccessLevelID() {
         return accessLevelID;
     }
 
-    public void setAccessLevelID(int accessLevelID) {
+    public void setAccessLevelID(Integer accessLevelID) {
         this.accessLevelID = accessLevelID;
     }
 

@@ -5,6 +5,9 @@
  */
 package at.htlpinkafeld.pojo;
 
+import at.htlpinkafeld.mobileInterface.service.util.DayOfWeekAdapter;
+import at.htlpinkafeld.mobileInterface.service.util.LocalDateAdapter;
+import at.htlpinkafeld.mobileInterface.service.util.LocalTimeAdapter;
 import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -12,6 +15,7 @@ import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  *
@@ -24,6 +28,10 @@ public class SollZeit implements Serializable {
     private User user;
     private LocalTime sollStartTime;
     private LocalTime sollEndTime;
+
+    @Deprecated
+    public SollZeit() {
+    }
 
     public SollZeit(SollZeit sz) {
         this.day = sz.day;
@@ -69,10 +77,12 @@ public class SollZeit implements Serializable {
         return null;
     }
 
+    @XmlJavaTypeAdapter(DayOfWeekAdapter.class)
     public DayOfWeek getDay() {
         return day;
     }
 
+    @XmlJavaTypeAdapter(DayOfWeekAdapter.class)
     public void setDay(DayOfWeek day) {
         this.day = day;
     }
@@ -85,18 +95,22 @@ public class SollZeit implements Serializable {
         this.user = user;
     }
 
+    @XmlJavaTypeAdapter(LocalTimeAdapter.class)
     public LocalTime getSollStartTime() {
         return sollStartTime;
     }
 
+    @XmlJavaTypeAdapter(LocalTimeAdapter.class)
     public void setSollStartTime(LocalTime sollStartTime) {
         this.sollStartTime = sollStartTime;
     }
 
+    @XmlJavaTypeAdapter(LocalTimeAdapter.class)
     public LocalTime getSollEndTime() {
         return sollEndTime;
     }
 
+    @XmlJavaTypeAdapter(LocalTimeAdapter.class)
     public void setSollEndTime(LocalTime sollEndTime) {
         this.sollEndTime = sollEndTime;
     }

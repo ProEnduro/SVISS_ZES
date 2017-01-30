@@ -146,7 +146,9 @@ public abstract class Base_JDBCDAO<T> extends Base_DAO_Observable<T> {
             Map<String, Object> entityMap = entityToMap(o);
             int i = 1;
             for (String col : ALL_COLUMNS) {
-                if (entityMap.get(col).toString().contentEquals("-1")) {
+                if (entityMap.get(col) == null) {
+                    stmt.setNull(i, Types.INTEGER);
+                } else if (entityMap.get(col).toString().contentEquals("-1")) {
                     stmt.setNull(i, Types.INTEGER);
                 } else {
                     stmt.setObject(i, entityMap.get(col));

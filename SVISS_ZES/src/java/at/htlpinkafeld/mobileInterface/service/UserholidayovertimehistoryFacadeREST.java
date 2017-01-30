@@ -8,11 +8,12 @@ package at.htlpinkafeld.mobileInterface.service;
 import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.Base_DAO;
 import at.htlpinkafeld.mobileInterface.authorization.Secured;
+import at.htlpinkafeld.mobileInterface.service.util.PATCH;
+import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserHistoryEntry;
 import java.util.List;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -29,7 +30,7 @@ import javax.ws.rs.core.MediaType;
 public class UserholidayovertimehistoryFacadeREST extends AbstractFacade<UserHistoryEntry> {
 
     @PersistenceContext(unitName = "SVISS_ZESPU")
-    private Base_DAO dao;
+    private final Base_DAO dao;
 
     public UserholidayovertimehistoryFacadeREST() {
         super(UserHistoryEntry.class);
@@ -42,7 +43,8 @@ public class UserholidayovertimehistoryFacadeREST extends AbstractFacade<UserHis
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public UserHistoryEntry create(UserHistoryEntry entity) {
-        return super.create(entity);
+        UserHistoryEntry uhe = super.create(entity);
+        return uhe;
     }
 
     @PUT
@@ -53,7 +55,7 @@ public class UserholidayovertimehistoryFacadeREST extends AbstractFacade<UserHis
         super.edit(entity);
     }
 
-    @DELETE
+    @PATCH
     @Secured
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -66,27 +68,15 @@ public class UserholidayovertimehistoryFacadeREST extends AbstractFacade<UserHis
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<UserHistoryEntry> findAll() {
-        return super.findAll();
+        List<UserHistoryEntry> historyEntrys = super.findAll();
+        for (UserHistoryEntry uhe : historyEntrys) {
+            uhe.setUser(new User(uhe.getUser()));
+        }
+        return historyEntrys;
     }
 
     @Override
     protected Base_DAO getDAO() {
         return dao;
     }
-
-    @Override
-    public UserHistoryEntry create(String jsonEntity) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void edit(String jsonEntity) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void remove(String jsonEntity) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
 }

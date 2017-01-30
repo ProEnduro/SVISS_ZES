@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.BeforeClass;
 
 /**
  *
@@ -31,33 +31,9 @@ public class AbsenceType_JDBCDAOTest {
         absenceType_DAO = DAOFactory.getDAOFactory().getAbsenceTypeDAO();
     }
 
-    @BeforeClass
+    @AfterClass
     public static void setUpClass() throws Exception {
-// rcarver - setup the jndi context and the datasource
-        try {
-            // Create initial context
-            /*System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-                    "org.apache.naming.java.javaURLContextFactory");
-            System.setProperty(Context.URL_PKG_PREFIXES,
-                    "org.apache.naming");
-            InitialContext ic = new javax.naming.InitialContext();
-
-            ic.createSubcontext("java:");
-            ic.createSubcontext("java:/comp");
-            ic.createSubcontext("java:/comp/env");
-            ic.createSubcontext("java:/comp/env/jdbc");
-
-            // Construct DataSource
-            MysqlConnectionPoolDataSource ds = new MysqlConnectionPoolDataSource();
-            ds.setURL("jdbc:mysql://localhost:3306/zes_sviss?zeroDateTimeBehavior=convertToNull");
-            ds.setUser("root");
-            ds.setPassword("admin");
-
-            ic.bind("java:/comp/env/jdbc/zes_sviss", ds);*/
-
-        } catch (Exception ex) {
-            Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        ConnectionManager.setDebugInstance(false);
     }
 
     @After

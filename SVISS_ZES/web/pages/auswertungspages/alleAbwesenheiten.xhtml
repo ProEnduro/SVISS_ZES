@@ -33,7 +33,7 @@ and open the template in the editor.
 
 
             <h:form id="absenceform">
-                <p:dataTable id="absenceid" var="absence" value="#{alleAbwesenheitenBean.absence}" paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                <p:dataTable id="absenceid" var="absence" value="#{alleAbwesenheitenBean.absences}" paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
                              paginator="true" rows="30" style="margin-bottom:20px">
 
                     <p:column headerText="Benutzer" sortBy="#{absence.user.username}" filterBy="#{absence.user.username}">

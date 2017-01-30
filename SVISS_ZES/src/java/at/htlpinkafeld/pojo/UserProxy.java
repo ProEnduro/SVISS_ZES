@@ -9,7 +9,6 @@ import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.mobileInterface.service.util.LocalDateAdapter;
 import at.htlpinkafeld.service.AccessRightsService;
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -20,187 +19,186 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * @author Martin Six
  */
 @XmlRootElement
-public class UserProxy implements User {
+public class UserProxy extends User {
 
     private static final User_DAO USER_DAO;
-    private User user;
 
     static {
         USER_DAO = DAOFactory.getDAOFactory().getUserDAO();
     }
 
     public UserProxy() {
-        user = new UserImpl();
+        super();
     }
 
     public UserProxy(User u) {
-        user = new UserImpl(u);
+        super(u);
         if (u.ApproverInitialized()) {
-            user.setApprover(u.getApprover());
+            super.setApprover(u.getApprover());
         }
     }
 
     @Deprecated
     public UserProxy(Integer userNr, AccessLevel accessLevel, String PersName, Integer vacationLeft, Integer overTimeLeft, String username, String email, LocalDate hiredate, String pass, Double weekTime, boolean disabled) {
-        user = new UserImpl(userNr, accessLevel, PersName, vacationLeft, overTimeLeft, username, email, hiredate, pass, weekTime, disabled);
+        super(userNr, accessLevel, PersName, vacationLeft, overTimeLeft, username, email, hiredate, pass, weekTime, disabled);
     }
 
     public UserProxy(AccessLevel accessLevel, String PersName, Integer vacationLeft, Integer overTimeLeft, String username, String email, LocalDate hiredate, String pass, Double weekTime) {
-        user = new UserImpl(accessLevel, PersName, vacationLeft, overTimeLeft, username, email, hiredate, pass, weekTime);
+        super(accessLevel, PersName, vacationLeft, overTimeLeft, username, email, hiredate, pass, weekTime);
     }
 
     public UserProxy(AccessLevel accessLevel, String PersName, String username, String email, LocalDate hiredate, String pass, Double weekTime) {
-        user = new UserImpl(accessLevel, PersName, username, email, hiredate, pass, weekTime);
+        super(accessLevel, PersName, username, email, hiredate, pass, weekTime);
     }
 
     @Override
     public AccessLevel getAccessLevel() {
-        return user.getAccessLevel();
+        return super.getAccessLevel();
     }
 
     @Override
     public String getDisabledString() {
-        return user.getDisabledString();
+        return super.getDisabledString();
     }
 
     @Override
     public String getEmail() {
-        return user.getEmail();
+        return super.getEmail();
     }
 
     @Override
     @XmlJavaTypeAdapter(LocalDateAdapter.class)
     public LocalDate getHiredate() {
-        return user.getHiredate();
+        return super.getHiredate();
     }
 
     @Override
     public Integer getOverTimeLeft() {
-        return user.getOverTimeLeft();
+        return super.getOverTimeLeft();
     }
 
     @Override
     public String getPass() {
-        return user.getPass();
+        return super.getPass();
     }
 
     @Override
     public String getPersName() {
-        return user.getPersName();
+        return super.getPersName();
     }
 
     @Override
     public Integer getUserNr() {
-        return user.getUserNr();
+        return super.getUserNr();
     }
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return super.getUsername();
     }
 
     @Override
     public Integer getVacationLeft() {
-        return user.getVacationLeft();
+        return super.getVacationLeft();
     }
 
     @Override
     public Double getWeekTime() {
-        return user.getWeekTime();
+        return super.getWeekTime();
     }
 
     @Override
     public boolean isDisabled() {
-        return user.isDisabled();
+        return super.isDisabled();
     }
 
     @Override
     public void setAccessLevel(AccessLevel accessLevel) {
-        user.setAccessLevel(accessLevel);
+        super.setAccessLevel(accessLevel);
     }
 
     @Override
     public void setDisabled(boolean disabled) {
-        user.setDisabled(disabled);
+        super.setDisabled(disabled);
     }
 
     @Override
     public void setEmail(String email) {
-        user.setEmail(email);
+        super.setEmail(email);
     }
 
     @Override
     @XmlJavaTypeAdapter(LocalDateAdapter.class)
     public void setHiredate(LocalDate hiredate) {
-        user.setHiredate(hiredate);
+        super.setHiredate(hiredate);
     }
 
     @Override
     public void setOverTimeLeft(Integer overTimeLeft) {
-        user.setOverTimeLeft(overTimeLeft);
+        super.setOverTimeLeft(overTimeLeft);
     }
 
     @Override
     public void setPass(String pass) {
-        user.setPass(pass);
+        super.setPass(pass);
     }
 
     @Override
     public void setPersName(String PersName) {
-        user.setPersName(PersName);
+        super.setPersName(PersName);
     }
 
     @Override
     public void setUserNr(Integer userNr) {
-        user.setUserNr(userNr);
+        super.setUserNr(userNr);
     }
 
     @Override
     public void setUsername(String username) {
-        user.setUsername(username);
+        super.setUsername(username);
     }
 
     @Override
     public void setVacationLeft(Integer vacationLeft) {
-        user.setVacationLeft(vacationLeft);
+        super.setVacationLeft(vacationLeft);
     }
 
     @Override
     public void setWeekTime(Double weekTime) {
-        user.setWeekTime(weekTime);
+        super.setWeekTime(weekTime);
     }
 
     @Override
     public List<User> getApprover() {
-        if (user.getApprover() == null) {
-            user.setApprover(USER_DAO.getApprover(user));
+        if (super.getApprover() == null) {
+            super.setApprover(USER_DAO.getApprover(this));
         }
-        return user.getApprover();
+        return super.getApprover();
     }
 
     @Override
     public void setApprover(List<User> approver) {
-        user.setApprover(approver);
+        super.setApprover(approver);
     }
 
     @Override
     public Boolean ApproverInitialized() {
-        return user.ApproverInitialized();
+        return super.ApproverInitialized();
     }
 
     @Override
     public boolean equals(Object obj) {
-        return user.equals(obj);
+        return super.equals(obj);
     }
 
     @Override
     public int hashCode() {
-        return user.hashCode();
+        return super.hashCode();
     }
 
     @Override
     public String toString() {
-        return user.toString();
+        return super.toString();
     }
 
     public static User fromString(String s) {
@@ -218,7 +216,7 @@ public class UserProxy implements User {
         String pass = attributes[10].substring(attributes[10].indexOf("=") + 1);
         double weekTime = Double.parseDouble(attributes[11].substring(attributes[11].indexOf("=") + 1));
         boolean disabled = Boolean.valueOf(attributes[12].substring(attributes[12].indexOf("=") + 1));
-        return new UserProxy(new UserImpl(userNr, al, persName, vacLeft, overLeft, userName, email, hiredate, pass, weekTime, disabled));
+        return new UserProxy(new User(userNr, al, persName, vacLeft, overLeft, userName, email, hiredate, pass, weekTime, disabled));
     }
 
 }

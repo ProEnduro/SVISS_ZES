@@ -66,7 +66,13 @@ class UserHistory_JDBCDAO extends Base_JDBCDAO<UserHistoryEntry> implements User
 
     @Override
     protected void updateEntityWithAutoKeys(ResultSet rs, UserHistoryEntry entity) {
-
+        try {
+            if (rs.next()) {
+                entity.setTimestamp(rs.getTimestamp(MONTHTS_COL).toLocalDateTime());
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHistory_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override

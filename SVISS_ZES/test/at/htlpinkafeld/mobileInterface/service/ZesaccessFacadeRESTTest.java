@@ -7,11 +7,9 @@ package at.htlpinkafeld.mobileInterface.service;
 
 import at.htlpinkafeld.dao.jdbc.ConnectionManager;
 import at.htlpinkafeld.mobileInterface.authorization.Credentials;
-import at.htlpinkafeld.pojo.Absence;
-import at.htlpinkafeld.pojo.User;
-import at.htlpinkafeld.service.AbsenceService;
-import at.htlpinkafeld.service.BenutzerverwaltungService;
-import java.time.LocalDateTime;
+import at.htlpinkafeld.pojo.AbsenceType;
+import at.htlpinkafeld.pojo.AccessLevel;
+import java.util.LinkedList;
 import java.util.List;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -30,14 +28,14 @@ import org.junit.Test;
  *
  * @author Martin Six
  */
-public class AbsenceFacadeRESTTest {
+public class ZesaccessFacadeRESTTest {
 
     private WebTarget webTarget;
     private Client client;
     private String token;
     private static final String BASE_URI = "http://localhost:8084/SVISS_ZES/webresources";
 
-    public AbsenceFacadeRESTTest() {
+    public ZesaccessFacadeRESTTest() {
         ConnectionManager.setDebugInstance(true);
     }
 
@@ -54,7 +52,7 @@ public class AbsenceFacadeRESTTest {
         Credentials credentials = new Credentials("admin", "admin");
         token = authTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(credentials, javax.ws.rs.core.MediaType.APPLICATION_JSON), Response.class).readEntity(String.class);
 
-        webTarget = client.target(BASE_URI).path("absence");
+        webTarget = client.target(BASE_URI).path("zesaccess");
     }
 
     @After
@@ -64,19 +62,19 @@ public class AbsenceFacadeRESTTest {
     }
 
     /**
-     * Test of findAll method, of class AbsenceFacadeREST.
+     * Test of findAll method, of class ZesaccessFacadeREST.
      */
     @Test
     public void testFindAll() {
         System.out.println("findAll");
         Response result;
-        List<Absence> l;
+        List<AccessLevel> l;
 
         result = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
-        l = (List<Absence>) result.readEntity(new GenericType<List<Absence>>() {
+        l = (List<AccessLevel>) result.readEntity(new GenericType<List<AccessLevel>>() {
         });
 
-        Assert.assertFalse("Check for getList being empty", l.isEmpty());
+        Assert.assertFalse(l.isEmpty());
 
         for (Object o : l) {
             o.toString();
@@ -84,44 +82,45 @@ public class AbsenceFacadeRESTTest {
     }
 
     /**
-     * Test of various methods, of class AbsenceFacadeREST.
+     * Test of various methods, of class ZesaccessFacadeREST.
      */
     @Test
     public void testCreateEditRemove() {
         System.out.println("create");
-        Absence result;
+        AccessLevel result;
         Response response;
-        List<Absence> absenceL;
-        Absence a = new Absence(new User(BenutzerverwaltungService.getUserList().get(0)), AbsenceService.getList().get(0), LocalDateTime.of(1800, 7, 9, 0, 0), LocalDateTime.of(1800, 7, 12, 0, 0));
-        Response res = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).post(Entity.json(a));
-        result = res.readEntity(Absence.class);
-        Assert.assertNotEquals("Check create and the auto-created key", a.getAbsenceID(), result.getAbsenceID());
+        List<AccessLevel> accessLevels;
+        AccessLevel al = new AccessLevel("NoPlan", new LinkedList());
+        Response res = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).post(Entity.json(al));
+        result = res.readEntity(AccessLevel.class);
 
-        a = new Absence(result);
-        a.setUser(new User(a.getUser()));
-        a.setReason("%&?$§!NoPlan%&?$§!%&?$§!");
+        Assert.assertNotEquals("Assert if create and key-generation worked", al.getAccessLevelID(), result.getAccessLevelID());
 
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).put(Entity.json(a));
+        al = new AccessLevel(result);
+        al.setAccessLevelName("%&?$§!NoPlan%&?$§!%&?$§!");
+        al.getPermissions().add("ALL");
+
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).put(Entity.json(al));
 
         response = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
-        absenceL = (List<Absence>) response.readEntity((GenericType) new GenericType<List<Absence>>() {
+        accessLevels = (List<AccessLevel>) response.readEntity((GenericType) new GenericType<List<AccessLevel>>() {
         });
 
-        for (Absence absence : absenceL) {
-            if (absence.getReason().equals(a.getReason())) {
-                result = absence;
+        for (AccessLevel accessLevel : accessLevels) {
+            if (accessLevel.getAccessLevelID().equals(al.getAccessLevelID())) {
+                result = accessLevel;
             }
         }
 
-        Assert.assertEquals("Check if edit works", a, result);
+        Assert.assertEquals("Assert if edit worked", al, result);
 
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).build("PATCH", Entity.json(a)).invoke();
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).build("PATCH", Entity.json(al)).invoke();
 
         response = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
-        absenceL = (List<Absence>) response.readEntity((GenericType) new GenericType<List<Absence>>() {
+        accessLevels = (List<AccessLevel>) response.readEntity((GenericType) new GenericType<List<AccessLevel>>() {
         });
 
-        Assert.assertFalse("Check if the remove worked via get", absenceL.contains(a));
+        Assert.assertFalse("Assert if delete worked", accessLevels.contains(al));
     }
 
 }

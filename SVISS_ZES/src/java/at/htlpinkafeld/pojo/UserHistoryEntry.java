@@ -5,20 +5,26 @@
  */
 package at.htlpinkafeld.pojo;
 
+import at.htlpinkafeld.mobileInterface.service.util.LocalDateTimeAdapter;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  *
  * @author Martin Six
  */
 @XmlRootElement
-public class UserHistoryEntry {
+public class UserHistoryEntry implements Serializable {
 
     private LocalDateTime timestamp;
     private User user;
-    private int overtime;
-    private int vacation;
+    private Integer overtime;
+    private Integer vacation;
+
+    public UserHistoryEntry() {
+    }
 
     public UserHistoryEntry(UserHistoryEntry entry) {
         this.timestamp = entry.timestamp;
@@ -34,10 +40,12 @@ public class UserHistoryEntry {
         this.vacation = vacation;
     }
 
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
@@ -50,19 +58,19 @@ public class UserHistoryEntry {
         this.user = user;
     }
 
-    public int getOvertime() {
+    public Integer getOvertime() {
         return overtime;
     }
 
-    public void setOvertime(int overtime) {
+    public void setOvertime(Integer overtime) {
         this.overtime = overtime;
     }
 
-    public int getVacation() {
+    public Integer getVacation() {
         return vacation;
     }
 
-    public void setVacation(int vacation) {
+    public void setVacation(Integer vacation) {
         this.vacation = vacation;
     }
 

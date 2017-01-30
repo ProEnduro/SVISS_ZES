@@ -9,8 +9,11 @@ import at.htlpinkafeld.dao.util.DAODML_Observer;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.service.AccessRightsService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.context.FacesContext;
@@ -70,6 +73,17 @@ public class MasterBean implements DAODML_Observer {
                 break;
         }
 
+    }
+
+    public void refreshIfNoCurrentUser() {
+        if (user == null) {
+            FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+            try {
+                FacesContext.getCurrentInstance().getExternalContext().redirect("/SVISS_ZES/");
+            } catch (IOException ex) {
+                Logger.getLogger(MasterBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     public int getColumns() {

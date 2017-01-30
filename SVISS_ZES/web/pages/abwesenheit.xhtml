@@ -101,7 +101,7 @@ and open the template in the editor.
                     }
                 </style>
                 <h:form id="addAbsenceDlgForm">
-                    <p:dialog widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip" modal="true">
+                    <p:dialog widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip" modal="true" resizable="false">
                         <h:panelGrid id="eventDetails" columns="2">
                             <p:outputLabel for="from" value="From:" />
                             <p:calendar id="from" value="#{scheduleView.event.startDate}" pattern="#{scheduleView.pattern}" showOn="button" mask="true"/>
@@ -127,7 +127,7 @@ and open the template in the editor.
 
             <h:form id="absenceDialogForm">
 
-                <p:dialog id="absenceDialogID" widgetVar="absenceDialog" header="Absence Details" showEffect="clip" hideEffect="clip" closeOnEscape="true" modal="true">
+                <p:dialog id="absenceDialogID" widgetVar="absenceDialog" header="Absence Details" showEffect="clip" hideEffect="clip" closeOnEscape="true" modal="true" resizable="false">
                     <h:panelGrid id="absenceDetails" columns="2">
                         <p:outputLabel for="absencetitle" value="Titles:" />
                         <p:inputText id="absencetitle" value="#{scheduleView.event.title}" readonly="true"/>
@@ -149,7 +149,7 @@ and open the template in the editor.
 
             <h:form id="worktimeDialogForm">
 
-                <p:dialog id="worktimeDialogID" widgetVar="worktimeDialog" header="Worktime Details" showEffect="clip" hideEffect="clip" closeOnEscape="true">
+                <p:dialog id="worktimeDialogID" widgetVar="worktimeDialog" header="Worktime Details" showEffect="clip" hideEffect="clip" closeOnEscape="true" resizable="false">
                     <h:panelGrid id="workdetails" columns="2">
                         <p:outputLabel for="worktitle" value="Titles:" />
                         <p:inputText id="worktitle" value="#{scheduleView.event.title}" readonly="true"/>
@@ -174,7 +174,7 @@ and open the template in the editor.
 
             <h:form id="feiertagDialogForm">
 
-                <p:dialog id="feiertagDialogID" widgetVar="feiertagDialog" header="Feiertag Details" showEffect="clip" hideEffect="clip" closeOnEscape="true">
+                <p:dialog id="feiertagDialogID" widgetVar="feiertagDialog" header="Feiertag Details" showEffect="clip" hideEffect="clip" closeOnEscape="true" resizable="false">
                     <h:panelGrid id="absenceDetails" columns="2">
                         <p:outputLabel for="feiertagtitle" value="Titles:" />
                         <p:inputText id="feiertagtitle" value="#{scheduleView.event.title}" readonly="true"/>

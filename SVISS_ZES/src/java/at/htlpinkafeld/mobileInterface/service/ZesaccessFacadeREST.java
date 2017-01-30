@@ -8,6 +8,7 @@ package at.htlpinkafeld.mobileInterface.service;
 import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.Base_DAO;
 import at.htlpinkafeld.mobileInterface.authorization.Secured;
+import at.htlpinkafeld.mobileInterface.service.util.PATCH;
 import at.htlpinkafeld.pojo.AccessLevel;
 import java.util.List;
 import javax.persistence.PersistenceContext;
@@ -53,7 +54,7 @@ public class ZesaccessFacadeREST extends AbstractFacade<AccessLevel> {
         super.edit(entity);
     }
 
-    @DELETE
+    @PATCH
     @Secured
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -62,7 +63,7 @@ public class ZesaccessFacadeREST extends AbstractFacade<AccessLevel> {
     }
 
     @GET
-//    @Secured
+    @Secured
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<AccessLevel> findAll() {
@@ -72,21 +73,6 @@ public class ZesaccessFacadeREST extends AbstractFacade<AccessLevel> {
     @Override
     protected Base_DAO getDAO() {
         return dao;
-    }
-
-    @Override
-    public AccessLevel create(String jsonEntity) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void edit(String jsonEntity) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void remove(String jsonEntity) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

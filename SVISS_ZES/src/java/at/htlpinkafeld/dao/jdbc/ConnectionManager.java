@@ -30,17 +30,16 @@ public class ConnectionManager {
     private WrappedConnection testConnection = null;
 
     protected ConnectionManager() throws SQLException {
-        if (!test) {
-            Context ctx;
-            MysqlDataSource mysqlds = new MysqlDataSource();
+        Context ctx;
+        MysqlDataSource mysqlds = new MysqlDataSource();
 //                ctx = new javax.naming.InitialContext();
 //                ds = (DataSource) ctx.lookup("java:comp/env/" + DATASOURCE);
-            mysqlds.setURL("jdbc:mysql://localhost:3306/ZES_SVISS");
-            mysqlds.setUser("root");
-            mysqlds.setPassword("Burgenland2016#");
-            ds = mysqlds;
-        } else {
-            testConnection = new WrappedConnection(DriverManager.getConnection("jdbc:mysql://localhost:3306/" + "ZES_SVISS?useSSL=false", "root", "Burgenland2016#"), false);
+        mysqlds.setURL("jdbc:mysql://localhost:3306/ZES_SVISS");
+        mysqlds.setUser("root");
+        mysqlds.setPassword("Burgenland2016#");
+        ds = mysqlds;
+        if (test) {
+            testConnection = new WrappedConnection(ds.getConnection(), false);
             testConnection.getConn().setAutoCommit(false);
         }
 

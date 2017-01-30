@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -34,6 +35,11 @@ public class Absence_JDBCDAOTest {
         absence_DAO = DAOFactory.getDAOFactory().getAbsenceDAO();
         absenceType_DAO = DAOFactory.getDAOFactory().getAbsenceTypeDAO();
         ConnectionManager.setDebugInstance(true);
+    }
+
+    @AfterClass
+    public static void setUpClass() throws Exception {
+        ConnectionManager.setDebugInstance(false);
     }
 
     @After
@@ -152,7 +158,7 @@ public class Absence_JDBCDAOTest {
 
     /**
      * Test of getAbsencesByUser_Acknowledgment method, of class
- Absence_JDBCDAO.
+     * Absence_JDBCDAO.
      */
     @Test
     public void testGetAbsencesByUserAndAcknowledgment() {

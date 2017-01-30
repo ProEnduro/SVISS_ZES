@@ -29,7 +29,7 @@ import org.apache.poi.hssf.util.HSSFColor;
  */
 public class AlleAbwesenheitenBean {
 
-    List<Absence> absence;
+    List<Absence> absences;
 
     User currentUser;
 
@@ -37,18 +37,18 @@ public class AlleAbwesenheitenBean {
     private List<String> allUsers;
 
     public AlleAbwesenheitenBean() {
-        absence = AbsenceService.getAllAbsences();
+        absences = AbsenceService.getAllAbsences();
 
-        this.loadUserSelect();
+        loadUserSelect();
 
     }
 
-    public List<Absence> getAbsence() {
-        return absence;
+    public List<Absence> getAbsences() {
+        return absences;
     }
 
-    public void setAbsence(List<Absence> absence) {
-        this.absence = absence;
+    public void setAbsences(List<Absence> absences) {
+        this.absences = absences;
     }
 
     public String getSelectedUser() {
@@ -67,7 +67,7 @@ public class AlleAbwesenheitenBean {
         this.allUsers = allUsers;
     }
 
-    public String loadUserSelect() {
+    private String loadUserSelect() {
         this.selectedUser = "All";
         this.allUsers = new ArrayList<>();
 
@@ -84,9 +84,9 @@ public class AlleAbwesenheitenBean {
         currentUser = BenutzerverwaltungService.getUserByUsername(selectedUser);
 
         if (selectedUser.equals("All")) {
-            absence = AbsenceService.getAllAbsences();
+            absences = AbsenceService.getAllAbsences();
         } else {
-            absence = AbsenceService.getAbsenceByUser(currentUser);
+            absences = AbsenceService.getAbsenceByUser(currentUser);
             //absence=AbsenceService.getAbsencesByUserBetweenDates(currentUser, new Date(2016, 01, 01, 00, 00, 00), new Date(2016, 12, 31, 00, 00, 00));          
         }
     }
@@ -97,11 +97,11 @@ public class AlleAbwesenheitenBean {
         pdf.add(new Paragraph("\n\nStand: " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
         pdf.close();
     }
-    
+
     public void postProcessXLS(Object document) {
         HSSFWorkbook wb = (HSSFWorkbook) document;
         HSSFSheet sheet = wb.getSheetAt(0);
-        
+
         HSSFRow header = sheet.getRow(0);
 
         HSSFCellStyle cellStyle = wb.createCellStyle();

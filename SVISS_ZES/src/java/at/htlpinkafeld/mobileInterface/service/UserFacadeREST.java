@@ -10,7 +10,7 @@ import at.htlpinkafeld.dao.interf.Base_DAO;
 import at.htlpinkafeld.mobileInterface.authorization.Secured;
 import at.htlpinkafeld.mobileInterface.service.util.PATCH;
 import at.htlpinkafeld.pojo.User;
-import at.htlpinkafeld.pojo.UserImpl;
+import at.htlpinkafeld.pojo.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
@@ -51,42 +51,24 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Override
-    public User create(String entity) {
-        User u = null;
-        try {
-            u = mapper.readValue(entity, UserImpl.class);
-        } catch (IOException ex) {
-            Logger.getLogger(UserFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return super.create(u);
+    public User create(User entity) {
+        return super.create(entity);
     }
 
     @PUT
     @Secured
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Override
-    public void edit(String entity) {
-        User u = null;
-        try {
-            u = mapper.readValue(entity, UserImpl.class);
-        } catch (IOException ex) {
-            Logger.getLogger(UserFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        super.edit(u);
+    public void edit(User entity) {
+        super.edit(entity);
     }
 
     @PATCH
     @Secured
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Override
-    public void remove(String entity) {
-        User u = null;
-        try {
-            u = mapper.readValue(entity, UserImpl.class);
-        } catch (IOException ex) {
-            Logger.getLogger(UserFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        super.remove(u);
+    public void remove(User entity) {
+        super.remove(entity);
     }
 
     @GET
@@ -97,7 +79,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
         List<User> users = super.findAll();
         List<User> usersImpl = new ArrayList<>();
         for (User u : users) {
-            usersImpl.add(new UserImpl(u));
+            usersImpl.add(new User(u));
         }
         return usersImpl;
     }

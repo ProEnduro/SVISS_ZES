@@ -54,7 +54,7 @@ public class TimeRowDisplay {
         workTimeEnd = wt.getEndTime().format(timeFormatter);
         breakTime = wt.getBreakTime();
 
-        DecimalFormat df = new DecimalFormat("#.##");
+        DecimalFormat df = new DecimalFormat("#,0#");
         double temp = wt.getSollStartTime().until(wt.getSollEndTime(), ChronoUnit.MINUTES) / 60.0;
         if (temp >= 6.0) {
             sollZeit = df.format(temp - 0.5);
@@ -62,7 +62,9 @@ public class TimeRowDisplay {
             sollZeit = df.format(temp);
         }
         workTime = df.format(wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES) / 60.0 - (breakTime / 60.0));
-        overTime19plus = df.format(wt.getOvertimeAfter19());
+
+        double ot19Plus = wt.getOvertimeAfter19() / 60.0;
+        overTime19plus = df.format(ot19Plus);
         reason = wt.getStartComment() + "   " + wt.getEndComment();
     }
 

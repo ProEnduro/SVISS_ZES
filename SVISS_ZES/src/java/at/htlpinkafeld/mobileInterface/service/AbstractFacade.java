@@ -13,7 +13,7 @@ import java.util.List;
  * @author Martin Six
  * @param <T>
  */
-public abstract class AbstractFacade<T> implements RestInterface<T>{
+public abstract class AbstractFacade<T> {
 
     private Class<T> entityClass;
 
@@ -39,5 +39,4 @@ public abstract class AbstractFacade<T> implements RestInterface<T>{
     public List<T> findAll() {
         return getDAO().getList();
     }
-
 }

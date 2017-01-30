@@ -17,6 +17,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -80,15 +81,15 @@ public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeit> implements SollZe
     @Override
     public List<SollZeit> getList() throws DAOException {
         List<SollZeit> sollZeiten = new LinkedList<>();
-        System.out.println("SELECT * FROM " + TABLE_NAME + " sz1 WHERE sz1." + INSERTED_COL
-                + " =  ( select MAX( sz2." + INSERTED_COL + ")  from " + TABLE_NAME + " sz2 where  sz1." + DAYID_COL + " = sz2." + DAYID_COL + " ) " + " GROUP BY " + DAYID_COL + SQL_ORDER_BY_LINE);
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                 Statement stmt = con.getConn().createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " sz1 WHERE sz1." + INSERTED_COL
                         + " =  ( select MAX( sz2." + INSERTED_COL + ")  from " + TABLE_NAME + " sz2 where  sz1." + DAYID_COL + " = sz2." + DAYID_COL + " ) " + " GROUP BY " + DAYID_COL + " " + SQL_ORDER_BY_LINE)) {
 
             while (rs.next()) {
-                sollZeiten.add(getEntityFromResultSet(rs));
+                if (!(rs.getTime(SOLLSTARTTIME_COL).toLocalTime().equals(LocalTime.MIN) && rs.getTime(SOLLENDTIME_COL).toLocalTime().equals(LocalTime.MIN))) {
+                    sollZeiten.add(getEntityFromResultSet(rs));
+                }
             }
 
         } catch (SQLException ex) {
@@ -115,8 +116,23 @@ public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeit> implements SollZe
      * @param o
      */
     @Override
+    @Deprecated
     public void delete(SollZeit o) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void insert(SollZeit sz) throws DAOException {
+        try {
+            super.insert(sz);
+        } catch (DAOException ex) {
+            try {
+                Thread.sleep(1000);
+                super.insert(sz);
+            } catch (InterruptedException ex1) {
+                Logger.getLogger(SollZeiten_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+        }
     }
 
     @Override
@@ -128,7 +144,9 @@ public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeit> implements SollZe
                         + " =  ( select MAX( sz2." + INSERTED_COL + ")  from " + TABLE_NAME + " sz2 where  sz1." + DAYID_COL + " = sz2." + DAYID_COL
                         + " AND sz1." + USERNR_COL + " = sz2." + USERNR_COL + " ) " + SQL_ORDER_BY_LINE)) {
             while (rs.next()) {
-                sollZeiten.add(getEntityFromResultSet(rs));
+                if (!(rs.getTime(SOLLSTARTTIME_COL).toLocalTime().equals(LocalTime.MIN) && rs.getTime(SOLLENDTIME_COL).toLocalTime().equals(LocalTime.MIN))) {
+                    sollZeiten.add(getEntityFromResultSet(rs));
+                }
             }
 
         } catch (SQLException ex) {
@@ -148,7 +166,7 @@ public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeit> implements SollZe
                         + " AND sz1." + DAYID_COL + " = '" + SollZeit.getDBShortFromDayOfWeek(d) + "' AND sz1." + INSERTED_COL
                         + " =  ( select MAX( " + INSERTED_COL + ")  from " + TABLE_NAME + " sz2 where  sz1." + DAYID_COL + " = sz2." + DAYID_COL
                         + " AND sz1." + USERNR_COL + " = sz2." + USERNR_COL + " ) " + SQL_ORDER_BY_LINE)) {
-            if (rs.next()) {
+            if (rs.next() && !(rs.getTime(SOLLSTARTTIME_COL).toLocalTime().equals(LocalTime.MIN) && rs.getTime(SOLLENDTIME_COL).toLocalTime().equals(LocalTime.MIN))) {
                 sollZeit = getEntityFromResultSet(rs);
             }
 
@@ -171,7 +189,7 @@ public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeit> implements SollZe
             stmt.setTimestamp(1, Timestamp.valueOf(ldt));
             ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
+            if (rs.next() && !(rs.getTime(SOLLSTARTTIME_COL).toLocalTime().equals(LocalTime.MIN) && rs.getTime(SOLLENDTIME_COL).toLocalTime().equals(LocalTime.MIN))) {
                 sollZeit = getEntityFromResultSet(rs);
             }
 

@@ -8,7 +8,6 @@ package at.htlpinkafeld.mobileInterface.service;
 import at.htlpinkafeld.dao.jdbc.ConnectionManager;
 import at.htlpinkafeld.mobileInterface.authorization.Credentials;
 import at.htlpinkafeld.pojo.User;
-import at.htlpinkafeld.pojo.UserImpl;
 import at.htlpinkafeld.pojo.UserProxy;
 import at.htlpinkafeld.service.AccessRightsService;
 import java.time.LocalDate;
@@ -22,6 +21,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,12 +41,15 @@ public class UserFacadeRESTTest {
         ConnectionManager.setDebugInstance(true);
     }
 
+    @AfterClass
+    public static void setUpClass() throws Exception {
+        ConnectionManager.setDebugInstance(false);
+    }
+
     @Before
     public void setUp() {
         client = javax.ws.rs.client.ClientBuilder.newClient().property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
-        
-        
-        
+
         WebTarget authTarget = client.target(BASE_URI).path("authentication");
         Credentials credentials = new Credentials("admin", "admin");
         token = authTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(credentials, javax.ws.rs.core.MediaType.APPLICATION_JSON), Response.class).readEntity(String.class);
@@ -69,7 +72,7 @@ public class UserFacadeRESTTest {
         Response result;
         List<UserProxy> l;
 
-        result = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
+        result = webTarget.request(MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
         l = (List<UserProxy>) result.readEntity(new GenericType<List<UserProxy>>() {
         });
 
@@ -89,15 +92,12 @@ public class UserFacadeRESTTest {
         User createResult;
         User editResult = null;
         User startUser;
-        User u = null;
+        User u;
         Response response;
         List<User> userL;
         startUser = new UserProxy(AccessRightsService.getAccessLevelFromName("admin"), "x", "x", "xmail", LocalDate.of(1998, 7, 9), "x", 0.0);
 
-//        String s = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).post(Entity.entity(startUser, MediaType.APPLICATION_JSON)).readEntity(String.class);
-//        System.out.println(s);
-        createResult = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).post(Entity.entity(startUser, MediaType.APPLICATION_JSON)).readEntity(UserProxy.class);
-//            createResult = null;
+        createResult = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).post(Entity.json(startUser)).readEntity(UserProxy.class);
 
         u = new UserProxy(createResult);
         u.setUsername("awdawdawd!NoPlan!wadwd");
@@ -120,9 +120,9 @@ public class UserFacadeRESTTest {
         userL = (List<User>) response.readEntity((GenericType) new GenericType<List<UserProxy>>() {
         });
 
-        Assert.assertNotEquals(createResult.getUserNr(), startUser.getUserNr());
-        Assert.assertEquals(editResult, u);
-        Assert.assertFalse(userL.contains(u));
+        Assert.assertNotEquals("Check create and the auto-created key", startUser.getUserNr(), createResult.getUserNr());
+        Assert.assertEquals("Check if the edit worked", u, editResult);
+        Assert.assertFalse("Check remove", userL.contains(u));
     }
 
 }

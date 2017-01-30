@@ -138,8 +138,8 @@ public class JahresuebersichtBean {
     }
 
     public void loadYears() {
+        years = new ArrayList<>();
         if (selectedUser != null) {
-            years = new ArrayList<>();
             LocalDate hireyear = selectedUser.getHiredate().withDayOfYear(1);
             for (LocalDate year = hireyear; year.isBefore(LocalDate.now().withDayOfYear(1)) || year.isEqual(LocalDate.now().withDayOfYear(1)); year = year.plusYears(1)) {
                 years.add(new SelectItem(year, String.valueOf(year.getYear())));
@@ -154,9 +154,9 @@ public class JahresuebersichtBean {
             LocalDate month;
             LocalDate today;
             if (selectedYear.getYear() == LocalDate.now().getYear()) {
-                today = LocalDate.now();
+                today = LocalDate.now().plusDays(1);
             } else {
-                today = selectedYear.plusYears(1).minusDays(1);
+                today = selectedYear.plusYears(1);
             }
 
             for (month = selectedYear; month.isBefore(selectedUser.getHiredate().withDayOfMonth(1)); month = month.plusMonths(1)) {
@@ -164,21 +164,27 @@ public class JahresuebersichtBean {
             }
             overtimeSum = 0;
             overtime19PlusSum = 0;
-            DecimalFormat df = new DecimalFormat("#.##");
-            for (; month.isBefore(today.withDayOfMonth(today.lengthOfMonth())); month = month.plusMonths(1)) {
-                if (today.getMonth() != month.getMonth()) {
+            for (; month.isBefore(today.withDayOfMonth(today.lengthOfMonth())) && months.size() < 12; month = month.plusMonths(1)) {
 
-                    double overtime = Double.parseDouble(df.format(calcOvertimeMinusPlus19H(selectedUser, month, month.plusMonths(1)) / 60.0));
-                    double overtime19plus = Double.parseDouble(df.format(calcOvertime19Plus(selectedUser, month, month.plusMonths(1)) / 60.0));
+                if (today.getMonth() != month.getMonth() || today.getYear() != month.getYear()) {
+
+                    double overtime = Math.round((calcOvertimeMinusPlus19H(selectedUser, month, month.plusMonths(1)) / 60.0) * 100.0) / 100.0;
+                    double overtime19plus = Math.round((calcOvertime19Plus(selectedUser, month, month.plusMonths(1)) / 60.0) * 100.0) / 100.0;
                     months.add(new SelectItem(overtime, month.format(monthFormatter), String.valueOf(overtime19plus)));
 
                     overtimeSum += overtime;
                     overtime19PlusSum += overtime19plus;
                 } else {
-                    months.add(new SelectItem(Double.parseDouble(df.format(calcOvertimeMinusPlus19H(selectedUser, month, today) / 60.0)),
-                            month.format(monthFormatter), String.valueOf(Double.parseDouble(df.format(calcOvertime19Plus(selectedUser, month, today) / 60.0)))));
+                    double overtime = Math.round((calcOvertimeMinusPlus19H(selectedUser, month, today) / 60.0) * 100.0) / 100.0;
+                    double overtime19plus = Math.round((calcOvertime19Plus(selectedUser, month, today) / 60.0) * 100.0) / 100.0;
+                    months.add(new SelectItem(overtime, month.format(monthFormatter), String.valueOf(overtime19plus)));
+
+                    overtimeSum += overtime;
+                    overtime19PlusSum += overtime19plus;
+
                 }
             }
+
             for (; month.isBefore(selectedYear.plusYears(1)); month = month.plusMonths(1)) {
                 months.add(new SelectItem(" - ", month.format(monthFormatter), "-"));
             }
@@ -335,10 +341,7 @@ public class JahresuebersichtBean {
         LocalTime lt19Plus = LocalTime.of(19, 0);
 
         for (WorkTime wt : workTimes) {
-            if (lt19Plus.isBefore(wt.getEndTime().toLocalTime())) {
-                overtime += lt19Plus.until(wt.getEndTime().toLocalTime(), ChronoUnit.MINUTES);
-            }
-
+            overtime += wt.getOvertimeAfter19();
         }
         return overtime;
     }
@@ -375,6 +378,8 @@ public class JahresuebersichtBean {
     public void postProcessXLS(Object document) {
         HSSFWorkbook wb = (HSSFWorkbook) document;
         HSSFSheet sheet = wb.getSheetAt(0);
+
+        sheet.shiftRows(0, sheet.getLastRowNum(), 2);
 
         HSSFRow topRow = sheet.createRow(0);
 

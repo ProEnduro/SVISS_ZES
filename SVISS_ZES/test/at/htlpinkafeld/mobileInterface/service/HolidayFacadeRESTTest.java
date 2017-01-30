@@ -7,11 +7,9 @@ package at.htlpinkafeld.mobileInterface.service;
 
 import at.htlpinkafeld.dao.jdbc.ConnectionManager;
 import at.htlpinkafeld.mobileInterface.authorization.Credentials;
-import at.htlpinkafeld.pojo.Absence;
-import at.htlpinkafeld.pojo.User;
-import at.htlpinkafeld.service.AbsenceService;
-import at.htlpinkafeld.service.BenutzerverwaltungService;
-import java.time.LocalDateTime;
+import at.htlpinkafeld.pojo.Holiday;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -30,14 +28,14 @@ import org.junit.Test;
  *
  * @author Martin Six
  */
-public class AbsenceFacadeRESTTest {
+public class HolidayFacadeRESTTest {
 
     private WebTarget webTarget;
     private Client client;
     private String token;
     private static final String BASE_URI = "http://localhost:8084/SVISS_ZES/webresources";
 
-    public AbsenceFacadeRESTTest() {
+    public HolidayFacadeRESTTest() {
         ConnectionManager.setDebugInstance(true);
     }
 
@@ -54,7 +52,7 @@ public class AbsenceFacadeRESTTest {
         Credentials credentials = new Credentials("admin", "admin");
         token = authTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(credentials, javax.ws.rs.core.MediaType.APPLICATION_JSON), Response.class).readEntity(String.class);
 
-        webTarget = client.target(BASE_URI).path("absence");
+        webTarget = client.target(BASE_URI).path("holiday");
     }
 
     @After
@@ -70,13 +68,13 @@ public class AbsenceFacadeRESTTest {
     public void testFindAll() {
         System.out.println("findAll");
         Response result;
-        List<Absence> l;
+        List<Holiday> l;
 
         result = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
-        l = (List<Absence>) result.readEntity(new GenericType<List<Absence>>() {
+        l = (List<Holiday>) result.readEntity(new GenericType<List<Holiday>>() {
         });
 
-        Assert.assertFalse("Check for getList being empty", l.isEmpty());
+        Assert.assertFalse(l.isEmpty());
 
         for (Object o : l) {
             o.toString();
@@ -89,39 +87,38 @@ public class AbsenceFacadeRESTTest {
     @Test
     public void testCreateEditRemove() {
         System.out.println("create");
-        Absence result;
+        Holiday result;
         Response response;
-        List<Absence> absenceL;
-        Absence a = new Absence(new User(BenutzerverwaltungService.getUserList().get(0)), AbsenceService.getList().get(0), LocalDateTime.of(1800, 7, 9, 0, 0), LocalDateTime.of(1800, 7, 12, 0, 0));
-        Response res = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).post(Entity.json(a));
-        result = res.readEntity(Absence.class);
-        Assert.assertNotEquals("Check create and the auto-created key", a.getAbsenceID(), result.getAbsenceID());
+        List<Holiday> holidays;
+        Holiday h = new Holiday(LocalDate.of(1980, Month.MARCH, 7), "NoPlan");
+        Response res = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).post(Entity.json(h));
+        result = res.readEntity(Holiday.class);
+        Assert.assertEquals("Check if Holiday was inserted", h.getHolidayDate(), result.getHolidayDate());
 
-        a = new Absence(result);
-        a.setUser(new User(a.getUser()));
-        a.setReason("%&?$§!NoPlan%&?$§!%&?$§!");
+        h = new Holiday(result);
+        h.setHolidayComment("%&?$§!NoPlan%&?$§!%&?$§!");
 
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).put(Entity.json(a));
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).put(Entity.json(h));
 
         response = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
-        absenceL = (List<Absence>) response.readEntity((GenericType) new GenericType<List<Absence>>() {
+        holidays = (List<Holiday>) response.readEntity((GenericType) new GenericType<List<Holiday>>() {
         });
 
-        for (Absence absence : absenceL) {
-            if (absence.getReason().equals(a.getReason())) {
-                result = absence;
+        for (Holiday holiday : holidays) {
+            if (h.getHolidayDate().equals(holiday.getHolidayDate())) {
+                result = holiday;
             }
         }
 
-        Assert.assertEquals("Check if edit works", a, result);
+        Assert.assertEquals("Check if the Update worked", h, result);
 
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).build("PATCH", Entity.json(a)).invoke();
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).build("PATCH", Entity.json(h)).invoke();
 
         response = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
-        absenceL = (List<Absence>) response.readEntity((GenericType) new GenericType<List<Absence>>() {
+        holidays = (List<Holiday>) response.readEntity((GenericType) new GenericType<List<Holiday>>() {
         });
 
-        Assert.assertFalse("Check if the remove worked via get", absenceL.contains(a));
+        Assert.assertFalse("Check if the remove worked via get", holidays.contains(h));
     }
 
 }

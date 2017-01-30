@@ -10,13 +10,8 @@ import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,13 +28,13 @@ public class SollZeitenService {
 
     public static List<SollZeit> getSollZeitenByUser(User u) {
         List<SollZeit> sollZeiten = SOLL_ZEITEN__DAO.getSollZeitenByUser(u);
-        List<SollZeit> sollZeiten_ohneNull = new ArrayList<>();
-        for (SollZeit sz : sollZeiten) {
-            if (!sz.getSollStartTime().equals(sz.getSollEndTime())) {
-                sollZeiten_ohneNull.add(sz);
-            }
-        }
-        return sollZeiten_ohneNull;
+//        List<SollZeit> sollZeiten_ohneNull = new ArrayList<>();
+//        for (SollZeit sz : sollZeiten) {
+//            if (!sz.getSollStartTime().equals(sz.getSollEndTime())) {
+//                sollZeiten_ohneNull.add(sz);
+//            }
+//        }
+        return sollZeiten;
     }
 
 //    public static List<SollZeit> getSollZeiten() {
@@ -57,11 +52,11 @@ public class SollZeitenService {
 
     public static SollZeit getSollZeitenByUser_DayOfWeek_ValidDate(User u, DayOfWeek d, LocalDateTime ldt) {
         SollZeit sz = SOLL_ZEITEN__DAO.getSollZeitenByUser_DayOfWeek_ValidDate(u, d, ldt);
-        if (sz == null || sz.getSollStartTime().equals(sz.getSollEndTime())) {
-            return null;
-        } else {
-            return sz;
-        }
+//        if (sz == null || sz.getSollStartTime().equals(sz.getSollEndTime())) {
+//            return null;
+//        } else {
+        return sz;
+//        }
     }
 
     public static SollZeit getSollZeitByUserAndDayOfWeek(User u, DayOfWeek dow) {

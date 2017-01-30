@@ -5,9 +5,11 @@
  */
 package at.htlpinkafeld.pojo;
 
+import at.htlpinkafeld.mobileInterface.service.util.LocalDateAdapter;
 import java.time.LocalDate;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  *
@@ -19,6 +21,10 @@ public class Holiday {
     private LocalDate holidayDate;
     private String holidayComment;
 
+    @Deprecated
+    public Holiday() {
+    }
+
     public Holiday(Holiday h) {
         this.holidayDate = h.holidayDate;
         this.holidayComment = h.holidayComment;
@@ -29,10 +35,12 @@ public class Holiday {
         this.holidayComment = holidayComment;
     }
 
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
     public LocalDate getHolidayDate() {
         return holidayDate;
     }
 
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
     public void setHolidayDate(LocalDate holidayDate) {
         this.holidayDate = holidayDate;
     }
@@ -69,6 +77,11 @@ public class Holiday {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Holiday{" + "holidayDate=" + holidayDate + ", holidayComment=" + holidayComment + '}';
     }
 
 }

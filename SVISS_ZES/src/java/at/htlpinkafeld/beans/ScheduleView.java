@@ -188,7 +188,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
     }
 
     public boolean isAbleToDeleteAbsence() {
-        return AccessRightsService.checkPermission(currentUser.getAccessLevel(), "ALL");
+        return currentUser != null && AccessRightsService.checkPermission(currentUser.getAccessLevel(), "ALL");
     }
 
     public void deleteAbsenceEvent() {
@@ -227,8 +227,8 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         } else if (!startDT.toLocalDate().equals(endDT.toLocalDate())) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Arbeitszeit kann nur an einem Tag eingetragen werden!"));
             FacesContext.getCurrentInstance().validationFailed();
-        } else if (event.getStartDate().before(getStartDateToday()) || event.getEndDate().before(getStartDateToday())
-                || event.getEndDate().after(getEndDateToday()) || event.getStartDate().after(getEndDateToday())) {
+        } else if (!AccessRightsService.checkPermission(currentUser.getAccessLevel(), "ALL") && (event.getStartDate().before(getAllowedStartDateToday()) || event.getEndDate().before(getAllowedStartDateToday())
+                || event.getEndDate().after(getAllowedEndDateToday()) || event.getStartDate().after(getAllowedEndDateToday()))) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Die eingebene Zeit ist nicht erlaubt!"));
             FacesContext.getCurrentInstance().validationFailed();
         } else if (!workTimes.isEmpty() && event.getId() == null) {
@@ -286,8 +286,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
     public boolean checkAvailableTime(Date startD, Date endD, boolean checkWorkTime) {
         boolean retVal = true;
 
-        if (event instanceof AbsenceEvent && type.getAbsenceName().contentEquals("business-related absence")) {
-        } else {
+        if (event instanceof AbsenceEvent && !type.getAbsenceName().contentEquals("business-related absence")) {
             LocalDateTime startDT = TimeConverterService.convertDateToLocalDateTime(startD);
             LocalDateTime endDT = TimeConverterService.convertDateToLocalDateTime(endD);
 
@@ -410,13 +409,16 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
     public void onIstZeitDateSelect(SelectEvent selectEvent) {
         Date sDate = (Date) selectEvent.getObject();
-        if (sDate.before(getStartDateToday()) || sDate.after(getEndDateToday())) {
+        if (!AccessRightsService.checkPermission(currentUser.getAccessLevel(), "ALL") && (sDate.before(getAllowedStartDateToday()) || sDate.after(getAllowedEndDateToday()))) {
             FacesContext.getCurrentInstance().validationFailed();
         } else {
 
             LocalDate start = TimeConverterService.convertDateToLocalDate(sDate);
 
             SollZeit soll = SollZeitenService.getSollZeitByUserAndDayOfWeek(currentUser, start.getDayOfWeek());
+
+            startcomment = "";
+            endcomment = "";
 
             if (soll != null) {
                 LocalDateTime s = start.atTime(soll.getSollStartTime());
@@ -754,7 +756,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
     }
 
     public String getPattern() {
-        if (type.getAbsenceName().equals("holiday")) {
+        if (type == null || type.getAbsenceName().equals("holiday")) {
             return "dd.MM.yyyy";
         } else {
             return "dd.MM.yyyy HH:mm";
@@ -785,26 +787,37 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         this.reason = reason;
     }
 
-    public Date getStartDateToday() {
+    public Date getAllowedStartDateToday() {
 
-        LocalDateTime start = LocalDateTime.now();
+        if (!AccessRightsService.checkPermission(currentUser.getAccessLevel(), "ALL")) {
+            LocalDateTime start = LocalDateTime.now();
 
-        start = start.withHour(0).withMinute(0).withSecond(0).minusWeeks(1);
+            start = start.withHour(0).withMinute(0).withSecond(0).minusWeeks(1);
 
-        return TimeConverterService.convertLocalDateTimeToDate(start);
+            return TimeConverterService.convertLocalDateTimeToDate(start);
+        } else {
+            return null;
+        }
     }
 
-    public Date getEndDateToday() {
+    public Date getAllowedEndDateToday() {
 
-        LocalDateTime end = LocalDateTime.now();
+        if (!AccessRightsService.checkPermission(currentUser.getAccessLevel(), "ALL")) {
+            LocalDateTime end = LocalDateTime.now();
 
-        end = end.withHour(23).withMinute(59).withSecond(59);
+            end = end.withHour(23).withMinute(59).withSecond(59);
 
-        return TimeConverterService.convertLocalDateTimeToDate(end);
+            return TimeConverterService.convertLocalDateTimeToDate(end);
+        } else {
+            return null;
+        }
     }
 
     public double getOvertimeleft() {
-        return currentUser.getOverTimeLeft();
+        if (currentUser != null) {
+            return currentUser.getOverTimeLeft();
+        }
+        return 0;
     }
 
     public void setOvertimeleft(double overtimeleft) {
