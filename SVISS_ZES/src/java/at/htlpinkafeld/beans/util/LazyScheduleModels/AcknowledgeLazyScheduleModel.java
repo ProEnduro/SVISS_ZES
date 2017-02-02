@@ -10,28 +10,39 @@ import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.service.AbsenceService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import at.htlpinkafeld.service.TimeConverterService;
-import java.util.Date;
+import org.primefaces.model.DefaultScheduleModel;
 import org.primefaces.model.LazyScheduleModel;
 
 /**
+ * A {@link LazyScheduleModel} which uses a selectedUser and loads
+ * unacknowledged Absences from AbsenceService as {@link AbsenceEvent}
+ * accordingly
  *
  * @author msi
  */
-public class AcknowledgeLazyScheduleModel extends LazyScheduleModel {
+public class AcknowledgeLazyScheduleModel extends DefaultScheduleModel {
 
     String selectedUser = null;
 
     public AcknowledgeLazyScheduleModel() {
-
+        loadEvents();
     }
 
+    /**
+     * Sets selected User for Event loading. setting null or "ALL" loads all
+     * Absences otherwise loads Absences according to
+     *
+     * @param selected
+     */
     public void setSelectedUser(String selected) {
         selectedUser = selected;
     }
 
-    @Override
-    public void loadEvents(Date start, Date end) {
-        super.loadEvents(start, end); //To change body of generated methods, choose Tools | Templates.
+    /**
+     * Loads all of the unacknowledged Absences according to selectedUser
+     *
+     */
+    public final void loadEvents() {
 
         if (selectedUser == null || selectedUser.equals("All")) {
             for (Absence a : AbsenceService.getAllUnacknowledged()) {
@@ -53,7 +64,7 @@ public class AcknowledgeLazyScheduleModel extends LazyScheduleModel {
                     case 4:
                         e.setStyleClass("business-related_absence");
                         break;
-
+                    default:
                 }
 
                 this.addEvent(e);
@@ -78,7 +89,7 @@ public class AcknowledgeLazyScheduleModel extends LazyScheduleModel {
                     case 4:
                         e.setStyleClass("business-related_absence");
                         break;
-
+                    default:
                 }
 
                 this.addEvent(e);
