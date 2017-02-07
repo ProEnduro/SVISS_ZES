@@ -15,6 +15,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * {@link Runnable} which sends Notifications for unacknowledged Absences and
+ * deletes 3 weeks old unacknowledged absences
  *
  * @author Martin Six
  */

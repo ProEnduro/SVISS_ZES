@@ -12,9 +12,22 @@ package at.htlpinkafeld.dao.util;
  */
 public interface DAODML_Observable {
 
+    /**
+     * registers the {@link DAODML_Observer} o to this object
+     *
+     * @param o
+     */
     public void addObserver(DAODML_Observer o);
 
+    /**
+     * removes the {@link DAODML_Observer} o from the observers of this object
+     *
+     * @param o
+     */
     public void deleteObserver(DAODML_Observer o);
 
+    /**
+     * notifies all registered {@link DAODML_Observer}
+     */
     public void notifyObservers();
 }

@@ -23,12 +23,23 @@ import at.htlpinkafeld.dao.util.InvalidDAOFactoryTypeException;
  */
 public abstract class DAOFactory {
 
+    /**
+     * JDBC-DaoType for setDAOFactoryType *
+     */
     public static final int JDBCDAO = 0;
+    /**
+     * DUMMY-DaoType for setDAOFactoryType *
+     */
     public static final int DUMMY_DAO = 1;
     private static int daoType;
 
     private static DAOFactory daof;
 
+    /**
+     * Static method which the current DAOFactory
+     *
+     * @return
+     */
     public static synchronized DAOFactory getDAOFactory() {
         if (daof == null) {
             daoType = JDBCDAO;

@@ -7,6 +7,7 @@ package at.htlpinkafeld.dao.dummy;
 
 import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
+import at.htlpinkafeld.dao.util.DAOException;
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import java.time.DayOfWeek;
@@ -34,6 +35,19 @@ public class SollZeiten_InMemoryDAO extends Base_InMemoryDAO<SollZeit> implement
             super.insert(new SollZeit(DayOfWeek.of(i), uDAO.getUser(2), LocalTime.parse("08:00:00"), LocalTime.parse("16:30:00")));
         }
         super.insert(new SollZeit(DayOfWeek.FRIDAY, uDAO.getUser(2), LocalTime.parse("08:00:00"), LocalTime.parse("12:00:00")));
+    }
+
+    @Override
+    public void insert(SollZeit o) {
+        try {
+            super.insert(o);
+        } catch (DAOException ex) {
+            if (o.getSollStartTime().equals(LocalTime.MIN) && o.getSollEndTime().equals(LocalTime.MIN)) {
+                super.delete(o);
+            } else {
+                super.update(o);
+            }
+        }
     }
 
     @Override

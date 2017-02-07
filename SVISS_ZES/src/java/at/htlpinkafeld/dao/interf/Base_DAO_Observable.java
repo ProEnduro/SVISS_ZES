@@ -8,6 +8,8 @@ package at.htlpinkafeld.dao.interf;
 import at.htlpinkafeld.dao.util.DAODML_Observable_Impl;
 
 /**
+ * {@link Base_DAO}-Implemetation which combines it with a
+ * {@link DAODML_Observable_Impl}
  *
  * @author Martin Six
  * @param <T>

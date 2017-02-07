@@ -9,13 +9,16 @@ import at.htlpinkafeld.dao.interf.Base_DAO;
 import java.util.List;
 
 /**
+ * Abstract Facade for the Rest-Interfaces. It implements the default
+ * implementaton as delegation to the {@link Base_DAO} from getDAO(); which is
+ * abstract
  *
  * @author Martin Six
  * @param <T>
  */
 public abstract class AbstractFacade<T> {
 
-    private Class<T> entityClass;
+    private final Class<T> entityClass;
 
     public AbstractFacade(Class<T> entityClass) {
         this.entityClass = entityClass;

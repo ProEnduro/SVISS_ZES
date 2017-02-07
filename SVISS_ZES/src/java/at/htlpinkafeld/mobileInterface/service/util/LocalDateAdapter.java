@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
+ * {@link XmlAdapter} for {@link LocalDate}
  *
  * @author Martin Six
  */

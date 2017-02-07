@@ -6,6 +6,7 @@
 package at.htlpinkafeld.dao.util;
 
 /**
+ * RuntimeException-Wrapper for various Exceptions which can occur in the DAOs
  *
  * @author Martin Six
  */

@@ -8,9 +8,7 @@ package at.htlpinkafeld.dao.interf;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserHistoryEntry;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
-import org.apache.tomcat.jni.Local;
 
 /**
  *

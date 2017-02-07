@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.dao.jdbc;
 
+import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.util.DAOException;
 import at.htlpinkafeld.dao.util.WrappedConnection;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
@@ -31,16 +32,18 @@ public class ConnectionManager {
 
     protected ConnectionManager() throws SQLException {
         Context ctx;
-        MysqlDataSource mysqlds = new MysqlDataSource();
+        if (DAOFactory.getDAOFactory() instanceof JDBCDAOFactory) {
+            MysqlDataSource mysqlds = new MysqlDataSource();
 //                ctx = new javax.naming.InitialContext();
 //                ds = (DataSource) ctx.lookup("java:comp/env/" + DATASOURCE);
-        mysqlds.setURL("jdbc:mysql://localhost:3306/ZES_SVISS");
-        mysqlds.setUser("root");
-        mysqlds.setPassword("Burgenland2016#");
-        ds = mysqlds;
-        if (test) {
-            testConnection = new WrappedConnection(ds.getConnection(), false);
-            testConnection.getConn().setAutoCommit(false);
+            mysqlds.setURL("jdbc:mysql://localhost:3306/ZES_SVISS");
+            mysqlds.setUser("root");
+            mysqlds.setPassword("Burgenland2016#");
+            ds = mysqlds;
+            if (test) {
+                testConnection = new WrappedConnection(ds.getConnection(), false);
+                testConnection.getConn().setAutoCommit(false);
+            }
         }
 
     }
@@ -58,7 +61,10 @@ public class ConnectionManager {
     public static synchronized void rollback() {
         if (test) {
             try {
-                getInstance().getWrappedConnection().getConn().rollback();
+                ConnectionManager cm = getInstance();
+                if (cm.getWrappedConnection() != null) {
+                    cm.getWrappedConnection().getConn().rollback();
+                }
             } catch (SQLException ex) {
                 Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
             }

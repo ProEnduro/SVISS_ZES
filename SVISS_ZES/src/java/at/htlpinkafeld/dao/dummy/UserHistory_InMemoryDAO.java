@@ -6,9 +6,11 @@
 package at.htlpinkafeld.dao.dummy;
 
 import at.htlpinkafeld.dao.interf.UserHistory_DAO;
+import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserHistoryEntry;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,6 +23,11 @@ class UserHistory_InMemoryDAO extends Base_InMemoryDAO<UserHistoryEntry> impleme
 
     public UserHistory_InMemoryDAO() {
         super(new ArrayList<>());
+        User_DAO uDAO = new User_InMemoryDAO();
+
+        for (User u : uDAO.getList()) {
+            super.insert(new UserHistoryEntry(LocalDateTime.now(), u, u.getOverTimeLeft(), u.getVacationLeft()));
+        }
     }
 
     @Override

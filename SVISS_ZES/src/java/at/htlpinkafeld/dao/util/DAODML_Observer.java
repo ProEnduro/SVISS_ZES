@@ -6,6 +6,7 @@
 package at.htlpinkafeld.dao.util;
 
 /**
+ * The Observer-Interface for {@link DAODML_Observable}
  *
  * @author Martin Six
  */

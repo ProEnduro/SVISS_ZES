@@ -5,7 +5,11 @@
  */
 package at.htlpinkafeld.dao.util;
 
+import at.htlpinkafeld.dao.factory.DAOFactory;
+
 /**
+ * Exception thrown, when an invalid daoType is to setDAOFactoryType in
+ * {@link DAOFactory}
  *
  * @author Martin Six
  */

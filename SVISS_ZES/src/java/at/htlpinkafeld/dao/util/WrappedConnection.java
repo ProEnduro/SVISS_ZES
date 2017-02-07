@@ -9,6 +9,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
+ * Wrapper-Object for {@link Connection} where {@link AutoCloseable} can be
+ * activaed or deactivated, for local-side or server-side use of connections
  *
  * @author Martin Six
  */

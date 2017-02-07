@@ -8,9 +8,9 @@ package at.htlpinkafeld.dao.dummy;
 import at.htlpinkafeld.dao.interf.Holiday_DAO;
 import at.htlpinkafeld.pojo.Holiday;
 import at.htlpinkafeld.service.TimeConverterService;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -21,6 +21,7 @@ public class Holiday_InMemoryDAO extends Base_InMemoryDAO<Holiday> implements Ho
 
     protected Holiday_InMemoryDAO() {
         super(new ArrayList<>());
+        super.insert(new Holiday(LocalDate.of(2016, 12, 24), "Christmas"));
     }
 
     @Override

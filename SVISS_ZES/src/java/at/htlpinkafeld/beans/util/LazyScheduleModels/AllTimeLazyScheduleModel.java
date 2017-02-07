@@ -37,7 +37,7 @@ public class AllTimeLazyScheduleModel extends LazyScheduleModel {
 
     @Override
     public void loadEvents(Date start, Date end) {
-        super.loadEvents(start, end); //To change body of generated methods, choose Tools | Templates.
+        super.loadEvents(start, end);
 
         DefaultScheduleEvent holidayevent;
 
@@ -156,7 +156,7 @@ public class AllTimeLazyScheduleModel extends LazyScheduleModel {
                 this.addEvent(e);
             }
 
-            for (WorkTime w : IstZeitService.getWorktimeByUser(BenutzerverwaltungService.getUser(selectedUser))) {
+            for (WorkTime w : IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(BenutzerverwaltungService.getUser(selectedUser), start, end)) {
                 WorkTimeEvent workevent = new WorkTimeEvent(w.getUser().getUsername() + " Ist-Zeit", TimeConverterService.convertLocalDateTimeToDate(w.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(w.getEndTime()), "istzeit", w);
 
                 this.addEvent(workevent);

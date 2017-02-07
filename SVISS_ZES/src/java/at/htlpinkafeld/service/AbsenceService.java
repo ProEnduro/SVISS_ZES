@@ -16,6 +16,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * A serivce which wraps {@link Absence_DAO} and {@link AbsenceType_DAO} with
+ * static functions, which are then delegated to the DAOs.
  *
  * @author msi
  */

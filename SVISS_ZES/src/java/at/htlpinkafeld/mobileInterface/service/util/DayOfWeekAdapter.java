@@ -9,6 +9,7 @@ import java.time.DayOfWeek;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
+ * {@link XmlAdapter} for {@link DayOfWeek}
  *
  * @author Martin Six
  */

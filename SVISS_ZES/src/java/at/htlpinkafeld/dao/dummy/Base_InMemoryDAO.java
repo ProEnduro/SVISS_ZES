@@ -45,8 +45,11 @@ public abstract class Base_InMemoryDAO<T> extends Base_DAO_Observable<T> {
 
     @Override
     public void update(T o) {
-        oList.set(oList.indexOf(o), clone(o));
-        notifyObservers();
+        int idx = oList.indexOf(o);
+        if (idx != -1) {
+            oList.set(idx, clone(o));
+            notifyObservers();
+        }
     }
 
     @Override

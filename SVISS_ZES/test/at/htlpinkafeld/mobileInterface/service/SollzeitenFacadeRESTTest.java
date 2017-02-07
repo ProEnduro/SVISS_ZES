@@ -113,7 +113,7 @@ public class SollzeitenFacadeRESTTest {
             }
         }
 
-        Assert.assertEquals("Check if edit works", result.getSollEndTime(), sz.getSollEndTime());
+        Assert.assertEquals("Check if edit works", sz.getSollEndTime(), result.getSollEndTime());
 
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).build("PATCH", Entity.json(sz)).invoke();
 
