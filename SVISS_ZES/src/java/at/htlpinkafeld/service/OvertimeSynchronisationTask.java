@@ -6,6 +6,7 @@
 package at.htlpinkafeld.service;
 
 import at.htlpinkafeld.dao.factory.DAOFactory;
+import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
 import at.htlpinkafeld.dao.interf.Absence_DAO;
 import at.htlpinkafeld.dao.interf.Holiday_DAO;
 import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
@@ -76,7 +77,7 @@ public class OvertimeSynchronisationTask implements Runnable {
             } else {
                 int diff = 0;
                 for (Absence a : absences) {
-                    if (a.getAbsenceType().getAbsenceName().contentEquals("medical leave") || a.getAbsenceType().getAbsenceName().contentEquals("time compensation")) {
+                    if (a.getAbsenceType().getAbsenceName().contentEquals(AbsenceType_DAO.MEDICAL_LEAVE) || a.getAbsenceType().getAbsenceName().contentEquals(AbsenceType_DAO.TIMECOMPENSATION)) {
                         if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime()) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
                             diff += (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
                         } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime()) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime())) {

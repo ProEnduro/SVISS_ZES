@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.beans;
 
+import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
 import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.Holiday;
 import at.htlpinkafeld.pojo.SollZeit;
@@ -24,7 +25,6 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
-import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -185,13 +185,17 @@ public class JahresuebersichtBean {
                 }
             }
 
+            // rounding stuff to be safe
+            overtimeSum = Math.round(overtimeSum * 100.0) / 100.0;
+            overtime19PlusSum = Math.round(overtime19PlusSum * 100.0) / 100.0;
+
             for (; month.isBefore(selectedYear.plusYears(1)); month = month.plusMonths(1)) {
                 months.add(new SelectItem(" - ", month.format(monthFormatter), "-"));
             }
         }
     }
 
-    public int calcOvertimeMinusPlus19H(User u, LocalDate startDate, LocalDate endDate) {
+    private int calcOvertimeMinusPlus19H(User u, LocalDate startDate, LocalDate endDate) {
         int overtime = 0;
 
         List<WorkTime> workTimes = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(u, TimeConverterService.convertLocalDateToDate(startDate), TimeConverterService.convertLocalDateToDate(endDate));
@@ -229,7 +233,7 @@ public class JahresuebersichtBean {
                 a.setEndTime(endDate.atStartOfDay().minusSeconds(1));
             }
             switch (a.getAbsenceType().getAbsenceName()) {
-                case "holiday":
+                case AbsenceType_DAO.HOLIDAY:
                     if (!a.isAcknowledged()) {
                         break;
                     }
@@ -248,38 +252,39 @@ public class JahresuebersichtBean {
 
                     }
                     break;
-                case "time compensation":
-                    if (a.isAcknowledged()) {
-                        int dayNum = a.getEndTime().getDayOfYear() - a.getStartTime().getDayOfYear() + 1;
-                        DayOfWeek sDay = a.getStartTime().getDayOfWeek();
-                        for (int i = 0; i < dayNum; i++, sDay.plus(1)) {
-                            SollZeit sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, a.getStartTime().getDayOfWeek(), a.getStartTime());
-                            int diff = 0;
-                            if (sz != null) {
-                                if (i == 0 || i == (dayNum - 1)) {
-                                    if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime()) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
-                                        diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
-                                    } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime()) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime())) {
-                                    } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime())) {
-                                        diff = (int) a.getStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
-                                    } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
-                                        diff = (int) sz.getSollStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
-                                    } else {
-                                        diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
-                                    }
-                                } else {
-                                    diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
-                                }
-                            }
-                            if (diff > 6 * 60) {
-                                diff -= 30;
-                            }
-                            overtime -= diff;
-
-                        }
-                    }
+                case AbsenceType_DAO.TIMECOMPENSATION:
+                    //Ignore because it is the same as not working = SollZeit is already deducted
+//                    if (a.isAcknowledged()) {
+//                        int dayNum = a.getEndTime().getDayOfYear() - a.getStartTime().getDayOfYear() + 1;
+//                        DayOfWeek sDay = a.getStartTime().getDayOfWeek();
+//                        for (int i = 0; i < dayNum; i++, sDay.plus(1)) {
+//                            SollZeit sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, a.getStartTime().getDayOfWeek(), a.getStartTime());
+//                            int diff = 0;
+//                            if (sz != null) {
+//                                if (i == 0 || i == (dayNum - 1)) {
+//                                    if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime()) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
+//                                        diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
+//                                    } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime()) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime())) {
+//                                    } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime())) {
+//                                        diff = (int) a.getStartTime().toLocalTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+//                                    } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
+//                                        diff = (int) sz.getSollStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
+//                                    } else {
+//                                        diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+//                                    }
+//                                } else {
+//                                    diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+//                                }
+//                            }
+//                            if (diff > 6 * 60) {
+//                                diff -= 30;
+//                            }
+//                            overtime -= diff;
+//
+//                        }
+//                    }
                     break;
-                case "medical leave":
+                case AbsenceType_DAO.MEDICAL_LEAVE:
                     int dayNum = a.getEndTime().getDayOfYear() - a.getStartTime().getDayOfYear() + 1;
                     DayOfWeek sDay = a.getStartTime().getDayOfWeek();
                     for (int i = 0; i < dayNum; i++, sDay.plus(1)) {
@@ -291,7 +296,7 @@ public class JahresuebersichtBean {
                                     diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
                                 } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime()) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime())) {
                                 } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime())) {
-                                    diff = (int) a.getStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                                    diff = (int) a.getStartTime().toLocalTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
                                 } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
                                     diff = (int) sz.getSollStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
                                 } else {
@@ -307,7 +312,7 @@ public class JahresuebersichtBean {
                         overtime += diff;
                     }
                     break;
-                case "business-related absence":
+                case AbsenceType_DAO.BUSINESSRELATED_ABSENCE:
                     break;
             }
         }

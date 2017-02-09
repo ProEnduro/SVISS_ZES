@@ -13,5 +13,10 @@ import at.htlpinkafeld.pojo.AbsenceType;
  */
 public interface AbsenceType_DAO extends Base_DAO<AbsenceType> {
 
+    public static final String MEDICAL_LEAVE = "Krankenstand";
+    public static final String BUSINESSRELATED_ABSENCE = "unternehmensbedingte Abwesenheit";
+    public static final String TIMECOMPENSATION = "Zeitausgleich";
+    public static final String HOLIDAY = "Urlaub";
+
     public abstract AbsenceType getAbsenceTypeByID(int absenceTypeID);
 }

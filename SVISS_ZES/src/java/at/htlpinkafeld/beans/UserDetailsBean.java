@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.beans;
 
+import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
 import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.Holiday;
 import at.htlpinkafeld.pojo.SollZeit;
@@ -60,6 +61,8 @@ import org.apache.poi.ss.util.CellRangeAddress;
  * @author msi
  */
 public class UserDetailsBean {
+//TODO enable view for current month
+//TODO default ComboBox entries
 
     /**
      * Creates a new instance of UserDetailsBean
@@ -224,13 +227,13 @@ public class UserDetailsBean {
                 if (!worklist.isEmpty()) {
                     trd = new TimeRowDisplay(worklist.get(0));
 
-                    Double worktime = Double.parseDouble(trd.getWorkTime());
-                    Double sollzeit = Double.parseDouble(trd.getSollZeit());
+                    Double worktime = trd.getWorkTime();
+                    Double sollzeit = trd.getSollZeit();
                     Double breaktime = worklist.get(0).getBreakTime() * 1.0;
 
                     saldotemp = worktime - sollzeit;
 
-                    überstundenNach19 += Double.parseDouble(trd.getOverTime19plus());
+                    überstundenNach19 += trd.getOverTime19plus();
 
                     if (worklist.size() > 1) {
                         for (WorkTime w : worklist.subList(1, worklist.size() - 1)) {
@@ -247,7 +250,7 @@ public class UserDetailsBean {
                     for (Absence a : absencelist) {
                         trd.setReason(trd.getReason() + a.getAbsenceType().getAbsenceName() + " " + a.getReason() + " ");
 
-                        if (!worklist.isEmpty() && !a.getAbsenceType().getAbsenceName().equals("medical leave")) {
+                        if (!worklist.isEmpty() && (!a.getAbsenceType().getAbsenceName().equals(AbsenceType_DAO.TIMECOMPENSATION) && !a.getAbsenceType().getAbsenceName().equals(AbsenceType_DAO.BUSINESSRELATED_ABSENCE))) {
                             double smax;
                             double s;
                             SollZeit sollzeit = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(currentUser, temp.getDayOfWeek(), temp.atStartOfDay());
@@ -267,7 +270,7 @@ public class UserDetailsBean {
                                 }
 
                                 if (a.getStartTime().isBefore(sollzeit.getSollEndTime().atDate(temp))) {
-                                    smax = a.getStartTime().until(sollzeit.getSollEndTime(), ChronoUnit.MINUTES);
+                                    smax = a.getStartTime().toLocalTime().until(sollzeit.getSollEndTime(), ChronoUnit.MINUTES);
                                     s = a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
 
                                     if (s > smax) {
@@ -335,9 +338,15 @@ public class UserDetailsBean {
 
     public void setYears(List<Integer> years) {
         this.years = years;
+        loadMonths();
+    }
+
+    public void loadMonths() {
+
+        this.dates.clear();
 
         LocalDate start = LocalDate.of(selectedYear, Month.JANUARY, 1);
-        LocalDate end = start.withDayOfYear(start.lengthOfYear());
+        LocalDate end = start.plusYears(1);
 
         SelectItem si;
 
@@ -354,15 +363,7 @@ public class UserDetailsBean {
 
             this.dates.add(si);
         }
-    }
 
-    public String getPlusOrMinus() {
-        if (this.saldo > 0) {
-            return "+";
-        } else if (saldo < 0) {
-            return "-";
-        }
-        return "";
     }
 
     public void preProcessPDF(Object document) throws DocumentException {
@@ -501,9 +502,9 @@ public class UserDetailsBean {
             } else {
                 pdfTable.addCell(new Paragraph(String.valueOf(trd.getBreakTime()), font));
             }
-            pdfTable.addCell(new Paragraph(trd.getSollZeit(), font));
-            pdfTable.addCell(new Paragraph(trd.getWorkTime(), font));
-            pdfTable.addCell(new Paragraph(trd.getOverTime19plus(), font));
+            pdfTable.addCell(new Paragraph(String.valueOf(trd.getSollZeit()).replace("null", ""), font));
+            pdfTable.addCell(new Paragraph(String.valueOf(trd.getWorkTime()).replace("null", ""), font));
+            pdfTable.addCell(new Paragraph(String.valueOf(trd.getOverTime19plus()).replace("null", ""), font));
             pdfTable.addCell(new Paragraph(trd.getReason(), font));
         }
 
@@ -514,8 +515,8 @@ public class UserDetailsBean {
         pdfTable.addCell(new Paragraph(" ", font));
         pdfTable.addCell(new Paragraph(" ", font));
 
-        DecimalFormat df = new DecimalFormat("#.#");
-        pdfTable.addCell(new Paragraph("Saldo: " + getPlusOrMinus() + df.format(saldo), font));
+        DecimalFormat df = new DecimalFormat("#.##");
+        pdfTable.addCell(new Paragraph("Saldo: " + df.format(saldo), font));
         pdfTable.addCell(new Paragraph("Gesamt: " + überstundenNach19, font));
         pdfTable.addCell(new Paragraph("Verbleibender Urlaub am Ende des Monats: " + urlaubsanspruch + " Tage", font));
 

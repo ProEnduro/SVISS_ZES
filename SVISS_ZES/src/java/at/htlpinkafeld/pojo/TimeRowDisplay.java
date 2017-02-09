@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.pojo;
 
+import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
 import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -30,9 +31,9 @@ public class TimeRowDisplay {
     private String workTimeStart = null;
     private String workTimeEnd = null;
     private Integer breakTime = null;
-    private String sollZeit = null;
-    private String workTime = null;
-    private String overTime19plus = null;
+    private Double sollZeit = null;
+    private Double workTime = null;
+    private Double overTime19plus = null;
     private String reason = null;
 
     public TimeRowDisplay(Holiday h) {
@@ -43,7 +44,7 @@ public class TimeRowDisplay {
     public TimeRowDisplay(Absence a) {
         date = a.getStartTime().toLocalDate();
         reason = a.getAbsenceType().getAbsenceName() + ": " + a.getReason();
-        if (!a.getAbsenceType().getAbsenceName().contentEquals("holiday")) {
+        if (!a.getAbsenceType().getAbsenceName().contentEquals(AbsenceType_DAO.HOLIDAY)) {
             reason += a.getStartTime().toLocalTime().format(timeFormatter) + " -  " + a.getEndTime().toLocalTime().format(timeFormatter);
         }
     }
@@ -54,17 +55,16 @@ public class TimeRowDisplay {
         workTimeEnd = wt.getEndTime().format(timeFormatter);
         breakTime = wt.getBreakTime();
 
-        DecimalFormat df = new DecimalFormat("#,0#");
         double temp = wt.getSollStartTime().until(wt.getSollEndTime(), ChronoUnit.MINUTES) / 60.0;
         if (temp >= 6.0) {
-            sollZeit = df.format(temp - 0.5);
+            sollZeit = Math.round((temp - 0.5) * 100.0) / 100.0;
         } else {
-            sollZeit = df.format(temp);
+            sollZeit = Math.round(temp * 100.0) / 100.0;
         }
-        workTime = df.format(wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES) / 60.0 - (breakTime / 60.0));
+        workTime = Math.round((wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES) / 60.0 - (breakTime / 60.0)) * 100.0) / 100.0;
 
         double ot19Plus = wt.getOvertimeAfter19() / 60.0;
-        overTime19plus = df.format(ot19Plus);
+        overTime19plus = Math.round(ot19Plus * 100.0) / 100.0;
         reason = wt.getStartComment() + "   " + wt.getEndComment();
     }
 
@@ -96,15 +96,15 @@ public class TimeRowDisplay {
         return breakTime;
     }
 
-    public String getSollZeit() {
+    public Double getSollZeit() {
         return sollZeit;
     }
 
-    public String getWorkTime() {
+    public Double getWorkTime() {
         return workTime;
     }
 
-    public String getOverTime19plus() {
+    public Double getOverTime19plus() {
         return overTime19plus;
     }
 

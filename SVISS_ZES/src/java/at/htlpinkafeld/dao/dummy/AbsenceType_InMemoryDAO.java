@@ -17,10 +17,10 @@ public class AbsenceType_InMemoryDAO extends Base_InMemoryDAO<AbsenceType> imple
 
     protected AbsenceType_InMemoryDAO() {
         super(new LinkedList<>());
-        super.insert(new AbsenceType(1, "medical leave"));
-        super.insert(new AbsenceType(2, "holiday"));
-        super.insert(new AbsenceType(3, "time compensation"));
-        super.insert(new AbsenceType(4, "business-related absence"));
+        super.insert(new AbsenceType(1, AbsenceType_DAO.MEDICAL_LEAVE));
+        super.insert(new AbsenceType(2, AbsenceType_DAO.HOLIDAY));
+        super.insert(new AbsenceType(3, AbsenceType_DAO.TIMECOMPENSATION));
+        super.insert(new AbsenceType(4, AbsenceType_DAO.BUSINESSRELATED_ABSENCE));
     }
 
     @Override

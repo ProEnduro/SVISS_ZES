@@ -11,6 +11,7 @@ import at.htlpinkafeld.beans.util.LazyScheduleModels.AllTimeLazyScheduleModel;
 import at.htlpinkafeld.beans.util.LazyScheduleModels.AlleAbwesenheitenLazyScheduleModel;
 import at.htlpinkafeld.beans.util.LazyScheduleModels.IstZeitLazyScheduleModel;
 import at.htlpinkafeld.beans.util.WorkTimeEvent;
+import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
 import at.htlpinkafeld.dao.util.DAODML_Observer;
 import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.AbsenceType;
@@ -145,7 +146,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         } else if (!checkAvailableTime(TimeConverterService.convertLocalDateTimeToDate(startDT), TimeConverterService.convertLocalDateTimeToDate(endDT), true)) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Ein Eintrag für diese Urzeit ist bereits vorhanden!"));
             FacesContext.getCurrentInstance().validationFailed();
-        } else if (!FacesContext.getCurrentInstance().isValidationFailed() && type.getAbsenceName().equals("holiday")) {
+        } else if (!FacesContext.getCurrentInstance().isValidationFailed() && type.getAbsenceName().equals(AbsenceType_DAO.HOLIDAY)) {
             int days = 0;
             List<SollZeit> sollZeiten = SollZeitenService.getSollZeitenByUser(currentUser);
             for (LocalDate ld = startDT.toLocalDate(); ld.atStartOfDay().isBefore(endDT); ld = ld.plusDays(1)) {
@@ -286,7 +287,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
     public boolean checkAvailableTime(Date startD, Date endD, boolean checkWorkTime) {
         boolean retVal = true;
 
-        if (event instanceof AbsenceEvent && !type.getAbsenceName().contentEquals("business-related absence")) {
+        if (event instanceof AbsenceEvent && !type.getAbsenceName().contentEquals(AbsenceType_DAO.BUSINESSRELATED_ABSENCE)) {
             LocalDateTime startDT = TimeConverterService.convertDateToLocalDateTime(startD);
             LocalDateTime endDT = TimeConverterService.convertDateToLocalDateTime(endD);
 
@@ -306,7 +307,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             List<Absence> absList = AbsenceService.getAbsencesByUserBetweenDates(currentUser, startD, endD);
 
             for (Absence a : absList) {
-                if (!a.getAbsenceType().getAbsenceName().contentEquals("business-related absence")) {
+                if (!a.getAbsenceType().getAbsenceName().contentEquals(AbsenceType_DAO.BUSINESSRELATED_ABSENCE)) {
                     if (!startD.equals(TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()))) {
                         if (event instanceof AbsenceEvent) {
                             if (((AbsenceEvent) event).getAbsence() != null && !((AbsenceEvent) event).getAbsence().equals(a)) {
@@ -465,7 +466,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
             absenceEvent.getAbsence().setAcknowledged(true);
             AbsenceService.updateAbsence(absenceEvent.getAbsence());
-            if (absenceEvent.getAbsence().getAbsenceType().getAbsenceName().contentEquals("holiday")) {
+            if (absenceEvent.getAbsence().getAbsenceType().getAbsenceName().contentEquals(AbsenceType_DAO.HOLIDAY)) {
                 setHolidayAndIstZeiten(absenceEvent.getAbsence());
             } else {
                 int overtime = calcAbsenceOvertime(absenceEvent.getAbsence());
@@ -492,7 +493,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             AbsenceService.deleteAbsence(absenceEvent.getAbsence());
 
             if (absenceEvent.getAbsence().isAcknowledged()) {
-                if (absenceEvent.getAbsence().getAbsenceType().getAbsenceName().equals("holiday")) {
+                if (absenceEvent.getAbsence().getAbsenceType().getAbsenceName().equals(AbsenceType_DAO.HOLIDAY)) {
                     removeHolidayAndIstZeiten(absenceEvent.getAbsence());
                 } else {
                     User u = absenceEvent.getAbsence().getUser();
@@ -519,7 +520,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             AbsenceService.deleteAbsence(a);
 
             if (a.isAcknowledged()) {
-                if (a.getAbsenceType().getAbsenceName().equals("holiday")) {
+                if (a.getAbsenceType().getAbsenceName().equals(AbsenceType_DAO.HOLIDAY)) {
                     removeHolidayAndIstZeiten(a);
                 } else {
 
@@ -544,7 +545,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         User u = a.getUser();
         List<SollZeit> sollZeiten = SollZeitenService.getSollZeitenByUser(u);
         int days = 0;
-        if (a.getAbsenceType().getAbsenceName().contentEquals("holiday") && a.isAcknowledged()) {
+        if (a.getAbsenceType().getAbsenceName().contentEquals(AbsenceType_DAO.HOLIDAY) && a.isAcknowledged()) {
             days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
 
             u.setVacationLeft(u.getVacationLeft() - days);
@@ -569,7 +570,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
     private void removeHolidayAndIstZeiten(Absence a) {
         User u = a.getUser();
         int days = 0;
-        if (a.getAbsenceType().getAbsenceName().contentEquals("holiday") && a.isAcknowledged()) {
+        if (a.getAbsenceType().getAbsenceName().contentEquals(AbsenceType_DAO.HOLIDAY) && a.isAcknowledged()) {
             days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
 
             u.setVacationLeft(u.getVacationLeft() + days);
@@ -591,9 +592,9 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         DayOfWeek sDay;
 
         switch (a.getAbsenceType().getAbsenceName()) {
-            case "holiday":
+            case AbsenceType_DAO.HOLIDAY:
                 break;
-            case "time compensation":
+            case AbsenceType_DAO.TIMECOMPENSATION:
                 days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
                 sDay = a.getStartTime().getDayOfWeek();
 
@@ -623,7 +624,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                     }
                 }
                 break;
-            case "medical leave":
+            case AbsenceType_DAO.MEDICAL_LEAVE:
                 days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
                 sDay = a.getStartTime().getDayOfWeek();
 
@@ -756,7 +757,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
     }
 
     public String getPattern() {
-        if (type == null || type.getAbsenceName().equals("holiday")) {
+        if (type == null || type.getAbsenceName().equals(AbsenceType_DAO.HOLIDAY)) {
             return "dd.MM.yyyy";
         } else {
             return "dd.MM.yyyy HH:mm";

@@ -30,7 +30,7 @@ and open the template in the editor.
 
                 <p:selectOneMenu id="selectedYear" value="#{userDetailsBean.selectedYear}">
                     <f:selectItems value="#{userDetailsBean.years}"/>
-                    <p:ajax update="selectedDate"/>
+                    <p:ajax listener="#{userDetailsBean.loadMonths}" update="selectedDate"/>
                 </p:selectOneMenu>
 
                 <p:selectOneMenu id="selectedDate" value="#{userDetailsBean.selectedDate}" converter="localDateConverter">
@@ -67,7 +67,7 @@ and open the template in the editor.
                     <p:outputLabel value="#{entry.workTime}"/>
 
                     <f:facet name="footer">
-                        <p:outputLabel value="Saldo: #{userDetailsBean.plusOrMinus}#{userDetailsBean.saldo}"/>
+                        <p:outputLabel value="Saldo: #{userDetailsBean.saldo}"/>
                     </f:facet>
                 </p:column>
 
