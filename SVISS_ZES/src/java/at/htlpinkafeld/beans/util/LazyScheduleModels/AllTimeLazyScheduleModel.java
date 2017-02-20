@@ -24,7 +24,8 @@ import org.primefaces.model.LazyScheduleModel;
  * @author msi
  */
 public class AllTimeLazyScheduleModel extends LazyScheduleModel {
-
+//TODO  LazyLoading in Service-Layer
+    
     String selectedUser = null;
 
     public AllTimeLazyScheduleModel() {

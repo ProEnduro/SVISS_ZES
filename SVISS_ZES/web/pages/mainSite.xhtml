@@ -17,6 +17,7 @@ and open the template in the editor.
     <h:body>
         <h:form>
 
+
             <p:remoteCommand actionListener="#{masterBean.refreshIfNoCurrentUser}" immediate="true" autoRun="true" />
             <p:poll listener="#{masterBean.refreshIfNoCurrentUser}" interval="10"  immediate="true" partialSubmit="true"/>
 

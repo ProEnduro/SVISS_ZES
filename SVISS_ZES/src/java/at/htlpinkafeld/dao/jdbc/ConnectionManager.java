@@ -9,7 +9,6 @@ import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.util.DAOException;
 import at.htlpinkafeld.dao.util.WrappedConnection;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;

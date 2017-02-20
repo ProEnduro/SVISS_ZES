@@ -29,6 +29,13 @@ and open the template in the editor.
                         <p:commandButton value="load" actionListener="#{scheduleView.loadAllTimesByUser}" update="schedule"/>
                     </p:panelGrid>
 
+                    <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+
+                    <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+                        <p:graphicImage name="/images/loading.gif" />
+                    </p:dialog>
+
+
                     <p:schedule draggable="false" resizable="false" firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.allTimesModel}" widgetVar="myschedule" timeZone="Europe/Vienna" locale="de" 
                                 columnFormat="month:'ddd',  week:'dddd - dd.MM', day:'dd.MM.yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
                         <p:ajax event="eventSelect" listener="#{scheduleView.onEventInAbwesenheitenSelect}" update=":absenceDialogForm:absenceDialogID :worktimeDialogForm:worktimeDialogID :feiertagDialogForm:feiertagDialogID" />
