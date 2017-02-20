@@ -167,10 +167,10 @@ and open the template in the editor.
                         <p:inputText id="absencetitle" value="#{scheduleView.event.title}" readonly="true"/>
 
                         <p:outputLabel for="absencefrom" value="From:" />
-                        <p:calendar id="absencefrom" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd.MM.yyyy HH:mm" readonly="true" showOn="" mask="true"/>
+                        <p:calendar id="absencefrom" value="#{scheduleView.event.startDate}" pattern="dd.MM.yyyy HH:mm" readonly="true" showOn="" mask="true"/>
 
                         <p:outputLabel for="absenceto" value="To:" />
-                        <p:calendar id="absenceto" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd.MM.yyyy HH:mm" readonly="true" showOn="" mask="true"/>
+                        <p:calendar id="absenceto" value="#{scheduleView.event.endDate}" pattern="dd.MM.yyyy HH:mm" readonly="true" showOn="" mask="true"/>
 
                         <p:outputLabel for="reason" value="Reason:"/>
                         <p:inputTextarea id="reason" value="#{scheduleView.reason}" readonly="true"/>
@@ -186,7 +186,7 @@ and open the template in the editor.
                         <p:inputText id="feiertagtitle" value="#{scheduleView.event.title}" readonly="true"/>
 
                         <p:outputLabel for="feiertagfrom" value="Date:" />
-                        <p:calendar id="feiertagfrom" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd.MM.yyyy" showOn="" mask="true" readonly="true"/>
+                        <p:calendar id="feiertagfrom" value="#{scheduleView.event.startDate}" pattern="dd.MM.yyyy" showOn="" mask="true" readonly="true"/>
 
 
                     </h:panelGrid>
