@@ -20,6 +20,7 @@ import javax.faces.convert.FacesConverter;
 @FacesConverter("themeConverter")
 public class ThemeConverter implements Converter {
 
+    @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
         if (value != null && value.trim().length() > 0) {
             try {
@@ -33,6 +34,7 @@ public class ThemeConverter implements Converter {
         }
     }
 
+    @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object object) {
         if (object != null) {
             return String.valueOf(((Theme) object).getId());

@@ -101,7 +101,7 @@ and open the template in the editor.
                     }
                 </style>
                 <h:form id="addAbsenceDlgForm">
-                    <p:dialog widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip" modal="true" resizable="false">
+                    <p:dialog widgetVar="eventDialog" header="Abwesenheit eintragen" showEffect="clip" hideEffect="clip" modal="true" resizable="false">
                         <h:panelGrid id="eventDetails" columns="2">
                             <p:outputLabel for="from" value="From:" />
                             <p:calendar id="from" value="#{scheduleView.event.startDate}" pattern="#{scheduleView.pattern}" showOn="button" mask="true"/>
@@ -117,7 +117,7 @@ and open the template in the editor.
                             <p:commandButton id="addButton" value="Save" update=":messages" actionListener="#{scheduleView.addAbsenceEvent}" oncomplete="PF('myschedule').update();if (args &amp;&amp; !args.validationFailed) PF('eventDialog').hide();" />
 
                             <p:selectOneRadio id="type" value="#{scheduleView.type}" converter="absenceTypeConv">
-                                <f:selectItems var="t" itemLabel="#{t.absenceName}" value="#{scheduleView.types}" itemValue="#{t}"/>
+                                <f:selectItems var="t" itemLabel="#{t}" value="#{scheduleView.types}" itemValue="#{t}"/>
                                 <p:ajax update="eventDetails"/>
                             </p:selectOneRadio>
                         </h:panelGrid>

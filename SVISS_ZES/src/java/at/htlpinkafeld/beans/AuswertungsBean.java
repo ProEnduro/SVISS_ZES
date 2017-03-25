@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.imageio.ImageIO;
@@ -80,9 +82,9 @@ public class AuswertungsBean {
             allUser = new ArrayList<>();
             allUser.add("All");
 
-            for (User u : BenutzerverwaltungService.getUserList()) {
+            BenutzerverwaltungService.getUserList().forEach((u) -> {
                 allUser.add(u.getUsername());
-            }
+            });
             return true;
         }
     }
@@ -126,7 +128,7 @@ public class AuswertungsBean {
         List<WorkTime> workList;
         List<Absence> absenceList;
 
-        if (selectedUser == null) {
+        if (null == selectedUser) {
             if (this.isNotUser()) {
                 workList = IstZeitService.getAllWorkTime();
                 absenceList = AbsenceService.getAllAcknowledged();
@@ -134,12 +136,15 @@ public class AuswertungsBean {
                 workList = IstZeitService.getWorktimeByUser(currentUser);
                 absenceList = AbsenceService.getAbsenceByUserAndAcknowledged(currentUser);
             }
-        } else if (selectedUser.equals("All")) {
-            workList = IstZeitService.getAllWorkTime();
-            absenceList = AbsenceService.getAllAcknowledged();
-        } else {
-            workList = IstZeitService.getWorktimeByUser(BenutzerverwaltungService.getUser(selectedUser));
-            absenceList = AbsenceService.getAbsenceByUserAndAcknowledged(BenutzerverwaltungService.getUser(selectedUser));
+        } else switch (selectedUser) {
+            case "All":
+                workList = IstZeitService.getAllWorkTime();
+                absenceList = AbsenceService.getAllAcknowledged();
+                break;
+            default:
+                workList = IstZeitService.getWorktimeByUser(BenutzerverwaltungService.getUser(selectedUser));
+                absenceList = AbsenceService.getAbsenceByUserAndAcknowledged(BenutzerverwaltungService.getUser(selectedUser));
+                break;
         }
 
         for (WorkTime w : workList) {
@@ -151,17 +156,17 @@ public class AuswertungsBean {
 
         for (Absence a : absenceList) {
             double t = a.getStartTime().until((a.getEndTime()), ChronoUnit.MINUTES) / 60.0;
-            switch (a.getAbsenceType().getAbsenceTypeID()) {
-                case 1:
+            switch (a.getAbsenceType()) {
+                case MEDICAL_LEAVE:
                     medical = medical + t;
                     break;
-                case 2:
+                case HOLIDAY:
                     holiday = holiday + t;
                     break;
-                case 3:
+                case TIME_COMPENSATION:
                     timecompensation = timecompensation + t;
                     break;
-                case 4:
+                case BUSINESSRELATED_ABSENCE:
                     business = business + t;
                     break;
             }
@@ -200,14 +205,15 @@ public class AuswertungsBean {
                 boolean b = ImageIO.write(renderedImage, "png", new File(path + "/pdfs/out.png"));
 
                 if (b) {
+
                     testPDF(null);
                     InputStream stream = FacesContext.getCurrentInstance().getExternalContext().getResourceAsStream("/pdfs/test.pdf");
                     file = new DefaultStreamedContent(stream, "application/pdf", "auswertung_" + this.selectedUser + ".pdf");
                 }
-
             } catch (IOException ex) {
-                ex.printStackTrace();
+                Logger.getLogger(AuswertungsBean.class.getName()).log(Level.SEVERE, null, ex);
             }
+
         }
     }
 
@@ -218,24 +224,22 @@ public class AuswertungsBean {
 
         BufferedImage img = ImageIO.read(new File(path + "out.png"));
 
-//        function for joining two pictures -> 
+        try (//        function for joining two pictures -> 
 //        BufferedImage joined = joinBufferedImage(one, two);
 //        boolean success = ImageIO.write(joined, "png", new File(path + "joined.png"));
 //        System.out.println("saved success? " + success);
-        PDDocument doc = new PDDocument();
-        PDPage blank = new PDPage();
-        doc.addPage(blank);
-        PDImageXObject image = JPEGFactory.createFromImage(doc, img);
-        PDPageContentStream contentStream = new PDPageContentStream(doc, blank, true, true, true);
-
-        int w = (int) (img.getWidth() / 3);
-        int h = (int) (img.getHeight() / 3);
-
-        contentStream.drawXObject(image, 0, 792 - h, w, h);
-        contentStream.close();
-        doc.save(new File(path + "test.pdf"));
-
-        doc.close();
+                PDDocument doc = new PDDocument()) {
+            PDPage blank = new PDPage();
+            doc.addPage(blank);
+            PDImageXObject imageXObject = JPEGFactory.createFromImage(doc, img);
+            try (PDPageContentStream pageContentStream = new PDPageContentStream(doc, blank, true, true, true)) {
+                int w = (int) (img.getWidth() / 3);
+                int h = (int) (img.getHeight() / 3);
+                
+                pageContentStream.drawXObject(imageXObject, 0, 792 - h, w, h);
+            }
+            doc.save(new File(path + "test.pdf"));
+        }
     }
 
     public static BufferedImage joinBufferedImage(BufferedImage img1, BufferedImage img2) {

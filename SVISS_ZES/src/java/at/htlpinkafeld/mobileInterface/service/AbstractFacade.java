@@ -18,10 +18,8 @@ import java.util.List;
  */
 public abstract class AbstractFacade<T> {
 
-    private final Class<T> entityClass;
 
-    public AbstractFacade(Class<T> entityClass) {
-        this.entityClass = entityClass;
+    public AbstractFacade() {
     }
 
     protected abstract Base_DAO<T> getDAO();

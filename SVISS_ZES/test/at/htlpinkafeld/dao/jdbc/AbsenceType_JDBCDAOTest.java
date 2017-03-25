@@ -5,30 +5,27 @@
  */
 package at.htlpinkafeld.dao.jdbc;
 
-import at.htlpinkafeld.dao.factory.DAOFactory;
-import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
 import at.htlpinkafeld.dao.util.InvalidDAOFactoryTypeException;
-import at.htlpinkafeld.pojo.AbsenceType;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
  * @author Martin Six
  */
+@Deprecated
 public class AbsenceType_JDBCDAOTest {
 
-    AbsenceType_DAO absenceType_DAO;
-
+    /**
+     * Constructor for AbsenceType_JDBCDAOTest
+     * @throws InvalidDAOFactoryTypeException is thrown if something goes wrong
+     */
     public AbsenceType_JDBCDAOTest() throws InvalidDAOFactoryTypeException {
         ConnectionManager.setDebugInstance(true);
-        absenceType_DAO = DAOFactory.getDAOFactory().getAbsenceTypeDAO();
     }
 
     @AfterClass
@@ -52,12 +49,12 @@ public class AbsenceType_JDBCDAOTest {
      */
     @Test
     public void testInsertAndGetList() throws SQLException {
-        List<AbsenceType> expResult = absenceType_DAO.getList();
-        AbsenceType at = new AbsenceType("TestAbsence");
-        expResult.add(at);
-        absenceType_DAO.insert(at);
-        List result = absenceType_DAO.getList();
-        assertArrayEquals(expResult.toArray(), result.toArray());
+//        List<AbsenceType> expResult = absenceType_DAO.getList();
+//        AbsenceType at = new AbsenceType("TestAbsence");
+//        expResult.add(at);
+//        absenceType_DAO.insert(at);
+//        List result = absenceType_DAO.getList();
+//        assertArrayEquals(expResult.toArray(), result.toArray());
     }
 
     /**
@@ -65,12 +62,12 @@ public class AbsenceType_JDBCDAOTest {
      */
     @Test
     public void testUpdateAndGetAbsenceTypeByID() {
-        AbsenceType at = absenceType_DAO.getAbsenceTypeByID(1);
-        assertNotEquals("TestAbsence", at.getAbsenceName());
-        at.setAbsenceName("TestAbsence");
-        absenceType_DAO.update(at);
-        AbsenceType result = absenceType_DAO.getAbsenceTypeByID(1);
-        assertEquals(at.getAbsenceName(), result.getAbsenceName());
+//        AbsenceType at = absenceType_DAO.getAbsenceTypeByID(1);
+//        assertNotEquals("TestAbsence", at.getAbsenceName());
+//        at.setAbsenceName("TestAbsence");
+//        absenceType_DAO.update(at);
+//        AbsenceType result = absenceType_DAO.getAbsenceTypeByID(1);
+//        assertEquals(at.getAbsenceName(), result.getAbsenceName());
     }
 
     /**
@@ -78,12 +75,12 @@ public class AbsenceType_JDBCDAOTest {
      */
     @Test
     public void testInsertAndDelete() {
-        AbsenceType at = new AbsenceType("TestAbsence");
-        absenceType_DAO.insert(at);
-        List<AbsenceType> result = absenceType_DAO.getList();
-        assertTrue(result.contains(at));
-        absenceType_DAO.delete(at);
-        result = absenceType_DAO.getList();
-        assertFalse(result.contains(at));
+//        AbsenceType at = new AbsenceType("TestAbsence");
+//        absenceType_DAO.insert(at);
+//        List<AbsenceType> result = absenceType_DAO.getList();
+//        assertTrue(result.contains(at));
+//        absenceType_DAO.delete(at);
+//        result = absenceType_DAO.getList();
+//        assertFalse(result.contains(at));
     }
 }

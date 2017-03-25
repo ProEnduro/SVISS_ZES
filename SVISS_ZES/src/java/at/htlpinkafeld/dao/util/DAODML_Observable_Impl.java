@@ -30,9 +30,9 @@ public class DAODML_Observable_Impl implements DAODML_Observable {
 
     @Override
     public void notifyObservers() {
-        for (DAODML_Observer o : observers) {
+        observers.forEach((o) -> {
             o.notifyObserver();
-        }
+        });
     }
 
 }

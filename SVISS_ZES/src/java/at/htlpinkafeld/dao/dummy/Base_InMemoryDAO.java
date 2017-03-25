@@ -27,9 +27,9 @@ public abstract class Base_InMemoryDAO<T> extends Base_DAO_Observable<T> {
     @Override
     public List<T> getList() {
         List<T> retList = new ArrayList<>();
-        for (T entity : oList) {
+        oList.forEach((entity) -> {
             retList.add(clone(entity));
-        }
+        });
         return retList;
     }
 

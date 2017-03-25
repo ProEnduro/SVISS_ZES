@@ -19,9 +19,11 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlRootElement
 public class Absence implements Serializable {
 
+    private static final long serialVersionUID = 4144574463884739053L;
+
     private Integer absenceID;
     private User user;
-    private AbsenceType absenceType;
+    private AbsenceTypeNew absenceType;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String reason;
@@ -55,7 +57,7 @@ public class Absence implements Serializable {
      * @deprecated
      */
     @Deprecated
-    public Absence(Integer absenceID, User user, AbsenceType absenceType, LocalDateTime startTime, LocalDateTime endTime, String reason, Boolean acknowledged) {
+    public Absence(Integer absenceID, User user, AbsenceTypeNew absenceType, LocalDateTime startTime, LocalDateTime endTime, String reason, Boolean acknowledged) {
         this.absenceID = absenceID;
         this.user = user;
         this.absenceType = absenceType;
@@ -65,7 +67,7 @@ public class Absence implements Serializable {
         this.acknowledged = acknowledged;
     }
 
-    public Absence(User user, AbsenceType absenceType, LocalDateTime startTime, LocalDateTime endTime, String reason) {
+    public Absence(User user, AbsenceTypeNew absenceType, LocalDateTime startTime, LocalDateTime endTime, String reason) {
         this();
         this.user = user;
         this.absenceType = absenceType;
@@ -75,13 +77,13 @@ public class Absence implements Serializable {
         this.acknowledged = false;
     }
 
-    public Absence(User user, AbsenceType absenceType, LocalDateTime startTime, LocalDateTime endTime) {
+    public Absence(User user, AbsenceTypeNew absenceType, LocalDateTime startTime, LocalDateTime endTime) {
         this();
         this.user = user;
         this.absenceType = absenceType;
         this.startTime = startTime;
         this.endTime = endTime;
-        reason = absenceType.getAbsenceName();
+        reason = absenceType.name();
         acknowledged = false;
     }
 
@@ -101,11 +103,11 @@ public class Absence implements Serializable {
         this.user = user;
     }
 
-    public AbsenceType getAbsenceType() {
+    public AbsenceTypeNew getAbsenceType() {
         return absenceType;
     }
 
-    public void setAbsenceType(AbsenceType absenceType) {
+    public void setAbsenceType(AbsenceTypeNew absenceType) {
         this.absenceType = absenceType;
     }
 

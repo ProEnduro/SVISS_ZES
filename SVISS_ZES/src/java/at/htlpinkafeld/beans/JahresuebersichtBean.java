@@ -5,7 +5,6 @@
  */
 package at.htlpinkafeld.beans;
 
-import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
 import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.Holiday;
 import at.htlpinkafeld.pojo.SollZeit;
@@ -32,6 +31,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -80,9 +80,9 @@ public class JahresuebersichtBean {
         users = new ArrayList<>();
         if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_ALL")) {
             List<User> userL = BenutzerverwaltungService.getUserByDisabled(Boolean.FALSE);
-            for (User u : userL) {
+            userL.forEach((u) -> {
                 users.add(new SelectItem(u, u.getPersName()));
-            }
+            });
         } else if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_SELF")) {
             users.add(new SelectItem(currentUser, currentUser.getPersName()));
         }
@@ -212,9 +212,11 @@ public class JahresuebersichtBean {
         }
 
         for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
-            SollZeit sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, date.getDayOfWeek(), date.atStartOfDay());
+            SollZeit sz = SollZeitenService.getSollZeitenByUser_ValidDate(u, date.atStartOfDay());
+            DayOfWeek dow = date.getDayOfWeek();
+
             if (sz != null) {
-                long diff = sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                long diff = sz.getSollStartTime(dow).until(sz.getSollEndTime(dow), ChronoUnit.MINUTES);
                 if (diff >= 6 * 60) {
                     diff -= 30;
                 }
@@ -232,8 +234,8 @@ public class JahresuebersichtBean {
             if (a.getEndTime().isAfter(endDate.atTime(23, 59, 59))) {
                 a.setEndTime(endDate.atStartOfDay().minusSeconds(1));
             }
-            switch (a.getAbsenceType().getAbsenceName()) {
-                case AbsenceType_DAO.HOLIDAY:
+            switch (a.getAbsenceType()) {
+                case HOLIDAY:
                     if (!a.isAcknowledged()) {
                         break;
                     }
@@ -241,9 +243,10 @@ public class JahresuebersichtBean {
                     DayOfWeek hDay = a.getStartTime().getDayOfWeek();
                     for (int i = 0; i < holidayLength; i++, hDay.plus(1)) {
                         int diff = 0;
-                        SollZeit sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, a.getStartTime().getDayOfWeek(), a.getStartTime());
+                        SollZeit sz = SollZeitenService.getSollZeitenByUser_ValidDate(u, a.getStartTime());
+
                         if (sz != null) {
-                            diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                            diff = (int) sz.getSollStartTime(hDay).until(sz.getSollEndTime(hDay), ChronoUnit.MINUTES);
                         }
                         if (diff > 6 * 60) {
                             diff -= 30;
@@ -252,7 +255,7 @@ public class JahresuebersichtBean {
 
                     }
                     break;
-                case AbsenceType_DAO.TIMECOMPENSATION:
+                case TIME_COMPENSATION:
                     //Ignore because it is the same as not working = SollZeit is already deducted
 //                    if (a.isAcknowledged()) {
 //                        int dayNum = a.getEndTime().getDayOfYear() - a.getStartTime().getDayOfYear() + 1;
@@ -284,26 +287,26 @@ public class JahresuebersichtBean {
 //                        }
 //                    }
                     break;
-                case AbsenceType_DAO.MEDICAL_LEAVE:
+                case MEDICAL_LEAVE:
                     int dayNum = a.getEndTime().getDayOfYear() - a.getStartTime().getDayOfYear() + 1;
                     DayOfWeek sDay = a.getStartTime().getDayOfWeek();
                     for (int i = 0; i < dayNum; i++, sDay.plus(1)) {
-                        SollZeit sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, a.getStartTime().getDayOfWeek(), a.getStartTime());
+                        SollZeit sz = SollZeitenService.getSollZeitenByUser_ValidDate(u, a.getStartTime());
                         int diff = 0;
                         if (sz != null) {
                             if (i == 0 || i == (dayNum - 1)) {
-                                if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime()) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
+                                if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime(sDay)) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime(sDay))) {
                                     diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
-                                } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime()) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime())) {
-                                } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime())) {
-                                    diff = (int) a.getStartTime().toLocalTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
-                                } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
-                                    diff = (int) sz.getSollStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
+                                } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime(sDay)) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime(sDay))) {
+                                } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime(sDay))) {
+                                    diff = (int) a.getStartTime().toLocalTime().until(sz.getSollEndTime(sDay), ChronoUnit.MINUTES);
+                                } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime(sDay))) {
+                                    diff = (int) sz.getSollStartTime(sDay).until(a.getEndTime(), ChronoUnit.MINUTES);
                                 } else {
-                                    diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                                    diff = (int) sz.getSollStartTime(sDay).until(sz.getSollEndTime(sDay), ChronoUnit.MINUTES);
                                 }
                             } else {
-                                diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                                diff = (int) sz.getSollStartTime(sDay).until(sz.getSollEndTime(sDay), ChronoUnit.MINUTES);
                             }
                         }
                         if (diff > 6 * 60) {
@@ -312,7 +315,7 @@ public class JahresuebersichtBean {
                         overtime += diff;
                     }
                     break;
-                case AbsenceType_DAO.BUSINESSRELATED_ABSENCE:
+                case BUSINESSRELATED_ABSENCE:
                     break;
             }
         }
@@ -322,13 +325,15 @@ public class JahresuebersichtBean {
         for (Holiday h : holidays) {
             SollZeit sz = null;
             if (hDate == null) {
-                sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, h.getHolidayDate().getDayOfWeek(), h.getHolidayDate().atStartOfDay());
+                sz = SollZeitenService.getSollZeitenByUser_ValidDate(u, h.getHolidayDate().atStartOfDay());
             } else if (!hDate.equals(h.getHolidayDate())) {
-                sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, h.getHolidayDate().getDayOfWeek(), hDate.atStartOfDay());
+                sz = SollZeitenService.getSollZeitenByUser_ValidDate(u, hDate.atStartOfDay());
             }
             hDate = h.getHolidayDate();
             if (sz != null) {
-                long diff = sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                DayOfWeek dow = hDate.getDayOfWeek();
+
+                long diff = sz.getSollStartTime(dow).until(sz.getSollEndTime(dow), ChronoUnit.MINUTES);
                 if (diff >= 6 * 60) {
                     diff -= 30;
                 }
@@ -343,8 +348,6 @@ public class JahresuebersichtBean {
         int overtime = 0;
 
         List<WorkTime> workTimes = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(u, TimeConverterService.convertLocalDateToDate(startDate), TimeConverterService.convertLocalDateToDate(endDate));
-        LocalTime lt19Plus = LocalTime.of(19, 0);
-
         for (WorkTime wt : workTimes) {
             overtime += wt.getOvertimeAfter19();
         }

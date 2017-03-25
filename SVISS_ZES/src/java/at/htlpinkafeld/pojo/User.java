@@ -9,6 +9,7 @@ import at.htlpinkafeld.mobileInterface.service.util.LocalDateAdapter;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -19,9 +20,11 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlRootElement
 public class User implements Serializable {
 
+    private static final long serialVersionUID = -3142401026506327543L;
+
     private Integer userNr;
     private AccessLevel accessLevel;
-    private String PersName;
+    private String persName;
     //in days
     private Integer vacationLeft;
     //in minutes
@@ -46,7 +49,7 @@ public class User implements Serializable {
     public User(User u) {
         this.userNr = u.getUserNr();
         this.accessLevel = u.getAccessLevel();
-        this.PersName = u.getPersName();
+        this.persName = u.getPersName();
         this.vacationLeft = u.getVacationLeft();
         this.overTimeLeft = u.getOverTimeLeft();
         this.username = u.getUsername();
@@ -55,16 +58,16 @@ public class User implements Serializable {
         this.pass = u.getPass();
         this.weekTime = u.getWeekTime();
         this.disabled = u.isDisabled();
-        if (u.ApproverInitialized()) {
+        if (u.areApproverInitialized()) {
             this.approver = u.getApprover();
         }
     }
 
     @Deprecated
-    public User(Integer userNr, AccessLevel accessLevel, String PersName, Integer vacationLeft, Integer overTimeLeft, String username, String email, LocalDate hiredate, String pass, Double weekTime, Boolean disabled) {
+    public User(Integer userNr, AccessLevel accessLevel, String persName, Integer vacationLeft, Integer overTimeLeft, String username, String email, LocalDate hiredate, String pass, Double weekTime, Boolean disabled) {
         this.userNr = userNr;
         this.accessLevel = accessLevel;
-        this.PersName = PersName;
+        this.persName = persName;
         this.vacationLeft = vacationLeft;
         this.overTimeLeft = overTimeLeft;
         this.username = username;
@@ -75,10 +78,10 @@ public class User implements Serializable {
         this.disabled = disabled;
     }
 
-    public User(AccessLevel accessLevel, String PersName, Integer vacationLeft, Integer overTimeLeft, String username, String email, LocalDate hiredate, String pass, Double weekTime) {
+    public User(AccessLevel accessLevel, String persName, Integer vacationLeft, Integer overTimeLeft, String username, String email, LocalDate hiredate, String pass, Double weekTime) {
         this();
         this.accessLevel = accessLevel;
-        this.PersName = PersName;
+        this.persName = persName;
         this.vacationLeft = vacationLeft;
         this.overTimeLeft = overTimeLeft;
         this.username = username;
@@ -88,10 +91,10 @@ public class User implements Serializable {
         this.weekTime = weekTime;
     }
 
-    public User(AccessLevel accessLevel, String PersName, String username, String email, LocalDate hiredate, String pass, Double weekTime) {
+    public User(AccessLevel accessLevel, String persName, String username, String email, LocalDate hiredate, String pass, Double weekTime) {
         this();
         this.accessLevel = accessLevel;
-        this.PersName = PersName;
+        this.persName = persName;
         this.username = username;
         this.email = email;
         this.hiredate = hiredate;
@@ -116,11 +119,11 @@ public class User implements Serializable {
     }
 
     public String getPersName() {
-        return PersName;
+        return persName;
     }
 
-    public void setPersName(String PersName) {
-        this.PersName = PersName;
+    public void setPersName(String persName) {
+        this.persName = persName;
     }
 
     public Integer getVacationLeft() {
@@ -199,7 +202,7 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "User{" + "userNr=" + userNr + ", accessLevel=" + accessLevel + ", PersName=" + PersName + ", vacationLeft=" + vacationLeft + ", overTimeLeft=" + overTimeLeft + ", username=" + username + ", email=" + email + ", hiredate=" + hiredate + ", pass=" + pass + ", weekTime=" + weekTime + ", disabled=" + disabled + '}';
+        return "User{" + "userNr=" + userNr + ", accessLevel=" + accessLevel + ", PersName=" + persName + ", vacationLeft=" + vacationLeft + ", overTimeLeft=" + overTimeLeft + ", username=" + username + ", email=" + email + ", hiredate=" + hiredate + ", pass=" + pass + ", weekTime=" + weekTime + ", disabled=" + disabled + '}';
     }
 
     @Override
@@ -211,21 +214,20 @@ public class User implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof User) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-
-            final User other = (User) obj;
-            if (this.userNr != other.getUserNr()) {
-                return false;
-            }
+        if (this == obj) {
             return true;
         }
-        return false;
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final User other = (User) obj;
+        if (!Objects.equals(this.userNr, other.userNr)) {
+            return false;
+        }
+        return true;
     }
 
     public String getDisabledString() {
@@ -236,7 +238,7 @@ public class User implements Serializable {
         }
     }
 
-    public Boolean ApproverInitialized() {
+    public Boolean areApproverInitialized() {
         return approver != null;
     }
 

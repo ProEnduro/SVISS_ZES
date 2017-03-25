@@ -5,8 +5,6 @@
  */
 package at.htlpinkafeld.pojo;
 
-import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
-import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -21,10 +19,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class TimeRowDisplay {
 
-    private static final DateTimeFormatter timeFormatter;
+    private static final DateTimeFormatter TIME_FORMATTER;
 
     static {
-        timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     }
 
     private final LocalDate date;
@@ -43,16 +41,16 @@ public class TimeRowDisplay {
 
     public TimeRowDisplay(Absence a) {
         date = a.getStartTime().toLocalDate();
-        reason = a.getAbsenceType().getAbsenceName() + ": " + a.getReason();
-        if (!a.getAbsenceType().getAbsenceName().contentEquals(AbsenceType_DAO.HOLIDAY)) {
-            reason += a.getStartTime().toLocalTime().format(timeFormatter) + " -  " + a.getEndTime().toLocalTime().format(timeFormatter);
+        reason = a.getAbsenceType()+ ": " + a.getReason();
+        if (!a.getAbsenceType().equals(AbsenceTypeNew.HOLIDAY)) {
+            reason += a.getStartTime().toLocalTime().format(TIME_FORMATTER) + " -  " + a.getEndTime().toLocalTime().format(TIME_FORMATTER);
         }
     }
 
     public TimeRowDisplay(WorkTime wt) {
         date = wt.getStartTime().toLocalDate();
-        workTimeStart = wt.getStartTime().format(timeFormatter);
-        workTimeEnd = wt.getEndTime().format(timeFormatter);
+        workTimeStart = wt.getStartTime().format(TIME_FORMATTER);
+        workTimeEnd = wt.getEndTime().format(TIME_FORMATTER);
         breakTime = wt.getBreakTime();
 
         double temp = wt.getSollStartTime().until(wt.getSollEndTime(), ChronoUnit.MINUTES) / 60.0;

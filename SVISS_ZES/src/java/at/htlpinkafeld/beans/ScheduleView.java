@@ -11,10 +11,9 @@ import at.htlpinkafeld.beans.util.LazyScheduleModels.AllTimeLazyScheduleModel;
 import at.htlpinkafeld.beans.util.LazyScheduleModels.AlleAbwesenheitenLazyScheduleModel;
 import at.htlpinkafeld.beans.util.LazyScheduleModels.IstZeitLazyScheduleModel;
 import at.htlpinkafeld.beans.util.WorkTimeEvent;
-import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
 import at.htlpinkafeld.dao.util.DAODML_Observer;
 import at.htlpinkafeld.pojo.Absence;
-import at.htlpinkafeld.pojo.AbsenceType;
+import at.htlpinkafeld.pojo.AbsenceTypeNew;
 import at.htlpinkafeld.pojo.Holiday;
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
@@ -27,6 +26,7 @@ import at.htlpinkafeld.service.HolidayService;
 import at.htlpinkafeld.service.IstZeitService;
 import at.htlpinkafeld.service.SollZeitenService;
 import at.htlpinkafeld.service.TimeConverterService;
+import edu.emory.mathcs.backport.java.util.Arrays;
 import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -35,6 +35,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -49,9 +50,10 @@ import org.primefaces.model.ScheduleModel;
 
 public class ScheduleView implements Serializable, DAODML_Observer {
 
-    AbsenceType type;
-    List<AbsenceType> types;
-    User currentUser;
+    private static final long serialVersionUID = 1L;
+
+    private AbsenceTypeNew type;
+    private User currentUser;
 
     private ScheduleModel istZeitEventModel;
 
@@ -85,8 +87,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         if (currentUser != null) {
             BenutzerverwaltungService.addUserObserver(this);
 
-            types = AbsenceService.getList();
-            type = types.get(0);
+            type = AbsenceTypeNew.MEDICAL_LEAVE;
 
             istZeitEventModel = new IstZeitLazyScheduleModel(currentUser);
             acknowledgementModel = new AcknowledgeLazyScheduleModel();
@@ -146,14 +147,16 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         } else if (!checkAvailableTime(TimeConverterService.convertLocalDateTimeToDate(startDT), TimeConverterService.convertLocalDateTimeToDate(endDT), true)) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Ein Eintrag für diese Urzeit ist bereits vorhanden!"));
             FacesContext.getCurrentInstance().validationFailed();
-        } else if (!FacesContext.getCurrentInstance().isValidationFailed() && type.getAbsenceName().equals(AbsenceType_DAO.HOLIDAY)) {
+        } else if (!FacesContext.getCurrentInstance().isValidationFailed() && type.equals(AbsenceTypeNew.HOLIDAY)) {
             int days = 0;
-            List<SollZeit> sollZeiten = SollZeitenService.getSollZeitenByUser(currentUser);
-            for (LocalDate ld = startDT.toLocalDate(); ld.atStartOfDay().isBefore(endDT); ld = ld.plusDays(1)) {
-                for (SollZeit sz : sollZeiten) {
-                    if (sz.getDay().equals(ld.getDayOfWeek())) {
+            SollZeit currentSollZeit = SollZeitenService.getSollZeitenByUser_Current(currentUser);
+            if (currentSollZeit != null) {
+                for (LocalDate ld = startDT.toLocalDate(); ld.atStartOfDay().isBefore(endDT); ld = ld.plusDays(1)) {
+
+                    if (currentSollZeit.getSollStartTimeMap().containsKey(ld.getDayOfWeek())) {
                         days++;
                     }
+
                 }
             }
             if (days > currentUser.getVacationLeft()) {
@@ -162,7 +165,9 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             }
         }
         //Inserts or updates
-        if (!FacesContext.getCurrentInstance().isValidationFailed() && event instanceof AbsenceEvent && event.getId() == null) {
+
+        if (!FacesContext.getCurrentInstance()
+                .isValidationFailed() && event instanceof AbsenceEvent && event.getId() == null) {
 
             Absence a = ((AbsenceEvent) event).getAbsence();
             a.setStartTime(startDT);
@@ -247,12 +252,22 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             } else if (event instanceof WorkTimeEvent) {
                 wt = ((WorkTimeEvent) event).getWorktime();
                 LocalTime plus19 = LocalTime.of(19, 0);
-                diff -= wt.getStartTime().toLocalTime().until(wt.getSollStartTime(), ChronoUnit.MINUTES);
-                if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
-                    diff -= wt.getOvertimeAfter19() * 1.5;
-                    diff -= wt.getSollEndTime().until(plus19, ChronoUnit.MINUTES);
+                if (wt.getSollStartTime() != null) {
+                    diff -= wt.getStartTime().toLocalTime().until(wt.getSollStartTime(), ChronoUnit.MINUTES);
+                    if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
+                        diff -= wt.getOvertimeAfter19() * 1.5;
+                        diff -= wt.getSollEndTime().until(plus19, ChronoUnit.MINUTES);
+                    } else {
+                        diff -= wt.getSollEndTime().until(wt.getEndTime().toLocalTime(), ChronoUnit.MINUTES);
+                    }
                 } else {
-                    diff -= wt.getSollEndTime().until(wt.getEndTime().toLocalTime(), ChronoUnit.MINUTES);
+                    //detract all time (would be overtime)
+                    if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
+                        diff -= wt.getOvertimeAfter19() * 1.5;
+                        diff -= wt.getStartTime().toLocalTime().until(plus19, ChronoUnit.MINUTES);
+                    } else {
+                        diff -= wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
+                    }
                 }
 
                 wt.setBreakTime(breaktime);
@@ -262,20 +277,29 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                 wt.setEndTime(endDT);
 
                 IstZeitService.update(wt);
-            } else if (event instanceof AbsenceEvent) {
+            } //else if (event instanceof AbsenceEvent) {
 
 //                AbsenceService.updateAbsence(((AbsenceEvent) event).getAbsence());
-            }
-
+            // }
             if (wt != null) {
 
                 LocalTime plus19 = LocalTime.of(19, 0);
-                diff += wt.getStartTime().toLocalTime().until(wt.getSollStartTime(), ChronoUnit.MINUTES);
-                if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
-                    diff += wt.getOvertimeAfter19() * 1.5;
-                    diff += wt.getSollEndTime().until(plus19, ChronoUnit.MINUTES);
+                if (wt.getSollStartTime() != null) {
+                    diff += wt.getStartTime().toLocalTime().until(wt.getSollStartTime(), ChronoUnit.MINUTES);
+                    if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
+                        diff += wt.getOvertimeAfter19() * 1.5;
+                        diff += wt.getSollEndTime().until(plus19, ChronoUnit.MINUTES);
+                    } else {
+                        diff += wt.getSollEndTime().until(wt.getEndTime().toLocalTime(), ChronoUnit.MINUTES);
+                    }
                 } else {
-                    diff += wt.getSollEndTime().until(wt.getEndTime().toLocalTime(), ChronoUnit.MINUTES);
+                    //detract all time (would be overtime)
+                    if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
+                        diff += wt.getOvertimeAfter19() * 1.5;
+                        diff += wt.getStartTime().toLocalTime().until(plus19, ChronoUnit.MINUTES);
+                    } else {
+                        diff += wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
+                    }
                 }
                 wt.getUser().setOverTimeLeft(wt.getUser().getOverTimeLeft() + diff);
                 BenutzerverwaltungService.updateUser(wt.getUser());
@@ -287,7 +311,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
     public boolean checkAvailableTime(Date startD, Date endD, boolean checkWorkTime) {
         boolean retVal = true;
 
-        if (event instanceof AbsenceEvent && !type.getAbsenceName().contentEquals(AbsenceType_DAO.BUSINESSRELATED_ABSENCE)) {
+        if (event instanceof AbsenceEvent && !type.equals(AbsenceTypeNew.BUSINESSRELATED_ABSENCE)) {
             LocalDateTime startDT = TimeConverterService.convertDateToLocalDateTime(startD);
             LocalDateTime endDT = TimeConverterService.convertDateToLocalDateTime(endD);
 
@@ -307,7 +331,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             List<Absence> absList = AbsenceService.getAbsencesByUserBetweenDates(currentUser, startD, endD);
 
             for (Absence a : absList) {
-                if (!a.getAbsenceType().getAbsenceName().contentEquals(AbsenceType_DAO.BUSINESSRELATED_ABSENCE)) {
+                if (!a.getAbsenceType().equals(AbsenceTypeNew.BUSINESSRELATED_ABSENCE)) {
                     if (!startD.equals(TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()))) {
                         if (event instanceof AbsenceEvent) {
                             if (((AbsenceEvent) event).getAbsence() != null && !((AbsenceEvent) event).getAbsence().equals(a)) {
@@ -339,12 +363,22 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                 int diff = 0;
                 WorkTime wt = workevent.getWorktime();
                 LocalTime plus19 = LocalTime.of(19, 0);
-                diff -= wt.getStartTime().toLocalTime().until(wt.getSollStartTime(), ChronoUnit.MINUTES);
-                if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
-                    diff -= wt.getOvertimeAfter19() * 1.5;
-                    diff -= wt.getSollEndTime().until(plus19, ChronoUnit.MINUTES);
+                if (wt.getSollStartTime() != null) {
+                    diff -= wt.getStartTime().toLocalTime().until(wt.getSollStartTime(), ChronoUnit.MINUTES);
+                    if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
+                        diff -= wt.getOvertimeAfter19() * 1.5;
+                        diff -= wt.getSollEndTime().until(plus19, ChronoUnit.MINUTES);
+                    } else {
+                        diff -= wt.getSollEndTime().until(wt.getEndTime().toLocalTime(), ChronoUnit.MINUTES);
+                    }
                 } else {
-                    diff -= wt.getSollEndTime().until(wt.getEndTime().toLocalTime(), ChronoUnit.MINUTES);
+                    //detract all time (would be overtime)
+                    if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
+                        diff -= wt.getOvertimeAfter19() * 1.5;
+                        diff -= wt.getStartTime().toLocalTime().until(plus19, ChronoUnit.MINUTES);
+                    } else {
+                        diff -= wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
+                    }
                 }
                 wt.getUser().setOverTimeLeft(wt.getUser().getOverTimeLeft() + diff);
                 BenutzerverwaltungService.updateUser(wt.getUser());
@@ -363,7 +397,6 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         reason = "";
 
         if (event instanceof WorkTimeEvent) {
-            event = (WorkTimeEvent) event;
             WorkTimeEvent ev = (WorkTimeEvent) event;
             startcomment = ev.getWorktime().getStartComment();
             endcomment = ev.getWorktime().getEndComment();
@@ -372,7 +405,6 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             RequestContext.getCurrentInstance().execute("PF('eventDialog').show();");
 
         } else if (event instanceof AbsenceEvent) {
-            event = (AbsenceEvent) event;
             AbsenceEvent ev = (AbsenceEvent) event;
             reason = ev.getAbsence().getReason();
             RequestContext.getCurrentInstance().execute("PF('absenceDialog').show();");
@@ -390,7 +422,6 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         reason = "";
 
         if (event instanceof WorkTimeEvent) {
-            event = (WorkTimeEvent) event;
             WorkTimeEvent ev = (WorkTimeEvent) event;
             startcomment = ev.getWorktime().getStartComment();
             endcomment = ev.getWorktime().getEndComment();
@@ -399,7 +430,6 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             RequestContext.getCurrentInstance().execute("PF('worktimeDialog').show();");
 
         } else if (event instanceof AbsenceEvent) {
-            event = (AbsenceEvent) event;
             AbsenceEvent ev = (AbsenceEvent) event;
             reason = ev.getAbsence().getReason();
             RequestContext.getCurrentInstance().execute("PF('absenceDialog').show();");
@@ -414,18 +444,20 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             FacesContext.getCurrentInstance().validationFailed();
         } else {
 
-            LocalDate start = TimeConverterService.convertDateToLocalDate(sDate);
+            LocalDate startDate = TimeConverterService.convertDateToLocalDate(sDate);
 
-            SollZeit soll = SollZeitenService.getSollZeitByUserAndDayOfWeek(currentUser, start.getDayOfWeek());
+            SollZeit soll = SollZeitenService.getSollZeitenByUser_Current(currentUser);
 
             startcomment = "";
             endcomment = "";
 
-            if (soll != null) {
-                LocalDateTime s = start.atTime(soll.getSollStartTime());
-                LocalDateTime e = start.atTime(soll.getSollEndTime());
+            DayOfWeek dow = startDate.getDayOfWeek();
+            if (soll != null && soll.getSollStartTime(dow) != null) {
 
-                event = new WorkTimeEvent("", TimeConverterService.convertLocalDateTimeToDate(s), TimeConverterService.convertLocalDateTimeToDate(e), null);
+                LocalDateTime sdt = startDate.atTime(soll.getSollStartTime(dow));
+                LocalDateTime edt = startDate.atTime(soll.getSollEndTime(dow));
+
+                event = new WorkTimeEvent("", TimeConverterService.convertLocalDateTimeToDate(sdt), TimeConverterService.convertLocalDateTimeToDate(edt), null);
             } else {
                 event = new WorkTimeEvent("", sDate, sDate, null);
             }
@@ -437,16 +469,16 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         event = new AbsenceEvent("", sDate, sDate, new Absence(this.currentUser, type, null, null));
     }
 
-    public AbsenceType getType() {
+    public AbsenceTypeNew getType() {
         return type;
     }
 
-    public void setType(AbsenceType type) {
+    public void setType(AbsenceTypeNew type) {
         this.type = type;
     }
 
-    public List<AbsenceType> getTypes() {
-        return types;
+    public List<AbsenceTypeNew> getTypes() {
+        return new LinkedList(Arrays.asList(AbsenceTypeNew.values()));
     }
 
     public void setAcknowledged(ActionEvent actionEvent) {
@@ -466,7 +498,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
             absenceEvent.getAbsence().setAcknowledged(true);
             AbsenceService.updateAbsence(absenceEvent.getAbsence());
-            if (absenceEvent.getAbsence().getAbsenceType().getAbsenceName().contentEquals(AbsenceType_DAO.HOLIDAY)) {
+            if (absenceEvent.getAbsence().getAbsenceType().equals(AbsenceTypeNew.HOLIDAY)) {
                 setHolidayAndIstZeiten(absenceEvent.getAbsence());
             } else {
                 int overtime = calcAbsenceOvertime(absenceEvent.getAbsence());
@@ -493,7 +525,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             AbsenceService.deleteAbsence(absenceEvent.getAbsence());
 
             if (absenceEvent.getAbsence().isAcknowledged()) {
-                if (absenceEvent.getAbsence().getAbsenceType().getAbsenceName().equals(AbsenceType_DAO.HOLIDAY)) {
+                if (absenceEvent.getAbsence().getAbsenceType().equals(AbsenceTypeNew.HOLIDAY)) {
                     removeHolidayAndIstZeiten(absenceEvent.getAbsence());
                 } else {
                     User u = absenceEvent.getAbsence().getUser();
@@ -520,7 +552,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             AbsenceService.deleteAbsence(a);
 
             if (a.isAcknowledged()) {
-                if (a.getAbsenceType().getAbsenceName().equals(AbsenceType_DAO.HOLIDAY)) {
+                if (a.getAbsenceType().equals(AbsenceTypeNew.HOLIDAY)) {
                     removeHolidayAndIstZeiten(a);
                 } else {
 
@@ -543,9 +575,9 @@ public class ScheduleView implements Serializable, DAODML_Observer {
     //adds Worktimes and removes Vacation if Absence is aknowledged
     private void setHolidayAndIstZeiten(Absence a) {
         User u = a.getUser();
-        List<SollZeit> sollZeiten = SollZeitenService.getSollZeitenByUser(u);
-        int days = 0;
-        if (a.getAbsenceType().getAbsenceName().contentEquals(AbsenceType_DAO.HOLIDAY) && a.isAcknowledged()) {
+        SollZeit sollZeit = SollZeitenService.getSollZeitenByUser_Current(u);
+        int days;
+        if (a.getAbsenceType().equals(AbsenceTypeNew.HOLIDAY) && a.isAcknowledged()) {
             days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
 
             u.setVacationLeft(u.getVacationLeft() - days);
@@ -553,33 +585,34 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
             LocalDateTime day = a.getStartTime();
             for (int i = 0; i < days; i++, day = day.plusDays(1)) {
-                for (SollZeit sz : sollZeiten) {
-                    if (sz.getDay().equals(day.getDayOfWeek())) {
-                        int breaktime = 0;
-                        if (sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.HOURS) >= 6) {
-                            breaktime = 30;
-                        }
-                        IstZeitService.addIstTime(new WorkTime(u, day.with(sz.getSollStartTime()), day.with(sz.getSollEndTime()), breaktime, "Urlaub", "Urlaub"));
+                DayOfWeek dow = day.getDayOfWeek();
+
+                if (sollZeit.getSollStartTimeMap().containsKey(dow)) {
+                    int breaktime = 0;
+                    if (sollZeit.getSollStartTime(dow).until(sollZeit.getSollEndTime(dow), ChronoUnit.HOURS) >= 6) {
+                        breaktime = 30;
                     }
+                    IstZeitService.addIstTime(new WorkTime(u, day.with(sollZeit.getSollStartTime(dow)), day.with(sollZeit.getSollEndTime(dow)), breaktime, "Urlaub", "Urlaub"));
                 }
             }
+
         }
     }
 
     //removes Worktimes and adds Vacation if Absence is aknowledged
     private void removeHolidayAndIstZeiten(Absence a) {
         User u = a.getUser();
-        int days = 0;
-        if (a.getAbsenceType().getAbsenceName().contentEquals(AbsenceType_DAO.HOLIDAY) && a.isAcknowledged()) {
+        int days;
+        if (a.getAbsenceType().equals(AbsenceTypeNew.HOLIDAY) && a.isAcknowledged()) {
             days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
 
             u.setVacationLeft(u.getVacationLeft() + days);
             BenutzerverwaltungService.updateUser(u);
 
             List<WorkTime> workTimes = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(u, TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime().toLocalDate().plusDays(1).atStartOfDay()));
-            for (WorkTime wt : workTimes) {
+            workTimes.forEach((wt) -> {
                 IstZeitService.delete(wt);
-            }
+            });
         }
     }
 
@@ -587,88 +620,83 @@ public class ScheduleView implements Serializable, DAODML_Observer {
     private int calcAbsenceOvertime(Absence a) {
         int overtime = 0;
         User u = a.getUser();
-        List<SollZeit> sollZeiten = SollZeitenService.getSollZeitenByUser(u);
-        int days = 0;
+        SollZeit sollZeit = SollZeitenService.getSollZeitenByUser_Current(u);
+        int days;
         DayOfWeek sDay;
 
-        switch (a.getAbsenceType().getAbsenceName()) {
-            case AbsenceType_DAO.HOLIDAY:
+        switch (a.getAbsenceType()) {
+            case HOLIDAY:
                 break;
-            case AbsenceType_DAO.TIMECOMPENSATION:
+            case TIME_COMPENSATION:
                 days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
                 sDay = a.getStartTime().getDayOfWeek();
 
                 for (int i = 0; i < days; i++, sDay.plus(1)) {
-                    for (SollZeit sz : sollZeiten) {
-                        if (sz.getDay().equals(sDay)) {
-                            int diff = 0;
-                            if (i == 0 || i == (days - 1)) {
-                                if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime()) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
-                                    diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
-                                } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime()) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime())) {
-                                } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime())) {
-                                    diff = (int) a.getStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
-                                } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
-                                    diff = (int) sz.getSollStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
-                                } else {
-                                    diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
-                                }
-                            } else {
-                                diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
-                            }
-                            if (diff > 6 * 60) {
-                                diff -= 30;
-                            }
-                            overtime -= diff;
+                    int diff = 0;
+                    if (i == 0 || i == (days - 1)) {
+                        if (a.getStartTime().toLocalTime().isAfter(sollZeit.getSollStartTime(sDay)) && a.getEndTime().toLocalTime().isBefore(sollZeit.getSollEndTime(sDay))) {
+                            diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
+                        } else if (a.getEndTime().toLocalTime().isBefore(sollZeit.getSollStartTime(sDay)) || a.getStartTime().toLocalTime().isAfter(sollZeit.getSollEndTime(sDay))) {
+                        } else if (a.getStartTime().toLocalTime().isAfter(sollZeit.getSollStartTime(sDay))) {
+                            diff = (int) a.getStartTime().until(sollZeit.getSollEndTime(sDay), ChronoUnit.MINUTES);
+                        } else if (a.getEndTime().toLocalTime().isBefore(sollZeit.getSollEndTime(sDay))) {
+                            diff = (int) sollZeit.getSollStartTime(sDay).until(a.getEndTime(), ChronoUnit.MINUTES);
+                        } else {
+                            diff = (int) sollZeit.getSollStartTime(sDay).until(sollZeit.getSollEndTime(sDay), ChronoUnit.MINUTES);
                         }
+                    } else {
+                        diff = (int) sollZeit.getSollStartTime(sDay).until(sollZeit.getSollEndTime(sDay), ChronoUnit.MINUTES);
                     }
+                    if (diff > 6 * 60) {
+                        diff -= 30;
+                    }
+                    overtime -= diff;
+
                 }
                 break;
-            case AbsenceType_DAO.MEDICAL_LEAVE:
+            case MEDICAL_LEAVE:
                 days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
                 sDay = a.getStartTime().getDayOfWeek();
 
                 for (int i = 0; i < days; i++, sDay.plus(1)) {
-                    for (SollZeit sz : sollZeiten) {
-                        if (sz.getDay().equals(sDay)) {
-                            int diff = 0;
-                            if (i == 0 || i == (days - 1)) {
-                                if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime()) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
-                                    diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
-                                } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime()) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime())) {
-                                } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime())) {
-                                    diff = (int) a.getStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
-                                } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
-                                    diff = (int) sz.getSollStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
-                                } else {
-                                    diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
-                                }
-                            } else {
-                                diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
-                            }
-                            if (diff > 6 * 60) {
-                                diff -= 30;
-                            }
-                            overtime += diff;
+                    int diff = 0;
+                    if (i == 0 || i == (days - 1)) {
+                        if (a.getStartTime().toLocalTime().isAfter(sollZeit.getSollStartTime(sDay)) && a.getEndTime().toLocalTime().isBefore(sollZeit.getSollEndTime(sDay))) {
+                            diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
+                        } else if (a.getEndTime().toLocalTime().isBefore(sollZeit.getSollStartTime(sDay)) || a.getStartTime().toLocalTime().isAfter(sollZeit.getSollEndTime(sDay))) {
+                        } else if (a.getStartTime().toLocalTime().isAfter(sollZeit.getSollStartTime(sDay))) {
+                            diff = (int) a.getStartTime().until(sollZeit.getSollEndTime(sDay), ChronoUnit.MINUTES);
+                        } else if (a.getEndTime().toLocalTime().isBefore(sollZeit.getSollEndTime(sDay))) {
+                            diff = (int) sollZeit.getSollStartTime(sDay).until(a.getEndTime(), ChronoUnit.MINUTES);
+                        } else {
+                            diff = (int) sollZeit.getSollStartTime(sDay).until(sollZeit.getSollEndTime(sDay), ChronoUnit.MINUTES);
                         }
+                    } else {
+                        diff = (int) sollZeit.getSollStartTime(sDay).until(sollZeit.getSollEndTime(sDay), ChronoUnit.MINUTES);
                     }
+                    if (diff > 6 * 60) {
+                        diff -= 30;
+                    }
+                    overtime += diff;
                 }
+
                 break;
         }
         return overtime;
     }
 
     public void onAbsenceSelect(SelectEvent selectEvent) {
-        absenceEvent = (AbsenceEvent) selectEvent.getObject();
+        if (selectEvent.getObject() instanceof AbsenceEvent) {
+            absenceEvent = (AbsenceEvent) selectEvent.getObject();
 
-        reason = "";
+            reason = "";
 
-        if (absenceEvent instanceof AbsenceEvent) {
+            if (absenceEvent != null) {
 
-            reason = absenceEvent.getAbsence().getReason();
-            RequestContext.getCurrentInstance().execute("PF('eventDialog').show();");
+                reason = absenceEvent.getAbsence().getReason();
+                RequestContext.getCurrentInstance().execute("PF('eventDialog').show();");
+            }
         }
-
     }
 
     public AbsenceEvent getAbsenceEvent() {
@@ -685,9 +713,9 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
         allUsers.add("All");
 
-        for (User u : BenutzerverwaltungService.getUserList()) {
+        BenutzerverwaltungService.getUserList().forEach((u) -> {
             allUsers.add(u.getUsername());
-        }
+        });
 
         return "/pages/absence_acknowledgement.xhtml?faces-redirect=true";
     }
@@ -757,7 +785,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
     }
 
     public String getPattern() {
-        if (type == null || type.getAbsenceName().equals(AbsenceType_DAO.HOLIDAY)) {
+        if (type == null || type.equals(AbsenceTypeNew.HOLIDAY)) {
             return "dd.MM.yyyy";
         } else {
             return "dd.MM.yyyy HH:mm";
@@ -831,9 +859,9 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
         allUsers.add("All");
 
-        for (User u : BenutzerverwaltungService.getUserList()) {
+        BenutzerverwaltungService.getUserList().forEach((u) -> {
             allUsers.add(u.getUsername());
-        }
+        });
 
         return "/pages/allTime.xhtml?faces-redirect=true";
     }

@@ -27,12 +27,15 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.faces.application.FacesMessage;
@@ -60,8 +63,8 @@ public class BenutzerverwaltungBean {
 
     private DualListModel<User> approverModel;
 
-    private List<SollZeit> currentSollZeiten;
-    private List<SollZeit> newSollZeiten;
+    private SollZeit currentSollZeit;
+    private SollZeit newSollZeit;
 
     private ScheduleModel timeModel;
     private ScheduleEvent curEvent;
@@ -101,12 +104,12 @@ public class BenutzerverwaltungBean {
 
     public void newUser() {
         selectedUser = new UserProxy();
-        newSollZeiten = new ArrayList<>();
+        newSollZeit = null;
     }
 
     public void editUser(ActionEvent e) {
         selectedUser = new UserProxy((User) e.getComponent().getAttributes().get("user"));
-        newSollZeiten = new ArrayList<>();
+        newSollZeit = null;
     }
 
     public void saveUser() throws FileNotFoundException, IOException {
@@ -130,15 +133,8 @@ public class BenutzerverwaltungBean {
                 BenutzerverwaltungService.updateUser(selectedUser);
             }
 
-            if (!newSollZeiten.isEmpty()) {
-                for (SollZeit sz : newSollZeiten) {
-                    SollZeitenService.insertZeit(sz);
-                }
-                for (SollZeit sz : currentSollZeiten) {
-                    if (!newSollZeiten.contains(sz)) {
-                        SollZeitenService.deleteZeit(sz);
-                    }
-                }
+            if (newSollZeit != null) {
+                SollZeitenService.insertZeit(newSollZeit);
             }
 
             ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
@@ -186,7 +182,8 @@ public class BenutzerverwaltungBean {
             try {
                 EmailService.sendUserNewPasswordEmail(resetPWString, selectedUser);
             } catch (Exception e) {
-                e.printStackTrace();
+                Logger.getLogger(BenutzerverwaltungBean.class.getName()).log(Level.SEVERE, null, e);
+
             }
         }
     }
@@ -235,7 +232,7 @@ public class BenutzerverwaltungBean {
     }
 
     public void discardTimes() {
-        newSollZeiten = new ArrayList<>();
+        newSollZeit = null;
     }
 
     public void discardUserChanges() {
@@ -251,7 +248,7 @@ public class BenutzerverwaltungBean {
     }
 
     public List<AccessLevel> getAccessGroups() {
-        return AccessRightsService.AccessGroups;
+        return AccessRightsService.getAccessGroups();
     }
 
     //Scheduel Stuff from this Point
@@ -270,8 +267,8 @@ public class BenutzerverwaltungBean {
     public Double getNewWeekTime() {
         Double wt = 0.0;
         Double dayTime;
-        for (SollZeit sz : newSollZeiten) {
-            dayTime = sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES) / 60.0;
+        for (DayOfWeek dow : newSollZeit.getSollStartTimeMap().keySet()) {
+            dayTime = newSollZeit.getSollStartTime(dow).until(newSollZeit.getSollEndTime(dow), ChronoUnit.MINUTES) / 60.0;
             if (dayTime >= 6) {
                 dayTime -= 0.5;
             }
@@ -295,27 +292,35 @@ public class BenutzerverwaltungBean {
             endTime = startTime.plusMinutes((long) ((weekTime / 5) * 60));
         }
 
-        for (int i = 0; i < 5; i++) {
-            LocalDateTime sDateTime = LocalDateTime.of(pointDate.plusDays(i), startTime);
+        Map<DayOfWeek, LocalTime> startTimeMap = new HashMap<>();
+        Map<DayOfWeek, LocalTime> endTimeMap = new HashMap<>();
+
+        for (int i = 1; i <= 5; i++) {
+            LocalDateTime sDateTime = LocalDateTime.of(pointDate.plusDays(i-1), startTime);
             curEvent = new DefaultScheduleEvent("", TimeConverterService.convertLocalDateTimeToDate(sDateTime), TimeConverterService.convertLocalDateTimeToDate(sDateTime.with(endTime)), sDateTime.getDayOfWeek());
-            SollZeit sz = new SollZeit(sDateTime.getDayOfWeek(), selectedUser, startTime, endTime);
             timeModel.addEvent(curEvent);
-            newSollZeiten.add(sz);
+            startTimeMap.put(DayOfWeek.of(i), startTime);
+            endTimeMap.put(DayOfWeek.of(i), endTime);
         }
+        newSollZeit = new SollZeit(selectedUser, startTimeMap, endTimeMap);
+
     }
 
     public void loadSollZeiten() {
         timeModel.clear();
-        currentSollZeiten = SollZeitenService.getSollZeitenByUser(selectedUser);
-        newSollZeiten = new LinkedList<>();
-        for (SollZeit sz : currentSollZeiten) {
-            newSollZeiten.add(new SollZeit(sz));
+        currentSollZeit = SollZeitenService.getSollZeitenByUser_Current(selectedUser);
+        if (currentSollZeit != null) {
+            newSollZeit = new SollZeit(currentSollZeit);
+
+            newSollZeit.getSollEndTimeMap().keySet().forEach((dow) -> {
+                LocalDate curDate = pointDate.with(TemporalAdjusters.firstInMonth(dow));
+                timeModel.addEvent(new DefaultScheduleEvent("", TimeConverterService.convertLocalTimeToDate(curDate, newSollZeit.getSollStartTime(dow)),
+                        TimeConverterService.convertLocalDateTimeToDate(LocalDateTime.of(curDate, newSollZeit.getSollEndTime(dow))), dow));
+            });
+        } else {
+            newSollZeit = new SollZeit(selectedUser, new HashMap<>(), new HashMap<>());
         }
-        for (SollZeit sz : newSollZeiten) {
-            LocalDate curDate = pointDate.with(TemporalAdjusters.firstInMonth(sz.getDay()));
-            timeModel.addEvent(new DefaultScheduleEvent("", TimeConverterService.convertLocalTimeToDate(curDate, sz.getSollStartTime()),
-                    TimeConverterService.convertLocalDateTimeToDate(LocalDateTime.of(curDate, sz.getSollEndTime())), curDate.getDayOfWeek()));
-        }
+
     }
 
     public void onEventSelect(SelectEvent selectEvent) {
@@ -329,11 +334,9 @@ public class BenutzerverwaltungBean {
         Calendar c = Calendar.getInstance();
         c.setTime(date);
 
-        for (SollZeit sz : newSollZeiten) {
-            if (TimeConverterService.convertDateToLocalDate(date).getDayOfWeek().equals(sz.getDay())) {
-                FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Action failed", "Nur eine Arbeitszeit pro Tag!"));
-                FacesContext.getCurrentInstance().validationFailed();
-            }
+        if (newSollZeit.getSollStartTimeMap().containsKey(TimeConverterService.convertDateToLocalDate(date).getDayOfWeek())) {
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Action failed", "Nur eine Arbeitszeit pro Tag!"));
+            FacesContext.getCurrentInstance().validationFailed();
         }
 
         if (!FacesContext.getCurrentInstance().isValidationFailed()) {
@@ -342,7 +345,7 @@ public class BenutzerverwaltungBean {
         }
     }
 
-    public Object addWorkTimeEvent() {
+    public void addSollZeitEvent() {
         LocalDateTime sDateTime = LocalDateTime.of(pointDate.with(TemporalAdjusters.firstInMonth((DayOfWeek) curEvent.getData())), TimeConverterService.convertDateToLocalTime(curEvent.getStartDate()));
 
         Date endDate = TimeConverterService.convertLocalDateTimeToDate(sDateTime.plus(Duration.ofMillis(curEvent.getEndDate().getTime() - curEvent.getStartDate().getTime())));
@@ -351,28 +354,28 @@ public class BenutzerverwaltungBean {
         if (startDate.after(endDate)) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Action failed", "Endzeitpunkt ist vor Startzeitpunkt!"));
             FacesContext.getCurrentInstance().validationFailed();
-            return null;
-        }
-
-        ((DefaultScheduleEvent) curEvent).setEndDate(endDate);
-        ((DefaultScheduleEvent) curEvent).setStartDate(startDate);
-
-        SollZeit sz = new SollZeit(sDateTime.getDayOfWeek(), selectedUser, sDateTime.toLocalTime(), TimeConverterService.convertDateToLocalTime(curEvent.getEndDate()));
-        if (curEvent.getId() == null) {
-            timeModel.addEvent(curEvent);
         } else {
-            timeModel.updateEvent(curEvent);
+
+            ((DefaultScheduleEvent) curEvent).setEndDate(endDate);
+            ((DefaultScheduleEvent) curEvent).setStartDate(startDate);
+
+            if (curEvent.getId() == null) {
+                timeModel.addEvent(curEvent);
+            } else {
+                timeModel.updateEvent(curEvent);
+            }
+            newSollZeit.getSollStartTimeMap().put(sDateTime.getDayOfWeek(), sDateTime.toLocalTime());
+            newSollZeit.getSollEndTimeMap().put(sDateTime.getDayOfWeek(), TimeConverterService.convertDateToLocalTime(endDate));
+            curEvent = new DefaultScheduleEvent();
         }
-        newSollZeiten.remove(sz);
-        newSollZeiten.add(sz);
-        curEvent = new DefaultScheduleEvent();
-        return null;
     }
 
-    public void removeWorkTimeEvent() {
+    public void removeSollZeitEvent() {
         if (curEvent.getId() != null) {
-            SollZeit sz = new SollZeit((DayOfWeek) curEvent.getData(), selectedUser, null, null);
-            newSollZeiten.remove(sz);
+            DayOfWeek dow = (DayOfWeek) curEvent.getData();
+            newSollZeit.getSollStartTimeMap().remove(dow);
+            newSollZeit.getSollEndTimeMap().remove(dow);
+
         }
     }
 
@@ -389,11 +392,8 @@ public class BenutzerverwaltungBean {
         } else {
             Calendar c = Calendar.getInstance();
             c.setTime(event.getScheduleEvent().getStartDate());
-            for (SollZeit sz : newSollZeiten) {
-                if (sz.getDay().equals(startDateTime.getDayOfWeek())) {
-                    sz.setSollEndTime(endTime);
-                }
-            }
+
+            newSollZeit.getSollEndTimeMap().put(startDateTime.getDayOfWeek(), endTime);
         }
     }
 
@@ -402,17 +402,15 @@ public class BenutzerverwaltungBean {
 
         selectedUser = (User) e.getComponent().getAttributes().get("user");
         List<User> source = new LinkedList<>();
-        for (AccessLevel al : AccessRightsService.AccessGroups) {
-            if (al.containsPermission("ACKNOWLEDGE_USERS") || al.containsPermission("ALL")) {
-                source.addAll(BenutzerverwaltungService.getUserByAccessLevel(al));
-            }
-        }
+        AccessRightsService.getAccessGroups().stream().filter((al) -> (al.containsPermission("ACKNOWLEDGE_USERS") || al.containsPermission("ALL"))).forEachOrdered((al) -> {
+            source.addAll(BenutzerverwaltungService.getUserByAccessLevel(al));
+        });
         source.remove(selectedUser);
 
         List<User> target = new LinkedList<>();
-        for (User appr : selectedUser.getApprover()) {
+        selectedUser.getApprover().forEach((appr) -> {
             target.add(appr);
-        }
+        });
         source.removeAll(selectedUser.getApprover());
         approverModel = new DualListModel<>(source, target);
     }

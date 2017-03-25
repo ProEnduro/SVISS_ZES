@@ -25,9 +25,9 @@ class UserHistory_InMemoryDAO extends Base_InMemoryDAO<UserHistoryEntry> impleme
         super(new ArrayList<>());
         User_DAO uDAO = new User_InMemoryDAO();
 
-        for (User u : uDAO.getList()) {
+        uDAO.getList().forEach((u) -> {
             super.insert(new UserHistoryEntry(LocalDateTime.now(), u, u.getOverTimeLeft(), u.getVacationLeft()));
-        }
+        });
     }
 
     @Override
@@ -42,25 +42,19 @@ class UserHistory_InMemoryDAO extends Base_InMemoryDAO<UserHistoryEntry> impleme
     @Override
     public List<UserHistoryEntry> getUserHistoryEntrysByUser(User u) {
         List<UserHistoryEntry> historyEntrys = new LinkedList<>();
-        for (UserHistoryEntry uhe : super.getList()) {
-            if (uhe.getUser().equals(u)) {
-                historyEntrys.add(clone(uhe));
-            }
-        }
+        super.getList().stream().filter((uhe) -> (uhe.getUser().equals(u))).forEachOrdered((uhe) -> {
+            historyEntrys.add(clone(uhe));
+        });
         return historyEntrys;
     }
 
     @Override
     public List<UserHistoryEntry> getUserHistoryEntrysByUser_BetweenDates(User user, LocalDate startDate, LocalDate endDate) {
         List<UserHistoryEntry> historyEntrys = new LinkedList<>();
-        for (UserHistoryEntry uhe : super.getList()) {
-            if (uhe.getUser().equals(user)) {
-                if ((uhe.getTimestamp().toLocalDate().isAfter(startDate) || uhe.getTimestamp().toLocalDate().isEqual(startDate))
-                        && uhe.getTimestamp().toLocalDate().isBefore(endDate)) {
+        super.getList().stream().filter((uhe) -> (uhe.getUser().equals(user))).filter((uhe) -> ((uhe.getTimestamp().toLocalDate().isAfter(startDate) || uhe.getTimestamp().toLocalDate().isEqual(startDate))
+                && uhe.getTimestamp().toLocalDate().isBefore(endDate))).forEachOrdered((uhe) -> {
                     historyEntrys.add(clone(uhe));
-                }
-            }
-        }
+        });
         return historyEntrys;
     }
 

@@ -7,6 +7,7 @@ package at.htlpinkafeld.beans.util;
 
 import at.htlpinkafeld.pojo.Absence;
 import java.util.Date;
+import java.util.Objects;
 import org.primefaces.model.DefaultScheduleEvent;
 
 /**
@@ -14,6 +15,8 @@ import org.primefaces.model.DefaultScheduleEvent;
  * @author msi
  */
 public class AbsenceEvent extends DefaultScheduleEvent {
+
+    private static final long serialVersionUID = 1L;
 
     private Absence absence;
 
@@ -34,4 +37,30 @@ public class AbsenceEvent extends DefaultScheduleEvent {
     public void setAbsence(Absence a) {
         absence = a;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 67 * hash + Objects.hashCode(this.absence);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AbsenceEvent other = (AbsenceEvent) obj;
+        if (!Objects.equals(this.absence, other.absence)) {
+            return false;
+        }
+        return true;
+    }
+
 }

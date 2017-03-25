@@ -25,7 +25,9 @@ public class ThemeSwitcherView {
 
     @PostConstruct
     public void init() {
-        themes = service.getThemes();
+        if (service != null) {
+            themes = service.getThemes();
+        }
     }
 
     public List<Theme> getThemes() {

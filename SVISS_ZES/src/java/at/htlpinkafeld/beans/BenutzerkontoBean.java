@@ -6,6 +6,7 @@
 package at.htlpinkafeld.beans;
 
 import at.htlpinkafeld.pojo.Absence;
+import at.htlpinkafeld.pojo.AbsenceTypeNew;
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
@@ -25,7 +26,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -158,18 +158,16 @@ public class BenutzerkontoBean implements Validator {
     public void loadSollZeiten() {
         this.sollzeitModel = new DefaultScheduleModel();
 
-        List<SollZeit> currentSollZeiten;
+        SollZeit currentSollZeit = SollZeitenService.getSollZeitenByUser_Current(user);
 
-        currentSollZeiten = SollZeitenService.getSollZeitenByUser(user);
-
-        for (SollZeit sz : currentSollZeiten) {
-            if (!sz.getSollStartTime().equals(sz.getSollEndTime())) {
-                LocalDate curDate = pointDate.with(TemporalAdjusters.firstInMonth(sz.getDay()));
-                DefaultScheduleEvent de = new DefaultScheduleEvent("", TimeConverterService.convertLocalTimeToDate(curDate, sz.getSollStartTime()),
-                        TimeConverterService.convertLocalDateTimeToDate(LocalDateTime.of(curDate, sz.getSollEndTime())), curDate.getDayOfWeek());
-                sollzeitModel.addEvent(de);
-            }
-        }
+        currentSollZeit.getSollStartTimeMap().keySet().stream().map((dow) -> {
+            LocalDate curDate = pointDate.with(TemporalAdjusters.firstInMonth(dow));
+            DefaultScheduleEvent de = new DefaultScheduleEvent("", TimeConverterService.convertLocalTimeToDate(curDate, currentSollZeit.getSollStartTime(dow)),
+                    TimeConverterService.convertLocalDateTimeToDate(LocalDateTime.of(curDate, currentSollZeit.getSollEndTime(dow))), curDate.getDayOfWeek());
+            return de;
+        }).forEachOrdered((de) -> {
+            sollzeitModel.addEvent(de);
+        });
     }
 
     public void onEventSelect(SelectEvent selectEvent) {
@@ -291,7 +289,7 @@ public class BenutzerkontoBean implements Validator {
                                                 LocalTime lt = LocalTime.MIN.plusMinutes((int) (d + 0.5));
                                                 bemerkung = lt.format(DateTimeFormatter.ofPattern("HH:mm"));
                                             }
-                                        } catch (Exception e) {
+                                        } catch (NumberFormatException e) {
                                             //Value is not castable to double and will be ignored -> best case scenario
                                         }
                                     }
@@ -303,17 +301,17 @@ public class BenutzerkontoBean implements Validator {
 
                                     if (dif > 0.0) {
                                         LocalDateTime absenceend = end.plusMinutes((int) ((dif * 24 * 60) + 0.5));
-                                        Absence a = new Absence(user, AbsenceService.getAbsenceTypeByID(3), end, absenceend, bemerkung);
+                                        Absence a = new Absence(user, AbsenceTypeNew.TIME_COMPENSATION, end, absenceend, bemerkung);
                                         a.setAcknowledged(true);
                                         AbsenceService.insertAbsence(a);
                                     }
                                 }
-                            } else if (urlaub.getCellType() != Cell.CELL_TYPE_BLANK && urlaub.getNumericCellValue() == 1.0) {
+                            } else if (urlaub != null && urlaub.getCellType() != Cell.CELL_TYPE_BLANK && urlaub.getNumericCellValue() == 1.0) {
 
                                 start = LocalDateTime.of(day, LocalTime.MIN);
                                 end = start;
 
-                                Absence a = new Absence(user, AbsenceService.getAbsenceTypeByID(2), start, end);
+                                Absence a = new Absence(user, AbsenceTypeNew.HOLIDAY, start, end);
                                 a.setAcknowledged(true);
                                 AbsenceService.insertAbsence(a);
                             }
@@ -358,7 +356,7 @@ public class BenutzerkontoBean implements Validator {
                                     bemerkung = value.formatAsString();
                                 }
                             }
-                            Absence a = new Absence(user, AbsenceService.getAbsenceTypeByID(3), start, end, bemerkung);
+                            Absence a = new Absence(user, AbsenceTypeNew.TIME_COMPENSATION, start, end, bemerkung);
                             a.setAcknowledged(true);
                             AbsenceService.insertAbsence(a);
                         }

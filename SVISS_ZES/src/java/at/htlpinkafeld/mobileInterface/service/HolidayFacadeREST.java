@@ -32,7 +32,7 @@ public class HolidayFacadeREST extends AbstractFacade<Holiday> {
     private Base_DAO dao;
 
     public HolidayFacadeREST() {
-        super(Holiday.class);
+        super();
         dao = DAOFactory.getDAOFactory().getHolidayDAO();
     }
 

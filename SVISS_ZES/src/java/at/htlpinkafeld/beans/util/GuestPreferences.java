@@ -27,17 +27,19 @@ import javax.servlet.ServletContext;
 @ManagedBean(eager = true)
 public class GuestPreferences implements Serializable {
 
-    ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
-    String path = serv.getRealPath("/") + "/resources/";
-    FacesContext context = FacesContext.getCurrentInstance();
-    MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
+    private static final long serialVersionUID = 1L;
 
-    User user;
-    File file = new File(path + "themes.properties");
-    Enumeration enu;
-    String key;
+    private transient ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+    private String path = serv.getRealPath("/") + "/resources/";
+    private transient FacesContext context = FacesContext.getCurrentInstance();
+    private transient MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
 
-    String theme = "aristo";
+    private User user;
+    private File file = new File(path + "themes.properties");
+    private transient Enumeration enu;
+    private String key;
+
+    private String theme = "aristo";
 
     public String getTheme() throws IOException {
         user = masterBean.getUser();

@@ -26,6 +26,8 @@ import org.primefaces.model.LazyScheduleModel;
  */
 public class IstZeitLazyScheduleModel extends LazyScheduleModel {
 
+    private static final long serialVersionUID = 1L;
+
     private User currentUser;
 
     public IstZeitLazyScheduleModel(User u) {
@@ -57,17 +59,17 @@ public class IstZeitLazyScheduleModel extends LazyScheduleModel {
         List<Absence> absenceList = AbsenceService.getAbsencesByUserBetweenDates(currentUser, start, end);
 
         for (Absence a : absenceList) {
-            e = new AbsenceEvent(currentUser.getUsername() + " " + a.getAbsenceType().getAbsenceName(), TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);
+            e = new AbsenceEvent(currentUser.getUsername() + " " + a.getAbsenceType(), TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);
 
-            switch (a.getAbsenceType().getAbsenceTypeID()) {
-                case 1:
+            switch (a.getAbsenceType()) {
+                case MEDICAL_LEAVE:
                     if (a.isAcknowledged() == false) {
                         e.setStyleClass("medical_leave");
                     } else {
                         e.setStyleClass("medical_leave_acknowledged");
                     }
                     break;
-                case 2:
+                case HOLIDAY:
                     if (a.isAcknowledged() == false) {
                         e.setStyleClass("holiday");
                     } else {
@@ -75,14 +77,14 @@ public class IstZeitLazyScheduleModel extends LazyScheduleModel {
                     }
                     e.setAllDay(true);
                     break;
-                case 3:
+                case TIME_COMPENSATION:
                     if (a.isAcknowledged() == false) {
                         e.setStyleClass("time_compensation");
                     } else {
                         e.setStyleClass("time_compensation_acknowledged");
                     }
                     break;
-                case 4:
+                case BUSINESSRELATED_ABSENCE:
                     if (a.isAcknowledged() == false) {
                         e.setStyleClass("business-related_absence");
                     } else {
@@ -96,9 +98,9 @@ public class IstZeitLazyScheduleModel extends LazyScheduleModel {
 
         List<WorkTime> worktimelist = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(currentUser, start, end);
 
-        for (WorkTime w : worktimelist) {
+        worktimelist.forEach((w) -> {
             this.addEvent(new WorkTimeEvent(currentUser.getUsername() + " Ist-Zeit", TimeConverterService.convertLocalDateTimeToDate(w.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(w.getEndTime()), "istzeit", w));
-        }
+        });
 
     }
 

@@ -7,11 +7,14 @@ package at.htlpinkafeld.service;
 
 import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.User_DAO;
+import at.htlpinkafeld.dao.util.DAOException;
 import at.htlpinkafeld.pojo.User;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -29,7 +32,7 @@ public class HolidaySynchronisationTask implements Runnable {
     public void run() {
         Date today = new Date();
         List<User> users = user_DAO.getUserByDisabled(Boolean.FALSE);
-        for (User u : users) {
+        users.forEach((u) -> {
             try {
                 SimpleDateFormat fmt = new SimpleDateFormat("MMdd");
                 String t = fmt.format(today);
@@ -38,10 +41,11 @@ public class HolidaySynchronisationTask implements Runnable {
                     u.setVacationLeft(u.getVacationLeft() + 25);
                     user_DAO.update(u);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (DAOException e) {
+                Logger.getLogger(HolidaySynchronisationTask.class.getName()).log(Level.SEVERE, null, e);
+
             }
-        }
+        });
     }
 
 }

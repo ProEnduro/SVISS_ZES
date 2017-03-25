@@ -47,7 +47,7 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
     public static final String TABLE_NAME = "User";
     public static final String RELATION_TABLE_NAME = "ApproverUser";
     public static final String PRIMARY_KEY = USERNR_COL;
-    public static final String[] ALL_COLUMNS = {USERNR_COL, ACCESSLEVELID_COL, PERSNAME_COL, VACATIONLEFT_COL, OVERTIMELEFT_COL, USERNAME_COL, EMAIL_COL,
+    private static final String[] ALL_COLUMNS = {USERNR_COL, ACCESSLEVELID_COL, PERSNAME_COL, VACATIONLEFT_COL, OVERTIMELEFT_COL, USERNAME_COL, EMAIL_COL,
         HIREDATE_COL, PASSWORD_COL, WEEKTIME_COL, DISABLED_COL};
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -59,7 +59,7 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
     @Override
     public void insert(User u) throws DAOException {
         super.insert(u);
-        if (u.ApproverInitialized()) {
+        if (u.areApproverInitialized()) {
             try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                     Statement stmt = con.getConn().createStatement()) {
                 for (User approver : u.getApprover()) {

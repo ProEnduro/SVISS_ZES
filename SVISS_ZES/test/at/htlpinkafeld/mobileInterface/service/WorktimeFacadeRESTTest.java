@@ -77,9 +77,9 @@ public class WorktimeFacadeRESTTest {
 
         Assert.assertFalse("Check for getList being empty", l.isEmpty());
 
-        for (Object o : l) {
+        l.forEach((o) -> {
             o.toString();
-        }
+        });
     }
 
     /**

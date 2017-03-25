@@ -6,7 +6,6 @@
 package at.htlpinkafeld.dao.factory;
 
 import at.htlpinkafeld.dao.dummy.InMemoryDAOFactory;
-import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
 import at.htlpinkafeld.dao.interf.Absence_DAO;
 import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
 import at.htlpinkafeld.dao.interf.Holiday_DAO;
@@ -73,6 +72,8 @@ public abstract class DAOFactory {
                     break;
                 case DUMMY_DAO:
                     daof = new InMemoryDAOFactory();
+                default:
+                    daof = null;
             }
         } else {
             throw new InvalidDAOFactoryTypeException();
@@ -86,8 +87,6 @@ public abstract class DAOFactory {
     public abstract WorkTime_DAO getWorkTimeDAO();
 
     public abstract SollZeiten_DAO getSollZeitenDAO();
-
-    public abstract AbsenceType_DAO getAbsenceTypeDAO();
 
     public abstract Absence_DAO getAbsenceDAO();
 

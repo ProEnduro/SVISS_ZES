@@ -9,7 +9,6 @@ import at.htlpinkafeld.service.AbsenceCleaningTask;
 import at.htlpinkafeld.service.HolidaySynchronisationTask;
 import at.htlpinkafeld.service.OvertimeSynchronisationTask;
 import at.htlpinkafeld.service.UpdateUserHistoryTask;
-import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -17,6 +16,8 @@ import java.time.ZonedDateTime;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ApplicationScoped;
@@ -53,7 +54,8 @@ public class ScheduledTaskManagementBean {
             scheduler.scheduleAtFixedRate(new AbsenceCleaningTask(), initalDelayEmail, 24 * 60 * 60, TimeUnit.SECONDS);
             scheduler.scheduleAtFixedRate(new UpdateUserHistoryTask(), initalDelayOvertime, 24 * 60 * 60, TimeUnit.SECONDS);
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(ScheduledTaskManagementBean.class.getName()).log(Level.SEVERE, null, e);
+
         }
     }
 

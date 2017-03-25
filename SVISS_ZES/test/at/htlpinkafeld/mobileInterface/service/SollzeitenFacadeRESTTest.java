@@ -12,7 +12,9 @@ import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -78,9 +80,9 @@ public class SollzeitenFacadeRESTTest {
 
         Assert.assertFalse("Check if getList is working", szs.isEmpty());
 
-        for (Object o : szs) {
+        szs.forEach((o) -> {
             o.toString();
-        }
+        });
     }
 
     /**
@@ -92,14 +94,21 @@ public class SollzeitenFacadeRESTTest {
         SollZeit result;
         Response response;
         List<SollZeit> szs;
-        SollZeit sz = new SollZeit(DayOfWeek.SUNDAY, new User(BenutzerverwaltungService.getUserList().get(0)), LocalTime.of(9, 0), LocalTime.of(12, 0));
+        Map<DayOfWeek, LocalTime> startTimeMap = new HashMap<>();
+        startTimeMap.put(DayOfWeek.SUNDAY, LocalTime.of(8, 0));
+        Map<DayOfWeek, LocalTime> endTimeMap = new HashMap<>();
+        endTimeMap.put(DayOfWeek.SUNDAY, LocalTime.of(15, 0));
+
+        SollZeit sz = new SollZeit(new User(BenutzerverwaltungService.getUserList().get(0)), startTimeMap, endTimeMap);
         Response res = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).post(Entity.json(sz));
         result = res.readEntity(SollZeit.class);
-        Assert.assertEquals("Check if there is an Error in the create", sz.getDay(), result.getDay());
+        Assert.assertEquals("Check if there is an Error in the create", sz.getUser(), result.getUser());
 
         sz = new SollZeit(result);
         sz.setUser(new User(sz.getUser()));
-        sz.setSollEndTime(LocalTime.of(14, 0));
+        startTimeMap.put(DayOfWeek.SUNDAY, LocalTime.of(7, 0));
+
+        sz.setSollStartTimeMap(startTimeMap);
 
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).put(Entity.json(sz));
 
@@ -108,12 +117,12 @@ public class SollzeitenFacadeRESTTest {
         });
 
         for (SollZeit sollZeit : szs) {
-            if (sollZeit.getDay().equals(sz.getDay()) && sollZeit.getUser().equals(sz.getUser())) {
+            if (sollZeit.getUser().equals(sz.getUser()) && sz.getSollZeitID() == sollZeit.getSollZeitID()) {
                 result = sollZeit;
             }
         }
 
-        Assert.assertEquals("Check if edit works", sz.getSollEndTime(), result.getSollEndTime());
+        Assert.assertEquals("Check if edit works", sz.getSollEndTime(DayOfWeek.SUNDAY), result.getSollEndTime(DayOfWeek.SUNDAY));
 
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).build("PATCH", Entity.json(sz)).invoke();
 

@@ -18,6 +18,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlRootElement
 public class UserHistoryEntry implements Serializable {
 
+    private static final long serialVersionUID = 1903009026286137080L;
+
     private LocalDateTime timestamp;
     private User user;
     private Integer overtime;

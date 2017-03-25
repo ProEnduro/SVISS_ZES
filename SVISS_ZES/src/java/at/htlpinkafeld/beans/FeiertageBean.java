@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.beans;
 
+import at.htlpinkafeld.dao.util.DAOException;
 import at.htlpinkafeld.pojo.Holiday;
 import at.htlpinkafeld.service.HolidayService;
 import at.htlpinkafeld.service.TimeConverterService;
@@ -33,7 +34,6 @@ import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.LazyScheduleModel;
 import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
-import org.primefaces.model.UploadedFile;
 
 /**
  *
@@ -44,7 +44,6 @@ public class FeiertageBean {
     private ScheduleModel timeModel;
     private ScheduleEvent curEvent;
     private Boolean dateDisabled = false;
-    private UploadedFile file;
 
     @PostConstruct
     public void init() {
@@ -52,12 +51,13 @@ public class FeiertageBean {
             @Override
             public void loadEvents(Date start, Date end) {
                 List<Holiday> holidays = HolidayService.getHolidayBetweenDates(start, end);
-                for (Holiday h : holidays) {
-                    DefaultScheduleEvent dse = new DefaultScheduleEvent(h.getHolidayComment(), TimeConverterService.convertLocalDateTimeToDate(h.getHolidayDate().atStartOfDay()),
-                            TimeConverterService.convertLocalDateTimeToDate(h.getHolidayDate().atStartOfDay()));
-                    dse.setAllDay(true);
+                holidays.stream().map((h) -> new DefaultScheduleEvent(h.getHolidayComment(), TimeConverterService.convertLocalDateTimeToDate(h.getHolidayDate().atStartOfDay()),
+                        TimeConverterService.convertLocalDateTimeToDate(h.getHolidayDate().atStartOfDay()))).map((dse) -> {
+                            dse.setAllDay(true);
+                    return dse;
+                }).forEachOrdered((dse) -> {
                     this.addEvent(dse);
-                }
+                });
             }
 
         };
@@ -77,11 +77,11 @@ public class FeiertageBean {
                 try {
                     HolidayService.insert(new Holiday(date, name));
                     //                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check3"));
-                } catch (Exception ex) {
+                } catch (DAOException ex) {
                     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(ex.getMessage()));
                 }
             }
-        } catch (Exception ex) {
+        } catch (IOException | ParserException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(ex.getMessage()));
         }
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Feiertage wurden geladen"));
@@ -93,7 +93,10 @@ public class FeiertageBean {
         File file = new File(path + "Feiertageoesterreich.ics");
         CalendarBuilder builder = new CalendarBuilder();
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check1"));
-        net.fortuna.ical4j.model.Calendar calendar = builder.build(new FileInputStream(file));
+        net.fortuna.ical4j.model.Calendar calendar;
+        try (FileInputStream fis = new FileInputStream(file)) {
+            calendar = builder.build(fis);
+        }
         for (Iterator i = calendar.getComponents().iterator(); i.hasNext();) {
 //            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check2"));
 
@@ -105,7 +108,7 @@ public class FeiertageBean {
                 HolidayService.insert(new Holiday(date, name));
 //                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Check3"));
 
-            } catch (Exception ex) {
+            } catch (DAOException ex) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(ex.getMessage()));
             }
         }

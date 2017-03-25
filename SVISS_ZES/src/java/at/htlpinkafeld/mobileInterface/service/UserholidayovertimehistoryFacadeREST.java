@@ -33,7 +33,7 @@ public class UserholidayovertimehistoryFacadeREST extends AbstractFacade<UserHis
     private final Base_DAO dao;
 
     public UserholidayovertimehistoryFacadeREST() {
-        super(UserHistoryEntry.class);
+        super();
         dao = DAOFactory.getDAOFactory().getUserHistoryDAO();
     }
 
@@ -69,9 +69,9 @@ public class UserholidayovertimehistoryFacadeREST extends AbstractFacade<UserHis
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<UserHistoryEntry> findAll() {
         List<UserHistoryEntry> historyEntrys = super.findAll();
-        for (UserHistoryEntry uhe : historyEntrys) {
+        historyEntrys.forEach((uhe) -> {
             uhe.setUser(new User(uhe.getUser()));
-        }
+        });
         return historyEntrys;
     }
 

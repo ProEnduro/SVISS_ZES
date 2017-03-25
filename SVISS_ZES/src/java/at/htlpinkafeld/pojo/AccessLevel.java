@@ -16,6 +16,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class AccessLevel implements Serializable {
 
+    private static final long serialVersionUID = -2951540140770254655L;
+
     private Integer accessLevelID;
     private String accessLevelName;
     private List<String> permissions;
@@ -95,7 +97,7 @@ public class AccessLevel implements Serializable {
             return false;
         }
         final AccessLevel other = (AccessLevel) obj;
-        if (this.accessLevelID != other.accessLevelID) {
+        if (!java.util.Objects.equals(this.accessLevelID, other.accessLevelID)) {
             return false;
         }
         return true;

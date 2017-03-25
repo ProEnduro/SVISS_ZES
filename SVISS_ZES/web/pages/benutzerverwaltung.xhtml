@@ -183,8 +183,8 @@ and open the template in the editor.
                     <p:outputLabel for="to" value="To:" />
                     <p:calendar id="to" value="#{benutzerverwaltungsBean.curEvent.endDate}"  mask="99:99" pattern="HH:mm" pagedate="1/8/16" timeOnly="true" locale="de"  showOn="button"/>
 
-                    <p:commandButton id="addButton" value="Save" action="#{benutzerverwaltungsBean.addWorkTimeEvent}" update=":growl :weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  oncomplete="if (args &amp;&amp; !args.validationFailed) PF('eventDialog').hide()" />
-                    <p:commandButton id="delButton" value="Remove" action="#{benutzerverwaltungsBean.removeWorkTimeEvent}" update=":weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  onsuccess="PF('eventDialog').hide();" />
+                    <p:commandButton id="addButton" value="Save" action="#{benutzerverwaltungsBean.addSollZeitEvent}" update=":growl :weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  oncomplete="if (args &amp;&amp; !args.validationFailed) PF('eventDialog').hide()" />
+                    <p:commandButton id="delButton" value="Remove" action="#{benutzerverwaltungsBean.removeSollZeitEvent}" update=":weekDialogForm:weektimeSchedule :weekDialogForm:sollZeitText"  onsuccess="PF('eventDialog').hide();" />
                     <p:commandButton type="reset" value="Reset" />
                 </h:panelGrid>
             </h:form>

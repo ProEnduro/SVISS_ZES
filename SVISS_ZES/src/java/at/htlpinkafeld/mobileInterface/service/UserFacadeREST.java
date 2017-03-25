@@ -10,14 +10,10 @@ import at.htlpinkafeld.dao.interf.Base_DAO;
 import at.htlpinkafeld.mobileInterface.authorization.Secured;
 import at.htlpinkafeld.mobileInterface.service.util.PATCH;
 import at.htlpinkafeld.pojo.User;
-import at.htlpinkafeld.pojo.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -40,7 +36,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
     private ObjectMapper mapper;
 
     public UserFacadeREST() {
-        super(User.class);
+        super();
         dao = DAOFactory.getDAOFactory().getUserDAO();
         mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
@@ -78,9 +74,9 @@ public class UserFacadeREST extends AbstractFacade<User> {
     public List<User> findAll() {
         List<User> users = super.findAll();
         List<User> usersImpl = new ArrayList<>();
-        for (User u : users) {
+        users.forEach((u) -> {
             usersImpl.add(new User(u));
-        }
+        });
         return usersImpl;
     }
 

@@ -27,7 +27,6 @@ public class MasterBean implements DAODML_Observer {
     User user;
     int columns;
     List<String> permissionlist;
-    String page;
 
     /**
      * Creates a new instance of MasterBean
@@ -71,6 +70,8 @@ public class MasterBean implements DAODML_Observer {
             case 4:
                 columns = 6;
                 break;
+            default:
+                columns = 0;
         }
 
     }
@@ -160,26 +161,6 @@ public class MasterBean implements DAODML_Observer {
 
     public boolean isAuswertungEnabled() {
         return user != null;
-    }
-
-    public String getPage() {
-        return page;
-    }
-
-    public void setPage(String page) {
-
-        System.out.println(page);
-
-        switch (page) {
-            case "first":
-                this.page = "first.xhtml";
-                break;
-            case "second":
-                this.page = "/WEB-INF/pages/second.xhtml";
-                break;
-        }
-
-        System.out.println(this.page);
     }
 
     public Object logout() {

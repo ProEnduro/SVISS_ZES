@@ -73,9 +73,9 @@ public class AlleAbwesenheitenBean {
 
         allUsers.add("All");
 
-        for (User u : BenutzerverwaltungService.getUserList()) {
+        BenutzerverwaltungService.getUserList().forEach((u) -> {
             allUsers.add(u.getUsername());
-        }
+        });
 
         return "/pages/alleAbwesenheiten.xhtml?faces-redirect=true";
     }

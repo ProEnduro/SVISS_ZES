@@ -5,7 +5,6 @@
  */
 package at.htlpinkafeld.service;
 
-import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
 import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.User;
 import java.time.format.DateTimeFormatter;
@@ -27,14 +26,14 @@ import javax.mail.internet.MimeMessage;
  */
 public class EmailService {
 
-    private static final DateTimeFormatter dayFormatter;
-    private static final DateTimeFormatter dayTimeFormatter;
+    private static final DateTimeFormatter DAY_FORMATTER;
+    private static final DateTimeFormatter DAY_TIME_FORMATTER;
 
     private static final String SERVER_EMAILADDRESS = "zes@sviss.co.at";
 
     static {
-        dayFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        dayTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        DAY_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        DAY_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     }
 
     private static void sendEmail(String subject, String body, User from, List<User> to) {
@@ -96,32 +95,32 @@ public class EmailService {
         String subject = "";
         String body = "";
         User sender = a.getUser();
-        switch (a.getAbsenceType().getAbsenceName()) {
-            case AbsenceType_DAO.MEDICAL_LEAVE:
-                subject = "Krankenstand : " + sender.getPersName() + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter);
-                body = sender.getPersName() + " hat einen Krankenstandsantrag für den Zeitraum von " + a.getStartTime().format(dayFormatter) + " bis " + a.getEndTime().format(dayFormatter) + " gestellt.";
+        switch (a.getAbsenceType()) {
+            case MEDICAL_LEAVE:
+                subject = "Krankenstand : " + sender.getPersName() + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER);
+                body = sender.getPersName() + " hat einen Krankenstandsantrag für den Zeitraum von " + a.getStartTime().format(DAY_FORMATTER) + " bis " + a.getEndTime().format(DAY_FORMATTER) + " gestellt.";
                 if (!a.getReason().isEmpty()) {
                     body += "\n Grund: " + a.getReason();
                 }
 
                 break;
-            case AbsenceType_DAO.HOLIDAY:
-                subject = "Urlaubsantrag : " + sender.getPersName() + " " + a.getStartTime().format(dayFormatter) + " -- " + a.getEndTime().format(dayFormatter);
-                body = sender.getPersName() + " hat einen Urlaubsantrag für den Zeitraum von " + a.getStartTime().format(dayFormatter) + " bis " + a.getEndTime().format(dayFormatter) + " gestellt.";
+            case HOLIDAY:
+                subject = "Urlaubsantrag : " + sender.getPersName() + " " + a.getStartTime().format(DAY_FORMATTER) + " -- " + a.getEndTime().format(DAY_FORMATTER);
+                body = sender.getPersName() + " hat einen Urlaubsantrag für den Zeitraum von " + a.getStartTime().format(DAY_FORMATTER) + " bis " + a.getEndTime().format(DAY_FORMATTER) + " gestellt.";
                 if (!a.getReason().isEmpty()) {
                     body += "\n Grund: " + a.getReason();
                 }
                 break;
-            case AbsenceType_DAO.TIMECOMPENSATION:
-                subject = "Antrag auf Zeitausgleich : " + sender.getPersName() + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter);
-                body = sender.getPersName() + " hat einen Antrag auf Zeitausgleich für den Zeitraum von " + a.getStartTime().format(dayTimeFormatter) + " bis " + a.getEndTime().format(dayTimeFormatter) + " gestellt.";
+            case TIME_COMPENSATION:
+                subject = "Antrag auf Zeitausgleich : " + sender.getPersName() + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER);
+                body = sender.getPersName() + " hat einen Antrag auf Zeitausgleich für den Zeitraum von " + a.getStartTime().format(DAY_TIME_FORMATTER) + " bis " + a.getEndTime().format(DAY_TIME_FORMATTER) + " gestellt.";
                 if (!a.getReason().isEmpty()) {
                     body += "\n Grund: " + a.getReason();
                 }
                 break;
-            case AbsenceType_DAO.BUSINESSRELATED_ABSENCE:
-                subject = "Eintrag für eine unternehmensbezogene Abwesenheit: " + sender.getPersName() + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter);
-                body = sender.getPersName() + " hat einen Eintrag für eine unternehmensbezogene Abwesenheit für den Zeitraum von " + a.getStartTime().format(dayTimeFormatter) + " bis " + a.getEndTime().format(dayTimeFormatter) + " gemacht.";
+            case BUSINESSRELATED_ABSENCE:
+                subject = "Eintrag für eine unternehmensbezogene Abwesenheit: " + sender.getPersName() + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER);
+                body = sender.getPersName() + " hat einen Eintrag für eine unternehmensbezogene Abwesenheit für den Zeitraum von " + a.getStartTime().format(DAY_TIME_FORMATTER) + " bis " + a.getEndTime().format(DAY_TIME_FORMATTER) + " gemacht.";
                 break;
             default:
                 break;
@@ -135,26 +134,26 @@ public class EmailService {
         String bodyApprover = "";
         String bodySender = "";
         User sender = a.getUser();
-        switch (a.getAbsenceType().getAbsenceName()) {
-            case AbsenceType_DAO.MEDICAL_LEAVE:
-                subject = "Re: Krankenstand : " + sender.getPersName() + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter);
-                bodyApprover = "Der Krankenstandsantrag von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime().format(dayFormatter) + " bis " + a.getEndTime().format(dayFormatter) + " wurde von " + approver.getPersName() + " angenommen.";
-                bodySender = "Ihr Krankenstandsantrag für den Zeitraum von " + a.getStartTime().format(dayFormatter) + " bis " + a.getEndTime().format(dayFormatter) + " wurde von " + approver.getPersName() + " angenommen.";
+        switch (a.getAbsenceType()) {
+            case MEDICAL_LEAVE:
+                subject = "Re: Krankenstand : " + sender.getPersName() + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER);
+                bodyApprover = "Der Krankenstandsantrag von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime().format(DAY_FORMATTER) + " bis " + a.getEndTime().format(DAY_FORMATTER) + " wurde von " + approver.getPersName() + " angenommen.";
+                bodySender = "Ihr Krankenstandsantrag für den Zeitraum von " + a.getStartTime().format(DAY_FORMATTER) + " bis " + a.getEndTime().format(DAY_FORMATTER) + " wurde von " + approver.getPersName() + " angenommen.";
                 break;
-            case AbsenceType_DAO.HOLIDAY:
-                subject = "Re: Urlaubsantrag : " + sender.getPersName() + " " + a.getStartTime().format(dayFormatter) + " -- " + a.getEndTime().format(dayFormatter);
-                bodyApprover = "Der Urlaubsantrag von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime().format(dayFormatter) + " bis " + a.getEndTime().format(dayFormatter) + " wurde von " + approver.getPersName() + " angenommen.";
-                bodySender = "Ihr Urlaubsantrag für den Zeitraum von " + a.getStartTime().format(dayFormatter) + " bis " + a.getEndTime().format(dayFormatter) + " wurde von " + approver.getPersName() + " angenommen.";
+            case HOLIDAY:
+                subject = "Re: Urlaubsantrag : " + sender.getPersName() + " " + a.getStartTime().format(DAY_FORMATTER) + " -- " + a.getEndTime().format(DAY_FORMATTER);
+                bodyApprover = "Der Urlaubsantrag von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime().format(DAY_FORMATTER) + " bis " + a.getEndTime().format(DAY_FORMATTER) + " wurde von " + approver.getPersName() + " angenommen.";
+                bodySender = "Ihr Urlaubsantrag für den Zeitraum von " + a.getStartTime().format(DAY_FORMATTER) + " bis " + a.getEndTime().format(DAY_FORMATTER) + " wurde von " + approver.getPersName() + " angenommen.";
                 break;
-            case AbsenceType_DAO.TIMECOMPENSATION:
-                subject = "Re: Antrag auf Zeitausgleich : " + sender.getPersName() + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter);
-                bodyApprover = "Der Antrag auf Zeitausgleich von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime().format(dayTimeFormatter) + " bis " + a.getEndTime().format(dayTimeFormatter) + " wurde von " + approver.getPersName() + " angenommen.";
-                bodySender = "Ihr Antrag auf Zeitausgleich für den Zeitraum von " + a.getStartTime().format(dayTimeFormatter) + " bis " + a.getEndTime().format(dayTimeFormatter) + " wurde von " + approver.getPersName() + " angenommen.";
+            case TIME_COMPENSATION:
+                subject = "Re: Antrag auf Zeitausgleich : " + sender.getPersName() + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER);
+                bodyApprover = "Der Antrag auf Zeitausgleich von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime().format(DAY_TIME_FORMATTER) + " bis " + a.getEndTime().format(DAY_TIME_FORMATTER) + " wurde von " + approver.getPersName() + " angenommen.";
+                bodySender = "Ihr Antrag auf Zeitausgleich für den Zeitraum von " + a.getStartTime().format(DAY_TIME_FORMATTER) + " bis " + a.getEndTime().format(DAY_TIME_FORMATTER) + " wurde von " + approver.getPersName() + " angenommen.";
                 break;
-            case AbsenceType_DAO.BUSINESSRELATED_ABSENCE:
-                subject = "Re: Eintrag für eine unternehmensbezogene Abwesenheit: " + sender.getPersName() + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter);
-                bodyApprover = "Der Eintrag für eine unternehmensbezogene Abwesenheit von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime().format(dayTimeFormatter) + " bis " + a.getEndTime().format(dayTimeFormatter) + " wurde von " + approver.getPersName() + " bestätigt.";
-                bodySender = "Ihr Eintrag für eine unternehmensbezogene Abwesenheit für den Zeitraum von " + a.getStartTime().format(dayTimeFormatter) + " bis " + a.getEndTime().format(dayTimeFormatter) + " wurde von " + approver.getPersName() + " bestätigt.";
+            case BUSINESSRELATED_ABSENCE:
+                subject = "Re: Eintrag für eine unternehmensbezogene Abwesenheit: " + sender.getPersName() + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER);
+                bodyApprover = "Der Eintrag für eine unternehmensbezogene Abwesenheit von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime().format(DAY_TIME_FORMATTER) + " bis " + a.getEndTime().format(DAY_TIME_FORMATTER) + " wurde von " + approver.getPersName() + " bestätigt.";
+                bodySender = "Ihr Eintrag für eine unternehmensbezogene Abwesenheit für den Zeitraum von " + a.getStartTime().format(DAY_TIME_FORMATTER) + " bis " + a.getEndTime().format(DAY_TIME_FORMATTER) + " wurde von " + approver.getPersName() + " bestätigt.";
                 break;
             default:
                 break;
@@ -172,26 +171,26 @@ public class EmailService {
         String bodyApprover = "";
         String bodySender = "";
         User sender = a.getUser();
-        switch (a.getAbsenceType().getAbsenceName()) {
-            case AbsenceType_DAO.MEDICAL_LEAVE:
-                subject = "Re: Krankenstand : " + sender.getPersName() + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter) + " zurückgewiesen";
-                bodyApprover = "Der Krankenstandsantrag von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime().format(dayFormatter) + " bis " + a.getEndTime().format(dayFormatter) + " wurde von " + approver.getPersName() + " zurückgewiesen.";
-                bodySender = "Ihr Krankenstandsantrag für den Zeitraum von " + a.getStartTime().format(dayFormatter) + " bis " + a.getEndTime().format(dayFormatter) + " wurde von " + approver.getPersName() + " zurückgewiesen.";
+        switch (a.getAbsenceType()) {
+            case MEDICAL_LEAVE:
+                subject = "Re: Krankenstand : " + sender.getPersName() + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER) + " zurückgewiesen";
+                bodyApprover = "Der Krankenstandsantrag von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime().format(DAY_FORMATTER) + " bis " + a.getEndTime().format(DAY_FORMATTER) + " wurde von " + approver.getPersName() + " zurückgewiesen.";
+                bodySender = "Ihr Krankenstandsantrag für den Zeitraum von " + a.getStartTime().format(DAY_FORMATTER) + " bis " + a.getEndTime().format(DAY_FORMATTER) + " wurde von " + approver.getPersName() + " zurückgewiesen.";
                 break;
-            case AbsenceType_DAO.HOLIDAY:
-                subject = "Re: Urlaubsantrag : " + sender.getPersName() + " " + a.getStartTime().format(dayFormatter) + " -- " + a.getEndTime().format(dayFormatter);
-                bodyApprover = "Der Urlaubsantrag von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime().format(dayFormatter) + " bis " + a.getEndTime().format(dayFormatter) + " wurde von " + approver.getPersName() + " zurückgewiesen.";
-                bodySender = "Ihr Urlaubsantrag für den Zeitraum von " + a.getStartTime().format(dayFormatter) + " bis " + a.getEndTime().format(dayFormatter) + " wurde von " + approver.getPersName() + " zurückgewiesen.";
+            case HOLIDAY:
+                subject = "Re: Urlaubsantrag : " + sender.getPersName() + " " + a.getStartTime().format(DAY_FORMATTER) + " -- " + a.getEndTime().format(DAY_FORMATTER);
+                bodyApprover = "Der Urlaubsantrag von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime().format(DAY_FORMATTER) + " bis " + a.getEndTime().format(DAY_FORMATTER) + " wurde von " + approver.getPersName() + " zurückgewiesen.";
+                bodySender = "Ihr Urlaubsantrag für den Zeitraum von " + a.getStartTime().format(DAY_FORMATTER) + " bis " + a.getEndTime().format(DAY_FORMATTER) + " wurde von " + approver.getPersName() + " zurückgewiesen.";
                 break;
-            case AbsenceType_DAO.TIMECOMPENSATION:
-                subject = "Re: Antrag auf Zeitausgleich : " + sender.getPersName() + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter);
-                bodyApprover = "Der Antrag auf Zeitausgleich von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime().format(dayTimeFormatter) + " bis " + a.getEndTime().format(dayTimeFormatter) + " wurde von " + approver.getPersName() + " zurückgewiesen.";
-                bodySender = "Ihr Antrag auf Zeitausgleich für den Zeitraum von " + a.getStartTime().format(dayTimeFormatter) + " bis " + a.getEndTime().format(dayTimeFormatter) + " wurde von " + approver.getPersName() + " zurückgewiesen.";
+            case TIME_COMPENSATION:
+                subject = "Re: Antrag auf Zeitausgleich : " + sender.getPersName() + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER);
+                bodyApprover = "Der Antrag auf Zeitausgleich von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime().format(DAY_TIME_FORMATTER) + " bis " + a.getEndTime().format(DAY_TIME_FORMATTER) + " wurde von " + approver.getPersName() + " zurückgewiesen.";
+                bodySender = "Ihr Antrag auf Zeitausgleich für den Zeitraum von " + a.getStartTime().format(DAY_TIME_FORMATTER) + " bis " + a.getEndTime().format(DAY_TIME_FORMATTER) + " wurde von " + approver.getPersName() + " zurückgewiesen.";
                 break;
-            case AbsenceType_DAO.BUSINESSRELATED_ABSENCE:
-                subject = "Re: Eintrag für eine unternehmensbezogene Abwesenheit: " + sender.getPersName() + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter);
-                bodyApprover = "Der Eintrag für eine unternehmensbezogene Abwesenheit von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime().format(dayTimeFormatter) + " bis " + a.getEndTime().format(dayTimeFormatter) + " wurde von " + approver.getPersName() + " gelöscht.";
-                bodySender = "Ihr Eintrag für eine unternehmensbezogene Abwesenheit für den Zeitraum von " + a.getStartTime().format(dayTimeFormatter) + " bis " + a.getEndTime().format(dayTimeFormatter) + " wurde von " + approver.getPersName() + " gelöscht.";
+            case BUSINESSRELATED_ABSENCE:
+                subject = "Re: Eintrag für eine unternehmensbezogene Abwesenheit: " + sender.getPersName() + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER);
+                bodyApprover = "Der Eintrag für eine unternehmensbezogene Abwesenheit von " + sender.getPersName() + " für den Zeitraum von " + a.getStartTime().format(DAY_TIME_FORMATTER) + " bis " + a.getEndTime().format(DAY_TIME_FORMATTER) + " wurde von " + approver.getPersName() + " gelöscht.";
+                bodySender = "Ihr Eintrag für eine unternehmensbezogene Abwesenheit für den Zeitraum von " + a.getStartTime().format(DAY_TIME_FORMATTER) + " bis " + a.getEndTime().format(DAY_TIME_FORMATTER) + " wurde von " + approver.getPersName() + " gelöscht.";
                 break;
 
             default:
@@ -209,22 +208,22 @@ public class EmailService {
         String subject = "";
         String body = "";
         User sender = a.getUser();
-        switch (a.getAbsenceType().getAbsenceName()) {
-            case AbsenceType_DAO.MEDICAL_LEAVE:
-                subject = "Re: Krankenstand : " + sender.getPersName() + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter);
-                body = sender.getPersName() + " hat den Krankenstand von" + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter) + " gelöscht";
+        switch (a.getAbsenceType()) {
+            case MEDICAL_LEAVE:
+                subject = "Re: Krankenstand : " + sender.getPersName() + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER);
+                body = sender.getPersName() + " hat den Krankenstand von" + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER) + " gelöscht";
                 break;
-            case AbsenceType_DAO.HOLIDAY:
-                subject = "Re: Urlaubsantrag : " + sender.getPersName() + " " + a.getStartTime().format(dayFormatter) + " -- " + a.getEndTime().format(dayFormatter);
-                body = sender.getPersName() + " hat den Urlaubsantrag für den Zeitraum von " + a.getStartTime().format(dayFormatter) + " bis " + a.getEndTime().format(dayFormatter) + " gelöscht.";
+            case HOLIDAY:
+                subject = "Re: Urlaubsantrag : " + sender.getPersName() + " " + a.getStartTime().format(DAY_FORMATTER) + " -- " + a.getEndTime().format(DAY_FORMATTER);
+                body = sender.getPersName() + " hat den Urlaubsantrag für den Zeitraum von " + a.getStartTime().format(DAY_FORMATTER) + " bis " + a.getEndTime().format(DAY_FORMATTER) + " gelöscht.";
                 break;
-            case AbsenceType_DAO.TIMECOMPENSATION:
-                subject = "Re: Antrag auf Zeitausgleich : " + sender.getPersName() + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter);
-                body = sender.getPersName() + " hat den Antrag auf Zeitausgleich für den Zeitraum von " + a.getStartTime().format(dayTimeFormatter) + " bis " + a.getEndTime().format(dayTimeFormatter) + " gelöscht.";
+            case TIME_COMPENSATION:
+                subject = "Re: Antrag auf Zeitausgleich : " + sender.getPersName() + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER);
+                body = sender.getPersName() + " hat den Antrag auf Zeitausgleich für den Zeitraum von " + a.getStartTime().format(DAY_TIME_FORMATTER) + " bis " + a.getEndTime().format(DAY_TIME_FORMATTER) + " gelöscht.";
                 break;
-            case AbsenceType_DAO.BUSINESSRELATED_ABSENCE:
-                subject = "Re: Eintrag für eine unternehmensbezogene Abwesenheit : " + sender.getPersName() + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter);
-                body = sender.getPersName() + " hat den Eintrag für eine unternehmensbezogene Abwesenheit für den Zeitraum von " + a.getStartTime().format(dayTimeFormatter) + " bis " + a.getEndTime().format(dayTimeFormatter) + " gelöscht.";
+            case BUSINESSRELATED_ABSENCE:
+                subject = "Re: Eintrag für eine unternehmensbezogene Abwesenheit : " + sender.getPersName() + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER);
+                body = sender.getPersName() + " hat den Eintrag für eine unternehmensbezogene Abwesenheit für den Zeitraum von " + a.getStartTime().format(DAY_TIME_FORMATTER) + " bis " + a.getEndTime().format(DAY_TIME_FORMATTER) + " gelöscht.";
                 break;
             default:
                 break;
@@ -260,22 +259,22 @@ public class EmailService {
         String subject = "";
         String body = "";
         User sender = a.getUser();
-        switch (a.getAbsenceType().getAbsenceName()) {
-            case AbsenceType_DAO.MEDICAL_LEAVE:
-                subject = "Re: Krankenstand : " + sender.getPersName() + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter);
-                body = "Der Krankenstand von " + sender.getPersName() + "von " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter) + " muss noch freigegeben werden!";
+        switch (a.getAbsenceType()) {
+            case MEDICAL_LEAVE:
+                subject = "Re: Krankenstand : " + sender.getPersName() + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER);
+                body = "Der Krankenstand von " + sender.getPersName() + "von " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER) + " muss noch freigegeben werden!";
                 break;
-            case AbsenceType_DAO.HOLIDAY:
-                subject = "Re: Urlaubsantrag : " + sender.getPersName() + " " + a.getStartTime().format(dayFormatter) + " -- " + a.getEndTime().format(dayFormatter);
-                body = "Der Urlaub von " + sender.getPersName() + "von " + a.getStartTime().format(dayFormatter) + " -- " + a.getEndTime().format(dayFormatter) + " muss noch freigegeben werden!";
+            case HOLIDAY:
+                subject = "Re: Urlaubsantrag : " + sender.getPersName() + " " + a.getStartTime().format(DAY_FORMATTER) + " -- " + a.getEndTime().format(DAY_FORMATTER);
+                body = "Der Urlaub von " + sender.getPersName() + "von " + a.getStartTime().format(DAY_FORMATTER) + " -- " + a.getEndTime().format(DAY_FORMATTER) + " muss noch freigegeben werden!";
                 break;
-            case AbsenceType_DAO.TIMECOMPENSATION:
-                subject = "Re: Antrag auf Zeitausgleich : " + sender.getPersName() + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter);
-                body = "Der Zeitausgleich von " + sender.getPersName() + "von " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter) + " muss noch freigegeben werden!";
+            case TIME_COMPENSATION:
+                subject = "Re: Antrag auf Zeitausgleich : " + sender.getPersName() + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER);
+                body = "Der Zeitausgleich von " + sender.getPersName() + "von " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER) + " muss noch freigegeben werden!";
                 break;
-            case AbsenceType_DAO.BUSINESSRELATED_ABSENCE:
-                subject = "Re: Eintrag für eine unternehmensbezogene Abwesenheit : " + sender.getPersName() + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter);
-                body = "Der Eintrag für eine unternehmensbezogene Abwesenheit  von " + sender.getPersName() + "von " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter) + " muss noch freigegeben werden!";
+            case BUSINESSRELATED_ABSENCE:
+                subject = "Re: Eintrag für eine unternehmensbezogene Abwesenheit : " + sender.getPersName() + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER);
+                body = "Der Eintrag für eine unternehmensbezogene Abwesenheit  von " + sender.getPersName() + "von " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER) + " muss noch freigegeben werden!";
                 break;
             default:
                 break;
@@ -287,22 +286,22 @@ public class EmailService {
         String subject = "";
         String body = "";
         User sender = a.getUser();
-        switch (a.getAbsenceType().getAbsenceName()) {
-            case AbsenceType_DAO.MEDICAL_LEAVE:
-                subject = "Re:Re: Krankenstand : " + sender.getPersName() + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter);
-                body = "Der Krankenstand von " + sender.getPersName() + "von " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter) + " wurde vom System gelöscht!";
+        switch (a.getAbsenceType()) {
+            case MEDICAL_LEAVE:
+                subject = "Re:Re: Krankenstand : " + sender.getPersName() + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER);
+                body = "Der Krankenstand von " + sender.getPersName() + "von " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER) + " wurde vom System gelöscht!";
                 break;
-            case AbsenceType_DAO.HOLIDAY:
-                subject = "Re:Re: Urlaubsantrag : " + sender.getPersName() + " " + a.getStartTime().format(dayFormatter) + " -- " + a.getEndTime().format(dayFormatter);
-                body = "Der Urlaub von " + sender.getPersName() + "von " + a.getStartTime().format(dayFormatter) + " -- " + a.getEndTime().format(dayFormatter) + " wurde vom System gelöscht!";
+            case HOLIDAY:
+                subject = "Re:Re: Urlaubsantrag : " + sender.getPersName() + " " + a.getStartTime().format(DAY_FORMATTER) + " -- " + a.getEndTime().format(DAY_FORMATTER);
+                body = "Der Urlaub von " + sender.getPersName() + "von " + a.getStartTime().format(DAY_FORMATTER) + " -- " + a.getEndTime().format(DAY_FORMATTER) + " wurde vom System gelöscht!";
                 break;
-            case AbsenceType_DAO.TIMECOMPENSATION:
-                subject = "Re:Re: Antrag auf Zeitausgleich : " + sender.getPersName() + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter);
-                body = "Der Zeitausgleich von " + sender.getPersName() + "von " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter) + " wurde vom System gelöscht!";
+            case TIME_COMPENSATION:
+                subject = "Re:Re: Antrag auf Zeitausgleich : " + sender.getPersName() + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER);
+                body = "Der Zeitausgleich von " + sender.getPersName() + "von " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER) + " wurde vom System gelöscht!";
                 break;
-            case AbsenceType_DAO.BUSINESSRELATED_ABSENCE:
-                subject = "Re:Re: Eintrag für eine unternehmensbezogene Abwesenheit : " + sender.getPersName() + " " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter);
-                body = "Der Eintrag für eine unternehmensbezogene Abwesenheit  von " + sender.getPersName() + "von " + a.getStartTime().format(dayTimeFormatter) + " -- " + a.getEndTime().format(dayTimeFormatter) + " wurde vom System gelöscht!";
+            case BUSINESSRELATED_ABSENCE:
+                subject = "Re:Re: Eintrag für eine unternehmensbezogene Abwesenheit : " + sender.getPersName() + " " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER);
+                body = "Der Eintrag für eine unternehmensbezogene Abwesenheit  von " + sender.getPersName() + "von " + a.getStartTime().format(DAY_TIME_FORMATTER) + " -- " + a.getEndTime().format(DAY_TIME_FORMATTER) + " wurde vom System gelöscht!";
                 break;
             default:
                 break;

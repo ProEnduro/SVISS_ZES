@@ -7,7 +7,6 @@ package at.htlpinkafeld.mobileInterface.service;
 
 import at.htlpinkafeld.dao.jdbc.ConnectionManager;
 import at.htlpinkafeld.mobileInterface.authorization.Credentials;
-import at.htlpinkafeld.pojo.AbsenceType;
 import at.htlpinkafeld.pojo.AccessLevel;
 import java.util.LinkedList;
 import java.util.List;
@@ -76,9 +75,9 @@ public class ZesaccessFacadeRESTTest {
 
         Assert.assertFalse(l.isEmpty());
 
-        for (Object o : l) {
+        l.forEach((o) -> {
             o.toString();
-        }
+        });
     }
 
     /**

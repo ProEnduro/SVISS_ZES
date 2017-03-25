@@ -11,9 +11,7 @@ import at.htlpinkafeld.pojo.Holiday;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -76,9 +74,10 @@ public class Holiday_JDBCDAO extends Base_JDBCDAO<Holiday> implements Holiday_DA
             stmt.setTimestamp(2, endDate);
             stmt.setTimestamp(3, startDate);
             stmt.setTimestamp(4, endDate);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                holidays.add(getEntityFromResultSet(rs));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    holidays.add(getEntityFromResultSet(rs));
+                }
             }
 
         } catch (SQLException ex) {

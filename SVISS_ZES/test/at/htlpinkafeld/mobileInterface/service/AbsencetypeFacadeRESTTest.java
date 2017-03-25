@@ -7,10 +7,9 @@ package at.htlpinkafeld.mobileInterface.service;
 
 import at.htlpinkafeld.dao.jdbc.ConnectionManager;
 import at.htlpinkafeld.mobileInterface.authorization.Credentials;
-import at.htlpinkafeld.pojo.AbsenceType;
+import at.htlpinkafeld.pojo.AbsenceTypeNew;
 import java.util.List;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
@@ -26,6 +25,7 @@ import org.junit.Test;
  *
  * @author Martin Six
  */
+@Deprecated
 public class AbsencetypeFacadeRESTTest {
 
     private WebTarget webTarget;
@@ -66,17 +66,17 @@ public class AbsencetypeFacadeRESTTest {
     public void testFindAll() {
         System.out.println("findAll");
         Response result;
-        List<AbsenceType> l;
+        List<AbsenceTypeNew> l;
 
         result = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
-        l = (List<AbsenceType>) result.readEntity(new GenericType<List<AbsenceType>>() {
+        l = (List<AbsenceTypeNew>) result.readEntity(new GenericType<List<AbsenceTypeNew>>() {
         });
 
         Assert.assertFalse(l.isEmpty());
 
-        for (Object o : l) {
+        l.forEach((o) -> {
             o.toString();
-        }
+        });
     }
 
     /**
@@ -84,40 +84,40 @@ public class AbsencetypeFacadeRESTTest {
      */
     @Test
     public void testCreateEditRemove() {
-        System.out.println("create");
-        AbsenceType result;
-        Response response;
-        List<AbsenceType> absenceTypeL;
-        AbsenceType at = new AbsenceType("NoPlan");
-        Response res = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).post(Entity.json(at));
-        result = res.readEntity(AbsenceType.class);
-
-        Assert.assertNotEquals("Assert if create and key-generation worked", at.getAbsenceTypeID(), result.getAbsenceTypeID());
-
-        at = new AbsenceType(result);
-        at.setAbsenceName("%&?$§!NoPlan%&?$§!%&?$§!");
-
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).put(Entity.json(at));
-
-        response = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
-        absenceTypeL = (List<AbsenceType>) response.readEntity((GenericType) new GenericType<List<AbsenceType>>() {
-        });
-
-        for (AbsenceType absenceType : absenceTypeL) {
-            if (absenceType.getAbsenceTypeID().equals(at.getAbsenceTypeID())) {
-                result = absenceType;
-            }
-        }
-
-        Assert.assertEquals("Assert if edit worked", at, result);
-
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).build("PATCH", Entity.json(at)).invoke();
-
-        response = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
-        absenceTypeL = (List<AbsenceType>) response.readEntity((GenericType) new GenericType<List<AbsenceType>>() {
-        });
-
-        Assert.assertFalse("Assert if delete worked", absenceTypeL.contains(at));
+//        System.out.println("create");
+//        AbsenceTypeNew result;
+//        Response response;
+//        List<AbsenceTypeNew> absenceTypeL;
+//        AbsenceTypeNew at = AbsenceTypeNew.MEDICAL_LEAVE;
+//        Response res = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).post(Entity.json(at));
+//        result = res.readEntity(AbsenceType.class);
+//
+//        Assert.assertNotEquals("Assert if create and key-generation worked", at.getAbsenceTypeID(), result.getAbsenceTypeID());
+//
+//        at = new AbsenceType(result);
+//        at.setAbsenceName("%&?$§!NoPlan%&?$§!%&?$§!");
+//
+//        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).put(Entity.json(at));
+//
+//        response = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
+//        absenceTypeL = (List<AbsenceType>) response.readEntity((GenericType) new GenericType<List<AbsenceType>>() {
+//        });
+//
+//        for (AbsenceType absenceType : absenceTypeL) {
+//            if (absenceType.getAbsenceTypeID().equals(at.getAbsenceTypeID())) {
+//                result = absenceType;
+//            }
+//        }
+//
+//        Assert.assertEquals("Assert if edit worked", at, result);
+//
+//        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).build("PATCH", Entity.json(at)).invoke();
+//
+//        response = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
+//        absenceTypeL = (List<AbsenceType>) response.readEntity((GenericType) new GenericType<List<AbsenceType>>() {
+//        });
+//
+//        Assert.assertFalse("Assert if delete worked", absenceTypeL.contains(at));
     }
 
 }
