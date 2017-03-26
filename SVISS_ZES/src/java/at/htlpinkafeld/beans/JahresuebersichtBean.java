@@ -215,7 +215,7 @@ public class JahresuebersichtBean {
             SollZeit sz = SollZeitenService.getSollZeitenByUser_ValidDate(u, date.atStartOfDay());
             DayOfWeek dow = date.getDayOfWeek();
 
-            if (sz != null) {
+            if (sz != null && sz.getSollStartTimeMap().containsKey(dow)) {
                 long diff = sz.getSollStartTime(dow).until(sz.getSollEndTime(dow), ChronoUnit.MINUTES);
                 if (diff >= 6 * 60) {
                     diff -= 30;
@@ -245,7 +245,7 @@ public class JahresuebersichtBean {
                         int diff = 0;
                         SollZeit sz = SollZeitenService.getSollZeitenByUser_ValidDate(u, a.getStartTime());
 
-                        if (sz != null) {
+                        if (sz != null && sz.getSollStartTimeMap().containsKey(hDay)) {
                             diff = (int) sz.getSollStartTime(hDay).until(sz.getSollEndTime(hDay), ChronoUnit.MINUTES);
                         }
                         if (diff > 6 * 60) {
@@ -263,7 +263,7 @@ public class JahresuebersichtBean {
 //                        for (int i = 0; i < dayNum; i++, sDay.plus(1)) {
 //                            SollZeit sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, a.getStartTime().getDayOfWeek(), a.getStartTime());
 //                            int diff = 0;
-//                            if (sz != null) {
+//                            if (sz != null && sz.getSollStartTimeMap().containsKey(sDay)) {
 //                                if (i == 0 || i == (dayNum - 1)) {
 //                                    if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime()) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
 //                                        diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
@@ -293,7 +293,7 @@ public class JahresuebersichtBean {
                     for (int i = 0; i < dayNum; i++, sDay.plus(1)) {
                         SollZeit sz = SollZeitenService.getSollZeitenByUser_ValidDate(u, a.getStartTime());
                         int diff = 0;
-                        if (sz != null) {
+                        if (sz != null && sz.getSollStartTimeMap().containsKey(sDay)) {
                             if (i == 0 || i == (dayNum - 1)) {
                                 if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime(sDay)) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime(sDay))) {
                                     diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
