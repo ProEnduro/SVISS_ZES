@@ -10,6 +10,7 @@ import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,7 +42,7 @@ public class SollZeiten_JDBCDAOTest {
         try {
             ConnectionManager.getInstance().getWrappedConnection().getConn().rollback();
         } catch (SQLException ex) {
-            Logger.getLogger(AbsenceType_JDBCDAOTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SollZeiten_JDBCDAOTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -54,7 +55,7 @@ public class SollZeiten_JDBCDAOTest {
     public void testInsertAndGetList() throws SQLException {
         List<SollZeit> expResult = sollZeiten_DAO.getList();
 
-        SollZeit sz = new SollZeit(DAOFactory.getDAOFactory().getUserDAO().getUser(1), null, null);
+        SollZeit sz = new SollZeit(DAOFactory.getDAOFactory().getUserDAO().getUser(1), new HashMap(), new HashMap());
         sollZeiten_DAO.insert(sz);
         expResult.add(sz);
         List result = sollZeiten_DAO.getList();

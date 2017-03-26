@@ -43,7 +43,7 @@ public class Absence_JDBCDAOTest {
         try {
             ConnectionManager.getInstance().getWrappedConnection().getConn().rollback();
         } catch (SQLException ex) {
-            Logger.getLogger(AbsenceType_JDBCDAOTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Absence_JDBCDAOTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -102,7 +102,7 @@ public class Absence_JDBCDAOTest {
      */
     @Test
     public void test_Insert_Update_GetByAbsenceType() {
-        User u = DAOFactory.getDAOFactory().getUserDAO().getUser(2);
+        User u = DAOFactory.getDAOFactory().getUserDAO().getUser(1);
         AbsenceTypeNew at = AbsenceTypeNew.MEDICAL_LEAVE;
         Absence absence = new Absence(u, at, LocalDateTime.of(2016, 4, 4, 0, 0, 0), LocalDateTime.of(2016, 4, 6, 0, 0, 0));
         absence_DAO.insert(absence);

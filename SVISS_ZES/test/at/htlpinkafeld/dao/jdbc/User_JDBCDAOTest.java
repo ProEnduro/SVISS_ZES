@@ -44,7 +44,7 @@ public class User_JDBCDAOTest {
         try {
             ConnectionManager.getInstance().getWrappedConnection().getConn().rollback();
         } catch (SQLException ex) {
-            Logger.getLogger(AbsenceType_JDBCDAOTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(User_JDBCDAOTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

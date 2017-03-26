@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.pojo;
 
+import at.htlpinkafeld.mobileInterface.service.util.DayOfWeek_LocalTimeMapAdapter;
 import at.htlpinkafeld.mobileInterface.service.util.LocalTimeMapAdapter;
 import java.io.Serializable;
 import java.time.DayOfWeek;
@@ -111,22 +112,22 @@ public class SollZeit implements Serializable {
         this.validFrom = validFrom;
     }
 
-    @XmlJavaTypeAdapter(LocalTimeMapAdapter.class)
+    @XmlJavaTypeAdapter(DayOfWeek_LocalTimeMapAdapter.class)
     public Map<DayOfWeek, LocalTime> getSollStartTimeMap() {
         return sollStartTimeMap;
     }
 
-    @XmlJavaTypeAdapter(LocalTimeMapAdapter.class)
+    @XmlJavaTypeAdapter(DayOfWeek_LocalTimeMapAdapter.class)
     public void setSollStartTimeMap(Map<DayOfWeek, LocalTime> sollStartTimeMap) {
         this.sollStartTimeMap = sollStartTimeMap;
     }
 
-    @XmlJavaTypeAdapter(LocalTimeMapAdapter.class)
+    @XmlJavaTypeAdapter(DayOfWeek_LocalTimeMapAdapter.class)
     public Map<DayOfWeek, LocalTime> getSollEndTimeMap() {
         return sollEndTimeMap;
     }
 
-    @XmlJavaTypeAdapter(LocalTimeMapAdapter.class)
+    @XmlJavaTypeAdapter(DayOfWeek_LocalTimeMapAdapter.class)
     public void setSollEndTimeMap(Map<DayOfWeek, LocalTime> sollEndTimeMap) {
         this.sollEndTimeMap = sollEndTimeMap;
     }

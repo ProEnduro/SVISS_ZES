@@ -111,7 +111,7 @@ public abstract class Base_JDBCDAO<T> extends Base_DAO_Observable<T> {
     //Used to dynamically create the order by clause for selects
     //Sorts in the order of the PRIMARY_KEY array
     private String createOrderByLine() {
-        String sql_statement = "ORDER BY ";
+        String sql_statement = " ORDER BY ";
         for (String pk : PRIMARY_KEY) {
             sql_statement += pk + ", ";
         }

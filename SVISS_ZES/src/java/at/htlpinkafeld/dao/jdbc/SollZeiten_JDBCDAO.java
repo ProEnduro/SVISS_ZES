@@ -129,9 +129,11 @@ public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeit> implements SollZe
     public void insert(SollZeit sz) throws DAOException {
         try {
             super.insert(sz);
-            sz.getSollStartTimeMap().keySet().forEach((dow) -> {
-                zeitenPerDay_JDBCDAO.insertSollZeit(sz.getSollZeitID(), dow, sz.getSollStartTime(dow), sz.getSollEndTime(dow));
-            });
+            if (sz.getSollStartTimeMap() != null) {
+                sz.getSollStartTimeMap().keySet().forEach((dow) -> {
+                    zeitenPerDay_JDBCDAO.insertSollZeit(sz.getSollZeitID(), dow, sz.getSollStartTime(dow), sz.getSollEndTime(dow));
+                });
+            }
         } catch (DAOException ex) {
             Logger.getLogger(SollZeiten_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -142,7 +144,7 @@ public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeit> implements SollZe
         List<SollZeit> sollZeiten = new LinkedList<>();
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                 Statement stmt = con.getConn().createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " sz1 WHERE sz1." + USERNR_COL + " = " + u.getUserNr() + SQL_ORDER_BY_LINE)) {
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + u.getUserNr() + SQL_ORDER_BY_LINE)) {
             while (rs.next()) {
                 sollZeiten.add(getEntityFromResultSet(rs));
             }

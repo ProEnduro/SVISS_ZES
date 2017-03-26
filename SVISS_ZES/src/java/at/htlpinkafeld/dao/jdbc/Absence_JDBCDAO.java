@@ -104,7 +104,7 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
 
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                 Statement stmt = con.getConn().createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ABSENCETYPENAME_COL + " = " + at.name() + " " + SQL_ORDER_BY_LINE)) {
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ABSENCETYPENAME_COL + " = '" + at.name() + "' " + SQL_ORDER_BY_LINE)) {
 
             while (rs.next()) {
                 absences.add(getEntityFromResultSet(rs));
@@ -123,7 +123,7 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
 
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                 Statement stmt = con.getConn().createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ABSENCETYPENAME_COL + " = " + at.name() + " AND " + USERNR_COL + " = " + u.getUserNr() + " " + SQL_ORDER_BY_LINE)) {
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ABSENCETYPENAME_COL + " = '" + at.name() + "' AND " + USERNR_COL + " = " + u.getUserNr() + " " + SQL_ORDER_BY_LINE)) {
 
             while (rs.next()) {
                 absences.add(getEntityFromResultSet(rs));

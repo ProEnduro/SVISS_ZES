@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -117,7 +118,7 @@ public class SollzeitenFacadeRESTTest {
         });
 
         for (SollZeit sollZeit : szs) {
-            if (sollZeit.getUser().equals(sz.getUser()) && sz.getSollZeitID() == sollZeit.getSollZeitID()) {
+            if (sollZeit.getUser().equals(sz.getUser()) && Objects.equals(sz.getSollZeitID(), sollZeit.getSollZeitID())) {
                 result = sollZeit;
             }
         }
