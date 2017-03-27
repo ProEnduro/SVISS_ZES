@@ -32,6 +32,7 @@ public class ApplicationConfig extends Application {
         resources.add(at.htlpinkafeld.mobileInterface.authorization.AuthenticationFilter.class);
         resources.add(at.htlpinkafeld.mobileInterface.service.AbsenceFacadeREST.class);
         resources.add(at.htlpinkafeld.mobileInterface.service.AbsencetypeFacadeREST.class);
+        resources.add(at.htlpinkafeld.mobileInterface.service.EventFacadeRest.class);
         resources.add(at.htlpinkafeld.mobileInterface.service.HolidayFacadeREST.class);
         resources.add(at.htlpinkafeld.mobileInterface.service.SollzeitenFacadeREST.class);
         resources.add(at.htlpinkafeld.mobileInterface.service.UserFacadeREST.class);
