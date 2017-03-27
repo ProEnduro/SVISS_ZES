@@ -6,6 +6,7 @@
 package at.htlpinkafeld.beans.util;
 
 /**
+ * A Pojo which is used to store the available Themes
  *
  * @author ÐarkHell2
  */
@@ -15,9 +16,19 @@ public class Theme {
     private String displayName;
     private String name;
 
+    /**
+     * A Constuctor for the theme
+     */
     public Theme() {
     }
 
+    /**
+     * A Constuctor for the theme
+     *
+     * @param id unique id for the theme
+     * @param displayName the name which will be shown to the user
+     * @param name the internal name for the theme
+     */
     public Theme(int id, String displayName, String name) {
         this.id = id;
         this.displayName = displayName;

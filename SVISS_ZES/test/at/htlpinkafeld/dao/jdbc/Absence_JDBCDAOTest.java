@@ -41,7 +41,9 @@ public class Absence_JDBCDAOTest {
     @After
     public void tearDown() {
         try {
-            ConnectionManager.getInstance().getWrappedConnection().getConn().rollback();
+            if (ConnectionManager.getInstance().getWrappedConnection() != null) {
+                ConnectionManager.getInstance().getWrappedConnection().getConn().rollback();
+            }
         } catch (SQLException ex) {
             Logger.getLogger(Absence_JDBCDAOTest.class.getName()).log(Level.SEVERE, null, ex);
         }

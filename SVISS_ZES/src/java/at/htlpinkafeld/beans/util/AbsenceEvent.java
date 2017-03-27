@@ -11,6 +11,7 @@ import java.util.Objects;
 import org.primefaces.model.DefaultScheduleEvent;
 
 /**
+ * A {@link DefaultScheduleEvent} which wrapps a {@link Absence}
  *
  * @author msi
  */

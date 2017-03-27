@@ -91,12 +91,14 @@ public class SollZeiten_InMemoryDAO extends Base_InMemoryDAO<SollZeit> implement
 
     @Override
     protected SollZeit clone(SollZeit entity) {
-        return new SollZeit(entity);
+        SollZeit sz = new SollZeit(entity);
+        sz.setSollZeitID(entity.getSollZeitID());
+        return sz;
     }
 
     @Override
     protected void setID(SollZeit entity, int id) {
-      entity.setSollZeitID(id);
+        entity.setSollZeitID(id);
     }
 
 }

@@ -38,7 +38,9 @@ public class AccessLevel_JDBCDAOTest {
     @After
     public void tearDown() {
         try {
-            ConnectionManager.getInstance().getWrappedConnection().getConn().rollback();
+            if (ConnectionManager.getInstance().getWrappedConnection() != null) {
+                ConnectionManager.getInstance().getWrappedConnection().getConn().rollback();
+            }
         } catch (SQLException ex) {
             Logger.getLogger(AccessLevel_JDBCDAOTest.class.getName()).log(Level.SEVERE, null, ex);
         }

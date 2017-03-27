@@ -19,6 +19,8 @@ import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.LazyScheduleModel;
 
 /**
+ * A {@link LazyScheduleModel} which is used for the calendar in the All
+ * Times-Page
  *
  * @author msi
  */

@@ -13,6 +13,7 @@ import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
 
 /**
+ * A Converter for the Entry Acknowledged in den Einträgen
  *
  * @author ÐarkHell2
  */

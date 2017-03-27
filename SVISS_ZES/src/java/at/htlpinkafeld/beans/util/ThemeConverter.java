@@ -5,10 +5,6 @@
  */
 package at.htlpinkafeld.beans.util;
 
-/**
- *
- * @author ÐarkHell2
- */
 import at.htlpinkafeld.beans.ThemeService;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -17,6 +13,11 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
 
+/**
+ * A Converter for the Themes
+ *
+ * @author ÐarkHell2
+ */
 @FacesConverter("themeConverter")
 public class ThemeConverter implements Converter {
 

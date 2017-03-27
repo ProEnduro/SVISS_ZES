@@ -10,14 +10,12 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  *
  * @author Martin Six
  */
-@XmlRootElement
 public class User implements Serializable {
 
     private static final long serialVersionUID = -3142401026506327543L;

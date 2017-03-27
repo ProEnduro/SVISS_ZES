@@ -11,6 +11,7 @@ import java.util.Objects;
 import org.primefaces.model.DefaultScheduleEvent;
 
 /**
+ * A {@link DefaultScheduleEvent} which wrapps a {@link WorkTime}
  *
  * @author msi
  */
@@ -20,6 +21,14 @@ public class WorkTimeEvent extends DefaultScheduleEvent {
 
     private WorkTime worktime;
 
+    /**
+     * A Constructor for a WorkTimeEvent
+     *
+     * @param title the title for the event
+     * @param start the start-time for the event
+     * @param end the end-time for the event
+     * @param w the WorkTime which will be wrapped
+     */
     public WorkTimeEvent(String title, Date start, Date end, WorkTime w) {
         super(title, start, end);
 
@@ -28,10 +37,22 @@ public class WorkTimeEvent extends DefaultScheduleEvent {
         worktime = w;
     }
 
+    /**
+     * A Constructor for a WorkTimeEvent
+     */
     public WorkTimeEvent() {
         super();
     }
 
+    /**
+     * A Constructor for a WorkTimeEvent
+     *
+     * @param title the title for the event
+     * @param start the start-time for the event
+     * @param end the end-time for the event
+     * @param style The css-Style which will be used for the event
+     * @param w the WorkTime which will be wrapped
+     */
     public WorkTimeEvent(String title, Date start, Date end, String style, WorkTime w) {
         super(title, start, end, style);
 

@@ -12,6 +12,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
 /**
+ * A Converter for the AbsenceType-Enum
  *
  * @author Martin Six
  */

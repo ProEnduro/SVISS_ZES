@@ -42,7 +42,9 @@ public class User_JDBCDAOTest {
     @After
     public void tearDown() {
         try {
-            ConnectionManager.getInstance().getWrappedConnection().getConn().rollback();
+            if (ConnectionManager.getInstance().getWrappedConnection() != null) {
+                ConnectionManager.getInstance().getWrappedConnection().getConn().rollback();
+            }
         } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAOTest.class.getName()).log(Level.SEVERE, null, ex);
         }

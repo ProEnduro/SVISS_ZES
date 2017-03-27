@@ -40,7 +40,9 @@ public class SollZeiten_JDBCDAOTest {
     @After
     public void tearDown() {
         try {
-            ConnectionManager.getInstance().getWrappedConnection().getConn().rollback();
+            if (ConnectionManager.getInstance().getWrappedConnection() != null) {
+                ConnectionManager.getInstance().getWrappedConnection().getConn().rollback();
+            }
         } catch (SQLException ex) {
             Logger.getLogger(SollZeiten_JDBCDAOTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -57,6 +59,7 @@ public class SollZeiten_JDBCDAOTest {
 
         SollZeit sz = new SollZeit(DAOFactory.getDAOFactory().getUserDAO().getUser(1), new HashMap(), new HashMap());
         sollZeiten_DAO.insert(sz);
+        expResult.remove(sz);
         expResult.add(sz);
         List result = sollZeiten_DAO.getList();
         assertTrue(expResult.containsAll(result));

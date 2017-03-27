@@ -11,6 +11,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
 /**
+ * A converter which converts minutes to hours for visual display
  *
  * @author Martin Six
  */

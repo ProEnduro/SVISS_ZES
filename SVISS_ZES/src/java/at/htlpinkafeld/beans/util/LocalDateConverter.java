@@ -13,6 +13,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
 /**
+ * A Converter for LocalDate
  *
  * @author Martin Six
  */
