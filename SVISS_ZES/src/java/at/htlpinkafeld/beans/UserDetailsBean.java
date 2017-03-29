@@ -226,7 +226,7 @@ public class UserDetailsBean {
                 List<Holiday> holidaylist = HolidayService.getHolidayBetweenDates(start, end);
 
                 if (!worklist.isEmpty()) {
-                    trd = new TimeRowDisplay(worklist.get(0));
+                    trd = new TimeRowDisplay(worklist);
 
                     Double worktime = trd.getWorkTime();
                     Double sollzeit = trd.getSollZeit();
@@ -235,11 +235,11 @@ public class UserDetailsBean {
 
                     überstundenNach19 += trd.getOverTime19plus();
 
-                    if (worklist.size() > 1) {
-                        for (WorkTime w : worklist.subList(1, worklist.size() - 1)) {
-                            trd.setReason(trd.getReason() + " " + worklist.size() + ". Arbeitszeit von " + w.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " bis " + w.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " ");
-                        }
-                    }
+//                        if (worklist.size() > 1) {
+//                            for (WorkTime w : worklist.subList(1, worklist.size() - 1)) {
+//                                trd.setReason(trd.getReason() + " " + worklist.size() + ". Arbeitszeit von " + w.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " bis " + w.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " ");
+//                            }
+//                        }
                 }
 
                 if (!holidaylist.isEmpty()) {
@@ -256,7 +256,7 @@ public class UserDetailsBean {
                             SollZeit sollzeit = SollZeitenService.getSollZeitenByUser_ValidDate(currentUser, temp.atStartOfDay());
                             DayOfWeek dow = temp.getDayOfWeek();
 
-                            if (sollzeit != null) {
+                            if (sollzeit != null && sollzeit.getSollStartTime(dow) != null && sollzeit.getSollEndTime(dow) != null) {
                                 if (a.getStartTime().isBefore(temp.atStartOfDay())) {
                                     a.setStartTime(temp.atStartOfDay());
                                 }

@@ -237,9 +237,6 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                 || event.getEndDate().after(getAllowedEndDateToday()) || event.getStartDate().after(getAllowedEndDateToday()))) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Die eingebene Zeit ist nicht erlaubt!"));
             FacesContext.getCurrentInstance().validationFailed();
-        } else if (!workTimes.isEmpty() && event.getId() == null) {
-            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Nur eine Arbeitszeit pro Tag!"));
-            FacesContext.getCurrentInstance().validationFailed();
         } else if (!checkAvailableTime(event.getStartDate(), event.getEndDate(), false)) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Ein Eintrag für diese Urzeit ist bereits vorhanden!"));
             FacesContext.getCurrentInstance().validationFailed();

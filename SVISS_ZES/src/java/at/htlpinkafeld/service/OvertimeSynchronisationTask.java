@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Automatically adds a WorkTime for the last Day, if nothing was entered
  *
  * @author Martin Six
  */
@@ -68,7 +69,7 @@ public class OvertimeSynchronisationTask implements Runnable {
         SollZeit sz = SOLL_ZEITEN_DAO.getSollZeitenByUser_Current(u);
         List<WorkTime> workTimes = WORK_TIME_DAO.getWorkTimesFromUserBetweenDates(u, startDate, nextDate);
         List<Absence> absences = ABSENCE_DAO.getAbsencesByUser_BetweenDates(u, startDate, nextDate);
-        if (workTimes.isEmpty() && sz != null) {
+        if (workTimes.isEmpty() && sz != null && sz.getSollStartTime(currentDay) != null && sz.getSollEndTime(currentDay) != null) {
             if (absences.isEmpty()) {
                 int breaktime = 0;
                 if (sz.getSollTimeInHour(currentDay) >= 6) {

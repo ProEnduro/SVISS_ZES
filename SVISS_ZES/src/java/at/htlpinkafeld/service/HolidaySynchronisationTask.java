@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Adds 25 Days to the Vacation each year
  *
  * @author Martin Six
  */
