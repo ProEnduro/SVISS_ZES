@@ -25,10 +25,19 @@ public class AlleAbwesenheitenLazyScheduleModel extends LazyScheduleModel {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Constructor for AlleAbwesenheitenLazyScheduleModel
+     */
     public AlleAbwesenheitenLazyScheduleModel() {
 
     }
 
+    /**
+     * loads Events according to the start and end Date
+     *
+     * @param start start Date
+     * @param end end Date
+     */
     @Override
     public void loadEvents(Date start, Date end) {
         super.loadEvents(start, end); //To change body of generated methods, choose Tools | Templates.

@@ -296,7 +296,7 @@ public class BenutzerverwaltungBean {
         Map<DayOfWeek, LocalTime> endTimeMap = new HashMap<>();
 
         for (int i = 1; i <= 5; i++) {
-            LocalDateTime sDateTime = LocalDateTime.of(pointDate.plusDays(i-1), startTime);
+            LocalDateTime sDateTime = LocalDateTime.of(pointDate.plusDays(i - 1), startTime);
             curEvent = new DefaultScheduleEvent("", TimeConverterService.convertLocalDateTimeToDate(sDateTime), TimeConverterService.convertLocalDateTimeToDate(sDateTime.with(endTime)), sDateTime.getDayOfWeek());
             timeModel.addEvent(curEvent);
             startTimeMap.put(DayOfWeek.of(i), startTime);

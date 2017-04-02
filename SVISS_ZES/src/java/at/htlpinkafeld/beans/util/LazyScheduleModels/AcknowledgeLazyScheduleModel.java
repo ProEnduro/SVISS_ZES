@@ -26,6 +26,9 @@ public class AcknowledgeLazyScheduleModel extends DefaultScheduleModel {
 
     private String selectedUser = null;
 
+    /**
+     * Constructor for AcknowledgeLazyScheduleModel
+     */
     public AcknowledgeLazyScheduleModel() {
         loadEvents();
     }

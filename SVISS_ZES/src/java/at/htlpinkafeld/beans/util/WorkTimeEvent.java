@@ -59,10 +59,20 @@ public class WorkTimeEvent extends DefaultScheduleEvent {
         worktime = w;
     }
 
+    /**
+     * gets the wrapped {@link WorkTime}
+     *
+     * @return the wrapped WorkTime
+     */
     public WorkTime getWorktime() {
         return worktime;
     }
 
+    /**
+     * sets the new wrapped WorkTime
+     *
+     * @param worktime new WorkTime
+     */
     public void setWorktime(WorkTime worktime) {
         this.worktime = worktime;
     }

@@ -32,18 +32,39 @@ public class IstZeitLazyScheduleModel extends LazyScheduleModel {
 
     private User currentUser;
 
+    /**
+     * Constructor for IstZeitLazyScheduleModel
+     *
+     * @param u current User
+     */
     public IstZeitLazyScheduleModel(User u) {
         currentUser = u;
     }
 
+    /**
+     * get the current User
+     *
+     * @return the current User
+     */
     public User getCurrentUser() {
         return currentUser;
     }
 
+    /**
+     * set the current User
+     *
+     * @param currentUser the current User
+     */
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
     }
 
+    /**
+     * loads Events according to the start and end Date and the currentUser
+     *
+     * @param start start Date
+     * @param end end Date
+     */
     @Override
     public void loadEvents(Date start, Date end) {
         super.loadEvents(start, end); //To change body of generated methods, choose Tools | Templates.

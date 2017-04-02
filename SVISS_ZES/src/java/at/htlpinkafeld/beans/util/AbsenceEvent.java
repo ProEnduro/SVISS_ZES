@@ -21,20 +21,41 @@ public class AbsenceEvent extends DefaultScheduleEvent {
 
     private Absence absence;
 
+    /**
+     * Constructor for an AbsenceEvent
+     *
+     * @param title title of the event
+     * @param start start-Date of the Event
+     * @param end end-Date of the Event
+     * @param a the wrapped Absence
+     */
     public AbsenceEvent(String title, Date start, Date end, Absence a) {
         super(title, start, end);
 
         absence = a;
     }
 
+    /**
+     * Constructor for an AbsenceEvent
+     */
     public AbsenceEvent() {
         super();
     }
 
+    /**
+     * gets the wrapped Absence
+     *
+     * @return the wrapped {@link Absence}
+     */
     public Absence getAbsence() {
         return absence;
     }
 
+    /**
+     * sets the wrapped Absence
+     *
+     * @param a the new Absence
+     */
     public void setAbsence(Absence a) {
         absence = a;
     }
@@ -58,10 +79,7 @@ public class AbsenceEvent extends DefaultScheduleEvent {
             return false;
         }
         final AbsenceEvent other = (AbsenceEvent) obj;
-        if (!Objects.equals(this.absence, other.absence)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.absence, other.absence);
     }
 
 }

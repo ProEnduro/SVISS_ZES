@@ -31,14 +31,28 @@ public class AllTimeLazyScheduleModel extends LazyScheduleModel {
 
     private String selectedUser = null;
 
+    /**
+     * Constructor for AllTimeLazyScheduleModel
+     */
     public AllTimeLazyScheduleModel() {
 
     }
 
+    /**
+     * Sets the Username of the selected User
+     *
+     * @param s Username of the selectedUser
+     */
     public void setSelectedUser(String s) {
         selectedUser = s;
     }
 
+    /**
+     * loads Events according to the start and end Date and the selectedUser
+     *
+     * @param start start Date
+     * @param end end Date
+     */
     @Override
     public void loadEvents(Date start, Date end) {
         super.loadEvents(start, end);

@@ -34,10 +34,20 @@ public class ThemeSwitcherView {
         }
     }
 
+    /**
+     * Gets a List of all the available Themes
+     *
+     * @return List of Themes
+     */
     public List<Theme> getThemes() {
         return themes;
     }
 
+    /**
+     * Sets the ThemeService
+     *
+     * @param service a ThemeService
+     */
     public void setService(ThemeService service) {
         this.service = service;
     }
