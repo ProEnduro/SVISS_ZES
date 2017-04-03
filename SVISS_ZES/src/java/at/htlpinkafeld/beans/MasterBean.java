@@ -19,6 +19,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.context.FacesContext;
 
 /**
+ * The MasterBean is a Bean which contains various data for the User-session
  *
  * @author msi
  */
@@ -38,6 +39,10 @@ public class MasterBean implements DAODML_Observer {
 
     }
 
+    /**
+     * Sets this as Observer for the User_DAO, so that it is notified if changes
+     * are made
+     */
     @PostConstruct
     public void onConstruct() {
         BenutzerverwaltungService.addUserObserver(this);
@@ -163,6 +168,11 @@ public class MasterBean implements DAODML_Observer {
         return user != null;
     }
 
+    /**
+     * invalidates the current Session
+     *
+     * @return redirect to the login
+     */
     public Object logout() {
         FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
         return "/index.xhtml?faces-redirect=true";
@@ -174,6 +184,9 @@ public class MasterBean implements DAODML_Observer {
         BenutzerverwaltungService.deleteUserObserver(this);
     }
 
+    /**
+     * Updates the User if this is notified by the UserDao
+     */
     @Override
     public void notifyObserver() {
         if (user != null) {

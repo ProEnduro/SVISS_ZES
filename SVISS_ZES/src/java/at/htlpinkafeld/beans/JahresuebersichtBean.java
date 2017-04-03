@@ -31,7 +31,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -64,7 +63,7 @@ public class JahresuebersichtBean {
     private final DateTimeFormatter monthFormatter;
 
     /**
-     * Creates a new instance of alleUserBean
+     * Creates a new instance of JahresuebersichtBean
      */
     public JahresuebersichtBean() {
         monthFormatter = DateTimeFormatter.ofPattern("MMMM");
@@ -74,6 +73,9 @@ public class JahresuebersichtBean {
 
     }
 
+    /**
+     * loads the available Users according to the Permissions
+     */
     public void loadJahresübersichtBean() {
 
         User currentUser = masterBean.getUser();
@@ -137,6 +139,9 @@ public class JahresuebersichtBean {
         return overtime19PlusSum;
     }
 
+    /**
+     * loads the Years according to the User-Selection
+     */
     public void loadYears() {
         years = new ArrayList<>();
         if (selectedUser != null) {
@@ -147,6 +152,9 @@ public class JahresuebersichtBean {
         }
     }
 
+    /**
+     * loads the Data for the year according to the selected year and user
+     */
     public void loadData() {
         if (selectedYear != null && selectedUser != null) {
             months = new ArrayList<>();
@@ -195,6 +203,15 @@ public class JahresuebersichtBean {
         }
     }
 
+    /**
+     * Calculates the Overtime for the User between the dates but without the
+     * overtime over 19:00
+     *
+     * @param u User
+     * @param startDate startDate for the Calculation
+     * @param endDate endDate for the Calculation
+     * @return overtime without the Time over 19
+     */
     private int calcOvertimeMinusPlus19H(User u, LocalDate startDate, LocalDate endDate) {
         int overtime = 0;
 
@@ -344,6 +361,15 @@ public class JahresuebersichtBean {
         return overtime;
     }
 
+    /**
+     * The counterpart to the above function which calculates only the Overtime
+     * over 19:00
+     *
+     * @param u User
+     * @param startDate startDate for the Calculation
+     * @param endDate endDate for the Calculation
+     * @return overtime over 19
+     */
     public int calcOvertime19Plus(User u, LocalDate startDate, LocalDate endDate) {
         int overtime = 0;
 
@@ -354,6 +380,12 @@ public class JahresuebersichtBean {
         return overtime;
     }
 
+    /**
+     * pre processes the PDF for creating
+     *
+     * @param document pdf-doc
+     * @throws DocumentException may be thrown
+     */
     public void preProcessPDF(Object document) throws DocumentException {
         Document pdf = (Document) document;
         pdf.open();
@@ -369,6 +401,13 @@ public class JahresuebersichtBean {
         pdf.add(new Paragraph("\n"));
     }
 
+    /**
+     * Factory-Method for a PdfCell
+     *
+     * @param text Text for the cell
+     * @param alignment alignment for the cell content
+     * @return the created Cell
+     */
     private PdfPCell getCell(String text, int alignment) {
         PdfPCell cell = new PdfPCell(new Phrase(text));
         cell.setPadding(0);
@@ -377,12 +416,23 @@ public class JahresuebersichtBean {
         return cell;
     }
 
+    /**
+     * post processes the PDF for creating
+     *
+     * @param document pdf-doc
+     * @throws DocumentException may be thrown
+     */
     public void postProcessPDF(Object document) throws DocumentException {
         Document pdf = (Document) document;
         pdf.add(new Paragraph("\nStand: " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
         pdf.close();
     }
 
+    /**
+     * post processes the XLS for creating
+     *
+     * @param document xls-doc
+     */
     public void postProcessXLS(Object document) {
         HSSFWorkbook wb = (HSSFWorkbook) document;
         HSSFSheet sheet = wb.getSheetAt(0);

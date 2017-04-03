@@ -15,8 +15,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -36,6 +36,7 @@ import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
 
 /**
+ * Bean which is used for the "holidays.xhtml"-page
  *
  * @author Martin Six
  */
@@ -45,6 +46,9 @@ public class FeiertageBean {
     private ScheduleEvent curEvent;
     private Boolean dateDisabled = false;
 
+    /**
+     * loads the Data for the Page
+     */
     @PostConstruct
     public void init() {
         timeModel = new LazyScheduleModel() {
@@ -53,7 +57,7 @@ public class FeiertageBean {
                 List<Holiday> holidays = HolidayService.getHolidayBetweenDates(start, end);
                 holidays.stream().map((h) -> new DefaultScheduleEvent(h.getHolidayComment(), TimeConverterService.convertLocalDateTimeToDate(h.getHolidayDate().atStartOfDay()),
                         TimeConverterService.convertLocalDateTimeToDate(h.getHolidayDate().atStartOfDay()))).map((dse) -> {
-                            dse.setAllDay(true);
+                    dse.setAllDay(true);
                     return dse;
                 }).forEachOrdered((dse) -> {
                     this.addEvent(dse);
@@ -63,6 +67,11 @@ public class FeiertageBean {
         };
     }
 
+    /**
+     * loads the Data for the Holidays from an .ics-File
+     *
+     * @param event FileUploadEvent event
+     */
     public void loadEventsFromICS(FileUploadEvent event) {
         try {
             CalendarBuilder builder = new CalendarBuilder();
@@ -87,6 +96,14 @@ public class FeiertageBean {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Feiertage wurden geladen"));
     }
 
+    /**
+     * loads the Data for the Holidays from a special .ics-File, because Uploda
+     * does not work
+     *
+     * @throws FileNotFoundException throw from the file
+     * @throws ParserException throw from the file
+     * @throws IOException throw from the file
+     */
     public void load() throws FileNotFoundException, ParserException, IOException {
         ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
         String path = serv.getRealPath("/") + "/resources/";
@@ -135,12 +152,18 @@ public class FeiertageBean {
         this.dateDisabled = dateDisabled;
     }
 
+    /**
+     * adds a new Holiday
+     */
     public void addEvent() {
         Holiday h = new Holiday(TimeConverterService.convertDateToLocalDate(curEvent.getStartDate()), curEvent.getTitle());
         HolidayService.delete(h);
         HolidayService.insert(h);
     }
 
+    /**
+     * removes a Holiday
+     */
     public void removeEvent() {
         Holiday h = new Holiday(TimeConverterService.convertDateToLocalDate(curEvent.getStartDate()), curEvent.getTitle());
         HolidayService.delete(h);
@@ -151,6 +174,11 @@ public class FeiertageBean {
         dateDisabled = true;
     }
 
+    /**
+     * set the curEvent according to the SelectEvent
+     *
+     * @param selectEvent SelectEvent
+     */
     public void onDateSelect(SelectEvent selectEvent) {
         dateDisabled = false;
         Date date = (Date) selectEvent.getObject();
@@ -166,6 +194,11 @@ public class FeiertageBean {
         curEvent = new DefaultScheduleEvent("", date, c.getTime());
     }
 
+    /**
+     * Moves the Holiday according to the ScheduleEntryMoveEvent
+     *
+     * @param e ScheduleEntryMoveEvent
+     */
     public void onEventMove(ScheduleEntryMoveEvent e) {
         Holiday h = new Holiday(TimeConverterService.convertDateToLocalDate(e.getScheduleEvent().getStartDate()), e.getScheduleEvent().getTitle());
         HolidayService.insert(h);

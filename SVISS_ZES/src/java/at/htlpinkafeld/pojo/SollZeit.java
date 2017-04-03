@@ -6,7 +6,6 @@
 package at.htlpinkafeld.pojo;
 
 import at.htlpinkafeld.mobileInterface.service.util.DayOfWeek_LocalTimeMapAdapter;
-import at.htlpinkafeld.mobileInterface.service.util.LocalTimeMapAdapter;
 import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;

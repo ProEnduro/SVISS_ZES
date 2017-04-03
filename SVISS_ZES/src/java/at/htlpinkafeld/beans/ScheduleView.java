@@ -38,16 +38,22 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import org.primefaces.context.RequestContext;
-
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
 
+/**
+ * Bean which is used by "allTime.xhtml", "istzeit.xhtml", "abwesenheit.xhtml",
+ * "view_all_abwesenheiten.xhtml", "absence_acknowledgments.xhtml"
+ *
+ * @author msi
+ */
 public class ScheduleView implements Serializable, DAODML_Observer {
 
     private static final long serialVersionUID = 1L;
@@ -69,15 +75,18 @@ public class ScheduleView implements Serializable, DAODML_Observer {
     private String selectedUser;
     private List<String> allUsers;
 
-    double verbleibend;
-    double overtimeleft;
+    private double verbleibend;
+    private double overtimeleft;
 
-    String startcomment;
-    String endcomment;
-    String reason;
+    private String startcomment;
+    private String endcomment;
+    private String reason;
 
-    int breaktime;
+    private int breaktime;
 
+    /**
+     * Initializes various models for the multiple pages
+     */
     @PostConstruct
     public void init() {
 
@@ -98,6 +107,19 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         }
     }
 
+    @PreDestroy
+    private void destroy() {
+        if (currentUser != null) {
+            BenutzerverwaltungService.deleteUserObserver(this);
+        }
+    }
+
+    /**
+     * calculates the default Breaktime according to startDate and endDate of
+     * event
+     *
+     * @return Breaktime in Minutes
+     */
     public int getBreaktime() {
 
         if (event.getStartDate() != null && event.getEndDate() != null) {
@@ -131,6 +153,12 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         this.event = event;
     }
 
+    /**
+     * adds a new Absence or updates one if validation succeeds, used in
+     * "absence.xhtml"
+     *
+     * @param actionEvent ActionEvent
+     */
     public void addAbsenceEvent(ActionEvent actionEvent) {
 
         LocalDateTime startDT = TimeConverterService.convertDateToLocalDateTime(event.getStartDate());
@@ -166,8 +194,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         }
         //Inserts or updates
 
-        if (!FacesContext.getCurrentInstance()
-                .isValidationFailed() && event instanceof AbsenceEvent && event.getId() == null) {
+        if (!FacesContext.getCurrentInstance().isValidationFailed() && event instanceof AbsenceEvent && event.getId() == null) {
 
             Absence a = ((AbsenceEvent) event).getAbsence();
             a.setStartTime(startDT);
@@ -181,7 +208,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                 EmailService.sendUserEnteredAbsenceEmail(a, approverlist);
             }
         } else if (event instanceof WorkTimeEvent) {
-            IstZeitService.update(((WorkTimeEvent) event).getWorktime());
+//            IstZeitService.update(((WorkTimeEvent) event).getWorktime());
         } else if (event instanceof AbsenceEvent) {
             Absence a = ((AbsenceEvent) event).getAbsence();
             a.setReason(reason);
@@ -193,10 +220,20 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         event = new DefaultScheduleEvent();
     }
 
+    /**
+     * Checks if the current User is allowed to the delete an Absence, used in
+     * "absence.xhtml"
+     *
+     * @return is the currentUser able to?
+     */
     public boolean isAbleToDeleteAbsence() {
         return currentUser != null && AccessRightsService.checkPermission(currentUser.getAccessLevel(), "ALL");
     }
 
+    /**
+     * deletes the Absence in event if validation succeeds, used in
+     * "absence.xhtml"
+     */
     public void deleteAbsenceEvent() {
 
         if (event.getId() != null) {
@@ -217,6 +254,12 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
     }
 
+    /**
+     * Method updates or adds a Worktime if the Validation succeeds used in
+     * "istzeit.xhtml"
+     *
+     * @param actionEvent ActionEvent
+     */
     public void addIstZeitEvent(ActionEvent actionEvent) {
         int diff = 0;
 
@@ -305,6 +348,15 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         }
     }
 
+    /**
+     * checks if a WorkTime or an Absence may be inserted in this timearea
+     *
+     * @param startD startDate for the timearea
+     * @param endD endDate for the timearea
+     * @param checkWorkTime boolean whether it should check for WorkTime(true)
+     * or not(false
+     * @return boolean whether inserting or updating is allowed
+     */
     public boolean checkAvailableTime(Date startD, Date endD, boolean checkWorkTime) {
         boolean retVal = true;
 
@@ -350,6 +402,11 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
     }
 
+    /**
+     * deletes a WorkTime from event, used in "istzeit.xhtml"
+     *
+     * @param e ActionEvent
+     */
     public void deleteIstZeitEvent(ActionEvent e) {
         if (event.getId() != null) {
             if (event instanceof WorkTimeEvent) {
@@ -385,6 +442,12 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         }
     }
 
+    /**
+     * sets the selected event as data for the WorkTime-Dialog and opens it,
+     * used in "istzeit.xhtml"
+     *
+     * @param selectEvent SelectEvent
+     */
     public void onIstZeitEventSelect(SelectEvent selectEvent) {
         event = (ScheduleEvent) selectEvent.getObject();
 
@@ -401,15 +464,15 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
             RequestContext.getCurrentInstance().execute("PF('eventDialog').show();");
 
-        } else if (event instanceof AbsenceEvent) {
-            AbsenceEvent ev = (AbsenceEvent) event;
-            reason = ev.getAbsence().getReason();
-            RequestContext.getCurrentInstance().execute("PF('absenceDialog').show();");
-        } else {
-            RequestContext.getCurrentInstance().execute("PF('feiertagDialog').show();");
         }
     }
 
+    /**
+     * Handles Event-Clicks, sets the data for Dialogs and opens them, used in
+     * "allTime.xhtml" and "abwesenheiten.xhtml"
+     *
+     * @param selectEvent SelectEvent
+     */
     public void onEventInAbwesenheitenSelect(SelectEvent selectEvent) {
         event = (ScheduleEvent) selectEvent.getObject();
 
@@ -435,6 +498,12 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         }
     }
 
+    /**
+     * Sets the event used in the WorkTime-Creation-Dialog for creating a new
+     * WorkTime, used in "istzeit.xhtml"
+     *
+     * @param selectEvent SelectEvent
+     */
     public void onIstZeitDateSelect(SelectEvent selectEvent) {
         Date sDate = (Date) selectEvent.getObject();
         if (!AccessRightsService.checkPermission(currentUser.getAccessLevel(), "ALL") && (sDate.before(getAllowedStartDateToday()) || sDate.after(getAllowedEndDateToday()))) {
@@ -461,6 +530,12 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         }
     }
 
+    /**
+     * sets the event to be displayed when an Absence is selected, used in
+     * "abwesenheit.xhtml"
+     *
+     * @param selectEvent SelectEvent
+     */
     public void onAbsenceDateSelect(SelectEvent selectEvent) {
         Date sDate = (Date) selectEvent.getObject();
         event = new AbsenceEvent("", sDate, sDate, new Absence(this.currentUser, type, null, null));
@@ -478,6 +553,12 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         return new LinkedList(Arrays.asList(AbsenceTypeNew.values()));
     }
 
+    /**
+     * Set the currently selected Absence as acknowledged, if validation
+     * succeeds, used in "absence_acknowledgement.xhtml"
+     *
+     * @param actionEvent ActionEvent
+     */
     public void setAcknowledged(ActionEvent actionEvent) {
 
         if (absenceEvent.getId() == null) {
@@ -514,6 +595,11 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         absenceEvent = new AbsenceEvent();
     }
 
+    /**
+     * deletes an Absence regardless of Acknowledgment and recalculates the
+     * overtime accordingly and holiday of the user, used in
+     * "absence_acknowledgement.xhtml"
+     */
     public void deleteAcknowledgement() {
         if (absenceEvent.getId() == null) {
 
@@ -541,6 +627,10 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         }
     }
 
+    /**
+     * deletes an Absence from the DAOs and sends according emails, used in
+     * "allTime.xhtml" and "view_all_abwesenheiten.xhtml"
+     */
     public void deleteAcknowledgedAbsenceFromOverviews() {
         if (event.getId() == null) {
 
@@ -569,7 +659,14 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         }
     }
 
-    //adds Worktimes and removes Vacation if Absence is aknowledged
+    /**
+     * adds according Worktimes and removes the Vacation from the User if the
+     * {@link AbsenceTypeNew#HOLIDAY}-Absence is aknowledged and will be
+     * inserted
+     *
+     * @param a Absence which will be inserted and is checked
+     *
+     */
     private void setHolidayAndIstZeiten(Absence a) {
         User u = a.getUser();
         SollZeit sollZeit = SollZeitenService.getSollZeitenByUser_Current(u);
@@ -596,7 +693,12 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         }
     }
 
-    //removes Worktimes and adds Vacation if Absence is aknowledged
+    /**
+     * removes Worktimes and readds Vacation to the User if the
+     * {@link AbsenceTypeNew#HOLIDAY}-Absence is aknowledged and will be deleted
+     *
+     * @param a Absence which will be deleted and is checked
+     */
     private void removeHolidayAndIstZeiten(Absence a) {
         User u = a.getUser();
         int days;
@@ -613,7 +715,13 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         }
     }
 
-// Wenn eine angenommene Abwesenheit übergeben wird, wird der Urlaub dazugerechnet sonst wird sie abgezogen 
+    /**
+     * Wenn eine angenommene Abwesenheit übergeben wird, werden die Überstunden
+     * entsprechend berechnet und als Minuten zurückgegeben.
+     *
+     * @param a Absence which will be used for the calculations
+     * @return overtime in minutes
+     */
     private int calcAbsenceOvertime(Absence a) {
         int overtime = 0;
         User u = a.getUser();

@@ -5,36 +5,9 @@
  */
 package at.htlpinkafeld.beans;
 
-import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.User;
-import at.htlpinkafeld.pojo.WorkTime;
-import at.htlpinkafeld.service.AbsenceService;
-import at.htlpinkafeld.service.BenutzerverwaltungService;
-import at.htlpinkafeld.service.IstZeitService;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
-import javax.imageio.ImageIO;
-import javax.servlet.ServletContext;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.chart.PieChartModel;
 

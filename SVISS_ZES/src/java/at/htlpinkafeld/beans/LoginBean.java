@@ -6,8 +6,6 @@
 package at.htlpinkafeld.beans;
 
 import at.htlpinkafeld.pojo.User;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import at.htlpinkafeld.service.AccessRightsService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import at.htlpinkafeld.service.EmailService;
@@ -17,9 +15,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
 /**
+ * The bean used for the login-page
  *
  * @author msi
  */
@@ -29,6 +30,9 @@ public class LoginBean {
     public String pw;
     private User user;
 
+    /**
+     * The username or email which is entered for the password reset
+     */
     private String emailOrUsername;
 
     /**
@@ -53,6 +57,13 @@ public class LoginBean {
         this.pw = PasswordEncryptionService.digestPassword(pw);
     }
 
+    /**
+     * checks the input data and logs the user in. the User is further set in
+     * the {@link MasterBean}
+     *
+     * @return a String for redirecting
+     * @throws IOException if the Theme causes errors
+     */
     public Object login() throws IOException {
         User u = null;
         try {
@@ -118,6 +129,10 @@ public class LoginBean {
         this.emailOrUsername = emailOrUsername;
     }
 
+    /**
+     * sends a reset Password request to the Admins according to the inputed
+     * emailOrUsername
+     */
     public void sendPWResetRequest() {
         User u;
         if (emailOrUsername == null || emailOrUsername.isEmpty()) {
@@ -137,6 +152,12 @@ public class LoginBean {
         }
     }
 
+    /**
+     * creates the File for the Themes and other stuff
+     *
+     * @throws FileNotFoundException may be thrown
+     * @throws IOException may be thrown
+     */
     public void createThemePropertie() throws FileNotFoundException, IOException {
         ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
         String path = serv.getRealPath("/") + "/resources/";

@@ -37,10 +37,10 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.servlet.ServletContext;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.servlet.ServletContext;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.ScheduleEntryResizeEvent;
@@ -52,6 +52,7 @@ import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
 
 /**
+ * Bean welche von der Seite-"benutzerverwaltung.xhtml" benutzt wird
  *
  * @author msi
  */
@@ -75,6 +76,9 @@ public class BenutzerverwaltungBean {
 
     private String resetPWString;
 
+    /**
+     * Initializes the ScheduleModel for the SollZeit-Dialog
+     */
     @PostConstruct
     public void init() {
         timeModel = new DefaultScheduleModel();
@@ -87,6 +91,9 @@ public class BenutzerverwaltungBean {
     public BenutzerverwaltungBean() {
     }
 
+    /**
+     * Loads the Users for the Page
+     */
     public void onLoad() {
         userlist = BenutzerverwaltungService.getUserList();
     }
@@ -102,16 +109,30 @@ public class BenutzerverwaltungBean {
         return userlist;
     }
 
+    /**
+     * Create new User
+     */
     public void newUser() {
         selectedUser = new UserProxy();
         newSollZeit = null;
     }
 
+    /**
+     * sets the selected User for editing
+     *
+     * @param e used to get the user from the table
+     */
     public void editUser(ActionEvent e) {
         selectedUser = new UserProxy((User) e.getComponent().getAttributes().get("user"));
         newSollZeit = null;
     }
 
+    /**
+     * Saves the Changes to the current User or inserts a new one
+     *
+     * @throws FileNotFoundException if an error with the themes occurs
+     * @throws IOException if an error with the themes occurs
+     */
     public void saveUser() throws FileNotFoundException, IOException {
         if (isEmailUnavailable(selectedUser.getEmail())) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Action failed", "Diese Email wurde bereits vergeben!"));
@@ -157,6 +178,11 @@ public class BenutzerverwaltungBean {
         }
     }
 
+    /**
+     * creates a random String for the Password
+     *
+     * @return random String
+     */
     public String getResetPWString() {
         return RandomStringUtils.randomAlphanumeric(10);
     }
@@ -165,6 +191,9 @@ public class BenutzerverwaltungBean {
         this.resetPWString = resetPWString;
     }
 
+    /**
+     * Sets the new Password and sends a corresponding email
+     */
     public void resetPassword() {
         if (resetPWString.length() < 6) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_WARN, "Action failed", "Passwort muss mindestens 6 Zeichen haben!"));
@@ -264,6 +293,12 @@ public class BenutzerverwaltungBean {
         this.curEvent = curEvent;
     }
 
+    /**
+     *
+     * Gets the weektime according to the soll-zeiten
+     *
+     * @return NewWeekTime
+     */
     public Double getNewWeekTime() {
         Double wt = 0.0;
         Double dayTime;
@@ -281,6 +316,9 @@ public class BenutzerverwaltungBean {
         this.weekTime = Math.abs(weekTime);
     }
 
+    /**
+     * distributes the Soll-Zeiten according to the entered WeekTime
+     */
     public void distributeTimes() {
         timeModel.clear();
         discardTimes();
@@ -306,6 +344,9 @@ public class BenutzerverwaltungBean {
 
     }
 
+    /**
+     * loads the current SollZeiten for the Schedule
+     */
     public void loadSollZeiten() {
         timeModel.clear();
         currentSollZeit = SollZeitenService.getSollZeitenByUser_Current(selectedUser);
@@ -323,11 +364,21 @@ public class BenutzerverwaltungBean {
 
     }
 
+    /**
+     * Hides the EventDialog
+     *
+     * @param selectEvent selectEvent
+     */
     public void onEventSelect(SelectEvent selectEvent) {
         RequestContext.getCurrentInstance().execute("PF('eventDialog').hide();");
         curEvent = (ScheduleEvent) selectEvent.getObject();
     }
 
+    /**
+     * used to set data for creating a new SollZeit in the Schedule
+     *
+     * @param selectEvent selectEvent
+     */
     public void onDateSelect(SelectEvent selectEvent) {
         RequestContext.getCurrentInstance().execute("PF('eventDialog').hide();");
         Date date = (Date) selectEvent.getObject();
@@ -345,6 +396,9 @@ public class BenutzerverwaltungBean {
         }
     }
 
+    /**
+     * adds the curEvent as new SollZeit
+     */
     public void addSollZeitEvent() {
         LocalDateTime sDateTime = LocalDateTime.of(pointDate.with(TemporalAdjusters.firstInMonth((DayOfWeek) curEvent.getData())), TimeConverterService.convertDateToLocalTime(curEvent.getStartDate()));
 
@@ -370,6 +424,9 @@ public class BenutzerverwaltungBean {
         }
     }
 
+    /**
+     * removes the curEvent-SollZeit
+     */
     public void removeSollZeitEvent() {
         if (curEvent.getId() != null) {
             DayOfWeek dow = (DayOfWeek) curEvent.getData();
@@ -379,6 +436,11 @@ public class BenutzerverwaltungBean {
         }
     }
 
+    /**
+     * resizes the SollZeit according to the changes in the Schedule
+     *
+     * @param event ScheduleEntryResizeEvent event
+     */
     public void onEventResize(ScheduleEntryResizeEvent event) {
         LocalDateTime startDateTime = TimeConverterService.convertDateToLocalDateTime(event.getScheduleEvent().getStartDate());
         LocalTime endTime = TimeConverterService.convertDateToLocalTime(event.getScheduleEvent().getEndDate());
@@ -397,7 +459,11 @@ public class BenutzerverwaltungBean {
         }
     }
 
-    //Approver Stuff from here on
+    /**
+     * sets data for editing the approvers of a user
+     *
+     * @param e ActionEvent used to get the selected User
+     */
     public void editApprover(ActionEvent e) {
 
         selectedUser = (User) e.getComponent().getAttributes().get("user");
@@ -423,6 +489,9 @@ public class BenutzerverwaltungBean {
         this.approverModel = approverModel;
     }
 
+    /**
+     * Saves the changes to the Approvers to the database
+     */
     public void saveApprover() {
         selectedUser.setApprover(approverModel.getTarget());
         BenutzerverwaltungService.updateApproverOfUser(selectedUser);
