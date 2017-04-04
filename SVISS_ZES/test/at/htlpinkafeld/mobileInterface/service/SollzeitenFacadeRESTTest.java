@@ -80,10 +80,6 @@ public class SollzeitenFacadeRESTTest {
         });
 
         Assert.assertFalse("Check if getList is working", szs.isEmpty());
-
-        szs.forEach((o) -> {
-            o.toString();
-        });
     }
 
     /**

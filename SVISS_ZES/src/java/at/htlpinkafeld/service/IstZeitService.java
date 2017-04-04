@@ -11,6 +11,7 @@ import at.htlpinkafeld.dao.interf.WorkTime_DAO;
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -35,9 +36,10 @@ public class IstZeitService {
     public static void addIstTime(WorkTime t) {
         if (t.getSollStartTime() == null) {
             SollZeit sz = sollZeiten_DAO.getSollZeitenByUser_Current(t.getUser());
-            if (sz != null) {
-                t.setSollStartTime(sz.getSollStartTime(t.getStartTime().getDayOfWeek()));
-                t.setSollEndTime(sz.getSollEndTime(t.getStartTime().getDayOfWeek()));
+            DayOfWeek dow = t.getStartTime().getDayOfWeek();
+            if (sz.getSollStartTime(dow) != null) {
+                t.setSollStartTime(sz.getSollStartTime(dow));
+                t.setSollEndTime(sz.getSollEndTime(dow));
             } else {
                 t.setSollStartTime(LocalTime.MIN);
                 t.setSollEndTime(LocalTime.MIN);

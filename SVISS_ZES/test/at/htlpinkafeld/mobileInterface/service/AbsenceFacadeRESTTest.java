@@ -78,9 +78,6 @@ public class AbsenceFacadeRESTTest {
 
         Assert.assertFalse("Check for getList being empty", l.isEmpty());
 
-        l.forEach((o) -> {
-            o.toString();
-        });
     }
 
     /**
