@@ -8,6 +8,8 @@ package at.htlpinkafeld.pojo;
 import at.htlpinkafeld.mobileInterface.service.util.LocalDateTimeAdapter;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -52,6 +54,10 @@ public class UserHistoryEntry implements Serializable {
         this.timestamp = timestamp;
     }
 
+    public String getTimestampAsYearMonthString() {
+        return this.timestamp.format(DateTimeFormatter.ofPattern("yyyy MMMM"));
+    }
+
     public User getUser() {
         return user;
     }
@@ -74,6 +80,40 @@ public class UserHistoryEntry implements Serializable {
 
     public void setVacation(Integer vacation) {
         this.vacation = vacation;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 17 * hash + Objects.hashCode(this.timestamp);
+        hash = 17 * hash + Objects.hashCode(this.user);
+        hash = 17 * hash + Objects.hashCode(this.overtime);
+        hash = 17 * hash + Objects.hashCode(this.vacation);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final UserHistoryEntry other = (UserHistoryEntry) obj;
+        if (!Objects.equals(this.timestamp.getYear(), other.timestamp.getYear())) {
+            return false;
+        }
+        if (!Objects.equals(this.timestamp.getMonthValue(), other.timestamp.getMonthValue())) {
+            return false;
+        }
+        if (!Objects.equals(this.user, other.user)) {
+            return false;
+        }
+        return true;
     }
 
     @Override

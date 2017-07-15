@@ -70,7 +70,7 @@ public class UserDetailsBean {
      */
     List<String> userAsStringList;
     String selectedUser;
-    List<SelectItem> dates;
+    List<SelectItem> availableMonthLocalDates;
     LocalDate selectedDate;
 
     List<TimeRowDisplay> timerowlist;
@@ -109,7 +109,7 @@ public class UserDetailsBean {
             }
         }
 
-        dates = new ArrayList<>();
+        availableMonthLocalDates = new ArrayList<>();
 
     }
 
@@ -124,7 +124,7 @@ public class UserDetailsBean {
             userAsStringList.add(currentUser.getUsername());
         }
 
-        dates = new ArrayList<>();
+        availableMonthLocalDates = new ArrayList<>();
 
         this.setSelectedUser(userAsStringList.get(0));
         this.loadMonthOverview(null);
@@ -144,13 +144,13 @@ public class UserDetailsBean {
 
     public void setSelectedUser(String selectedUser) {
         this.selectedUser = selectedUser;
+    }
 
-        SelectItem si;
-
+    public void onUserSelected() {
         this.selectedDate = null;
         this.selectedYear = 0;
 
-        dates.clear();
+        availableMonthLocalDates.clear();
         years = new ArrayList<>();
 
         List<UserHistoryEntry> uhelist = UserHistoryService.getUserHistoryEntriesForUser(BenutzerverwaltungService.getUserByUsername(selectedUser));
@@ -171,12 +171,12 @@ public class UserDetailsBean {
         }
     }
 
-    public List<SelectItem> getDates() {
-        return dates;
+    public List<SelectItem> getAvailableMonthLocalDates() {
+        return availableMonthLocalDates;
     }
 
-    public void setDates(List<SelectItem> dates) {
-        this.dates = dates;
+    public void setAvailableMonthLocalDates(List<SelectItem> availableMonthLocalDates) {
+        this.availableMonthLocalDates = availableMonthLocalDates;
     }
 
     public LocalDate getSelectedDate() {
@@ -344,7 +344,7 @@ public class UserDetailsBean {
 
     public void loadMonths() {
 
-        this.dates.clear();
+        this.availableMonthLocalDates.clear();
 
         LocalDate start = LocalDate.of(selectedYear, Month.JANUARY, 1);
         LocalDate end = start.plusYears(1);
@@ -362,7 +362,7 @@ public class UserDetailsBean {
                 urlaubsanspruch = uhe.getVacation();
             }
 
-            this.dates.add(si);
+            this.availableMonthLocalDates.add(si);
         }
 
     }

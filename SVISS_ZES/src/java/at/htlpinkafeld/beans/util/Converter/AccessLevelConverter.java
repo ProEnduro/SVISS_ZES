@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htlpinkafeld.beans.util;
+package at.htlpinkafeld.beans.util.Converter;
 
 import at.htlpinkafeld.pojo.AccessLevel;
 import at.htlpinkafeld.service.AccessRightsService;

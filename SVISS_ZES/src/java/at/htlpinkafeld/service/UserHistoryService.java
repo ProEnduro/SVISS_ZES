@@ -24,11 +24,23 @@ public class UserHistoryService {
         userHistoryDAO = DAOFactory.getDAOFactory().getUserHistoryDAO();
     }
 
+    public static List<UserHistoryEntry> getUserHistoryEntries() {
+        return userHistoryDAO.getList();
+    }
+
     public static List<UserHistoryEntry> getUserHistoryEntriesForUser(User u) {
         return userHistoryDAO.getUserHistoryEntrysByUser(u);
     }
 
     public static List<UserHistoryEntry> getUserHistoryEntriesForUserBetweenDates(User u, LocalDate start, LocalDate end) {
         return userHistoryDAO.getUserHistoryEntrysByUser_BetweenDates(u, start, end);
+    }
+
+    public static void updateUserHistoryEntry(UserHistoryEntry uhe) {
+        userHistoryDAO.update(uhe);
+    }
+
+    public static void insertUserHistoryEntry(UserHistoryEntry uhe) {
+        userHistoryDAO.insert(uhe);
     }
 }
