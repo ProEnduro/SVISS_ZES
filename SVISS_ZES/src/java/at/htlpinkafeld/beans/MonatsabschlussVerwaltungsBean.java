@@ -5,7 +5,6 @@
  */
 package at.htlpinkafeld.beans;
 
-import at.htlpinkafeld.dao.jdbc.ConnectionManager;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserHistoryEntry;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
@@ -15,8 +14,7 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
@@ -103,11 +101,7 @@ public class MonatsabschlussVerwaltungsBean {
         String carName = value.toString().toUpperCase();
         filterText = filterText.toUpperCase();
 
-        if (carName.contains(filterText)) {
-            return true;
-        } else {
-            return false;
-        }
+        return carName.contains(filterText);
     }
 
     public void editUserHistoryEntry(ActionEvent e) {
@@ -130,8 +124,13 @@ public class MonatsabschlussVerwaltungsBean {
                 this.userHistoryEntrys.remove(selectedUserHistoryEntry);
                 this.userHistoryEntrys.add(selectedUserHistoryEntry);
             } else {
-                UserHistoryService.insertUserHistoryEntry(selectedUserHistoryEntry);
-                this.userHistoryEntrys.add(selectedUserHistoryEntry);
+                if (this.userHistoryEntrys.contains(this.selectedUserHistoryEntry)) {
+                    FacesContext.getCurrentInstance().validationFailed();
+                    FacesContext.getCurrentInstance().addMessage("uhEntryDialogForm", new FacesMessage(FacesMessage.SEVERITY_WARN, "Speichern fehlgeschlagen!", "Es ist bereits ein Eintrag für diesen Benutzer in diesem Monat verfügbar!"));
+                } else {
+                    UserHistoryService.insertUserHistoryEntry(selectedUserHistoryEntry);
+                    this.userHistoryEntrys.add(selectedUserHistoryEntry);
+                }
             }
         }
     }
@@ -147,5 +146,12 @@ public class MonatsabschlussVerwaltungsBean {
 
     public String getDisplayName(Month month) {
         return month.getDisplayName(TextStyle.FULL, Locale.getDefault());
+    }
+
+    public int sortByTimestamp(Object obj1, Object obj2) {
+        LocalDateTime ldt1 = (LocalDateTime) obj1;
+        LocalDateTime ldt2 = (LocalDateTime) obj2;
+
+        return ldt1.compareTo(ldt2);
     }
 }

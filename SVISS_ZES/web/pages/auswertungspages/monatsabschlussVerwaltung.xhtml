@@ -18,15 +18,18 @@ and open the template in the editor.
     <ui:define name="auswertung">
         <h:form id="uhTableForm">
             <h1 align="center">Auswertung: Monatsabschlüsse</h1>
-            <p:growl autoUpdate="true"/>
+            <p:growl autoUpdate="true" showDetail="true"/>
 
-            <p:dataTable id="uhTable" value="#{monatsabschlussVerwaltungsBean.userHistoryEntrys}" var="uhEntry" stickyHeader="true">
+            <p:commandButton style="width: 100%; height: 40px"  value="Neuen Monatsabschluss verfassen" actionListener="#{monatsabschlussVerwaltungsBean.createUserHistoryEntry}" 
+                             oncomplete="PF('editUHEntryDialog').show();" update=":uhEntryDialogForm:uhEntryDialogGrid"/>
+
+            <p:dataTable id="uhTable" value="#{monatsabschlussVerwaltungsBean.userHistoryEntrys}" lazy="true" var="uhEntry" sortMode="multiple">
 
                 <p:column headerText="Name" filterBy="#{uhEntry.user.persName}"  filterFunction="#{monatsabschlussVerwaltungsBean.filterByInsensitiveString}" sortBy="#{uhEntry.user.persName}">
                     #{uhEntry.user.persName}
                 </p:column>
 
-                <p:column headerText="Timestamp" filterBy="#{uhEntry.timestampAsYearMonthString}" filterFunction="#{monatsabschlussVerwaltungsBean.filterByInsensitiveString}" sortBy="#{uhEntry.timestampAsYearMonthString}">
+                <p:column headerText="Timestamp" filterBy="#{uhEntry.timestampAsYearMonthString}" filterFunction="#{monatsabschlussVerwaltungsBean.filterByInsensitiveString}" sortBy="#{uhEntry.timestamp}" sortFunction="#{monatsabschlussVerwaltungsBean.sortByTimestamp}">
                     #{uhEntry.timestampAsYearMonthString}
                 </p:column>
 
@@ -44,11 +47,6 @@ and open the template in the editor.
                         <f:attribute name="uhEntry" value="#{uhEntry}"/>                        
                     </p:commandButton>
                 </p:column>
-
-                <f:facet name="footer">
-                    <p:commandButton value="Neuen Monatsabschluss verfassen" actionListener="#{monatsabschlussVerwaltungsBean.createUserHistoryEntry}" 
-                                     oncomplete="PF('editUHEntryDialog').show();" update=":uhEntryDialogForm:uhEntryDialogGrid"/>
-                </f:facet>
             </p:dataTable>
         </h:form>
 
