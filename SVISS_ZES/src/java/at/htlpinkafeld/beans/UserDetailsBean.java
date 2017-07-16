@@ -350,6 +350,7 @@ public class UserDetailsBean {
         LocalDate end = start.plusYears(1);
 
         SelectItem si;
+        SelectItem oldSi = null;
 
         this.selectedDate = null;
 
@@ -357,12 +358,16 @@ public class UserDetailsBean {
 
             si = new SelectItem(uhe.getTimestamp().toLocalDate(), uhe.getTimestamp().toLocalDate().format(DateTimeFormatter.ofPattern("MMMM")));
 
+            if (oldSi != null && oldSi.getLabel().equals(si.getLabel())) {
+                dates.remove(oldSi);
+            }
+
             if (this.selectedDate == null) {
                 this.setSelectedDate((LocalDate) si.getValue());
                 urlaubsanspruch = uhe.getVacation();
             }
-
             this.dates.add(si);
+            oldSi = si;
         }
 
     }

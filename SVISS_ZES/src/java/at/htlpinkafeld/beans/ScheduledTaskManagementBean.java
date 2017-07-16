@@ -38,6 +38,7 @@ public class ScheduledTaskManagementBean {
         ZonedDateTime zonedNow = ZonedDateTime.of(localNow, currentZone);
         ZonedDateTime zonedNext0;
         zonedNext0 = zonedNow.withHour(3).withMinute(0).withSecond(0);
+
         if (zonedNow.compareTo(zonedNext0) > 0) {
             zonedNext0 = zonedNext0.plusDays(1);
         }

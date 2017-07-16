@@ -22,7 +22,7 @@ public class AuthenticationEndpointTest {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8084/SVISS_ZES/webresources";
+    private static final String BASE_URI = "http://zes.sviss.at/SVISS_ZES/webresources";
 
     public AuthenticationEndpointTest() {
     }
@@ -45,7 +45,7 @@ public class AuthenticationEndpointTest {
     @Test
     public void testAuthenticateUser() {
         System.out.println("authenticateUser");
-        Credentials credentials = new Credentials("admin", "admin");
+        Credentials credentials = new Credentials("apptest", "apptest");
         Response result;
         String resultS;
 

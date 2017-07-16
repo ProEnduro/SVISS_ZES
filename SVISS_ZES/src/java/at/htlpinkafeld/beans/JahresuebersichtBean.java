@@ -229,7 +229,7 @@ public class JahresuebersichtBean {
         }
 
         for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
-            SollZeit sz = SollZeitenService.getSollZeitenByUser_ValidDate(u, date.atStartOfDay());
+            SollZeit sz = SollZeitenService.getSollZeitenByUser_ValidDate(u, date.atTime(23, 59));
             DayOfWeek dow = date.getDayOfWeek();
 
             if (sz != null && sz.getSollStartTimeMap().containsKey(dow)) {
@@ -347,8 +347,9 @@ public class JahresuebersichtBean {
                 sz = SollZeitenService.getSollZeitenByUser_ValidDate(u, hDate.atStartOfDay());
             }
             hDate = h.getHolidayDate();
-            if (sz != null) {
-                DayOfWeek dow = hDate.getDayOfWeek();
+            DayOfWeek dow = hDate.getDayOfWeek();
+
+            if (sz != null && sz.getSollStartTime(dow) != null) {
 
                 long diff = sz.getSollStartTime(dow).until(sz.getSollEndTime(dow), ChronoUnit.MINUTES);
                 if (diff >= 6 * 60) {
