@@ -117,7 +117,7 @@ public class MonatsabschlussVerwaltungsBean {
         if (selectedUserHistoryEntry.getOvertime() == null || selectedUserHistoryEntry.getVacation() == null) {
             FacesContext.getCurrentInstance().validationFailed();
         } else {
-            selectedUserHistoryEntry.setTimestamp(LocalDateTime.of(selectedYear, selectedMonth.plus(1), 1, 0, 0).minusMinutes(10));
+            
 
             if (isEditing()) {
                 UserHistoryService.updateUserHistoryEntry(selectedUserHistoryEntry);
@@ -128,6 +128,7 @@ public class MonatsabschlussVerwaltungsBean {
                     FacesContext.getCurrentInstance().validationFailed();
                     FacesContext.getCurrentInstance().addMessage("uhEntryDialogForm", new FacesMessage(FacesMessage.SEVERITY_WARN, "Speichern fehlgeschlagen!", "Es ist bereits ein Eintrag für diesen Benutzer in diesem Monat verfügbar!"));
                 } else {
+                    selectedUserHistoryEntry.setTimestamp(LocalDateTime.of(selectedYear, selectedMonth.plus(1), 1, 0, 0).minusMinutes(10));
                     UserHistoryService.insertUserHistoryEntry(selectedUserHistoryEntry);
                     this.userHistoryEntrys.add(selectedUserHistoryEntry);
                 }

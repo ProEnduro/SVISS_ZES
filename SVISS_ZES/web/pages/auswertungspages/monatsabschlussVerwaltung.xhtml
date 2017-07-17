@@ -23,7 +23,7 @@ and open the template in the editor.
             <p:commandButton style="width: 100%; height: 40px"  value="Neuen Monatsabschluss verfassen" actionListener="#{monatsabschlussVerwaltungsBean.createUserHistoryEntry}" 
                              oncomplete="PF('editUHEntryDialog').show();" update=":uhEntryDialogForm:uhEntryDialogGrid"/>
 
-            <p:dataTable id="uhTable" value="#{monatsabschlussVerwaltungsBean.userHistoryEntrys}" lazy="true" var="uhEntry" sortMode="multiple">
+            <p:dataTable id="uhTable" value="#{monatsabschlussVerwaltungsBean.userHistoryEntrys}" var="uhEntry" sortMode="multiple">
 
                 <p:column headerText="Name" filterBy="#{uhEntry.user.persName}"  filterFunction="#{monatsabschlussVerwaltungsBean.filterByInsensitiveString}" sortBy="#{uhEntry.user.persName}">
                     #{uhEntry.user.persName}
@@ -34,7 +34,9 @@ and open the template in the editor.
                 </p:column>
 
                 <p:column headerText="übrige Überstunden" sortBy="#{uhEntry.overtime}">
-                    #{uhEntry.overtime}
+                    <p:outputLabel value="#{uhEntry.overtime}">
+                        <f:converter converterId="minuteHourConverter"/>
+                    </p:outputLabel> 
                 </p:column>
 
                 <p:column headerText="übriger Urlaub" sortBy="#{uhEntry.vacation}">
@@ -73,11 +75,11 @@ and open the template in the editor.
                     </p:row>
                     <p:row>
                         <p:column colspan="2"><p:outputLabel value="übrige Überstunden"/></p:column>
-                        <p:column colspan="2"><p:spinner value="#{monatsabschlussVerwaltungsBean.selectedUserHistoryEntry.overtime}" required="true" requiredMessage="Die übrigen Überstunden müssen eingegeben werden!"/></p:column>
+                        <p:column colspan="2"><p:inputText value="#{monatsabschlussVerwaltungsBean.selectedUserHistoryEntry.overtime}" converter="minuteHourConverter" required="true" requiredMessage="Die übrigen Überstunden müssen eingegeben werden!"/></p:column>
                     </p:row>
                     <p:row>
                         <p:column colspan="2"><p:outputLabel value="übriger Urlaub"/></p:column>
-                        <p:column colspan="2"><p:spinner value="#{monatsabschlussVerwaltungsBean.selectedUserHistoryEntry.vacation}" required="true" requiredMessage="Der übrige Urlaub muss eingegeben werden!"/></p:column>
+                        <p:column colspan="2"><p:spinner value="#{monatsabschlussVerwaltungsBean.selectedUserHistoryEntry.vacation}" required="true" requiredMessage="Der übrige Urlaub muss eingegeben werden!" maxlength="4"/></p:column>
                     </p:row>
                     <p:row>
                         <p:column colspan="2"><p:commandButton value="Save" action="#{monatsabschlussVerwaltungsBean.saveEditedUserHistoryEntry}" 

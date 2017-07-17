@@ -24,6 +24,7 @@ public class UserHistoryEntry implements Serializable {
 
     private LocalDateTime timestamp;
     private User user;
+    //in Minuten
     private Integer overtime;
     private Integer vacation;
 
