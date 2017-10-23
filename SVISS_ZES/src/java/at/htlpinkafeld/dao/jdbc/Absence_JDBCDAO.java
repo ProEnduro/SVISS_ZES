@@ -8,9 +8,8 @@ package at.htlpinkafeld.dao.jdbc;
 import at.htlpinkafeld.dao.interf.Absence_DAO;
 import at.htlpinkafeld.dao.util.WrappedConnection;
 import at.htlpinkafeld.pojo.Absence;
-import at.htlpinkafeld.pojo.AbsenceType;
+import at.htlpinkafeld.pojo.AbsenceTypeNew;
 import at.htlpinkafeld.pojo.User;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,15 +30,15 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
 
     public static final String ABSENCEID_COL = "AbsenceID";
     public static final String USERNR_COL = User_JDBCDAO.USERNR_COL;
-    public static final String ABSENCETYPEID_COL = "AbsenceTypeID";
+    public static final String ABSENCETYPENAME_COL = "AbsenceType";
     public static final String STARTTIME_COL = "StartTime";
     public static final String ENDTIME_COL = "EndTime";
     private static final String REASON_COL = "Reason";
     public static final String ACKNOWLEDGED_COL = "Acknowledged";
 
     public static final String TABLE_NAME = "Absence";
-    public static final String[] PRIMARY_KEY = {USERNR_COL, ABSENCEID_COL};
-    public static final String[] ALL_COLUMNS = {ABSENCEID_COL, USERNR_COL, ABSENCETYPEID_COL, STARTTIME_COL, ENDTIME_COL, REASON_COL, ACKNOWLEDGED_COL};
+    private static final String[] PRIMARY_KEY = {USERNR_COL, ABSENCEID_COL};
+    private static final String[] ALL_COLUMNS = {ABSENCEID_COL, USERNR_COL, ABSENCETYPENAME_COL, STARTTIME_COL, ENDTIME_COL, REASON_COL, ACKNOWLEDGED_COL};
 
     protected Absence_JDBCDAO() {
         super(TABLE_NAME, ALL_COLUMNS, PRIMARY_KEY);
@@ -51,7 +50,7 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
 
         resMap.put(ABSENCEID_COL, entity.getAbsenceID());
         resMap.put(USERNR_COL, entity.getUser().getUserNr());
-        resMap.put(ABSENCETYPEID_COL, entity.getAbsenceType().getAbsenceTypeID());
+        resMap.put(ABSENCETYPENAME_COL, entity.getAbsenceType().name());
         resMap.put(STARTTIME_COL, entity.getStartTime());
         resMap.put(ENDTIME_COL, entity.getEndTime());
         resMap.put(REASON_COL, entity.getReason());
@@ -63,7 +62,7 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
     @Override
     protected Absence getEntityFromResultSet(ResultSet rs) {
         try {
-            return new Absence(rs.getInt(ABSENCEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), new AbsenceType_JDBCDAO().getAbsenceTypeByID(rs.getInt(ABSENCETYPEID_COL)), rs.getTimestamp(STARTTIME_COL).toLocalDateTime(), rs.getTimestamp(ENDTIME_COL).toLocalDateTime(), rs.getString(REASON_COL), rs.getBoolean(ACKNOWLEDGED_COL));
+            return new Absence(rs.getInt(ABSENCEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), AbsenceTypeNew.valueOf(rs.getString(ABSENCETYPENAME_COL)), rs.getTimestamp(STARTTIME_COL).toLocalDateTime(), rs.getTimestamp(ENDTIME_COL).toLocalDateTime(), rs.getString(REASON_COL), rs.getBoolean(ACKNOWLEDGED_COL));
         } catch (SQLException ex) {
             Logger.getLogger(Absence_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -100,12 +99,12 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
     }
 
     @Override
-    public List<Absence> getAbsencesByAbsenceType(AbsenceType at) {
+    public List<Absence> getAbsencesByAbsenceType(AbsenceTypeNew at) {
         List<Absence> absences = new ArrayList<>();
 
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                 Statement stmt = con.getConn().createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ABSENCETYPEID_COL + " = " + at.getAbsenceTypeID() + " " + SQL_ORDER_BY_LINE)) {
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ABSENCETYPENAME_COL + " = '" + at.name() + "' " + SQL_ORDER_BY_LINE)) {
 
             while (rs.next()) {
                 absences.add(getEntityFromResultSet(rs));
@@ -119,12 +118,12 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
     }
 
     @Override
-    public List<Absence> getAbsencesByAbsenceType_User(AbsenceType at, User u) {
+    public List<Absence> getAbsencesByAbsenceType_User(AbsenceTypeNew at, User u) {
         List<Absence> absences = new ArrayList<>();
 
         try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
                 Statement stmt = con.getConn().createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ABSENCETYPEID_COL + " = " + at.getAbsenceTypeID() + " AND " + USERNR_COL + " = " + u.getUserNr() + " " + SQL_ORDER_BY_LINE)) {
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ABSENCETYPENAME_COL + " = '" + at.name() + "' AND " + USERNR_COL + " = " + u.getUserNr() + " " + SQL_ORDER_BY_LINE)) {
 
             while (rs.next()) {
                 absences.add(getEntityFromResultSet(rs));
@@ -190,10 +189,12 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
             stmt.setTimestamp(4, endDate);
             stmt.setTimestamp(5, startDate);
             stmt.setTimestamp(6, endDate);
-            ResultSet rs = stmt.executeQuery();
 
-            while (rs.next()) {
-                absences.add(getEntityFromResultSet(rs));
+            try (ResultSet rs = stmt.executeQuery()) {
+
+                while (rs.next()) {
+                    absences.add(getEntityFromResultSet(rs));
+                }
             }
 
         } catch (SQLException ex) {
@@ -219,12 +220,12 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
             stmt.setTimestamp(4, endDate);
             stmt.setTimestamp(5, startDate);
             stmt.setTimestamp(6, endDate);
-            ResultSet rs = stmt.executeQuery();
+            try (ResultSet rs = stmt.executeQuery()) {
 
-            while (rs.next()) {
-                absences.add(getEntityFromResultSet(rs));
+                while (rs.next()) {
+                    absences.add(getEntityFromResultSet(rs));
+                }
             }
-
         } catch (SQLException ex) {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -249,10 +250,11 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
             stmt.setTimestamp(4, endDate);
             stmt.setTimestamp(5, startDate);
             stmt.setTimestamp(6, endDate);
-            ResultSet rs = stmt.executeQuery();
+            try (ResultSet rs = stmt.executeQuery()) {
 
-            while (rs.next()) {
-                absences.add(getEntityFromResultSet(rs));
+                while (rs.next()) {
+                    absences.add(getEntityFromResultSet(rs));
+                }
             }
 
         } catch (SQLException ex) {
@@ -263,7 +265,8 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
     }
 
     @Override
-    public List<Absence> getAbsencesByAcknowledgment_BetweenDates(boolean acknowledged, java.util.Date startDateU, java.util.Date endDateU) {
+    public List<Absence> getAbsencesByAcknowledgment_BetweenDates(boolean acknowledged, java.util.Date startDateU, java.util.Date endDateU
+    ) {
         List<Absence> absences = new ArrayList<>();
         Timestamp startDate = new Timestamp(startDateU.getTime());
         Timestamp endDate = new Timestamp(endDateU.getTime());
@@ -278,10 +281,11 @@ public class Absence_JDBCDAO extends Base_JDBCDAO<Absence> implements Absence_DA
             stmt.setTimestamp(4, endDate);
             stmt.setTimestamp(5, startDate);
             stmt.setTimestamp(6, endDate);
-            ResultSet rs = stmt.executeQuery();
+            try (ResultSet rs = stmt.executeQuery()) {
 
-            while (rs.next()) {
-                absences.add(getEntityFromResultSet(rs));
+                while (rs.next()) {
+                    absences.add(getEntityFromResultSet(rs));
+                }
             }
 
         } catch (SQLException ex) {

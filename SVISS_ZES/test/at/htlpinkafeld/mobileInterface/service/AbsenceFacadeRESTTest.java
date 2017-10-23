@@ -8,8 +8,8 @@ package at.htlpinkafeld.mobileInterface.service;
 import at.htlpinkafeld.dao.jdbc.ConnectionManager;
 import at.htlpinkafeld.mobileInterface.authorization.Credentials;
 import at.htlpinkafeld.pojo.Absence;
+import at.htlpinkafeld.pojo.AbsenceTypeNew;
 import at.htlpinkafeld.pojo.User;
-import at.htlpinkafeld.service.AbsenceService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -78,9 +78,6 @@ public class AbsenceFacadeRESTTest {
 
         Assert.assertFalse("Check for getList being empty", l.isEmpty());
 
-        for (Object o : l) {
-            o.toString();
-        }
     }
 
     /**
@@ -92,7 +89,7 @@ public class AbsenceFacadeRESTTest {
         Absence result;
         Response response;
         List<Absence> absenceL;
-        Absence a = new Absence(new User(BenutzerverwaltungService.getUserList().get(0)), AbsenceService.getList().get(0), LocalDateTime.of(1800, 7, 9, 0, 0), LocalDateTime.of(1800, 7, 12, 0, 0));
+        Absence a = new Absence(new User(BenutzerverwaltungService.getUserList().get(0)), AbsenceTypeNew.MEDICAL_LEAVE, LocalDateTime.of(1800, 7, 9, 0, 0), LocalDateTime.of(1800, 7, 12, 0, 0));
         Response res = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, "Bearer " + token).post(Entity.json(a));
         result = res.readEntity(Absence.class);
         Assert.assertNotEquals("Check create and the auto-created key", a.getAbsenceID(), result.getAbsenceID());

@@ -5,7 +5,6 @@
  */
 package at.htlpinkafeld.mobileInterface.service;
 
-import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.Base_DAO;
 import at.htlpinkafeld.mobileInterface.authorization.Secured;
 import at.htlpinkafeld.mobileInterface.service.util.PATCH;
@@ -13,7 +12,6 @@ import at.htlpinkafeld.pojo.AbsenceType;
 import java.util.List;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -33,8 +31,9 @@ public class AbsencetypeFacadeREST extends AbstractFacade<AbsenceType> {
     private final Base_DAO dao;
 
     public AbsencetypeFacadeREST() {
-        super(AbsenceType.class);
-        dao = DAOFactory.getDAOFactory().getAbsenceTypeDAO();
+        super();
+//        dao = DAOFactory.getDAOFactory().getAbsenceTypeDAO();
+        dao = null;
     }
 
     @POST

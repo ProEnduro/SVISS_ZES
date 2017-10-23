@@ -10,7 +10,6 @@ import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserProxy;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,9 +42,11 @@ public class User_JDBCDAOTest {
     @After
     public void tearDown() {
         try {
-            ConnectionManager.getInstance().getWrappedConnection().getConn().rollback();
+            if (ConnectionManager.getInstance().getWrappedConnection() != null) {
+                ConnectionManager.getInstance().getWrappedConnection().getConn().rollback();
+            }
         } catch (SQLException ex) {
-            Logger.getLogger(AbsenceType_JDBCDAOTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(User_JDBCDAOTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

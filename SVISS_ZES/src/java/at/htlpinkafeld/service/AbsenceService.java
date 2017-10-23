@@ -10,7 +10,6 @@ import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
 import at.htlpinkafeld.dao.interf.Absence_DAO;
 import at.htlpinkafeld.dao.util.DAOException;
 import at.htlpinkafeld.pojo.Absence;
-import at.htlpinkafeld.pojo.AbsenceType;
 import at.htlpinkafeld.pojo.User;
 import java.util.Date;
 import java.util.List;
@@ -24,11 +23,9 @@ import java.util.List;
 public class AbsenceService {
 
     private static final Absence_DAO ABSENCE_DAO;
-    private static final AbsenceType_DAO ABSENCE_TYPE_DAO;
 
     static {
         ABSENCE_DAO = DAOFactory.getDAOFactory().getAbsenceDAO();
-        ABSENCE_TYPE_DAO = DAOFactory.getDAOFactory().getAbsenceTypeDAO();
     }
 
     public static List<Absence> getAbsenceByUserAndUnacknowledged(User u) {
@@ -65,14 +62,6 @@ public class AbsenceService {
 
     public static List<Absence> getAllAbsences() {
         return ABSENCE_DAO.getList();
-    }
-
-    public static AbsenceType getAbsenceTypeByID(int absenceTypeID) {
-        return ABSENCE_TYPE_DAO.getAbsenceTypeByID(absenceTypeID);
-    }
-
-    public static List<AbsenceType> getList() {
-        return ABSENCE_TYPE_DAO.getList();
     }
 
     public static void deleteAbsence(Absence absence) {

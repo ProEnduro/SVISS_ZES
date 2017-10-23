@@ -5,11 +5,7 @@
  */
 package at.htlpinkafeld.beans;
 
-import at.htlpinkafeld.dao.factory.DAOFactory;
-import at.htlpinkafeld.dao.jdbc.ConnectionManager;
 import at.htlpinkafeld.pojo.User;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import at.htlpinkafeld.service.AccessRightsService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import at.htlpinkafeld.service.EmailService;
@@ -19,9 +15,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
 /**
+ * The bean used for the login-page
  *
  * @author msi
  */
@@ -31,6 +30,9 @@ public class LoginBean {
     public String pw;
     private User user;
 
+    /**
+     * The username or email which is entered for the password reset
+     */
     private String emailOrUsername;
 
     /**
@@ -55,12 +57,19 @@ public class LoginBean {
         this.pw = PasswordEncryptionService.digestPassword(pw);
     }
 
+    /**
+     * checks the input data and logs the user in. the User is further set in
+     * the {@link MasterBean}
+     *
+     * @return a String for redirecting
+     * @throws IOException if the Theme causes errors
+     */
     public Object login() throws IOException {
         User u = null;
         try {
             createThemePropertie();
             u = BenutzerverwaltungService.getUserByUsername(userString);
-        } catch (Exception e) {
+        } catch (IOException e) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
         }
         if (u == null) {
@@ -77,7 +86,7 @@ public class LoginBean {
             context.addMessage(null, new FacesMessage("User is disabled!"));
         }
 
-        if (user != null && user.getPass().equals(this.pw) && user.getUsername().contentEquals(this.userString) && user.isDisabled() == false) {
+        if (user.getPass().equals(this.pw) && user.getUsername().contentEquals(this.userString) && user.isDisabled() == false) {
 
             FacesContext context = FacesContext.getCurrentInstance();
             MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
@@ -101,7 +110,7 @@ public class LoginBean {
             return "success";
         }
 
-        if (user == null || (user.getPass().equals(this.pw)) == false) {
+        if (user.getPass().equals(this.pw) == false) {
             FacesContext context = FacesContext.getCurrentInstance();
             context.addMessage(null, new FacesMessage("Invalid Password!"));
         }
@@ -120,8 +129,12 @@ public class LoginBean {
         this.emailOrUsername = emailOrUsername;
     }
 
+    /**
+     * sends a reset Password request to the Admins according to the inputed
+     * emailOrUsername
+     */
     public void sendPWResetRequest() {
-        User u = null;
+        User u;
         if (emailOrUsername == null || emailOrUsername.isEmpty()) {
             FacesContext.getCurrentInstance().addMessage("passwordResetForm", new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Es muss etwas eingegeben werden!"));
         } else {
@@ -139,6 +152,12 @@ public class LoginBean {
         }
     }
 
+    /**
+     * creates the File for the Themes and other stuff
+     *
+     * @throws FileNotFoundException may be thrown
+     * @throws IOException may be thrown
+     */
     public void createThemePropertie() throws FileNotFoundException, IOException {
         ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
         String path = serv.getRealPath("/") + "/resources/";

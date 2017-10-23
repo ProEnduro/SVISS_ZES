@@ -5,16 +5,17 @@
  */
 package at.htlpinkafeld.beans.util;
 
-/**
- *
- * @author ÐarkHell2
- */
 import at.htlpinkafeld.beans.ThemeService;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 
+/**
+ * The Bean which is used to manage the themes
+ *
+ * @author ÐarkHell2
+ */
 @ManagedBean
 public class ThemeSwitcherView {
 
@@ -23,15 +24,30 @@ public class ThemeSwitcherView {
     @ManagedProperty("#{themeService}")
     private ThemeService service;
 
+    /**
+     * initializes the available themes
+     */
     @PostConstruct
     public void init() {
-        themes = service.getThemes();
+        if (service != null) {
+            themes = service.getThemes();
+        }
     }
 
+    /**
+     * Gets a List of all the available Themes
+     *
+     * @return List of Themes
+     */
     public List<Theme> getThemes() {
         return themes;
     }
 
+    /**
+     * Sets the ThemeService
+     *
+     * @param service a ThemeService
+     */
     public void setService(ThemeService service) {
         this.service = service;
     }

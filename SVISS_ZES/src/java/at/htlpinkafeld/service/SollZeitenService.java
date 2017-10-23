@@ -9,9 +9,7 @@ import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -26,7 +24,7 @@ public class SollZeitenService {
         SOLL_ZEITEN__DAO = DAOFactory.getDAOFactory().getSollZeitenDAO();
     }
 
-    public static List<SollZeit> getSollZeitenByUser(User u) {
+    public static List<SollZeit> getSollZeitenByUser_(User u) {
         List<SollZeit> sollZeiten = SOLL_ZEITEN__DAO.getSollZeitenByUser(u);
 //        List<SollZeit> sollZeiten_ohneNull = new ArrayList<>();
 //        for (SollZeit sz : sollZeiten) {
@@ -45,13 +43,11 @@ public class SollZeitenService {
     }
 
     public static void deleteZeit(SollZeit o) {
-        o.setSollStartTime(LocalTime.MIN);
-        o.setSollEndTime(LocalTime.MIN);
-        SOLL_ZEITEN__DAO.insert(o);
+        SOLL_ZEITEN__DAO.delete(o);
     }
 
-    public static SollZeit getSollZeitenByUser_DayOfWeek_ValidDate(User u, DayOfWeek d, LocalDateTime ldt) {
-        SollZeit sz = SOLL_ZEITEN__DAO.getSollZeitenByUser_DayOfWeek_ValidDate(u, d, ldt);
+    public static SollZeit getSollZeitenByUser_ValidDate(User u, LocalDateTime ldt) {
+        SollZeit sz = SOLL_ZEITEN__DAO.getSollZeitenByUser_ValidDate(u, ldt);
 //        if (sz == null || sz.getSollStartTime().equals(sz.getSollEndTime())) {
 //            return null;
 //        } else {
@@ -59,8 +55,8 @@ public class SollZeitenService {
 //        }
     }
 
-    public static SollZeit getSollZeitByUserAndDayOfWeek(User u, DayOfWeek dow) {
-        return SOLL_ZEITEN__DAO.getSollZeitenByUser_DayOfWeek(u, dow);
+    public static SollZeit getSollZeitenByUser_Current(User u) {
+        return SOLL_ZEITEN__DAO.getSollZeitenByUser_Current(u);
     }
 
 //    public static double getSollZeitForToday(User current) {

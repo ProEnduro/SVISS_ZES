@@ -10,13 +10,13 @@ import at.htlpinkafeld.dao.util.WrappedConnection;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.UserHistoryEntry;
 import at.htlpinkafeld.service.TimeConverterService;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,10 +107,11 @@ class UserHistory_JDBCDAO extends Base_JDBCDAO<UserHistoryEntry> implements User
 
             stmt.setDate(1, startDate);
             stmt.setDate(2, endDate);
-            ResultSet rs = stmt.executeQuery();
+            try (ResultSet rs = stmt.executeQuery()) {
 
-            while (rs.next()) {
-                historyEntrys.add(getEntityFromResultSet(rs));
+                while (rs.next()) {
+                    historyEntrys.add(getEntityFromResultSet(rs));
+                }
             }
 
         } catch (SQLException ex) {

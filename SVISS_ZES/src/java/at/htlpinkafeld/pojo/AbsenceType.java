@@ -6,6 +6,7 @@
 package at.htlpinkafeld.pojo;
 
 import java.io.Serializable;
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -14,6 +15,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class AbsenceType implements Serializable {
+
+    private static final long serialVersionUID = 8189138937691793171L;
 
     private Integer absenceTypeID;
     private String absenceName;
@@ -78,10 +81,15 @@ public class AbsenceType implements Serializable {
             return false;
         }
         final AbsenceType other = (AbsenceType) obj;
-        if (this.absenceTypeID != other.absenceTypeID) {
+        if (!Objects.equals(this.absenceName, other.absenceName)) {
+            return false;
+        }
+        if (!Objects.equals(this.absenceTypeID, other.absenceTypeID)) {
             return false;
         }
         return true;
     }
+
+    
 
 }

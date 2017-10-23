@@ -19,6 +19,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.context.FacesContext;
 
 /**
+ * The MasterBean is a Bean which contains various data for the User-session
  *
  * @author msi
  */
@@ -27,7 +28,6 @@ public class MasterBean implements DAODML_Observer {
     User user;
     int columns;
     List<String> permissionlist;
-    String page;
 
     /**
      * Creates a new instance of MasterBean
@@ -39,6 +39,10 @@ public class MasterBean implements DAODML_Observer {
 
     }
 
+    /**
+     * Sets this as Observer for the User_DAO, so that it is notified if changes
+     * are made
+     */
     @PostConstruct
     public void onConstruct() {
         BenutzerverwaltungService.addUserObserver(this);
@@ -71,6 +75,8 @@ public class MasterBean implements DAODML_Observer {
             case 4:
                 columns = 6;
                 break;
+            default:
+                columns = 0;
         }
 
     }
@@ -162,26 +168,11 @@ public class MasterBean implements DAODML_Observer {
         return user != null;
     }
 
-    public String getPage() {
-        return page;
-    }
-
-    public void setPage(String page) {
-
-        System.out.println(page);
-
-        switch (page) {
-            case "first":
-                this.page = "first.xhtml";
-                break;
-            case "second":
-                this.page = "/WEB-INF/pages/second.xhtml";
-                break;
-        }
-
-        System.out.println(this.page);
-    }
-
+    /**
+     * invalidates the current Session
+     *
+     * @return redirect to the login
+     */
     public Object logout() {
         FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
         return "/index.xhtml?faces-redirect=true";
@@ -193,6 +184,9 @@ public class MasterBean implements DAODML_Observer {
         BenutzerverwaltungService.deleteUserObserver(this);
     }
 
+    /**
+     * Updates the User if this is notified by the UserDao
+     */
     @Override
     public void notifyObserver() {
         if (user != null) {

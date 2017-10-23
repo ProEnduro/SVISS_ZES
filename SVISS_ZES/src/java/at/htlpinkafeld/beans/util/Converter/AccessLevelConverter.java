@@ -3,28 +3,31 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htlpinkafeld.beans.util;
+package at.htlpinkafeld.beans.util.Converter;
 
+import at.htlpinkafeld.pojo.AccessLevel;
+import at.htlpinkafeld.service.AccessRightsService;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
 /**
+ * A Converter for the AccessLevels
  *
  * @author Martin Six
  */
-@FacesConverter(value = "minuteHourConverter")
-public class MinuteHourConverter implements Converter {
+@FacesConverter(value = "accesslevelconv", forClass = AccessLevel.class)
+public class AccessLevelConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String string) {
-        return Double.parseDouble(string) * 60;
+        return AccessRightsService.getAccessLevelFromName(string);
     }
 
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object o) {
-        return String.valueOf(Double.valueOf(o.toString()) / 60.0);
+        return ((AccessLevel) o).getAccessLevelName();
     }
 
 }

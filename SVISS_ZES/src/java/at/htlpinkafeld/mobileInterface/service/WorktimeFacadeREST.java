@@ -34,7 +34,7 @@ public class WorktimeFacadeREST extends AbstractFacade<WorkTime> {
     private Base_DAO dao;
 
     public WorktimeFacadeREST() {
-        super(WorkTime.class);
+        super();
         dao = DAOFactory.getDAOFactory().getWorkTimeDAO();
     }
 
@@ -71,9 +71,9 @@ public class WorktimeFacadeREST extends AbstractFacade<WorkTime> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<WorkTime> findAll() {
         List<WorkTime> workTimes = super.findAll();
-        for (WorkTime wt : workTimes) {
+        workTimes.forEach((wt) -> {
             wt.setUser(new User(wt.getUser()));
-        }
+        });
         return workTimes;
     }
 

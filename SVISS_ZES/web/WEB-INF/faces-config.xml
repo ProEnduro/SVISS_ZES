@@ -6,7 +6,7 @@
     
     <converter>
         <converter-id>theme</converter-id>
-        <converter-class>at.htlpinkafeld.beans.util.ThemeConverter</converter-class>
+        <converter-class>at.htlpinkafeld.beans.util.Converter.ThemeConverter</converter-class>
     </converter>
     
     <navigation-rule>
@@ -116,7 +116,7 @@
     <managed-bean>
         <managed-bean-name>auswertungsBean</managed-bean-name>
         <managed-bean-class>at.htlpinkafeld.beans.AuswertungsBean</managed-bean-class>
-        <managed-bean-scope>view</managed-bean-scope>
+        <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
     
     <managed-bean>
@@ -142,5 +142,9 @@
         <managed-bean-class>at.htlpinkafeld.beans.UserDetailsBean</managed-bean-class>
         <managed-bean-scope>view</managed-bean-scope>
     </managed-bean>
-   
+    <managed-bean>
+        <managed-bean-name>monatsabschlussVerwaltungsBean</managed-bean-name>
+        <managed-bean-class>at.htlpinkafeld.beans.MonatsabschlussVerwaltungsBean</managed-bean-class>
+        <managed-bean-scope>view</managed-bean-scope>
+    </managed-bean>
 </faces-config>

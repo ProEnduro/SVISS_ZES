@@ -17,19 +17,19 @@ public class TokenService {
 
     private static final int TOKENLIFETIME = 5;
 
-    private static final List<UserToken> registeredTokens = new LinkedList<>();
+    private static final List<UserToken> REGISTERED_TOKENS = new LinkedList<>();
 
     public static synchronized void addToken(UserToken e) {
-        registeredTokens.add(e);
+        REGISTERED_TOKENS.add(e);
     }
 
     public static synchronized void removeToken(UserToken e) {
-        registeredTokens.remove(e);
+        REGISTERED_TOKENS.remove(e);
     }
 
     public static synchronized boolean validateToken(String token) {
         boolean success = false;
-        for (UserToken ut : registeredTokens) {
+        for (UserToken ut : REGISTERED_TOKENS) {
             if (ut.getToken().equals(token) && ut.getLastAuthentication().isBefore(ut.getLastAuthentication().plusMinutes(TOKENLIFETIME))) {
                 success = true;
                 ut.resetLastAuthentication();
@@ -40,12 +40,10 @@ public class TokenService {
 
     public static synchronized void cleanTokens() {
         List<UserToken> invalidUserTokens = new LinkedList<>();
-        for (UserToken ut : registeredTokens) {
-            if (ut.getLastAuthentication().isBefore(LocalDateTime.now().minusMinutes(TOKENLIFETIME))) {
-                invalidUserTokens.add(ut);
-            }
-        }
-        registeredTokens.removeAll(invalidUserTokens);
+        REGISTERED_TOKENS.stream().filter((ut) -> (ut.getLastAuthentication().isBefore(LocalDateTime.now().minusMinutes(TOKENLIFETIME)))).forEachOrdered((ut) -> {
+            invalidUserTokens.add(ut);
+        });
+        REGISTERED_TOKENS.removeAll(invalidUserTokens);
     }
 
 }

@@ -9,10 +9,8 @@ import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.Base_DAO;
 import at.htlpinkafeld.mobileInterface.authorization.Secured;
 import at.htlpinkafeld.mobileInterface.service.util.PATCH;
-import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
-import java.time.LocalTime;
 import java.util.List;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
@@ -35,7 +33,7 @@ public class SollzeitenFacadeREST extends AbstractFacade<SollZeit> {
     private Base_DAO dao;
 
     public SollzeitenFacadeREST() {
-        super(SollZeit.class);
+        super();
         dao = DAOFactory.getDAOFactory().getSollZeitenDAO();
     }
 
@@ -61,9 +59,7 @@ public class SollzeitenFacadeREST extends AbstractFacade<SollZeit> {
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void remove(SollZeit entity) {
-        entity.setSollEndTime(LocalTime.MIN);
-        entity.setSollStartTime(LocalTime.MIN);
-        super.create(entity);
+        super.remove(entity);
     }
 
     /**
@@ -78,9 +74,9 @@ public class SollzeitenFacadeREST extends AbstractFacade<SollZeit> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<SollZeit> findAll() {
         List<SollZeit> sollZeiten = super.findAll();
-        for (SollZeit sz : sollZeiten) {
+        sollZeiten.forEach((sz) -> {
             sz.setUser(new User(sz.getUser()));
-        }
+        });
         return sollZeiten;
     }
 

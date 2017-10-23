@@ -38,8 +38,8 @@ public class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime
     public static final String SOLLENDTIME_COL = "SollEndTime";
 
     public static final String TABLE_NAME = "WorkTime";
-    public static final String[] PRIMARY_KEY = {USERNR_COL, TIMEID_COL};
-    public static final String[] ALL_COLUMNS = {TIMEID_COL, USERNR_COL, STARTTIME_COL, ENDTIME_COL, BREAKTIME_COL, STARTCOMMENT_COL,
+    private static final String[] PRIMARY_KEY = {USERNR_COL, TIMEID_COL};
+    private static final String[] ALL_COLUMNS = {TIMEID_COL, USERNR_COL, STARTTIME_COL, ENDTIME_COL, BREAKTIME_COL, STARTCOMMENT_COL,
         ENDCOMMENT_COL, SOLLSTARTTIME_COL, SOLLENDTIME_COL};
 
     protected WorkTime_JDBCDAO() {
@@ -67,7 +67,9 @@ public class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime
     protected WorkTime getEntityFromResultSet(ResultSet rs) {
         try {
             return new WorkTime(rs.getInt(TIMEID_COL), new User_JDBCDAO().getUser(rs.getInt(USERNR_COL)), rs.getTimestamp(STARTTIME_COL).toLocalDateTime(),
-                    rs.getTimestamp(ENDTIME_COL).toLocalDateTime(), rs.getTime(SOLLSTARTTIME_COL).toLocalTime(), rs.getTime(SOLLENDTIME_COL).toLocalTime(),
+                    rs.getTimestamp(ENDTIME_COL).toLocalDateTime(),
+                    rs.getTime(SOLLSTARTTIME_COL) != null ? rs.getTime(SOLLSTARTTIME_COL).toLocalTime() : null,
+                    rs.getTime(SOLLENDTIME_COL) != null ? rs.getTime(SOLLENDTIME_COL).toLocalTime() : null,
                     rs.getInt(BREAKTIME_COL), rs.getString(STARTCOMMENT_COL), rs.getString(ENDCOMMENT_COL));
         } catch (SQLException ex) {
             Logger.getLogger(WorkTime_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -116,10 +118,11 @@ public class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime
 
             stmt.setDate(1, startDate);
             stmt.setDate(2, endDate);
-            ResultSet rs = stmt.executeQuery();
+            try (ResultSet rs = stmt.executeQuery()) {
 
-            while (rs.next()) {
-                workTimes.add(getEntityFromResultSet(rs));
+                while (rs.next()) {
+                    workTimes.add(getEntityFromResultSet(rs));
+                }
             }
 
         } catch (SQLException ex) {
@@ -142,10 +145,11 @@ public class WorkTime_JDBCDAO extends Base_JDBCDAO<WorkTime> implements WorkTime
 
             stmt.setDate(1, startDate);
             stmt.setDate(2, endDate);
-            ResultSet rs = stmt.executeQuery();
+            try (ResultSet rs = stmt.executeQuery()) {
 
-            while (rs.next()) {
-                workTimes.add(getEntityFromResultSet(rs));
+                while (rs.next()) {
+                    workTimes.add(getEntityFromResultSet(rs));
+                }
             }
 
         } catch (SQLException ex) {

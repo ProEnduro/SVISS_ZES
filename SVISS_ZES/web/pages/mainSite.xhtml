@@ -30,7 +30,7 @@ and open the template in the editor.
                 <p:menuitem value="Feiertage" action="#{scheduleView.redirectToFeiertage}" rendered="#{masterBean.feiertageEintragenEnabled}" style="white-space: nowrap"/>
                 <p:menuitem value="Alle Zeiten" rendered="#{masterBean.alleZeitenEnabled}" action="#{scheduleView.loadAllTimes}" style="white-space: nowrap"/>
                 <p:menuitem value="Alle Abwesenheiten" action="#{scheduleView.redirectToAllAbwesenheiten}" rendered="#{masterBean.alleAbwesenheitenEnabled}" style="white-space: nowrap"/>
-                <p:menuitem value="Auswertung" rendered="#{masterBean.auswertungEnabled}" action="#{auswertungsBean.auswerten}" style="white-space: nowrap"/>
+                <p:menuitem value="Auswertung" rendered="#{masterBean.auswertungEnabled}" action="#{auswertungsBean.loadAuswertungsBean}" style="white-space: nowrap"/>
                 <p:menuitem value="Logout" action="#{masterBean.logout}" style="white-space: nowrap; background-color: #cc5f59"/>
             </p:menubar>
 

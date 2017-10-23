@@ -30,7 +30,7 @@ public class AccessLevel_JDBCDAO extends Base_JDBCDAO<AccessLevel> implements Ac
 
     public static final String TABLE_NAME = "ZESAccess";
     public static final String PRIMARY_KEY = ACCESSLEVELID_COL;
-    public static final String[] ALL_COLUMNS = {ACCESSLEVELID_COL, ACCESSLEVELNAME_COL, PERMISSIONS_COL};
+    private static final String[] ALL_COLUMNS = {ACCESSLEVELID_COL, ACCESSLEVELNAME_COL, PERMISSIONS_COL};
 
     protected AccessLevel_JDBCDAO() {
         super(TABLE_NAME, ALL_COLUMNS, PRIMARY_KEY);
@@ -61,9 +61,7 @@ public class AccessLevel_JDBCDAO extends Base_JDBCDAO<AccessLevel> implements Ac
         resMap.put(ACCESSLEVELID_COL, entity.getAccessLevelID());
         resMap.put(ACCESSLEVELNAME_COL, entity.getAccessLevelName());
         String serialPerm = "";
-        for (String p : entity.getPermissions()) {
-            serialPerm += p + ";";
-        }
+        serialPerm = entity.getPermissions().stream().map((p) -> p.concat(";")).reduce(serialPerm, String::concat);
         resMap.put(PERMISSIONS_COL, serialPerm);
         return resMap;
     }

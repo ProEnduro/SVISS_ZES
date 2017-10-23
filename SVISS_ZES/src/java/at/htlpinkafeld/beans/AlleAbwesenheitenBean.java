@@ -24,6 +24,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 
 /**
+ * A Bean which is used for the Page-"alleAbwesenheiten.xtml"
  *
  * @author msi
  */
@@ -36,6 +37,9 @@ public class AlleAbwesenheitenBean {
     private String selectedUser;
     private List<String> allUsers;
 
+    /**
+     * Constructor for AlleAbwesenheitenBean
+     */
     public AlleAbwesenheitenBean() {
         absences = AbsenceService.getAllAbsences();
 
@@ -43,26 +47,56 @@ public class AlleAbwesenheitenBean {
 
     }
 
+    /**
+     * gets all currently loaded Absences
+     *
+     * @return List of Absences
+     */
     public List<Absence> getAbsences() {
         return absences;
     }
 
+    /**
+     * sets all currently loaded Absences
+     *
+     * @param absences List of Absence to be set
+     */
     public void setAbsences(List<Absence> absences) {
         this.absences = absences;
     }
 
+    /**
+     * gets the selected User as Username-String
+     *
+     * @return the selectedUser(name)
+     */
     public String getSelectedUser() {
         return selectedUser;
     }
 
+    /**
+     * sets the selected User as Username-String
+     *
+     * @param selectedUser the new selectedUser(name)
+     */
     public void setSelectedUser(String selectedUser) {
         this.selectedUser = selectedUser;
     }
 
+    /**
+     * get a List with all Users as Usernames
+     *
+     * @return List of Usernames
+     */
     public List<String> getAllUsers() {
         return allUsers;
     }
 
+    /**
+     * set a List with all Users as Usernames
+     *
+     * @param allUsers new List of Usernames
+     */
     public void setAllUsers(List<String> allUsers) {
         this.allUsers = allUsers;
     }
@@ -73,13 +107,16 @@ public class AlleAbwesenheitenBean {
 
         allUsers.add("All");
 
-        for (User u : BenutzerverwaltungService.getUserList()) {
+        BenutzerverwaltungService.getUserList().forEach((u) -> {
             allUsers.add(u.getUsername());
-        }
+        });
 
         return "/pages/alleAbwesenheiten.xhtml?faces-redirect=true";
     }
 
+    /**
+     * loads all Absences based on the selectedUser
+     */
     public void loadAllAbsenceByUser() {
         currentUser = BenutzerverwaltungService.getUserByUsername(selectedUser);
 
@@ -91,6 +128,12 @@ public class AlleAbwesenheitenBean {
         }
     }
 
+    /**
+     * pdf post processing
+     *
+     * @param document pdf document
+     * @throws DocumentException
+     */
     public void postProcessPDF(Object document) throws DocumentException {
         Document pdf = (Document) document;
 
@@ -98,6 +141,11 @@ public class AlleAbwesenheitenBean {
         pdf.close();
     }
 
+    /**
+     * xls post processing
+     *
+     * @param document xls document
+     */
     public void postProcessXLS(Object document) {
         HSSFWorkbook wb = (HSSFWorkbook) document;
         HSSFSheet sheet = wb.getSheetAt(0);

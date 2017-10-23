@@ -36,7 +36,7 @@ public class AbsenceFacadeREST extends AbstractFacade<Absence> {
     private ObjectMapper mapper;
 
     public AbsenceFacadeREST() {
-        super(Absence.class);
+        super();
         dao = DAOFactory.getDAOFactory().getAbsenceDAO();
         mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
@@ -73,9 +73,9 @@ public class AbsenceFacadeREST extends AbstractFacade<Absence> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Absence> findAll() {
         List<Absence> absences = super.findAll();
-        for (Absence a : absences) {
+        absences.forEach((a) -> {
             a.setUser(new User(a.getUser()));
-        }
+        });
         return absences;
     }
 

@@ -5,10 +5,6 @@
  */
 package at.htlpinkafeld.beans.util;
 
-/**
- *
- * @author ÐarkHell2
- */
 import at.htlpinkafeld.beans.MasterBean;
 import at.htlpinkafeld.pojo.User;
 import java.io.File;
@@ -24,21 +20,35 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
+/**
+ * A Bean used to set the Themes for the User
+ *
+ * @author ÐarkHell2
+ */
 @ManagedBean(eager = true)
 public class GuestPreferences implements Serializable {
 
-    ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
-    String path = serv.getRealPath("/") + "/resources/";
-    FacesContext context = FacesContext.getCurrentInstance();
-    MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
+    private static final long serialVersionUID = 1L;
 
-    User user;
-    File file = new File(path + "themes.properties");
-    Enumeration enu;
-    String key;
+    private transient ServletContext serv = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+    private String path = serv.getRealPath("/") + "/resources/";
+    private transient FacesContext context = FacesContext.getCurrentInstance();
+    private transient MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
 
-    String theme = "aristo";
+    private User user;
+    private File file = new File(path + "themes.properties");
+    private transient Enumeration enu;
+    private String key;
 
+    private String theme = "aristo";
+
+    /**
+     * Method to get the theme for the current user
+     *
+     * @return The theme selected for the current user
+     * @throws IOException when an error occurs while reading the
+     * themes.properties-File
+     */
     public String getTheme() throws IOException {
         user = masterBean.getUser();
         if (user != null) {
@@ -47,6 +57,13 @@ public class GuestPreferences implements Serializable {
         return this.theme;
     }
 
+    /**
+     * Method to set the theme for the current user
+     *
+     * @param theme The theme which should be set for the current user
+     * @throws IOException when an error occurs while reading the
+     * themes.properties-File
+     */
     public void setTheme(String theme) throws IOException {
         this.theme = theme;
         if (user != null) {
@@ -54,6 +71,9 @@ public class GuestPreferences implements Serializable {
         }
     }
 
+    /**
+     * Used to initialize some things
+     */
     public void changeTheme() {
         Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         if (params.containsKey("globaltheme")) {
@@ -61,6 +81,14 @@ public class GuestPreferences implements Serializable {
         }
     }
 
+    /**
+     * Reads the theme for the user from the properties-file and sets it here
+     *
+     * @throws FileNotFoundException when an error occurs while reading the
+     * themes.properties-File
+     * @throws IOException when an error occurs while reading the
+     * themes.properties-File
+     */
     public void setTheme() throws FileNotFoundException, IOException {
 
         try (FileInputStream inSF = new FileInputStream(file)) {
@@ -81,6 +109,15 @@ public class GuestPreferences implements Serializable {
 
     }
 
+    /**
+     * Method used to set the new Theme for the user
+     *
+     * @param newTheme the new theme to be used by the current user
+     * @throws FileNotFoundException when an error occurs while reading the
+     * themes.properties-File
+     * @throws IOException when an error occurs while reading the
+     * themes.properties-File
+     */
     public void setThemeProp(String newTheme) throws FileNotFoundException, IOException {
 
         try (FileInputStream inSF = new FileInputStream(file)) {

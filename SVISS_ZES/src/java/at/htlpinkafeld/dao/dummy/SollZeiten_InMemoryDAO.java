@@ -14,8 +14,10 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -26,27 +28,25 @@ public class SollZeiten_InMemoryDAO extends Base_InMemoryDAO<SollZeit> implement
     protected SollZeiten_InMemoryDAO() {
         super(new ArrayList<>());
         User_DAO uDAO = new User_InMemoryDAO();
-        for (int i = 1; i < 5; i++) {
-            super.insert(new SollZeit(DayOfWeek.of(i), uDAO.getUser(1), LocalTime.parse("08:00:00"), LocalTime.parse("16:30:00")));
-        }
-        super.insert(new SollZeit(DayOfWeek.FRIDAY, uDAO.getUser(1), LocalTime.parse("08:00:00"), LocalTime.parse("12:00:00")));
+
+        Map<DayOfWeek, LocalTime> startTimeMap = new HashMap<>();
+        Map<DayOfWeek, LocalTime> endTimeMap = new HashMap<>();
 
         for (int i = 1; i < 5; i++) {
-            super.insert(new SollZeit(DayOfWeek.of(i), uDAO.getUser(2), LocalTime.parse("08:00:00"), LocalTime.parse("16:30:00")));
+            startTimeMap.put(DayOfWeek.of(i), LocalTime.parse("08:00:00"));
+            endTimeMap.put(DayOfWeek.of(i), LocalTime.parse("16:30:00"));
         }
-        super.insert(new SollZeit(DayOfWeek.FRIDAY, uDAO.getUser(2), LocalTime.parse("08:00:00"), LocalTime.parse("12:00:00")));
+
+        super.insert(new SollZeit(uDAO.getUser(1), startTimeMap, endTimeMap));
+        super.insert(new SollZeit(uDAO.getUser(2), startTimeMap, endTimeMap));
     }
 
     @Override
     public void insert(SollZeit o) {
         try {
+            super.delete(o);
             super.insert(o);
         } catch (DAOException ex) {
-            if (o.getSollStartTime().equals(LocalTime.MIN) && o.getSollEndTime().equals(LocalTime.MIN)) {
-                super.delete(o);
-            } else {
-                super.update(o);
-            }
         }
     }
 
@@ -63,33 +63,27 @@ public class SollZeiten_InMemoryDAO extends Base_InMemoryDAO<SollZeit> implement
     @Override
     public List<SollZeit> getSollZeitenByUser(User u) {
         List<SollZeit> szList = new LinkedList<>();
-        for (SollZeit sz : super.getList()) {
-            if (sz.getUser().equals(u)) {
-                szList.add(clone(sz));
-            }
-        }
+        super.getList().stream().filter((sz) -> (sz.getUser().equals(u))).forEachOrdered((sz) -> {
+            szList.add(clone(sz));
+        });
         return szList;
     }
 
     @Override
-    public SollZeit getSollZeitenByUser_DayOfWeek(User u, DayOfWeek d) {
+    public SollZeit getSollZeitenByUser_Current(User u) {
         for (SollZeit sz : super.getList()) {
             if (sz.getUser().equals(u)) {
-                if (sz.getDay().equals(d)) {
-                    return sz;
-                }
+                return sz;
             }
         }
         return null;
     }
 
     @Override
-    public SollZeit getSollZeitenByUser_DayOfWeek_ValidDate(User u, DayOfWeek d, LocalDateTime ldt) {
+    public SollZeit getSollZeitenByUser_ValidDate(User u, LocalDateTime ldt) {
         for (SollZeit sz : super.getList()) {
             if (sz.getUser().equals(u)) {
-                if (sz.getDay().equals(d)) {
-                    return sz;
-                }
+                return sz;
             }
         }
         return null;
@@ -97,11 +91,14 @@ public class SollZeiten_InMemoryDAO extends Base_InMemoryDAO<SollZeit> implement
 
     @Override
     protected SollZeit clone(SollZeit entity) {
-        return new SollZeit(entity);
+        SollZeit sz = new SollZeit(entity);
+        sz.setSollZeitID(entity.getSollZeitID());
+        return sz;
     }
 
     @Override
     protected void setID(SollZeit entity, int id) {
+        entity.setSollZeitID(id);
     }
 
 }

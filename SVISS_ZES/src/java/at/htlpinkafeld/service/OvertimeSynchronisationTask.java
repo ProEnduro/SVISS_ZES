@@ -6,16 +6,17 @@
 package at.htlpinkafeld.service;
 
 import at.htlpinkafeld.dao.factory.DAOFactory;
-import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
 import at.htlpinkafeld.dao.interf.Absence_DAO;
 import at.htlpinkafeld.dao.interf.Holiday_DAO;
 import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.dao.interf.WorkTime_DAO;
 import at.htlpinkafeld.pojo.Absence;
+import at.htlpinkafeld.pojo.AbsenceTypeNew;
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
@@ -23,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Automatically adds a WorkTime for the last Day, if nothing was entered
  *
  * @author Martin Six
  */
@@ -54,43 +56,44 @@ public class OvertimeSynchronisationTask implements Runnable {
         Date startDate = c.getTime();
         noHoliday = HOLIDAY_DAO.getHolidayBetweenDates(startDate, nextDate).isEmpty();
         if (noHoliday) {
-            for (User u : users) {
+            users.forEach((u) -> {
                 addDefaultTimeAndUpdateOvertime(u, startDate, nextDate);
-            }
+            });
         }
     }
 
     //endDate has to be the start of the next day
     public static void addDefaultTimeAndUpdateOvertime(User u, Date startDate, Date nextDate) {
         LocalDate startLd = TimeConverterService.convertDateToLocalDate(startDate);
-        SollZeit sz = SOLL_ZEITEN_DAO.getSollZeitenByUser_DayOfWeek(u, startLd.getDayOfWeek());
+        DayOfWeek currentDay = startLd.getDayOfWeek();
+        SollZeit sz = SOLL_ZEITEN_DAO.getSollZeitenByUser_Current(u);
         List<WorkTime> workTimes = WORK_TIME_DAO.getWorkTimesFromUserBetweenDates(u, startDate, nextDate);
         List<Absence> absences = ABSENCE_DAO.getAbsencesByUser_BetweenDates(u, startDate, nextDate);
-        if (workTimes.isEmpty() && sz != null) {
+        if (workTimes.isEmpty() && sz != null && sz.getSollStartTime(currentDay) != null && sz.getSollEndTime(currentDay) != null) {
             if (absences.isEmpty()) {
                 int breaktime = 0;
-                if (sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.HOURS) >= 6) {
+                if (sz.getSollTimeInHour(currentDay) >= 6) {
                     breaktime = 30;
                 }
-                WorkTime wt = new WorkTime(u, sz.getSollStartTime().atDate(startLd), sz.getSollEndTime().atDate(startLd), breaktime, "", "");
+                WorkTime wt = new WorkTime(u, sz.getSollStartTime(currentDay).atDate(startLd), sz.getSollEndTime(currentDay).atDate(startLd), breaktime, "", "");
                 IstZeitService.addIstTime(wt);
             } else {
                 int diff = 0;
                 for (Absence a : absences) {
-                    if (a.getAbsenceType().getAbsenceName().contentEquals(AbsenceType_DAO.MEDICAL_LEAVE) || a.getAbsenceType().getAbsenceName().contentEquals(AbsenceType_DAO.TIMECOMPENSATION)) {
-                        if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime()) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
+                    if (a.getAbsenceType().equals(AbsenceTypeNew.MEDICAL_LEAVE) || a.getAbsenceType().equals(AbsenceTypeNew.TIME_COMPENSATION)) {
+                        if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime(currentDay)) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime(currentDay))) {
                             diff += (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
-                        } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime()) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime())) {
-                        } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime())) {
-                            diff += (int) a.getStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
-                        } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
-                            diff += (int) sz.getSollStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
+                        } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime(currentDay)) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime(currentDay))) {
+                        } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime(currentDay))) {
+                            diff += (int) a.getStartTime().until(sz.getSollEndTime(currentDay), ChronoUnit.MINUTES);
+                        } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime(currentDay))) {
+                            diff += (int) sz.getSollStartTime(currentDay).until(a.getEndTime(), ChronoUnit.MINUTES);
                         } else {
-                            diff += (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                            diff += (int) sz.getSollStartTime(currentDay).until(sz.getSollEndTime(currentDay), ChronoUnit.MINUTES);
                         }
                     }
                 }
-                diff -= sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                diff -= sz.getSollStartTime(currentDay).until(sz.getSollEndTime(currentDay), ChronoUnit.MINUTES);
                 u.setOverTimeLeft(u.getOverTimeLeft() + diff);
                 USER_DAO.update(u);
             }

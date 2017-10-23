@@ -17,7 +17,7 @@ and open the template in the editor.
     <ui:define name="auswertung">
         <h:body>
             <h:form>
-
+                <h1 align="center">Auswertung: Abwesenheiten</h1>
                 <p:panelGrid columns="2" style="border-style: hidden">
 
                     <p:selectOneMenu value="#{alleAbwesenheitenBean.selectedUser}">
@@ -33,20 +33,20 @@ and open the template in the editor.
 
 
             <h:form id="absenceform">
-                <p:dataTable id="absenceid" var="absence" value="#{alleAbwesenheitenBean.absences}" paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                <p:dataTable id="absenceid" var="absence" value="#{alleAbwesenheitenBean.absences}" resizableColumns="true" liveResize="true"  paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
                              paginator="true" rows="30" style="margin-bottom:20px">
 
-                    <p:column headerText="Benutzer" sortBy="#{absence.user.username}" filterBy="#{absence.user.username}">
+                    <p:column headerText="Benutzer" sortBy="#{absence.user.username}" width="10%" filterBy="#{absence.user.username}">
                         <h:outputText value="#{absence.user.username}"/>
                     </p:column>
 
-                    <p:column headerText="Datum" sortBy="#{absence.startTime}">
+                    <p:column headerText="Datum" sortBy="#{absence.startTime}" width="35%">
                         <h:outputText value="#{absence.startTime}" converter="localDateTimeConverter" style="margin-left: 20%"/>
                         <h:outputText value=" - " style="margin-left: 10%; margin-right: 10%"/>
                         <h:outputText value="#{absence.endTime}" converter="localDateTimeConverter"/>
                     </p:column>
 
-                    <p:column headerText="Grund">
+                    <p:column headerText="Grund" width="40%">
                         <h:outputText value="#{absence.reason}"/>
                     </p:column>
 
@@ -67,11 +67,6 @@ and open the template in the editor.
                     </f:facet>
 
                 </p:dataTable>
-
-
-
-
-
             </h:form>
 
 

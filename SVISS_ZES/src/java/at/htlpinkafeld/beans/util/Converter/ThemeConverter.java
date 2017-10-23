@@ -3,13 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htlpinkafeld.beans.util;
+package at.htlpinkafeld.beans.util.Converter;
 
-/**
- *
- * @author ÐarkHell2
- */
 import at.htlpinkafeld.beans.ThemeService;
+import at.htlpinkafeld.beans.util.Theme;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -17,9 +14,15 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
 
+/**
+ * A Converter for the Themes
+ *
+ * @author ÐarkHell2
+ */
 @FacesConverter("themeConverter")
 public class ThemeConverter implements Converter {
 
+    @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
         if (value != null && value.trim().length() > 0) {
             try {
@@ -33,6 +36,7 @@ public class ThemeConverter implements Converter {
         }
     }
 
+    @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object object) {
         if (object != null) {
             return String.valueOf(((Theme) object).getId());

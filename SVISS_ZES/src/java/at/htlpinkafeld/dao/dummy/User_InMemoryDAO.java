@@ -80,18 +80,16 @@ public class User_InMemoryDAO extends Base_InMemoryDAO<User> implements User_DAO
     @Override
     public List<User> getUserByDisabled(Boolean disabled) {
         List<User> userL = new ArrayList<>();
-        for (User u : getList()) {
-            if (u.isDisabled() == disabled) {
-                userL.add(clone(u));
-            }
-        }
+        getList().stream().filter((u) -> (u.isDisabled() == disabled)).forEachOrdered((u) -> {
+            userL.add(clone(u));
+        });
         return userL;
     }
 
     @Override
     public List<User> getApprover(User user) {
         List<User> approver;
-        if (user.ApproverInitialized()) {
+        if (user.areApproverInitialized()) {
             approver = getList().get(getList().indexOf(user)).getApprover();
             return approver;
         } else {
@@ -109,19 +107,17 @@ public class User_InMemoryDAO extends Base_InMemoryDAO<User> implements User_DAO
 
     @Override
     public void removeApprover(User approver) {
-        for (User u : getList()) {
+        getList().forEach((u) -> {
             u.getApprover().remove(approver);
-        }
+        });
     }
 
     @Override
     public List<User> getUserByAccessLevel(AccessLevel accessLevel) {
         List<User> userL = new ArrayList<>();
-        for (User u : getList()) {
-            if (u.getAccessLevel().equals(accessLevel)) {
-                userL.add(clone(u));
-            }
-        }
+        getList().stream().filter((u) -> (u.getAccessLevel().equals(accessLevel))).forEachOrdered((u) -> {
+            userL.add(clone(u));
+        });
         return userL;
     }
 

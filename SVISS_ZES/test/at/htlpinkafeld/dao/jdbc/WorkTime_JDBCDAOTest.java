@@ -11,14 +11,13 @@ import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -41,9 +40,11 @@ public class WorkTime_JDBCDAOTest {
     @After
     public void tearDown() {
         try {
-            ConnectionManager.getInstance().getWrappedConnection().getConn().rollback();
+            if (ConnectionManager.getInstance().getWrappedConnection() != null) {
+                ConnectionManager.getInstance().getWrappedConnection().getConn().rollback();
+            }
         } catch (SQLException ex) {
-            Logger.getLogger(AbsenceType_JDBCDAOTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WorkTime_JDBCDAOTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

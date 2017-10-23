@@ -5,7 +5,6 @@
  */
 package at.htlpinkafeld.dao.dummy;
 
-import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.dao.interf.WorkTime_DAO;
@@ -13,11 +12,9 @@ import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
 import at.htlpinkafeld.service.TimeConverterService;
-import java.sql.Date;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,49 +45,42 @@ public class WorkTime_InMemoryDAO extends Base_InMemoryDAO<WorkTime> implements 
         super.insert(new WorkTime(uDAO.getUser(14), LocalDateTime.of(2016, 6, 19, 10, 0), LocalDateTime.of(2016, 6, 19, 14, 23), 30, "Kicking the server!", "Server has a nice shape now!"));
 
         SollZeiten_DAO szdao = new SollZeiten_InMemoryDAO();
-        for (WorkTime wt : super.getList()) {
-            SollZeit sz = szdao.getSollZeitenByUser_DayOfWeek(wt.getUser(), wt.getStartTime().getDayOfWeek());
+        super.getList().forEach((wt) -> {
+            SollZeit sz = szdao.getSollZeitenByUser_Current(wt.getUser());
             if (sz != null) {
-                wt.setSollStartTime(sz.getSollStartTime());
-                wt.setSollEndTime(sz.getSollEndTime());
+                DayOfWeek dow = wt.getStartTime().getDayOfWeek();
+                wt.setSollStartTime(sz.getSollStartTime(dow));
+                wt.setSollEndTime(sz.getSollEndTime(dow));
             }
-        }
+        });
     }
 
     @Override
     public List<WorkTime> getWorkTimesByUser(User u) {
         List<WorkTime> wtList = new LinkedList<>();
-        for (WorkTime wt : super.getList()) {
-            if (wt.getUser().equals(u)) {
-                wtList.add(clone(wt));
-            }
-        }
+        super.getList().stream().filter((wt) -> (wt.getUser().equals(u))).forEachOrdered((wt) -> {
+            wtList.add(clone(wt));
+        });
         return wtList;
     }
 
     @Override
     public List<WorkTime> getWorkTimesBetweenDates(java.util.Date startDate, java.util.Date endDate) {
         List<WorkTime> wtList = new LinkedList<>();
-        for (WorkTime wt : super.getList()) {
-            if ((wt.getStartTime().isAfter(TimeConverterService.convertDateToLocalDateTime(startDate)) || wt.getStartTime().isEqual(TimeConverterService.convertDateToLocalDateTime(startDate)))
-                    && wt.getEndTime().isBefore(TimeConverterService.convertDateToLocalDateTime(endDate))) {
-                wtList.add(clone(wt));
-            }
-        }
+        super.getList().stream().filter((wt) -> ((wt.getStartTime().isAfter(TimeConverterService.convertDateToLocalDateTime(startDate)) || wt.getStartTime().isEqual(TimeConverterService.convertDateToLocalDateTime(startDate)))
+                && wt.getEndTime().isBefore(TimeConverterService.convertDateToLocalDateTime(endDate)))).forEachOrdered((wt) -> {
+                    wtList.add(clone(wt));
+        });
         return wtList;
     }
 
     @Override
     public List<WorkTime> getWorkTimesFromUserBetweenDates(User user, java.util.Date startDate, java.util.Date endDate) {
         List<WorkTime> wtList = new LinkedList<>();
-        for (WorkTime wt : super.getList()) {
-            if (wt.getUser().equals(user)) {
-                if ((wt.getStartTime().isAfter(TimeConverterService.convertDateToLocalDateTime(startDate)) || wt.getStartTime().isEqual(TimeConverterService.convertDateToLocalDateTime(startDate)))
-                        && wt.getEndTime().isBefore(TimeConverterService.convertDateToLocalDateTime(endDate))) {
+        super.getList().stream().filter((wt) -> (wt.getUser().equals(user))).filter((wt) -> ((wt.getStartTime().isAfter(TimeConverterService.convertDateToLocalDateTime(startDate)) || wt.getStartTime().isEqual(TimeConverterService.convertDateToLocalDateTime(startDate)))
+                && wt.getEndTime().isBefore(TimeConverterService.convertDateToLocalDateTime(endDate)))).forEachOrdered((wt) -> {
                     wtList.add(clone(wt));
-                }
-            }
-        }
+        });
         return wtList;
     }
 

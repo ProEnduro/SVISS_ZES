@@ -12,18 +12,18 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 /**
  * {@link XmlAdapter} for {@link LocalTime}
  *
- * @author Martin Six
+ * @author masix
  */
 public class LocalTimeAdapter extends XmlAdapter<String, LocalTime> {
 
     @Override
-    public LocalTime unmarshal(String dateString) throws Exception {
-        return LocalTime.parse(dateString, DateTimeFormatter.ISO_LOCAL_TIME);
+    public LocalTime unmarshal(String timeString) throws Exception {
+        return LocalTime.parse(timeString, DateTimeFormatter.ISO_LOCAL_TIME);
     }
 
     @Override
-    public String marshal(LocalTime localTime) throws Exception {
-        return DateTimeFormatter.ISO_LOCAL_TIME.format(localTime);
+    public String marshal(LocalTime time) throws Exception {
+        return time.format(DateTimeFormatter.ISO_LOCAL_TIME);
     }
 
 }

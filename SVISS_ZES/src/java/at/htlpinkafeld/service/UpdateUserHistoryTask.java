@@ -32,9 +32,9 @@ public class UpdateUserHistoryTask implements Runnable {
         LocalDate today = LocalDate.now();
         if (today.getDayOfMonth() == 1) {
             List<User> users = user_DAO.getUserByDisabled(Boolean.FALSE);
-            for (User u : users) {
-                history_DAO.insert(new UserHistoryEntry(today.atStartOfDay().minusSeconds(1), u, u.getOverTimeLeft(), u.getVacationLeft()));
-            }
+            users.forEach((u) -> {
+                history_DAO.insert(new UserHistoryEntry(today.atStartOfDay().minusHours(1).minusMinutes(1), u, u.getOverTimeLeft(), u.getVacationLeft()));
+            });
         }
     }
 

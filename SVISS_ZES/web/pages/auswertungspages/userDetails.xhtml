@@ -25,7 +25,7 @@ and open the template in the editor.
             <p:panelGrid columns="4">
                 <p:selectOneMenu id="selectUser" value="#{userDetailsBean.selectedUser}">
                     <f:selectItems value="#{userDetailsBean.userAsStringList}"/>
-                    <p:ajax update="selectedYear selectedDate"/>
+                    <p:ajax listener="#{userDetailsBean.onUserSelected}" update="selectedYear selectedDate" />
                 </p:selectOneMenu>
 
                 <p:selectOneMenu id="selectedYear" value="#{userDetailsBean.selectedYear}">
@@ -34,7 +34,7 @@ and open the template in the editor.
                 </p:selectOneMenu>
 
                 <p:selectOneMenu id="selectedDate" value="#{userDetailsBean.selectedDate}" converter="localDateConverter">
-                    <f:selectItems value="#{userDetailsBean.dates}" var="date" itemLabel="#{date.label}" itemValue="#{date.value}"/>
+                    <f:selectItems value="#{userDetailsBean.availableMonthLocalDates}" var="date" itemLabel="#{date.label}" itemValue="#{date.value}"/>
                 </p:selectOneMenu>
 
 
@@ -48,7 +48,7 @@ and open the template in the editor.
                 </p:column>
 
                 <p:column headerText="Beginn" width="7%" footerText="">
-                    <p:outputLabel value="#{entry.workTimeStart}"/>
+                    <p:outputLabel value="#{entry.workTimeStart}" escape="false"/>
                 </p:column>
 
                 <p:column headerText="Ende" width="8%" footerText="">
@@ -89,12 +89,12 @@ and open the template in the editor.
 
 
                 <f:facet name="footer">
-                    <p:commandLink ajax="false">
+                    <p:commandLink ajax="false" immediate="true">
                         <p:graphicImage name="/images/excel-icon.png" style="width: 3%"/>
                         <p:dataExporter   type="XLS" target="timeDataTable" fileName="Monatszeiten" encoding="iso-8859-1" postProcessor="#{userDetailsBean.postProcessXLS}"/>
 
-                    </p:commandLink>
-                    <p:commandLink ajax="false" action="#{userDetailsBean.createPDF}">
+                    </p:commandLink >
+                    <p:commandLink ajax="false" action="#{userDetailsBean.createPDF}" immediate="true">
                         <p:graphicImage name="/images/pdf-icon.png" style="width: 3%"/>
 
                     </p:commandLink>

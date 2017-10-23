@@ -3,30 +3,37 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htlpinkafeld.beans.util;
+package at.htlpinkafeld.beans.util.Converter;
 
-import at.htlpinkafeld.pojo.AccessLevel;
-import at.htlpinkafeld.service.AccessRightsService;
+import at.htlpinkafeld.pojo.UserProxy;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
 /**
+ * A Converter for Users
  *
  * @author Martin Six
  */
-@FacesConverter(value = "accesslevelconv", forClass = AccessLevel.class)
-public class AccessLevelConverter implements Converter {
+@FacesConverter(value = "userConverter")
+public class UserConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String string) {
-        return AccessRightsService.getAccessLevelFromName(string);
+        if (string != null && !string.contentEquals("")) {
+            return UserProxy.fromString(string);
+        }
+        return null;
     }
 
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object o) {
-        return ((AccessLevel) o).getAccessLevelName();
+        if (o != null) {
+            return o.toString();
+        } else {
+            return null;
+        }
     }
 
 }

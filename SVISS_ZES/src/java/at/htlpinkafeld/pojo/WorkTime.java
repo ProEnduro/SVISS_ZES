@@ -22,6 +22,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlRootElement
 public class WorkTime implements Serializable {
 
+    private static final long serialVersionUID = 6379762663436317117L;
+
     private Integer timeID;
     private User user;
     private LocalDateTime startTime;
@@ -196,7 +198,7 @@ public class WorkTime implements Serializable {
             return false;
         }
         final WorkTime other = (WorkTime) obj;
-        if (this.timeID != other.timeID) {
+        if (!Objects.equals(this.timeID, other.timeID)) {
             return false;
         }
         if (!Objects.equals(this.user, other.user)) {

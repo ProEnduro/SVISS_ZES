@@ -11,6 +11,7 @@ import at.htlpinkafeld.dao.interf.WorkTime_DAO;
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -26,8 +27,6 @@ public class IstZeitService {
 
     static WorkTime_DAO workDAO;
     static SollZeiten_DAO sollZeiten_DAO;
-    static WorkTime workT;
-    static WorkTime test;
 
     static {
         workDAO = DAOFactory.getDAOFactory().getWorkTimeDAO();
@@ -36,10 +35,11 @@ public class IstZeitService {
 
     public static void addIstTime(WorkTime t) {
         if (t.getSollStartTime() == null) {
-            SollZeit sz = sollZeiten_DAO.getSollZeitenByUser_DayOfWeek(t.getUser(), t.getStartTime().getDayOfWeek());
-            if (sz != null) {
-                t.setSollStartTime(sz.getSollStartTime());
-                t.setSollEndTime(sz.getSollEndTime());
+            SollZeit sz = sollZeiten_DAO.getSollZeitenByUser_Current(t.getUser());
+            DayOfWeek dow = t.getStartTime().getDayOfWeek();
+            if (sz.getSollStartTime(dow) != null) {
+                t.setSollStartTime(sz.getSollStartTime(dow));
+                t.setSollEndTime(sz.getSollEndTime(dow));
             } else {
                 t.setSollStartTime(LocalTime.MIN);
                 t.setSollEndTime(LocalTime.MIN);
@@ -79,11 +79,7 @@ public class IstZeitService {
 
         double dif = start.until(end, ChronoUnit.HOURS);
 
-        if (dif >= 6.00) {
-            return true;
-        } else {
-            return false;
-        }
+        return dif >= 6.00;
     }
 
     public static List<WorkTime> getWorkTimeForUserBetweenStartAndEndDate(User u, Date start, Date end) {

@@ -22,8 +22,13 @@ import org.primefaces.model.LazyScheduleModel;
  */
 public class AcknowledgeLazyScheduleModel extends DefaultScheduleModel {
 
-    String selectedUser = null;
+    private static final long serialVersionUID = 4918331375498080793L;
 
+    private String selectedUser = null;
+
+    /**
+     * Constructor for AcknowledgeLazyScheduleModel
+     */
     public AcknowledgeLazyScheduleModel() {
         loadEvents();
     }
@@ -47,21 +52,21 @@ public class AcknowledgeLazyScheduleModel extends DefaultScheduleModel {
         if (selectedUser == null || selectedUser.equals("All")) {
             for (Absence a : AbsenceService.getAllUnacknowledged()) {
 
-                AbsenceEvent e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType().getAbsenceName(), TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);
+                AbsenceEvent e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType(), TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);
 
-                switch (e.getAbsence().getAbsenceType().getAbsenceTypeID()) {
+                switch (e.getAbsence().getAbsenceType()) {
 
-                    case 1:
+                    case MEDICAL_LEAVE:
                         e.setStyleClass("medical_leave");
                         break;
-                    case 2:
+                    case HOLIDAY:
                         e.setStyleClass("holiday");
                         e.setAllDay(true);
                         break;
-                    case 3:
+                    case TIME_COMPENSATION:
                         e.setStyleClass("time_compensation");
                         break;
-                    case 4:
+                    case BUSINESSRELATED_ABSENCE:
                         e.setStyleClass("business-related_absence");
                         break;
                     default:
@@ -74,19 +79,19 @@ public class AcknowledgeLazyScheduleModel extends DefaultScheduleModel {
 
                 AbsenceEvent e = new AbsenceEvent(a.getReason(), TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);
 
-                switch (e.getAbsence().getAbsenceType().getAbsenceTypeID()) {
+                switch (e.getAbsence().getAbsenceType()) {
 
-                    case 1:
+                    case MEDICAL_LEAVE:
                         e.setStyleClass("medical_leave");
                         break;
-                    case 2:
+                    case HOLIDAY:
                         e.setStyleClass("holiday");
                         e.setAllDay(true);
                         break;
-                    case 3:
+                    case TIME_COMPENSATION:
                         e.setStyleClass("time_compensation");
                         break;
-                    case 4:
+                    case BUSINESSRELATED_ABSENCE:
                         e.setStyleClass("business-related_absence");
                         break;
                     default:

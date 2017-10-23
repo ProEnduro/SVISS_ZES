@@ -6,7 +6,6 @@
 package at.htlpinkafeld.dao.dummy;
 
 import at.htlpinkafeld.dao.factory.DAOFactory;
-import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
 import at.htlpinkafeld.dao.interf.Absence_DAO;
 import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
 import at.htlpinkafeld.dao.interf.Holiday_DAO;
@@ -25,7 +24,6 @@ public class InMemoryDAOFactory extends DAOFactory {
     private final AccessLevel_DAO accessLevel_DAO;
     private final WorkTime_DAO workTime_DAO;
     private final SollZeiten_DAO sollZeiten_DAO;
-    private final AbsenceType_DAO absenceType_DAO;
     private final Absence_DAO absence_DAO;
     private final Holiday_DAO holiday_DAO;
     private final UserHistory_DAO userHistory_DAO;
@@ -35,7 +33,6 @@ public class InMemoryDAOFactory extends DAOFactory {
         accessLevel_DAO = new AccessLevel_InMemoryDAO();
         workTime_DAO = new WorkTime_InMemoryDAO();
         sollZeiten_DAO = new SollZeiten_InMemoryDAO();
-        absenceType_DAO = new AbsenceType_InMemoryDAO();
         absence_DAO = new Absence_InMemoryDAO();
         holiday_DAO = new Holiday_InMemoryDAO();
         userHistory_DAO = new UserHistory_InMemoryDAO();
@@ -59,11 +56,6 @@ public class InMemoryDAOFactory extends DAOFactory {
     @Override
     public SollZeiten_DAO getSollZeitenDAO() {
         return sollZeiten_DAO;
-    }
-
-    @Override
-    public synchronized AbsenceType_DAO getAbsenceTypeDAO() {
-        return absenceType_DAO;
     }
 
     @Override

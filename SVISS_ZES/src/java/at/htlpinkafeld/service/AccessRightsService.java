@@ -12,6 +12,7 @@ import at.htlpinkafeld.pojo.AccessLevel;
 import edu.emory.mathcs.backport.java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Service which is used to easily check if a {@link AccessLevel} contains a
@@ -29,7 +30,7 @@ public class AccessRightsService implements DAODML_Observer {
     /**
      * unmodifiale list with all possible {@link AccessLevel}
      */
-    public static List<AccessLevel> AccessGroups;
+    private static List<AccessLevel> accessGroups;
 
     static {
         PERMISSIONS = new LinkedList<>();
@@ -43,6 +44,8 @@ public class AccessRightsService implements DAODML_Observer {
         PERMISSIONS.add("VIEW_ALL_ABSENCES");
         PERMISSIONS.add("INPUT_TIME");
         PERMISSIONS.add("EDIT_HOLIDAY");
+        //EDIT_MONTHLY_RECORDS = monatabschlussVerwaltung Benutzungsrecht
+        PERMISSIONS.add("EDIT_MONTHLY_RECORDS");
         PERMISSIONS.add("EVALUATE_SELF");
         PERMISSIONS.add("EVALUATE_ALL");
 
@@ -50,7 +53,11 @@ public class AccessRightsService implements DAODML_Observer {
         ARS = new AccessRightsService();
         ALDAO.addObserver(ARS);
 
-        AccessGroups = Collections.unmodifiableList(ALDAO.getList());
+        accessGroups = Collections.unmodifiableList(ALDAO.getList());
+    }
+
+    public static List<AccessLevel> getAccessGroups() {
+        return accessGroups;
     }
 
     private AccessRightsService() {
@@ -60,7 +67,7 @@ public class AccessRightsService implements DAODML_Observer {
      * Manually reloads all available AccessLevels
      */
     public static void reloadAccessGroups() {
-        AccessGroups = Collections.unmodifiableList(ALDAO.getList());
+        accessGroups = Collections.unmodifiableList(ALDAO.getList());
     }
 
     /**
@@ -72,7 +79,7 @@ public class AccessRightsService implements DAODML_Observer {
      * @return true if Permission is contained, false otherwise
      */
     public static boolean checkPermission(AccessLevel al, String neededPermission) {
-        return al.containsPermission(neededPermission.toUpperCase()) || al.containsPermission("ALL");
+        return al.containsPermission(neededPermission.toUpperCase(Locale.GERMAN)) || al.containsPermission("ALL");
     }
 
     /**
@@ -82,8 +89,8 @@ public class AccessRightsService implements DAODML_Observer {
      * @return AccessLevel with this name or null if it doesn't exist
      */
     public static AccessLevel getAccessLevelFromName(String accessLevelString) {
-        for (AccessLevel al : AccessGroups) {
-            if (al.getAccessLevelName().toLowerCase().contentEquals(accessLevelString.toLowerCase())) {
+        for (AccessLevel al : accessGroups) {
+            if (al.getAccessLevelName().equalsIgnoreCase(accessLevelString)) {
                 return al;
             }
         }

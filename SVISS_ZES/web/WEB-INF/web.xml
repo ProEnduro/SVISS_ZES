@@ -27,24 +27,33 @@
         <res-type>javax.sql.DataSource</res-type>
         <res-auth>Container</res-auth>
     </resource-ref>
-    
     <context-param>
         <param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
         <param-value>true</param-value>
     </context-param>
-    
     <context-param>
         <param-name>primefaces.THEME</param-name>
         <param-value>#{guestPreferences.theme}</param-value>
     </context-param>
-    
     <listener>
         <listener-class>org.apache.commons.fileupload.servlet.FileCleanerCleanup</listener-class>
     </listener>
-    
     <init-param>
         <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
         <param-value>true</param-value>
     </init-param>
     
+    <servlet>
+        <servlet-name>at.htlpinkafeld.ZES_REST</servlet-name>
+        <load-on-startup>1</load-on-startup>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>at.htlpinkafeld.mobileInterface.service.ApplicationConfig</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>at.htlpinkafeld.ZES_REST</servlet-name>
+        <url-pattern>/webresources/*</url-pattern>
+    </servlet-mapping>
 </web-app>

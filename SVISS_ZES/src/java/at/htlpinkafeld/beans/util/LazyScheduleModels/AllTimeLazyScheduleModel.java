@@ -9,7 +9,6 @@ import at.htlpinkafeld.beans.util.AbsenceEvent;
 import at.htlpinkafeld.beans.util.WorkTimeEvent;
 import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.Holiday;
-import at.htlpinkafeld.pojo.WorkTime;
 import at.htlpinkafeld.service.AbsenceService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
 import at.htlpinkafeld.service.HolidayService;
@@ -20,22 +19,40 @@ import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.LazyScheduleModel;
 
 /**
+ * A {@link LazyScheduleModel} which is used for the calendar in the All
+ * Times-Page
  *
  * @author msi
  */
 public class AllTimeLazyScheduleModel extends LazyScheduleModel {
-//TODO  LazyLoading in Service-Layer
-    
-    String selectedUser = null;
 
+//TODO  LazyLoading in Service-Layer
+    private static final long serialVersionUID = 1L;
+
+    private String selectedUser = null;
+
+    /**
+     * Constructor for AllTimeLazyScheduleModel
+     */
     public AllTimeLazyScheduleModel() {
 
     }
 
+    /**
+     * Sets the Username of the selected User
+     *
+     * @param s Username of the selectedUser
+     */
     public void setSelectedUser(String s) {
         selectedUser = s;
     }
 
+    /**
+     * loads Events according to the start and end Date and the selectedUser
+     *
+     * @param start start Date
+     * @param end end Date
+     */
     @Override
     public void loadEvents(Date start, Date end) {
         super.loadEvents(start, end);
@@ -55,21 +72,21 @@ public class AllTimeLazyScheduleModel extends LazyScheduleModel {
             AbsenceEvent e;
             for (Absence a : AbsenceService.getAllAcknowledged()) {
 
-                e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType().getAbsenceName(), TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);
+                e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType(), TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);
 
-                switch (e.getAbsence().getAbsenceType().getAbsenceTypeID()) {
+                switch (e.getAbsence().getAbsenceType()) {
 
-                    case 1:
+                    case MEDICAL_LEAVE:
                         e.setStyleClass("medical_leave_acknowledged");
                         break;
-                    case 2:
+                    case HOLIDAY:
                         e.setStyleClass("holiday_acknowledged");
                         e.setAllDay(true);
                         break;
-                    case 3:
+                    case TIME_COMPENSATION:
                         e.setStyleClass("time_compensation_acknowledged");
                         break;
-                    case 4:
+                    case BUSINESSRELATED_ABSENCE:
                         e.setStyleClass("business-related_absence_acknowledged");
                         break;
 
@@ -79,21 +96,21 @@ public class AllTimeLazyScheduleModel extends LazyScheduleModel {
 
             for (Absence a : AbsenceService.getAllUnacknowledged()) {
 
-                e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType().getAbsenceName() + " (unacknowledged)", TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);
+                e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType() + " (unacknowledged)", TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);
 
-                switch (e.getAbsence().getAbsenceType().getAbsenceTypeID()) {
+                switch (e.getAbsence().getAbsenceType()) {
 
-                    case 1:
+                    case MEDICAL_LEAVE:
                         e.setStyleClass("medical_leave");
                         break;
-                    case 2:
+                    case HOLIDAY:
                         e.setStyleClass("holiday");
                         e.setAllDay(true);
                         break;
-                    case 3:
+                    case TIME_COMPENSATION:
                         e.setStyleClass("time_compensation");
                         break;
-                    case 4:
+                    case BUSINESSRELATED_ABSENCE:
                         e.setStyleClass("business-related_absence");
                         break;
 
@@ -101,29 +118,28 @@ public class AllTimeLazyScheduleModel extends LazyScheduleModel {
                 this.addEvent(e);
             }
 
-            for (WorkTime w : IstZeitService.getAllWorkTime()) {
-                WorkTimeEvent workevent = new WorkTimeEvent(w.getUser().getUsername() + " Ist-Zeit", TimeConverterService.convertLocalDateTimeToDate(w.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(w.getEndTime()), "istzeit", w);
+            IstZeitService.getAllWorkTime().stream().map((w) -> new WorkTimeEvent(w.getUser().getUsername() + " Ist-Zeit", TimeConverterService.convertLocalDateTimeToDate(w.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(w.getEndTime()), "istzeit", w)).forEachOrdered((workevent) -> {
                 this.addEvent(workevent);
-            }
+            });
 
         } else {
             for (Absence a : AbsenceService.getAbsenceByUserAndUnacknowledged(BenutzerverwaltungService.getUser(selectedUser))) {
 
-                AbsenceEvent e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType().getAbsenceName() + " (unacknowledged)", TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);
+                AbsenceEvent e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType() + " (unacknowledged)", TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);
 
-                switch (e.getAbsence().getAbsenceType().getAbsenceTypeID()) {
+                switch (e.getAbsence().getAbsenceType()) {
 
-                    case 1:
+                    case MEDICAL_LEAVE:
                         e.setStyleClass("medical_leave");
                         break;
-                    case 2:
+                    case HOLIDAY:
                         e.setStyleClass("holiday");
                         e.setAllDay(true);
                         break;
-                    case 3:
+                    case TIME_COMPENSATION:
                         e.setStyleClass("time_compensation");
                         break;
-                    case 4:
+                    case BUSINESSRELATED_ABSENCE:
                         e.setStyleClass("business-related_absence");
                         break;
 
@@ -134,21 +150,21 @@ public class AllTimeLazyScheduleModel extends LazyScheduleModel {
 
             for (Absence a : AbsenceService.getAbsenceByUserAndAcknowledged(BenutzerverwaltungService.getUser(selectedUser))) {
 
-                AbsenceEvent e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType().getAbsenceName(), TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);
+                AbsenceEvent e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType(), TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);
 
-                switch (e.getAbsence().getAbsenceType().getAbsenceTypeID()) {
+                switch (e.getAbsence().getAbsenceType()) {
 
-                    case 1:
+                    case MEDICAL_LEAVE:
                         e.setStyleClass("medical_leave_acknowledged");
                         break;
-                    case 2:
+                    case HOLIDAY:
                         e.setStyleClass("holiday_acknowledged");
                         e.setAllDay(true);
                         break;
-                    case 3:
+                    case TIME_COMPENSATION:
                         e.setStyleClass("time_compensation_acknowledged");
                         break;
-                    case 4:
+                    case BUSINESSRELATED_ABSENCE:
                         e.setStyleClass("business-related_absence_acknowledged");
                         break;
 
@@ -157,11 +173,9 @@ public class AllTimeLazyScheduleModel extends LazyScheduleModel {
                 this.addEvent(e);
             }
 
-            for (WorkTime w : IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(BenutzerverwaltungService.getUser(selectedUser), start, end)) {
-                WorkTimeEvent workevent = new WorkTimeEvent(w.getUser().getUsername() + " Ist-Zeit", TimeConverterService.convertLocalDateTimeToDate(w.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(w.getEndTime()), "istzeit", w);
-
+            IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(BenutzerverwaltungService.getUser(selectedUser), start, end).stream().map((w) -> new WorkTimeEvent(w.getUser().getUsername() + " Ist-Zeit", TimeConverterService.convertLocalDateTimeToDate(w.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(w.getEndTime()), "istzeit", w)).forEachOrdered((workevent) -> {
                 this.addEvent(workevent);
-            }
+            });
         }
 
     }

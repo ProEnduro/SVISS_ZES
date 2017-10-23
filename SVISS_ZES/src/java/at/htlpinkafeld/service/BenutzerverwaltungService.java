@@ -22,27 +22,27 @@ import java.util.List;
  */
 public class BenutzerverwaltungService {
 
-    private static final User_DAO userdao;
+    private static final User_DAO USER_DAO;
     private static final UserHistory_DAO UHDAO;
 
     static {
-        userdao = DAOFactory.getDAOFactory().getUserDAO();
+        USER_DAO = DAOFactory.getDAOFactory().getUserDAO();
         UHDAO = DAOFactory.getDAOFactory().getUserHistoryDAO();
     }
 
     public static User getUser(String selectedUser) {
-        return userdao.getUserByUsername(selectedUser);
+        return USER_DAO.getUserByUsername(selectedUser);
     }
 
     private BenutzerverwaltungService() {
     }
 
     public static List<User> getUserList() {
-        return userdao.getList();
+        return USER_DAO.getList();
     }
 
     public static void insertUser(User u) {
-        userdao.insert(u);
+        USER_DAO.insert(u);
         LocalDateTime ldt = u.getHiredate().atStartOfDay();
         UHDAO.insert(new UserHistoryEntry(ldt, u, u.getOverTimeLeft(), u.getVacationLeft()));
         ldt = ldt.withDayOfMonth(1).plusMonths(2).with(LocalTime.MIN).minusSeconds(1);
@@ -52,43 +52,43 @@ public class BenutzerverwaltungService {
     }
 
     public static void updateUser(User u) {
-        userdao.update(u);
+        USER_DAO.update(u);
     }
 
     public static User getUser(int id) {
-        return userdao.getUser(id);
+        return USER_DAO.getUser(id);
     }
 
     public static User getUserByUsername(String username) {
-        return userdao.getUserByUsername(username);
+        return USER_DAO.getUserByUsername(username);
     }
 
     public static List<User> getUserByDisabled(Boolean disabled) {
-        return userdao.getUserByDisabled(disabled);
+        return USER_DAO.getUserByDisabled(disabled);
     }
 
     public static List<User> getUserByAccessLevel(AccessLevel accessLevel) {
-        return userdao.getUserByAccessLevel(accessLevel);
+        return USER_DAO.getUserByAccessLevel(accessLevel);
     }
 
     public static void updateApproverOfUser(User user) {
-        userdao.updateApproverOfUser(user);
+        USER_DAO.updateApproverOfUser(user);
     }
 
     public static void removeApprover(User approver) {
-        userdao.removeApprover(approver);
+        USER_DAO.removeApprover(approver);
     }
 
     public static User getUserByEmail(String email) {
-        return userdao.getUserByEmail(email);
+        return USER_DAO.getUserByEmail(email);
     }
 
     public static void addUserObserver(DAODML_Observer o) {
-        userdao.addObserver(o);
+        USER_DAO.addObserver(o);
     }
 
     public static void deleteUserObserver(DAODML_Observer o) {
-        userdao.deleteObserver(o);
+        USER_DAO.deleteObserver(o);
     }
 
 }

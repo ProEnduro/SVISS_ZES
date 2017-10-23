@@ -21,6 +21,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlRootElement
 public class UserProxy extends User {
 
+    private static final long serialVersionUID = 7842969962570984655L;
+
     private static final User_DAO USER_DAO;
 
     static {
@@ -33,7 +35,7 @@ public class UserProxy extends User {
 
     public UserProxy(User u) {
         super(u);
-        if (u.ApproverInitialized()) {
+        if (u.areApproverInitialized()) {
             super.setApprover(u.getApprover());
         }
     }
@@ -182,18 +184,8 @@ public class UserProxy extends User {
     }
 
     @Override
-    public Boolean ApproverInitialized() {
-        return super.ApproverInitialized();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
+    public Boolean areApproverInitialized() {
+        return super.areApproverInitialized();
     }
 
     @Override
@@ -202,20 +194,20 @@ public class UserProxy extends User {
     }
 
     public static User fromString(String s) {
-        s = s.substring(0, s.indexOf("[")) + s.substring(s.indexOf("]"));
+        s = s.substring(0, s.indexOf('[')) + s.substring(s.indexOf(']'));
         String[] attributes = s.split(",");
-        int userNr = Integer.parseInt(attributes[0].substring(attributes[0].indexOf("=") + 1));
-        String alName = attributes[2].substring(attributes[2].indexOf("=") + 1);
+        int userNr = Integer.parseInt(attributes[0].substring(attributes[0].indexOf('=') + 1));
+        String alName = attributes[2].substring(attributes[2].indexOf('=') + 1);
         AccessLevel al = AccessRightsService.getAccessLevelFromName(alName);
-        String persName = attributes[4].substring(attributes[4].indexOf("=") + 1);
-        int vacLeft = Integer.parseInt(attributes[5].substring(attributes[5].indexOf("=") + 1));
-        int overLeft = Integer.parseInt(attributes[6].substring(attributes[6].indexOf("=") + 1));
-        String userName = attributes[7].substring(attributes[7].indexOf("=") + 1);
-        String email = attributes[8].substring(attributes[8].indexOf("=") + 1);
-        LocalDate hiredate = LocalDate.parse(attributes[9].substring(attributes[9].indexOf("=") + 1));
-        String pass = attributes[10].substring(attributes[10].indexOf("=") + 1);
-        double weekTime = Double.parseDouble(attributes[11].substring(attributes[11].indexOf("=") + 1));
-        boolean disabled = Boolean.valueOf(attributes[12].substring(attributes[12].indexOf("=") + 1));
+        String persName = attributes[4].substring(attributes[4].indexOf('=') + 1);
+        int vacLeft = Integer.parseInt(attributes[5].substring(attributes[5].indexOf('=') + 1));
+        int overLeft = Integer.parseInt(attributes[6].substring(attributes[6].indexOf('=') + 1));
+        String userName = attributes[7].substring(attributes[7].indexOf('=') + 1);
+        String email = attributes[8].substring(attributes[8].indexOf('=') + 1);
+        LocalDate hiredate = LocalDate.parse(attributes[9].substring(attributes[9].indexOf('=') + 1));
+        String pass = attributes[10].substring(attributes[10].indexOf('=') + 1);
+        double weekTime = Double.parseDouble(attributes[11].substring(attributes[11].indexOf('=') + 1));
+        boolean disabled = Boolean.valueOf(attributes[12].substring(attributes[12].indexOf('=') + 1));
         return new UserProxy(new User(userNr, al, persName, vacLeft, overLeft, userName, email, hiredate, pass, weekTime, disabled));
     }
 

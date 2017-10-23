@@ -3,17 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htlpinkafeld.beans.util;
+package at.htlpinkafeld.beans.util.Converter;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
 /**
+ * A Converter for LocalDate
  *
  * @author Martin Six
  */

@@ -27,7 +27,7 @@ public class AbsenceType_JDBCDAO extends Base_JDBCDAO<AbsenceType> implements Ab
 
     public static final String TABLE_NAME = "AbsenceType";
     public static final String PRIMARY_KEY = ABSENCETYPEID_COL;
-    public static final String[] ALL_COLUMNS = {ABSENCETYPEID_COL, ABSENCETYPENAME_COL};
+    private static final String[] ALL_COLUMNS = {ABSENCETYPEID_COL, ABSENCETYPENAME_COL};
 
     protected AbsenceType_JDBCDAO() {
         super(TABLE_NAME, ALL_COLUMNS, PRIMARY_KEY);

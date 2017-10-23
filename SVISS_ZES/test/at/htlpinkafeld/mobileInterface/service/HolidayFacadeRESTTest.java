@@ -75,10 +75,6 @@ public class HolidayFacadeRESTTest {
         });
 
         Assert.assertFalse(l.isEmpty());
-
-        for (Object o : l) {
-            o.toString();
-        }
     }
 
     /**

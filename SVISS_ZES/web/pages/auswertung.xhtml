@@ -18,14 +18,13 @@ and open the template in the editor.
     <ui:define name="content">
 
         <h:form>
-
             <p:tabMenu activeIndex="#{currentAuswertungsIndex}">
                 <p:menuitem value="Jahresübersicht" action="#{auswertungsBean.redirectToJahresuebersicht}"/>
                 <p:menuitem value="User Details" action="#{auswertungsBean.redirectToUserDetails}"/>
                 <p:menuitem value="Alle Abwesenheiten" action="#{auswertungsBean.redirectToAlleAbwesenheiten}"/>
+                <p:menuitem value="Monatsabschlüsse verwalten" action="#{auswertungsBean.redirectToMonatsabschlussVerwaltung}" 
+                            rendered="#{auswertungsBean.canCurrentUserAccessMonatsabschlussVerwaltung}"/>
             </p:tabMenu>
-
-
         </h:form>
 
         <ui:insert name="auswertung"/>

@@ -16,6 +16,8 @@ import java.util.Objects;
  */
 public class UserToken implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private final String token;
     private final User user;
     private LocalDateTime lastAuthentication;

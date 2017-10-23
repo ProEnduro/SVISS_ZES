@@ -6,6 +6,7 @@
 package at.htlpinkafeld.beans;
 
 import at.htlpinkafeld.pojo.Absence;
+import at.htlpinkafeld.pojo.AbsenceTypeNew;
 import at.htlpinkafeld.pojo.SollZeit;
 import at.htlpinkafeld.pojo.User;
 import at.htlpinkafeld.pojo.WorkTime;
@@ -25,7 +26,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -49,6 +49,7 @@ import org.primefaces.model.ScheduleModel;
 import org.primefaces.model.UploadedFile;
 
 /**
+ * Bean which is used to in the Page-"benutzerkonto.xhtml"
  *
  * @author ÐarkHell2
  */
@@ -73,25 +74,44 @@ public class BenutzerkontoBean implements Validator {
         pointDate = LocalDate.of(2016, 8, 1);
     }
 
+    /**
+     * Constructor for BenutzerkontoBean
+     */
     public BenutzerkontoBean() {
         context = FacesContext.getCurrentInstance();
         masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
         user = masterBean.getUser();
     }
 
+    /**
+     * Method which loads all the Data
+     */
     public void onLoad() {
         user = masterBean.getUser();
         loadSollZeiten();
     }
 
+    /**
+     * gets current User
+     *
+     * @return current User
+     */
     public User getUser() {
         return user;
     }
 
+    /**
+     * sets current User
+     *
+     * @param user new User
+     */
     public void setUser(User user) {
         this.user = user;
     }
 
+    /**
+     * saves the changes to the User
+     */
     public void saveUser() {
         BenutzerverwaltungService.updateUser(user);
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("User gespeichert!"));
@@ -120,12 +140,17 @@ public class BenutzerkontoBean implements Validator {
     public void setExcel(UploadedFile excel) {
         this.excel = excel;
     }
-
+    /**
+     * discards all password changes
+     */
     public void discardPasswordChanges() {
         newPw = "";
         newPw2 = "";
     }
 
+    /**
+     * saves the new password
+     */
     public void savePassword() {
         if (newPw.length() < 6) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Das Passwort muss mindestens 6 Zeichen beinhalten"));
@@ -147,35 +172,56 @@ public class BenutzerkontoBean implements Validator {
         this.sollzeitModel = sollzeitModel;
     }
 
+    /**
+     * gets the current Event to be displayed in the small window
+     *
+     * @return the selected ScheduleEvent
+     */
     public ScheduleEvent getCurEvent() {
         return curEvent;
     }
 
+    /**
+     * sets the selected ScheduleEvent
+     *
+     * @param curEvent the new selected ScheduleEvent
+     */
     public void setCurEvent(ScheduleEvent curEvent) {
         this.curEvent = curEvent;
     }
 
+    /**
+     * loads the SollZeiten
+     */
     public void loadSollZeiten() {
         this.sollzeitModel = new DefaultScheduleModel();
 
-        List<SollZeit> currentSollZeiten;
+        SollZeit currentSollZeit = SollZeitenService.getSollZeitenByUser_Current(user);
 
-        currentSollZeiten = SollZeitenService.getSollZeitenByUser(user);
-
-        for (SollZeit sz : currentSollZeiten) {
-            if (!sz.getSollStartTime().equals(sz.getSollEndTime())) {
-                LocalDate curDate = pointDate.with(TemporalAdjusters.firstInMonth(sz.getDay()));
-                DefaultScheduleEvent de = new DefaultScheduleEvent("", TimeConverterService.convertLocalTimeToDate(curDate, sz.getSollStartTime()),
-                        TimeConverterService.convertLocalDateTimeToDate(LocalDateTime.of(curDate, sz.getSollEndTime())), curDate.getDayOfWeek());
-                sollzeitModel.addEvent(de);
-            }
-        }
+        currentSollZeit.getSollStartTimeMap().keySet().stream().map((dow) -> {
+            LocalDate curDate = pointDate.with(TemporalAdjusters.firstInMonth(dow));
+            DefaultScheduleEvent de = new DefaultScheduleEvent("", TimeConverterService.convertLocalTimeToDate(curDate, currentSollZeit.getSollStartTime(dow)),
+                    TimeConverterService.convertLocalDateTimeToDate(LocalDateTime.of(curDate, currentSollZeit.getSollEndTime(dow))), curDate.getDayOfWeek());
+            return de;
+        }).forEachOrdered((de) -> {
+            sollzeitModel.addEvent(de);
+        });
     }
 
+    /**
+     * sets the selected Event from ajax-Request
+     *
+     * @param selectEvent the selectEvent
+     */
     public void onEventSelect(SelectEvent selectEvent) {
         curEvent = (ScheduleEvent) selectEvent.getObject();
     }
 
+    /**
+     * Gets the pointDate for the Calendar
+     *
+     * @return start Date for the Calendar
+     */
     public Date getPointDate() {
         return IstZeitService.convertLocalDateTimeToDate(pointDate.atStartOfDay());
     }
@@ -187,6 +233,9 @@ public class BenutzerkontoBean implements Validator {
         }
     }
 
+    /**
+     * Method used to load stuff from predefined Excel not currently in use
+     */
     public void loadFromExcel(ActionEvent event) throws FileNotFoundException, IOException, ParserException {
 
         if (excel != null) {
@@ -291,7 +340,7 @@ public class BenutzerkontoBean implements Validator {
                                                 LocalTime lt = LocalTime.MIN.plusMinutes((int) (d + 0.5));
                                                 bemerkung = lt.format(DateTimeFormatter.ofPattern("HH:mm"));
                                             }
-                                        } catch (Exception e) {
+                                        } catch (NumberFormatException e) {
                                             //Value is not castable to double and will be ignored -> best case scenario
                                         }
                                     }
@@ -303,17 +352,17 @@ public class BenutzerkontoBean implements Validator {
 
                                     if (dif > 0.0) {
                                         LocalDateTime absenceend = end.plusMinutes((int) ((dif * 24 * 60) + 0.5));
-                                        Absence a = new Absence(user, AbsenceService.getAbsenceTypeByID(3), end, absenceend, bemerkung);
+                                        Absence a = new Absence(user, AbsenceTypeNew.TIME_COMPENSATION, end, absenceend, bemerkung);
                                         a.setAcknowledged(true);
                                         AbsenceService.insertAbsence(a);
                                     }
                                 }
-                            } else if (urlaub.getCellType() != Cell.CELL_TYPE_BLANK && urlaub.getNumericCellValue() == 1.0) {
+                            } else if (urlaub != null && urlaub.getCellType() != Cell.CELL_TYPE_BLANK && urlaub.getNumericCellValue() == 1.0) {
 
                                 start = LocalDateTime.of(day, LocalTime.MIN);
                                 end = start;
 
-                                Absence a = new Absence(user, AbsenceService.getAbsenceTypeByID(2), start, end);
+                                Absence a = new Absence(user, AbsenceTypeNew.HOLIDAY, start, end);
                                 a.setAcknowledged(true);
                                 AbsenceService.insertAbsence(a);
                             }
@@ -358,7 +407,7 @@ public class BenutzerkontoBean implements Validator {
                                     bemerkung = value.formatAsString();
                                 }
                             }
-                            Absence a = new Absence(user, AbsenceService.getAbsenceTypeByID(3), start, end, bemerkung);
+                            Absence a = new Absence(user, AbsenceTypeNew.TIME_COMPENSATION, start, end, bemerkung);
                             a.setAcknowledged(true);
                             AbsenceService.insertAbsence(a);
                         }
@@ -367,5 +416,4 @@ public class BenutzerkontoBean implements Validator {
             }
         }
     }
-
 }

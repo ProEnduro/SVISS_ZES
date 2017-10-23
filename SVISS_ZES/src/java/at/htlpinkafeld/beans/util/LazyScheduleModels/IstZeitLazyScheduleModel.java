@@ -21,25 +21,50 @@ import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.LazyScheduleModel;
 
 /**
+ * A {@link LazyScheduleModel} which is used for the calendar in the
+ * IstZeit-Page
  *
  * @author msi
  */
 public class IstZeitLazyScheduleModel extends LazyScheduleModel {
 
+    private static final long serialVersionUID = 1L;
+
     private User currentUser;
 
+    /**
+     * Constructor for IstZeitLazyScheduleModel
+     *
+     * @param u current User
+     */
     public IstZeitLazyScheduleModel(User u) {
         currentUser = u;
     }
 
+    /**
+     * get the current User
+     *
+     * @return the current User
+     */
     public User getCurrentUser() {
         return currentUser;
     }
 
+    /**
+     * set the current User
+     *
+     * @param currentUser the current User
+     */
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
     }
 
+    /**
+     * loads Events according to the start and end Date and the currentUser
+     *
+     * @param start start Date
+     * @param end end Date
+     */
     @Override
     public void loadEvents(Date start, Date end) {
         super.loadEvents(start, end); //To change body of generated methods, choose Tools | Templates.
@@ -57,17 +82,17 @@ public class IstZeitLazyScheduleModel extends LazyScheduleModel {
         List<Absence> absenceList = AbsenceService.getAbsencesByUserBetweenDates(currentUser, start, end);
 
         for (Absence a : absenceList) {
-            e = new AbsenceEvent(currentUser.getUsername() + " " + a.getAbsenceType().getAbsenceName(), TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);
+            e = new AbsenceEvent(currentUser.getUsername() + " " + a.getAbsenceType(), TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);
 
-            switch (a.getAbsenceType().getAbsenceTypeID()) {
-                case 1:
+            switch (a.getAbsenceType()) {
+                case MEDICAL_LEAVE:
                     if (a.isAcknowledged() == false) {
                         e.setStyleClass("medical_leave");
                     } else {
                         e.setStyleClass("medical_leave_acknowledged");
                     }
                     break;
-                case 2:
+                case HOLIDAY:
                     if (a.isAcknowledged() == false) {
                         e.setStyleClass("holiday");
                     } else {
@@ -75,14 +100,14 @@ public class IstZeitLazyScheduleModel extends LazyScheduleModel {
                     }
                     e.setAllDay(true);
                     break;
-                case 3:
+                case TIME_COMPENSATION:
                     if (a.isAcknowledged() == false) {
                         e.setStyleClass("time_compensation");
                     } else {
                         e.setStyleClass("time_compensation_acknowledged");
                     }
                     break;
-                case 4:
+                case BUSINESSRELATED_ABSENCE:
                     if (a.isAcknowledged() == false) {
                         e.setStyleClass("business-related_absence");
                     } else {
@@ -96,9 +121,9 @@ public class IstZeitLazyScheduleModel extends LazyScheduleModel {
 
         List<WorkTime> worktimelist = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(currentUser, start, end);
 
-        for (WorkTime w : worktimelist) {
+        worktimelist.forEach((w) -> {
             this.addEvent(new WorkTimeEvent(currentUser.getUsername() + " Ist-Zeit", TimeConverterService.convertLocalDateTimeToDate(w.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(w.getEndTime()), "istzeit", w));
-        }
+        });
 
     }
 

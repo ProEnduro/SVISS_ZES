@@ -5,7 +5,6 @@
  */
 package at.htlpinkafeld.beans;
 
-import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
 import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.Holiday;
 import at.htlpinkafeld.pojo.SollZeit;
@@ -64,7 +63,7 @@ public class JahresuebersichtBean {
     private final DateTimeFormatter monthFormatter;
 
     /**
-     * Creates a new instance of alleUserBean
+     * Creates a new instance of JahresuebersichtBean
      */
     public JahresuebersichtBean() {
         monthFormatter = DateTimeFormatter.ofPattern("MMMM");
@@ -74,15 +73,18 @@ public class JahresuebersichtBean {
 
     }
 
+    /**
+     * loads the available Users according to the Permissions
+     */
     public void loadJahresübersichtBean() {
 
         User currentUser = masterBean.getUser();
         users = new ArrayList<>();
         if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_ALL")) {
             List<User> userL = BenutzerverwaltungService.getUserByDisabled(Boolean.FALSE);
-            for (User u : userL) {
+            userL.forEach((u) -> {
                 users.add(new SelectItem(u, u.getPersName()));
-            }
+            });
         } else if (AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_SELF")) {
             users.add(new SelectItem(currentUser, currentUser.getPersName()));
         }
@@ -137,6 +139,9 @@ public class JahresuebersichtBean {
         return overtime19PlusSum;
     }
 
+    /**
+     * loads the Years according to the User-Selection
+     */
     public void loadYears() {
         years = new ArrayList<>();
         if (selectedUser != null) {
@@ -147,6 +152,9 @@ public class JahresuebersichtBean {
         }
     }
 
+    /**
+     * loads the Data for the year according to the selected year and user
+     */
     public void loadData() {
         if (selectedYear != null && selectedUser != null) {
             months = new ArrayList<>();
@@ -195,6 +203,15 @@ public class JahresuebersichtBean {
         }
     }
 
+    /**
+     * Calculates the Overtime for the User between the dates but without the
+     * overtime over 19:00
+     *
+     * @param u User
+     * @param startDate startDate for the Calculation
+     * @param endDate endDate for the Calculation
+     * @return overtime without the Time over 19
+     */
     private int calcOvertimeMinusPlus19H(User u, LocalDate startDate, LocalDate endDate) {
         int overtime = 0;
 
@@ -212,9 +229,11 @@ public class JahresuebersichtBean {
         }
 
         for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
-            SollZeit sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, date.getDayOfWeek(), date.atStartOfDay());
-            if (sz != null) {
-                long diff = sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+            SollZeit sz = SollZeitenService.getSollZeitenByUser_ValidDate(u, date.atTime(23, 59));
+            DayOfWeek dow = date.getDayOfWeek();
+
+            if (sz != null && sz.getSollStartTimeMap().containsKey(dow)) {
+                long diff = sz.getSollStartTime(dow).until(sz.getSollEndTime(dow), ChronoUnit.MINUTES);
                 if (diff >= 6 * 60) {
                     diff -= 30;
                 }
@@ -232,8 +251,8 @@ public class JahresuebersichtBean {
             if (a.getEndTime().isAfter(endDate.atTime(23, 59, 59))) {
                 a.setEndTime(endDate.atStartOfDay().minusSeconds(1));
             }
-            switch (a.getAbsenceType().getAbsenceName()) {
-                case AbsenceType_DAO.HOLIDAY:
+            switch (a.getAbsenceType()) {
+                case HOLIDAY:
                     if (!a.isAcknowledged()) {
                         break;
                     }
@@ -241,9 +260,10 @@ public class JahresuebersichtBean {
                     DayOfWeek hDay = a.getStartTime().getDayOfWeek();
                     for (int i = 0; i < holidayLength; i++, hDay.plus(1)) {
                         int diff = 0;
-                        SollZeit sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, a.getStartTime().getDayOfWeek(), a.getStartTime());
-                        if (sz != null) {
-                            diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                        SollZeit sz = SollZeitenService.getSollZeitenByUser_ValidDate(u, a.getStartTime());
+
+                        if (sz != null && sz.getSollStartTimeMap().containsKey(hDay)) {
+                            diff = (int) sz.getSollStartTime(hDay).until(sz.getSollEndTime(hDay), ChronoUnit.MINUTES);
                         }
                         if (diff > 6 * 60) {
                             diff -= 30;
@@ -252,7 +272,7 @@ public class JahresuebersichtBean {
 
                     }
                     break;
-                case AbsenceType_DAO.TIMECOMPENSATION:
+                case TIME_COMPENSATION:
                     //Ignore because it is the same as not working = SollZeit is already deducted
 //                    if (a.isAcknowledged()) {
 //                        int dayNum = a.getEndTime().getDayOfYear() - a.getStartTime().getDayOfYear() + 1;
@@ -260,7 +280,7 @@ public class JahresuebersichtBean {
 //                        for (int i = 0; i < dayNum; i++, sDay.plus(1)) {
 //                            SollZeit sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, a.getStartTime().getDayOfWeek(), a.getStartTime());
 //                            int diff = 0;
-//                            if (sz != null) {
+//                            if (sz != null && sz.getSollStartTimeMap().containsKey(sDay)) {
 //                                if (i == 0 || i == (dayNum - 1)) {
 //                                    if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime()) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
 //                                        diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
@@ -284,26 +304,26 @@ public class JahresuebersichtBean {
 //                        }
 //                    }
                     break;
-                case AbsenceType_DAO.MEDICAL_LEAVE:
+                case MEDICAL_LEAVE:
                     int dayNum = a.getEndTime().getDayOfYear() - a.getStartTime().getDayOfYear() + 1;
                     DayOfWeek sDay = a.getStartTime().getDayOfWeek();
                     for (int i = 0; i < dayNum; i++, sDay.plus(1)) {
-                        SollZeit sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, a.getStartTime().getDayOfWeek(), a.getStartTime());
+                        SollZeit sz = SollZeitenService.getSollZeitenByUser_ValidDate(u, a.getStartTime());
                         int diff = 0;
-                        if (sz != null) {
+                        if (sz != null && sz.getSollStartTimeMap().containsKey(sDay)) {
                             if (i == 0 || i == (dayNum - 1)) {
-                                if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime()) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
+                                if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime(sDay)) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime(sDay))) {
                                     diff = (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
-                                } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime()) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime())) {
-                                } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime())) {
-                                    diff = (int) a.getStartTime().toLocalTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
-                                } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime())) {
-                                    diff = (int) sz.getSollStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
+                                } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime(sDay)) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime(sDay))) {
+                                } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime(sDay))) {
+                                    diff = (int) a.getStartTime().toLocalTime().until(sz.getSollEndTime(sDay), ChronoUnit.MINUTES);
+                                } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime(sDay))) {
+                                    diff = (int) sz.getSollStartTime(sDay).until(a.getEndTime(), ChronoUnit.MINUTES);
                                 } else {
-                                    diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                                    diff = (int) sz.getSollStartTime(sDay).until(sz.getSollEndTime(sDay), ChronoUnit.MINUTES);
                                 }
                             } else {
-                                diff = (int) sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+                                diff = (int) sz.getSollStartTime(sDay).until(sz.getSollEndTime(sDay), ChronoUnit.MINUTES);
                             }
                         }
                         if (diff > 6 * 60) {
@@ -312,7 +332,7 @@ public class JahresuebersichtBean {
                         overtime += diff;
                     }
                     break;
-                case AbsenceType_DAO.BUSINESSRELATED_ABSENCE:
+                case BUSINESSRELATED_ABSENCE:
                     break;
             }
         }
@@ -322,13 +342,16 @@ public class JahresuebersichtBean {
         for (Holiday h : holidays) {
             SollZeit sz = null;
             if (hDate == null) {
-                sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, h.getHolidayDate().getDayOfWeek(), h.getHolidayDate().atStartOfDay());
+                sz = SollZeitenService.getSollZeitenByUser_ValidDate(u, h.getHolidayDate().atStartOfDay());
             } else if (!hDate.equals(h.getHolidayDate())) {
-                sz = SollZeitenService.getSollZeitenByUser_DayOfWeek_ValidDate(u, h.getHolidayDate().getDayOfWeek(), hDate.atStartOfDay());
+                sz = SollZeitenService.getSollZeitenByUser_ValidDate(u, hDate.atStartOfDay());
             }
             hDate = h.getHolidayDate();
-            if (sz != null) {
-                long diff = sz.getSollStartTime().until(sz.getSollEndTime(), ChronoUnit.MINUTES);
+            DayOfWeek dow = hDate.getDayOfWeek();
+
+            if (sz != null && sz.getSollStartTime(dow) != null) {
+
+                long diff = sz.getSollStartTime(dow).until(sz.getSollEndTime(dow), ChronoUnit.MINUTES);
                 if (diff >= 6 * 60) {
                     diff -= 30;
                 }
@@ -339,18 +362,31 @@ public class JahresuebersichtBean {
         return overtime;
     }
 
+    /**
+     * The counterpart to the above function which calculates only the Overtime
+     * over 19:00
+     *
+     * @param u User
+     * @param startDate startDate for the Calculation
+     * @param endDate endDate for the Calculation
+     * @return overtime over 19
+     */
     public int calcOvertime19Plus(User u, LocalDate startDate, LocalDate endDate) {
         int overtime = 0;
 
         List<WorkTime> workTimes = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(u, TimeConverterService.convertLocalDateToDate(startDate), TimeConverterService.convertLocalDateToDate(endDate));
-        LocalTime lt19Plus = LocalTime.of(19, 0);
-
         for (WorkTime wt : workTimes) {
             overtime += wt.getOvertimeAfter19();
         }
         return overtime;
     }
 
+    /**
+     * pre processes the PDF for creating
+     *
+     * @param document pdf-doc
+     * @throws DocumentException may be thrown
+     */
     public void preProcessPDF(Object document) throws DocumentException {
         Document pdf = (Document) document;
         pdf.open();
@@ -366,6 +402,13 @@ public class JahresuebersichtBean {
         pdf.add(new Paragraph("\n"));
     }
 
+    /**
+     * Factory-Method for a PdfCell
+     *
+     * @param text Text for the cell
+     * @param alignment alignment for the cell content
+     * @return the created Cell
+     */
     private PdfPCell getCell(String text, int alignment) {
         PdfPCell cell = new PdfPCell(new Phrase(text));
         cell.setPadding(0);
@@ -374,12 +417,23 @@ public class JahresuebersichtBean {
         return cell;
     }
 
+    /**
+     * post processes the PDF for creating
+     *
+     * @param document pdf-doc
+     * @throws DocumentException may be thrown
+     */
     public void postProcessPDF(Object document) throws DocumentException {
         Document pdf = (Document) document;
         pdf.add(new Paragraph("\nStand: " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
         pdf.close();
     }
 
+    /**
+     * post processes the XLS for creating
+     *
+     * @param document xls-doc
+     */
     public void postProcessXLS(Object document) {
         HSSFWorkbook wb = (HSSFWorkbook) document;
         HSSFSheet sheet = wb.getSheetAt(0);

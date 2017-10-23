@@ -37,14 +37,12 @@ public class Holiday_InMemoryDAO extends Base_InMemoryDAO<Holiday> implements Ho
     @Override
     public List<Holiday> getHolidayBetweenDates(Date startDate, Date endDate) {
         List<Holiday> holidays = new ArrayList<>();
-        for (Holiday h : getList()) {
-            if (((h.getHolidayDate().isAfter(TimeConverterService.convertDateToLocalDateTime(startDate).toLocalDate()) || h.getHolidayDate().isEqual(TimeConverterService.convertDateToLocalDateTime(startDate).toLocalDate()))
-                    && h.getHolidayDate().isBefore(TimeConverterService.convertDateToLocalDateTime(endDate).toLocalDate()))
-                    || (h.getHolidayDate().equals(TimeConverterService.convertDateToLocalDateTime(startDate).toLocalDate())
-                    && h.getHolidayDate().equals(TimeConverterService.convertDateToLocalDateTime(startDate).toLocalDate()))) {
-                holidays.add(clone(h));
-            }
-        }
+        getList().stream().filter((h) -> (((h.getHolidayDate().isAfter(TimeConverterService.convertDateToLocalDateTime(startDate).toLocalDate()) || h.getHolidayDate().isEqual(TimeConverterService.convertDateToLocalDateTime(startDate).toLocalDate()))
+                && h.getHolidayDate().isBefore(TimeConverterService.convertDateToLocalDateTime(endDate).toLocalDate()))
+                || (h.getHolidayDate().equals(TimeConverterService.convertDateToLocalDateTime(startDate).toLocalDate())
+                        && h.getHolidayDate().equals(TimeConverterService.convertDateToLocalDateTime(startDate).toLocalDate())))).forEachOrdered((h) -> {
+                            holidays.add(clone(h));
+        });
         return holidays;
     }
 

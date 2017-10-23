@@ -5,9 +5,9 @@
  */
 package at.htlpinkafeld.dao.interf;
 
-import java.util.List;
 import at.htlpinkafeld.dao.util.DAODML_Observable;
 import at.htlpinkafeld.dao.util.DAOException;
+import java.util.List;
 
 /**
  *

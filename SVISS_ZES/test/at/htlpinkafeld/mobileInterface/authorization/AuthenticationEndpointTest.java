@@ -22,7 +22,7 @@ public class AuthenticationEndpointTest {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8084/SVISS_ZES/webresources";
+    private static final String BASE_URI = "http://zes.sviss.at/SVISS_ZES/webresources";
 
     public AuthenticationEndpointTest() {
     }
@@ -45,13 +45,19 @@ public class AuthenticationEndpointTest {
     @Test
     public void testAuthenticateUser() {
         System.out.println("authenticateUser");
-        Credentials credentials = new Credentials("admin", "admin");
+        Credentials credentials = new Credentials("apptest", "apptest");
         Response result;
+        String resultS;
 
         result = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(Entity.xml(credentials), Response.class);
-        Assert.assertFalse(result.readEntity(String.class).isEmpty());
+        resultS = result.readEntity(String.class);
+        Assert.assertFalse(resultS.isEmpty());
+        System.out.println(resultS);
+
         result = webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(credentials, javax.ws.rs.core.MediaType.APPLICATION_JSON), Response.class);
-        Assert.assertFalse(result.readEntity(String.class).isEmpty());
+        resultS = result.readEntity(String.class);
+        Assert.assertFalse(resultS.isEmpty());
+        System.out.println(resultS);
     }
 
 }

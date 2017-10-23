@@ -5,12 +5,11 @@
  */
 package at.htlpinkafeld.pojo;
 
-import at.htlpinkafeld.dao.interf.AbsenceType_DAO;
-import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -21,20 +20,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class TimeRowDisplay {
 
-    private static final DateTimeFormatter timeFormatter;
+    private static final DateTimeFormatter TIME_FORMATTER;
 
     static {
-        timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     }
 
-    private final LocalDate date;
-    private String workTimeStart = null;
-    private String workTimeEnd = null;
+    private LocalDate date;
+    private String workTimeStart = "";
+    private String workTimeEnd = "";
     private Integer breakTime = null;
     private Double sollZeit = null;
     private Double workTime = null;
     private Double overTime19plus = null;
-    private String reason = null;
+    private String reason = "";
 
     public TimeRowDisplay(Holiday h) {
         date = h.getHolidayDate();
@@ -43,29 +42,43 @@ public class TimeRowDisplay {
 
     public TimeRowDisplay(Absence a) {
         date = a.getStartTime().toLocalDate();
-        reason = a.getAbsenceType().getAbsenceName() + ": " + a.getReason();
-        if (!a.getAbsenceType().getAbsenceName().contentEquals(AbsenceType_DAO.HOLIDAY)) {
-            reason += a.getStartTime().toLocalTime().format(timeFormatter) + " -  " + a.getEndTime().toLocalTime().format(timeFormatter);
+        reason = a.getAbsenceType() + ": " + a.getReason();
+        if (!a.getAbsenceType().equals(AbsenceTypeNew.HOLIDAY)) {
+            reason += a.getStartTime().toLocalTime().format(TIME_FORMATTER) + " -  " + a.getEndTime().toLocalTime().format(TIME_FORMATTER);
         }
     }
 
-    public TimeRowDisplay(WorkTime wt) {
-        date = wt.getStartTime().toLocalDate();
-        workTimeStart = wt.getStartTime().format(timeFormatter);
-        workTimeEnd = wt.getEndTime().format(timeFormatter);
-        breakTime = wt.getBreakTime();
+    public TimeRowDisplay(List<WorkTime> wts) {
+        if (!wts.isEmpty()) {
+            date = wts.get(0).getStartTime().toLocalDate();
+            breakTime = 0;
+            sollZeit = 0.0;
+            workTime = 0.0;
+            overTime19plus = 0.0;
+            for (WorkTime wt : wts) {
+                workTimeStart += ", " + wt.getStartTime().format(TIME_FORMATTER);
+                workTimeEnd += ", " + wt.getEndTime().format(TIME_FORMATTER);
+                breakTime += wt.getBreakTime();
 
-        double temp = wt.getSollStartTime().until(wt.getSollEndTime(), ChronoUnit.MINUTES) / 60.0;
-        if (temp >= 6.0) {
-            sollZeit = Math.round((temp - 0.5) * 100.0) / 100.0;
-        } else {
-            sollZeit = Math.round(temp * 100.0) / 100.0;
+                double temp = 0;
+                if (wt.getSollStartTime() != null) {
+                    temp = wt.getSollStartTime().until(wt.getSollEndTime(), ChronoUnit.MINUTES) / 60.0;
+                }
+                if (temp >= 6.0) {
+                    sollZeit += Math.round((temp - 0.5) * 100.0) / 100.0;
+                } else {
+                    sollZeit += Math.round(temp * 100.0) / 100.0;
+                }
+                workTime += Math.round((wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES) / 60.0) * 100.0) / 100.0;
+
+                double ot19Plus = wt.getOvertimeAfter19() / 60.0;
+                overTime19plus += Math.round(ot19Plus * 100.0) / 100.0;
+                reason += wt.getStartComment() + "   " + wt.getEndComment();
+            }
+            workTime -= breakTime / 60.0;
+            workTimeStart = workTimeStart.substring(2);
+            workTimeEnd = workTimeEnd.substring(2);
         }
-        workTime = Math.round((wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES) / 60.0 - (breakTime / 60.0)) * 100.0) / 100.0;
-
-        double ot19Plus = wt.getOvertimeAfter19() / 60.0;
-        overTime19plus = Math.round(ot19Plus * 100.0) / 100.0;
-        reason = wt.getStartComment() + "   " + wt.getEndComment();
     }
 
     public DayOfWeek getDayOfWeek() {
