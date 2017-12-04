@@ -150,4 +150,9 @@ public class Absence_InMemoryDAO extends Base_InMemoryDAO<Absence> implements Ab
     protected void setID(Absence entity, int id) {
         entity.setAbsenceID(id);
     }
+
+    @Override
+    public void deleteAllAbsenceFromUser(User o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

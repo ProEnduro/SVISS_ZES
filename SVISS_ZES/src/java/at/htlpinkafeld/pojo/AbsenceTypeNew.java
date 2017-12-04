@@ -28,4 +28,19 @@ public enum AbsenceTypeNew {
         }
     }
 
+    public String getMyString() {
+        switch (this) {
+            case HOLIDAY:
+                return "Urlaub";
+            case MEDICAL_LEAVE:
+                return "Krankenstand";
+            case TIME_COMPENSATION:
+                return "Zeitausgleich";
+            case BUSINESSRELATED_ABSENCE:
+                return "unternehmensbedingte Abwesenheit";
+            default:
+                return super.toString();
+        }
+    }
+
 }

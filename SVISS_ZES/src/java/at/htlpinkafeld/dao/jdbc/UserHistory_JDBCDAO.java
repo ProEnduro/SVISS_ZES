@@ -120,4 +120,15 @@ class UserHistory_JDBCDAO extends Base_JDBCDAO<UserHistoryEntry> implements User
 
         return historyEntrys;
     }
+
+    @Override
+    public void deleteAllUserHistoryFromUser(User o) {
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement()) {
+
+            stmt.execute("DELETE FROM " + TABLE_NAME + " WHERE + " + USERNR_COL + " = " + o.getUserNr() + ";");
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

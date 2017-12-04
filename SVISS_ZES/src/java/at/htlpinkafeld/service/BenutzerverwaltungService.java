@@ -15,6 +15,8 @@ import at.htlpinkafeld.pojo.UserHistoryEntry;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 
 /**
  *
@@ -32,6 +34,10 @@ public class BenutzerverwaltungService {
 
     public static User getUser(String selectedUser) {
         return USER_DAO.getUserByUsername(selectedUser);
+    }
+
+    public static void deleteUser(User u) {
+        USER_DAO.delete(u);
     }
 
     private BenutzerverwaltungService() {

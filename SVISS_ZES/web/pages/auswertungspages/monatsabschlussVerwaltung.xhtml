@@ -55,38 +55,38 @@ and open the template in the editor.
 
         <p:dialog widgetVar="editUHEntryDialog" header="Monatsabschluss Dialog" closeOnEscape="true" modal="true"  >
             <h:form id="uhEntryDialogForm">
-                <p:panelGrid id="uhEntryDialogGrid">
-                    <p:row>
-                        <p:column colspan="2"><p:outputLabel value="Name"/></p:column>
-                        <p:column colspan="2">
-                            <p:selectOneMenu  value="#{monatsabschlussVerwaltungsBean.selectedUserHistoryEntry.user}" disabled="#{monatsabschlussVerwaltungsBean.editing}" required="true" converter="userConverter">
-                                <f:selectItems value="#{monatsabschlussVerwaltungsBean.users}" var="user" itemLabel="#{user.persName}"/>
-                            </p:selectOneMenu>
-                        </p:column>
-                    </p:row>
-                    <p:row>
-                        <p:column colspan="2"><p:outputLabel value="Timestamp"/></p:column>
-                        <p:column>
-                            <p:selectOneMenu value="#{monatsabschlussVerwaltungsBean.selectedMonth}" disabled="#{monatsabschlussVerwaltungsBean.editing}" required="true">
-                                <f:selectItems value="#{monatsabschlussVerwaltungsBean.availableMonths}" var="month" itemLabel="#{monatsabschlussVerwaltungsBean.getDisplayName(month)}"/>
-                            </p:selectOneMenu>
-                        </p:column>
-                        <p:column><p:spinner value="#{monatsabschlussVerwaltungsBean.selectedYear}" disabled="#{monatsabschlussVerwaltungsBean.editing}"/></p:column>
-                    </p:row>
-                    <p:row>
-                        <p:column colspan="2"><p:outputLabel value="übrige Überstunden"/></p:column>
-                        <p:column colspan="2"><p:inputText value="#{monatsabschlussVerwaltungsBean.selectedUserHistoryEntry.overtime}" converter="minuteHourConverter" required="true" requiredMessage="Die übrigen Überstunden müssen eingegeben werden!"/></p:column>
-                    </p:row>
-                    <p:row>
-                        <p:column colspan="2"><p:outputLabel value="übriger Urlaub"/></p:column>
-                        <p:column colspan="2"><p:spinner value="#{monatsabschlussVerwaltungsBean.selectedUserHistoryEntry.vacation}" required="true" requiredMessage="Der übrige Urlaub muss eingegeben werden!" maxlength="4"/></p:column>
-                    </p:row>
-                    <p:row>
-                        <p:column colspan="2"><p:commandButton value="Save" action="#{monatsabschlussVerwaltungsBean.saveEditedUserHistoryEntry}" 
-                                                               oncomplete="if (args &amp;&amp; !args.validationFailed) PF('editUHEntryDialog').hide();" update=":uhTableForm:uhTable"/></p:column>
-                        <p:column colspan="2"><p:commandButton value="Cancel" oncomplete="PF('editUHEntryDialog').hide();" immediate="true"/></p:column>
-                    </p:row>
-                </p:panelGrid>
+                    <p:panelGrid id="uhEntryDialogGrid">
+                        <p:row>
+                            <p:column colspan="2"><p:outputLabel value="Name"/></p:column>
+                            <p:column colspan="2">
+                                <p:selectOneMenu  value="#{monatsabschlussVerwaltungsBean.selectedUserHistoryEntry.user}" disabled="#{monatsabschlussVerwaltungsBean.editing}" required="true" converter="userConverter">
+                                    <f:selectItems value="#{monatsabschlussVerwaltungsBean.users}" var="user" itemLabel="#{user.persName}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="2"><p:outputLabel value="Timestamp"/></p:column>
+                            <p:column>
+                                <p:selectOneMenu value="#{monatsabschlussVerwaltungsBean.selectedMonth}" disabled="#{monatsabschlussVerwaltungsBean.editing}" required="true">
+                                    <f:selectItems value="#{monatsabschlussVerwaltungsBean.availableMonths}" var="month" itemValue="#{month}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column><p:spinner value="#{monatsabschlussVerwaltungsBean.selectedYear}" disabled="#{monatsabschlussVerwaltungsBean.editing}"/></p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="2"><p:outputLabel value="übrige Überstunden"/></p:column>
+                            <p:column colspan="2"><p:inputText value="#{monatsabschlussVerwaltungsBean.selectedUserHistoryEntry.overtime}" converter="minuteHourConverter" required="true" requiredMessage="Die übrigen Überstunden müssen eingegeben werden!"/></p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="2"><p:outputLabel value="übriger Urlaub"/></p:column>
+                            <p:column colspan="2"><p:spinner value="#{monatsabschlussVerwaltungsBean.selectedUserHistoryEntry.vacation}" required="true" requiredMessage="Der übrige Urlaub muss eingegeben werden!" maxlength="4"/></p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="2"><p:commandButton value="Save" action="#{monatsabschlussVerwaltungsBean.saveEditedUserHistoryEntry}" 
+                                                                   oncomplete="if (args &amp;&amp; !args.validationFailed) PF('editUHEntryDialog').hide();" update=":uhTableForm:uhTable"/></p:column>
+                            <p:column colspan="2"><p:commandButton value="Cancel" oncomplete="PF('editUHEntryDialog').hide();" immediate="true"/></p:column>
+                        </p:row>
+                    </p:panelGrid>
             </h:form>
         </p:dialog>
 

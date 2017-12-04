@@ -22,6 +22,12 @@ and open the template in the editor.
 
             <p:panel>
                 <h1 align="center">Benutzerverwaltung</h1>
+                
+                <p:outputLabel value="Show disabled Users: "/>
+                <p:selectBooleanCheckbox value="#{benutzerverwaltungsBean.showDisabledUsers}" >
+                    <p:ajax update="usertable" listener="#{benutzerverwaltungsBean.reloadUsers}"/>
+                </p:selectBooleanCheckbox>
+                    
 
                 <p:dataTable id="usertable" var="user" value="#{benutzerverwaltungsBean.userList}" style="margin-top: 1.5%; text-align: center"  sortMode="multiple" >
 
@@ -69,6 +75,12 @@ and open the template in the editor.
 
                     <p:column headerText="User ändern" width="6%">
                         <p:commandButton id="editUserBut" value="edit User" actionListener="#{benutzerverwaltungsBean.editUser}" update=":userDialogForm:userDlgGrid" oncomplete="PF('userdlg').show();">
+                            <f:attribute name="user" value="#{user}"/>
+                        </p:commandButton>
+                    </p:column>
+
+                    <p:column headerText="User löschen" width="6%">
+                        <p:commandButton id="deleteUserButton" value="löschen" actionListener="#{benutzerverwaltungsBean.myDeleteUser}" oncomplete="PF('deleteUserDialog').show();">
                             <f:attribute name="user" value="#{user}"/>
                         </p:commandButton>
                     </p:column>
@@ -217,6 +229,17 @@ and open the template in the editor.
                 </h:panelGrid>
             </h:form>
         </p:dialog> 
+
+        <p:dialog widgetVar="deleteUserDialog" closeOnEscape="true" resizable="false" modal="true" header="Delete User">
+            <h:form>
+                <h:panelGrid columns="2">
+                    <p:outputLabel value="Wollen Sie den Benutzer #{user.username} wirklich löschen?"/>
+                    <h:commandButton value="debugDelete" action="#{benutzerverwaltungsBean.deleteUser}"/> 
+                    <p:commandButton value="Bestätigen" action="#{benutzerverwaltungsBean.deleteUser}" update=":tableForm:usertable :growl" oncomplete="PF('deleteUserDialog').hide();"/>
+                    <p:commandButton value="Abbrechen" action="#{benutzerverwaltungsBean.removeSelectedUser}" oncomplete="PF('deleteUserDialog').hide();"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
 
         <style type="text/css">
             .myTable {  

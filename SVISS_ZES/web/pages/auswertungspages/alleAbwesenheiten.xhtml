@@ -37,9 +37,14 @@ and open the template in the editor.
                              paginator="true" rows="30" style="margin-bottom:20px">
 
                     <p:column headerText="Benutzer" sortBy="#{absence.user.username}" width="10%" filterBy="#{absence.user.username}">
-                        <h:outputText value="#{absence.user.username}"/>
+                        <div align="center"><h:outputText value="#{absence.user.username}" style="text-align: center"/></div>
                     </p:column>
 
+                    
+                    <p:column headerText="Typ" width="15%">
+                        <div align="center"><h:outputText value="#{absence.absenceType.myString}" style="text-align: center"/></div>
+                    </p:column>               
+                    
                     <p:column headerText="Datum" sortBy="#{absence.startTime}" width="35%">
                         <h:outputText value="#{absence.startTime}" converter="localDateTimeConverter" style="margin-left: 20%"/>
                         <h:outputText value=" - " style="margin-left: 10%; margin-right: 10%"/>

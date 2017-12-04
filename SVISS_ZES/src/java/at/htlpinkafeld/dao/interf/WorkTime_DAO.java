@@ -21,4 +21,6 @@ public interface WorkTime_DAO extends Base_DAO<WorkTime> {
     public abstract List<WorkTime> getWorkTimesBetweenDates(Date startDateU, Date endDateU);
 
     public abstract List<WorkTime> getWorkTimesFromUserBetweenDates(User user, Date startDateU, Date endDateU);
+
+    public abstract void deleteAllWorktimeFromUser(User o);
 }

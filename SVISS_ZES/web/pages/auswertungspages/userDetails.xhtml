@@ -24,21 +24,25 @@ and open the template in the editor.
             <h1 align="center">Auswertung: User Details</h1>
             <p:panelGrid columns="4">
                 <p:selectOneMenu id="selectUser" value="#{userDetailsBean.selectedUser}">
+                    <f:selectItem itemLabel="Select a User" itemValue=""/>
                     <f:selectItems value="#{userDetailsBean.userAsStringList}"/>
                     <p:ajax listener="#{userDetailsBean.onUserSelected}" update="selectedYear selectedDate" />
                 </p:selectOneMenu>
 
                 <p:selectOneMenu id="selectedYear" value="#{userDetailsBean.selectedYear}">
+                    <f:selectItem itemLabel="Select a Year" itemValue=""/>
                     <f:selectItems value="#{userDetailsBean.years}"/>
                     <p:ajax listener="#{userDetailsBean.loadMonths}" update="selectedDate"/>
                 </p:selectOneMenu>
 
                 <p:selectOneMenu id="selectedDate" value="#{userDetailsBean.selectedDate}" converter="localDateConverter">
+                    <f:selectItem itemLabel="Select a Month" itemValue=""/>
                     <f:selectItems value="#{userDetailsBean.availableMonthLocalDates}" var="date" itemLabel="#{date.label}" itemValue="#{date.value}"/>
                 </p:selectOneMenu>
 
 
                 <p:commandButton value="load" actionListener="#{userDetailsBean.loadMonthOverview}" update="timeDataTable"/>
+                <p:commandButton value="Load Current Month" actionListener="#{userDetailsBean.loadCurrentMonth}" update="timeDataTable"/>
             </p:panelGrid>
 
             <p:dataTable id="timeDataTable" value="#{userDetailsBean.timerowlist}" var="entry" resizableColumns="true" liveResize="true" style="text-align: center">

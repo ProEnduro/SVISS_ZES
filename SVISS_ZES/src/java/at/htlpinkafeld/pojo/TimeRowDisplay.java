@@ -65,9 +65,9 @@ public class TimeRowDisplay {
                     temp = wt.getSollStartTime().until(wt.getSollEndTime(), ChronoUnit.MINUTES) / 60.0;
                 }
                 if (temp >= 6.0) {
-                    sollZeit += Math.round((temp - 0.5) * 100.0) / 100.0;
+                    sollZeit = Math.round((temp - 0.5) * 100.0) / 100.0;
                 } else {
-                    sollZeit += Math.round(temp * 100.0) / 100.0;
+                    sollZeit = Math.round(temp * 100.0) / 100.0;
                 }
                 workTime += Math.round((wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES) / 60.0) * 100.0) / 100.0;
 
@@ -78,6 +78,27 @@ public class TimeRowDisplay {
             workTime -= breakTime / 60.0;
             workTimeStart = workTimeStart.substring(2);
             workTimeEnd = workTimeEnd.substring(2);
+        }
+    }
+
+    public TimeRowDisplay(WorkTime wt) {
+        if (wt != null) {
+            date = wt.getStartTime().toLocalDate();
+            breakTime = 0;
+            sollZeit = 0.0;
+            workTime = 0.0;
+            overTime19plus = 0.0;
+
+            workTimeStart = wt.getStartTime().format(TIME_FORMATTER);
+            workTimeEnd = wt.getEndTime().format(TIME_FORMATTER);
+            breakTime = wt.getBreakTime();
+
+            workTime -= breakTime / 60.0;
+
+            double ot19Plus = wt.getOvertimeAfter19() / 60.0;
+            overTime19plus += Math.round(ot19Plus * 100.0) / 100.0;
+            reason += wt.getStartComment() + "   " + wt.getEndComment();
+            reason += " Followup from above";
         }
     }
 

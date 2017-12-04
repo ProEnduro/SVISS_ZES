@@ -93,4 +93,9 @@ public class WorkTime_InMemoryDAO extends Base_InMemoryDAO<WorkTime> implements 
     protected void setID(WorkTime entity, int id) {
         entity.setTimeID(id);
     }
+
+    @Override
+    public void deleteAllWorktimeFromUser(User o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

@@ -84,6 +84,8 @@ public class UserDetailsBean {
 
     User currentUser;
 
+    boolean loadCurrentMonthBoolean = false;
+
     public List<TimeRowDisplay> getTimerowlist() {
         return timerowlist;
     }
@@ -110,7 +112,7 @@ public class UserDetailsBean {
         }
 
         availableMonthLocalDates = new ArrayList<>();
-
+        selectedUser = "Select a User";
     }
 
     public void reloadUsers() {
@@ -126,7 +128,7 @@ public class UserDetailsBean {
 
         availableMonthLocalDates = new ArrayList<>();
 
-        this.setSelectedUser(userAsStringList.get(0));
+        this.setSelectedUser("Select a User");
         this.loadMonthOverview(null);
     }
 
@@ -194,6 +196,11 @@ public class UserDetailsBean {
         }
 
     }
+    
+    public void loadCurrentMonth(ActionEvent e){
+        loadCurrentMonthBoolean = true;
+        loadMonthOverview(null);
+    }
 
     public void loadMonthOverview(ActionEvent e) {
         this.timerowlist = new ArrayList<>();
@@ -204,6 +211,11 @@ public class UserDetailsBean {
         überstundenNach19 = 0;
 
         User currentUser = BenutzerverwaltungService.getUser(selectedUser);
+
+        LocalDate oldSelectedDate = selectedDate;
+        if (loadCurrentMonthBoolean == true) {
+            selectedDate = LocalDate.now();
+        }
 
         if (selectedDate != null) {
             int max = this.selectedDate.lengthOfMonth();
@@ -227,7 +239,7 @@ public class UserDetailsBean {
 
                 if (!worklist.isEmpty()) {
                     trd = new TimeRowDisplay(worklist);
-
+                    //trd = new TimeRowDisplay(worklist.get(0));
                     Double worktime = trd.getWorkTime();
                     Double sollzeit = trd.getSollZeit();
 
@@ -294,10 +306,26 @@ public class UserDetailsBean {
                         saldotemp = 0.0;
                     }
                 }
+
                 this.timerowlist.add(trd);
+                //int skip = 0;
+                if (worklist.size() > 1) {
+                    for (WorkTime w : worklist) {
+                        //if(skip > 0){
+                        this.timerowlist.add(new TimeRowDisplay(w));
+                        //}
+                        //skip++;
+                    }
+                }
+
                 saldo += saldotemp;
                 temp = temp.plus(1, ChronoUnit.DAYS);
             }
+        }
+
+        if (loadCurrentMonthBoolean == true) {
+            selectedDate = oldSelectedDate;
+            loadCurrentMonthBoolean = false;
         }
     }
 

@@ -101,4 +101,9 @@ public class SollZeiten_InMemoryDAO extends Base_InMemoryDAO<SollZeit> implement
         entity.setSollZeitID(id);
     }
 
+    @Override
+    public void deleteAllSollZeitenFromUser(User o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

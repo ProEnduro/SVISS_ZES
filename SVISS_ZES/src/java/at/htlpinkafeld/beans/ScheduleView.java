@@ -861,6 +861,9 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
     public void loadAbwesenheitByUser(ActionEvent ev) {
         this.acknowledgementModel.setSelectedUser(this.selectedUser);
+
+        this.acknowledgementModel.removeAllEvents();
+        this.acknowledgementModel.loadEvents();
     }
 
     public User getCurrentUser() {

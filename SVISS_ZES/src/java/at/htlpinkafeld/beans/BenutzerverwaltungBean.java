@@ -30,6 +30,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +77,16 @@ public class BenutzerverwaltungBean {
 
     private String resetPWString;
 
+    private boolean showDisabledUsers;
+
+    public boolean isShowDisabledUsers() {
+        return showDisabledUsers;
+    }
+
+    public void setShowDisabledUsers(boolean showDisabledUsers) {
+        this.showDisabledUsers = showDisabledUsers;
+    }
+
     /**
      * Initializes the ScheduleModel for the SollZeit-Dialog
      */
@@ -83,6 +94,7 @@ public class BenutzerverwaltungBean {
     public void init() {
         timeModel = new DefaultScheduleModel();
         pointDate = LocalDate.of(2016, 8, 1);
+        showDisabledUsers = false;
     }
 
     /**
@@ -103,9 +115,22 @@ public class BenutzerverwaltungBean {
     }
 
     public List<User> getUserList() {
-//        if (userlist == null) {
-//            userlist = BenutzerverwaltungService.getUserList();
-//        }
+        if (userlist == null) {
+            userlist = BenutzerverwaltungService.getUserList();
+        }
+
+        if (showDisabledUsers) {
+            return userlist;
+        } else {
+            Iterator<User> userIterator = userlist.iterator();
+
+            while (userIterator.hasNext()) {
+                User u = userIterator.next();
+                if (u.isDisabled()) {
+                    userIterator.remove();
+                }
+            }
+        }
         return userlist;
     }
 
@@ -496,6 +521,40 @@ public class BenutzerverwaltungBean {
         selectedUser.setApprover(approverModel.getTarget());
         BenutzerverwaltungService.updateApproverOfUser(selectedUser);
         selectedUser = null;
+    }
+
+    public void myDeleteUser(ActionEvent e) {
+        User user = (User) e.getComponent().getAttributes().get("user");
+        selectedUser = user;
+    }
+
+    public void deleteUser() {
+        //FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, selectedUser.getUsername(), "Löschen 1 and so that it is a bit longer so that you can see a difference!"));
+        BenutzerverwaltungService.deleteUser(selectedUser);
+        //FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, selectedUser.getUsername(), "Löschen 2!"));
+        userlist.remove(selectedUser);
+        selectedUser = null;
+    }
+
+    public void removeSelectedUser() {
+        selectedUser = null;
+    }
+
+    public void reloadUsers() {
+        userlist = BenutzerverwaltungService.getUserList();
+
+        if (showDisabledUsers) {
+
+        } else {
+            Iterator<User> userIterator = userlist.iterator();
+
+            while (userIterator.hasNext()) {
+                User u = userIterator.next();
+                if (u.isDisabled()) {
+                    userIterator.remove();
+                }
+            }
+        }
     }
 
 }

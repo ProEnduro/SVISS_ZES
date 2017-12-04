@@ -30,4 +30,6 @@ public interface SollZeiten_DAO extends Base_DAO<SollZeit> {
     public abstract SollZeit getSollZeitenByUser_Current(User u);
 
     public abstract SollZeit getSollZeitenByUser_ValidDate(User u, LocalDateTime ldt);
+
+    public abstract void deleteAllSollZeitenFromUser(User o);
 }

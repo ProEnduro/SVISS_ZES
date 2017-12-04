@@ -56,4 +56,8 @@
         <servlet-name>at.htlpinkafeld.ZES_REST</servlet-name>
         <url-pattern>/webresources/*</url-pattern>
     </servlet-mapping>
+    
+    <listener>
+        <listener-class>at.htlpinkafeld.beans.ScheduledTaskManagementBean</listener-class>
+    </listener>
 </web-app>

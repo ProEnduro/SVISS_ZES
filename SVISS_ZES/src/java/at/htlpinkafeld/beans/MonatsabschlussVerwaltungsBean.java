@@ -12,11 +12,14 @@ import at.htlpinkafeld.service.UserHistoryService;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.TextStyle;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.model.SelectItem;
+import org.apache.commons.lang3.text.WordUtils;
 
 /**
  *
@@ -31,7 +34,7 @@ public class MonatsabschlussVerwaltungsBean {
     private UserHistoryEntry selectedUserHistoryEntry;
 
     private List<User> users;
-    private Month[] availableMonths;
+    private List<SelectItem> availableMonths;
     private Month selectedMonth;
     private Integer selectedYear;
 
@@ -41,8 +44,14 @@ public class MonatsabschlussVerwaltungsBean {
     public MonatsabschlussVerwaltungsBean() {
         userHistoryEntrys = UserHistoryService.getUserHistoryEntries();
         users = BenutzerverwaltungService.getUserList();
-        availableMonths = Month.values();
-
+        
+        Month[] months = Month.values();
+        availableMonths = new LinkedList<>();
+        for(Month m: months){
+            availableMonths.add(new SelectItem(m, this.getDisplayName(m)));
+        }
+        
+        
         selectedMonth = Month.JANUARY;
         selectedYear = LocalDateTime.now().getYear();
         selectedUserHistoryEntry = new UserHistoryEntry(LocalDateTime.now(), null, 0, 0);
@@ -68,7 +77,7 @@ public class MonatsabschlussVerwaltungsBean {
         this.selectedUserHistoryEntry = selectedUserHistoryEntry;
     }
 
-    public Month[] getAvailableMonths() {
+    public List<SelectItem>getAvailableMonths() {
         return availableMonths;
     }
 
@@ -114,6 +123,10 @@ public class MonatsabschlussVerwaltungsBean {
     }
 
     public void saveEditedUserHistoryEntry() {
+        
+        //System.out.println(selectedUserHistoryEntry);
+        //System.out.println(selectedYear + " " + selectedMonth);
+        
         if (selectedUserHistoryEntry.getOvertime() == null || selectedUserHistoryEntry.getVacation() == null) {
             FacesContext.getCurrentInstance().validationFailed();
         } else {
@@ -124,11 +137,15 @@ public class MonatsabschlussVerwaltungsBean {
                 this.userHistoryEntrys.remove(selectedUserHistoryEntry);
                 this.userHistoryEntrys.add(selectedUserHistoryEntry);
             } else {
+                
+                selectedUserHistoryEntry.setTimestamp(LocalDateTime.of(selectedYear, selectedMonth.plus(1), 1, 0, 0).minusMinutes(10));
+                //System.out.println(selectedUserHistoryEntry);
+                
                 if (this.userHistoryEntrys.contains(this.selectedUserHistoryEntry)) {
                     FacesContext.getCurrentInstance().validationFailed();
                     FacesContext.getCurrentInstance().addMessage("uhEntryDialogForm", new FacesMessage(FacesMessage.SEVERITY_WARN, "Speichern fehlgeschlagen!", "Es ist bereits ein Eintrag für diesen Benutzer in diesem Monat verfügbar!"));
                 } else {
-                    selectedUserHistoryEntry.setTimestamp(LocalDateTime.of(selectedYear, selectedMonth.plus(1), 1, 0, 0).minusMinutes(10));
+                    //selectedUserHistoryEntry.setTimestamp(LocalDateTime.of(selectedYear, selectedMonth.plus(1), 1, 0, 0).minusMinutes(10));
                     UserHistoryService.insertUserHistoryEntry(selectedUserHistoryEntry);
                     this.userHistoryEntrys.add(selectedUserHistoryEntry);
                 }
@@ -145,8 +162,8 @@ public class MonatsabschlussVerwaltungsBean {
         editing = false;
     }
 
-    public String getDisplayName(Month month) {
-        return month.getDisplayName(TextStyle.FULL, Locale.getDefault());
+    public String getDisplayName(Month m) {
+        return m.getDisplayName(TextStyle.FULL, Locale.getDefault());
     }
 
     public int sortByTimestamp(Object obj1, Object obj2) {

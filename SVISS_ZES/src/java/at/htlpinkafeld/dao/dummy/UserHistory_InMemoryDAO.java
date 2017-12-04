@@ -58,4 +58,9 @@ class UserHistory_InMemoryDAO extends Base_InMemoryDAO<UserHistoryEntry> impleme
         return historyEntrys;
     }
 
+    @Override
+    public void deleteAllUserHistoryFromUser(User o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

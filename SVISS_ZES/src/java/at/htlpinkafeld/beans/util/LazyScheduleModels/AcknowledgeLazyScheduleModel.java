@@ -12,6 +12,7 @@ import at.htlpinkafeld.service.BenutzerverwaltungService;
 import at.htlpinkafeld.service.TimeConverterService;
 import org.primefaces.model.DefaultScheduleModel;
 import org.primefaces.model.LazyScheduleModel;
+import org.primefaces.model.ScheduleEvent;
 
 /**
  * A {@link LazyScheduleModel} which uses a selectedUser and loads
@@ -41,6 +42,15 @@ public class AcknowledgeLazyScheduleModel extends DefaultScheduleModel {
      */
     public void setSelectedUser(String selected) {
         selectedUser = selected;
+
+        //this.removeAllEvents();
+        //loadEvents();
+    }
+
+    public void removeAllEvents() {
+        for (ScheduleEvent e : this.getEvents()) {
+            this.deleteEvent(e);
+        }
     }
 
     /**
@@ -77,7 +87,7 @@ public class AcknowledgeLazyScheduleModel extends DefaultScheduleModel {
         } else {
             for (Absence a : AbsenceService.getAbsenceByUserAndUnacknowledged(BenutzerverwaltungService.getUser(selectedUser))) {
 
-                AbsenceEvent e = new AbsenceEvent(a.getReason(), TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);
+                AbsenceEvent e = new AbsenceEvent(a.getUser().getUsername() + " " + a.getAbsenceType() + " " + a.getReason(), TimeConverterService.convertLocalDateTimeToDate(a.getStartTime()), TimeConverterService.convertLocalDateTimeToDate(a.getEndTime()), a);
 
                 switch (e.getAbsence().getAbsenceType()) {
 

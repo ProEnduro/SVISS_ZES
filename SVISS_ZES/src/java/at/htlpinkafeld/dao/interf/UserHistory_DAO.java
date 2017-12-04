@@ -19,4 +19,6 @@ public interface UserHistory_DAO extends Base_DAO<UserHistoryEntry> {
     public List<UserHistoryEntry> getUserHistoryEntrysByUser(User u);
 
     public List<UserHistoryEntry> getUserHistoryEntrysByUser_BetweenDates(User u, LocalDate startDate, LocalDate endDate);
+
+    public abstract void deleteAllUserHistoryFromUser(User o);
 }

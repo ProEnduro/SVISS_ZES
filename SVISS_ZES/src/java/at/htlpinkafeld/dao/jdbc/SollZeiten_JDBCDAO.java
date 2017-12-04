@@ -203,6 +203,17 @@ public class SollZeiten_JDBCDAO extends Base_JDBCDAO<SollZeit> implements SollZe
         return sollZeit;
     }
 
+    @Override
+    public void deleteAllSollZeitenFromUser(User o) {
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement()) {
+
+            stmt.execute("DELETE FROM " + TABLE_NAME + " WHERE + " + USERNR_COL + " = " + o.getUserNr() + ";");
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     private static class SollZeitenPerDay_JDBCDAO {
 
         private static final String SUB_TABLE_NAME = "SollZeitPerDay";

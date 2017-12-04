@@ -5,6 +5,7 @@
  */
 package at.htlpinkafeld.dao.jdbc;
 
+import at.htlpinkafeld.dao.factory.DAOFactory;
 import at.htlpinkafeld.dao.interf.AccessLevel_DAO;
 import at.htlpinkafeld.dao.interf.User_DAO;
 import at.htlpinkafeld.dao.util.DAOException;
@@ -251,4 +252,32 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    @Override
+    public void delete(User o) {
+        //super.delete(o);
+
+        DAOFactory.getDAOFactory().getWorkTimeDAO().deleteAllWorktimeFromUser(o);
+        DAOFactory.getDAOFactory().getSollZeitenDAO().deleteAllSollZeitenFromUser(o);
+        DAOFactory.getDAOFactory().getAbsenceDAO().deleteAllAbsenceFromUser(o);
+        DAOFactory.getDAOFactory().getUserHistoryDAO().deleteAllUserHistoryFromUser(o);
+
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement()) {
+
+            stmt.execute("DELETE FROM " + RELATION_TABLE_NAME + " WHERE " + USERNR_COL + " = " + o.getUserNr() + ";");
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement()) {
+
+            stmt.execute("DELETE FROM " + TABLE_NAME + " WHERE " + USERNR_COL + " = " + o.getUserNr() + ";");
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
 }
