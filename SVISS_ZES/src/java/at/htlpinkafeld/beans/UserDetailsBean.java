@@ -196,8 +196,8 @@ public class UserDetailsBean {
         }
 
     }
-    
-    public void loadCurrentMonth(ActionEvent e){
+
+    public void loadCurrentMonth(ActionEvent e) {
         loadCurrentMonthBoolean = true;
         loadMonthOverview(null);
     }
@@ -260,6 +260,9 @@ public class UserDetailsBean {
                 }
                 if (!absencelist.isEmpty()) {
                     for (Absence a : absencelist) {
+                        if (a.getAbsenceType().equals(AbsenceTypeNew.HOLIDAY) && a.isAcknowledged()) {
+                            break;
+                        }
                         trd.setReason(trd.getReason() + a.getAbsenceType() + " " + a.getReason() + " ");
 
                         if (!worklist.isEmpty() && (!a.getAbsenceType().equals(AbsenceTypeNew.TIME_COMPENSATION) && !a.getAbsenceType().equals(AbsenceTypeNew.BUSINESSRELATED_ABSENCE))) {
@@ -288,8 +291,10 @@ public class UserDetailsBean {
 
                                     if (s > smax) {
                                         saldo += smax / 60.0;
+//                                        saldo += smax;
                                     } else {
                                         saldo += s / 60.0;
+//                                        saldo += s;
                                     }
                                 }
 
@@ -304,6 +309,18 @@ public class UserDetailsBean {
                     if (sollzeit == null || !sollzeit.getSollStartTimeMap().containsKey(temp.getDayOfWeek())) {
                         trd = new TimeRowDisplay(new Holiday(temp, "(frei)"));
                         saldotemp = 0.0;
+                    } else {
+                        if (loadCurrentMonthBoolean) {
+                            if (temp.isBefore(LocalDate.now())) {
+                                DayOfWeek dow = temp.getDayOfWeek();
+                                saldotemp = (double) -(sollzeit.getSollTimeInHour(dow)) * 5;
+                                trd = new TimeRowDisplay(new Holiday(temp, "nicht erschienen!"));
+                            }
+                        } else {
+                            DayOfWeek dow = temp.getDayOfWeek();
+                            saldotemp = (double) -(sollzeit.getSollTimeInHour(dow)) * 5;
+                            trd = new TimeRowDisplay(new Holiday(temp, "nicht erschienen!"));
+                        }
                     }
                 }
 
@@ -327,6 +344,7 @@ public class UserDetailsBean {
             selectedDate = oldSelectedDate;
             loadCurrentMonthBoolean = false;
         }
+        saldo = saldo / 5;
     }
 
     public double getSaldo() {

@@ -93,6 +93,7 @@ public class TimeRowDisplay {
             workTimeEnd = wt.getEndTime().format(TIME_FORMATTER);
             breakTime = wt.getBreakTime();
 
+            //workTime += Math.round((wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES) / 60.0) * 100.0) / 100.0;
             workTime -= breakTime / 60.0;
 
             double ot19Plus = wt.getOvertimeAfter19() / 60.0;

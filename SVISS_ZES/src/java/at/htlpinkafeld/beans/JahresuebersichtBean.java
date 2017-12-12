@@ -256,20 +256,24 @@ public class JahresuebersichtBean {
                     if (!a.isAcknowledged()) {
                         break;
                     }
-                    int holidayLength = (a.getEndTime().getDayOfYear() - a.getStartTime().getDayOfYear() + 1);
-                    DayOfWeek hDay = a.getStartTime().getDayOfWeek();
-                    for (int i = 0; i < holidayLength; i++, hDay.plus(1)) {
-                        int diff = 0;
-                        SollZeit sz = SollZeitenService.getSollZeitenByUser_ValidDate(u, a.getStartTime());
+                    boolean ignoreHoliday = true;
 
-                        if (sz != null && sz.getSollStartTimeMap().containsKey(hDay)) {
-                            diff = (int) sz.getSollStartTime(hDay).until(sz.getSollEndTime(hDay), ChronoUnit.MINUTES);
-                        }
-                        if (diff > 6 * 60) {
-                            diff -= 30;
-                        }
-                        overtime += diff;
+                    if (!ignoreHoliday) {
+                        int holidayLength = (a.getEndTime().getDayOfYear() - a.getStartTime().getDayOfYear() + 1);
+                        DayOfWeek hDay = a.getStartTime().getDayOfWeek();
+                        for (int i = 0; i < holidayLength; i++, hDay.plus(1)) {
+                            int diff = 0;
+                            SollZeit sz = SollZeitenService.getSollZeitenByUser_ValidDate(u, a.getStartTime());
 
+                            if (sz != null && sz.getSollStartTimeMap().containsKey(hDay)) {
+                                diff = (int) sz.getSollStartTime(hDay).until(sz.getSollEndTime(hDay), ChronoUnit.MINUTES);
+                            }
+                            if (diff > 6 * 60) {
+                                diff -= 30;
+                            }
+                            overtime += diff;
+
+                        }
                     }
                     break;
                 case TIME_COMPENSATION:
