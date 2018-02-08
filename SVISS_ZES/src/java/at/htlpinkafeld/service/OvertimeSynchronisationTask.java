@@ -78,24 +78,33 @@ public class OvertimeSynchronisationTask implements Runnable {
                 WorkTime wt = new WorkTime(u, sz.getSollStartTime(currentDay).atDate(startLd), sz.getSollEndTime(currentDay).atDate(startLd), breaktime, "", "");
                 IstZeitService.addIstTime(wt);
             } else {
-                int diff = 0;
+                boolean isUserHoliday = false;
                 for (Absence a : absences) {
-                    if (a.getAbsenceType().equals(AbsenceTypeNew.MEDICAL_LEAVE) || a.getAbsenceType().equals(AbsenceTypeNew.TIME_COMPENSATION)) {
-                        if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime(currentDay)) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime(currentDay))) {
-                            diff += (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
-                        } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime(currentDay)) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime(currentDay))) {
-                        } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime(currentDay))) {
-                            diff += (int) a.getStartTime().until(sz.getSollEndTime(currentDay), ChronoUnit.MINUTES);
-                        } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime(currentDay))) {
-                            diff += (int) sz.getSollStartTime(currentDay).until(a.getEndTime(), ChronoUnit.MINUTES);
-                        } else {
-                            diff += (int) sz.getSollStartTime(currentDay).until(sz.getSollEndTime(currentDay), ChronoUnit.MINUTES);
-                        }
+                    if (a.getAbsenceType().equals(AbsenceTypeNew.HOLIDAY)) {
+                        isUserHoliday = true;
                     }
                 }
-                diff -= sz.getSollStartTime(currentDay).until(sz.getSollEndTime(currentDay), ChronoUnit.MINUTES);
-                u.setOverTimeLeft(u.getOverTimeLeft() + diff);
-                USER_DAO.update(u);
+
+                if (!isUserHoliday) {
+                    int diff = 0;
+                    for (Absence a : absences) {
+                        if (a.getAbsenceType().equals(AbsenceTypeNew.MEDICAL_LEAVE) || a.getAbsenceType().equals(AbsenceTypeNew.TIME_COMPENSATION)) {
+                            if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime(currentDay)) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime(currentDay))) {
+                                diff += (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
+                            } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime(currentDay)) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime(currentDay))) {
+                            } else if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime(currentDay))) {
+                                diff += (int) a.getStartTime().until(sz.getSollEndTime(currentDay), ChronoUnit.MINUTES);
+                            } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime(currentDay))) {
+                                diff += (int) sz.getSollStartTime(currentDay).until(a.getEndTime(), ChronoUnit.MINUTES);
+                            } else {
+                                diff += (int) sz.getSollStartTime(currentDay).until(sz.getSollEndTime(currentDay), ChronoUnit.MINUTES);
+                            }
+                        }
+                    }
+                    diff -= sz.getSollStartTime(currentDay).until(sz.getSollEndTime(currentDay), ChronoUnit.MINUTES);
+                    u.setOverTimeLeft(u.getOverTimeLeft() + diff);
+                    USER_DAO.update(u);
+                }
             }
         }
     }

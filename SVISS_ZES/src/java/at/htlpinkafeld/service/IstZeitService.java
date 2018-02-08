@@ -37,7 +37,7 @@ public class IstZeitService {
         if (t.getSollStartTime() == null) {
             SollZeit sz = sollZeiten_DAO.getSollZeitenByUser_Current(t.getUser());
             DayOfWeek dow = t.getStartTime().getDayOfWeek();
-            if (sz.getSollStartTime(dow) != null) {
+            if (sz != null && sz.getSollStartTime(dow) != null) {
                 t.setSollStartTime(sz.getSollStartTime(dow));
                 t.setSollEndTime(sz.getSollEndTime(dow));
             } else {

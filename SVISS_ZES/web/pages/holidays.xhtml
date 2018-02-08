@@ -43,8 +43,8 @@
                         <p:calendar id="date" value="#{feiertageBean.curEvent.startDate}" disabled="#{feiertageBean.dateDisabled}" pattern="dd.MM.yyyy"   locale="de" required="true" readonlyInput="true"/>
 
                         <f:facet name="footer">
-                            <p:commandButton id="addButton" value="Save" action="#{feiertageBean.addEvent}" update=":scheduleForm"   onsuccess="PF('eventDialog').hide();" />
-                            <p:commandButton id="delButton" value="Delete" action="#{feiertageBean.removeEvent}" update=":scheduleForm"  onsuccess="PF('eventDialog').hide();" />
+                            <p:commandButton id="addButton" value="Save" action="#{feiertageBean.addEvent}" onsuccess="PF('myschedule').update();PF('eventDialog').hide();" />
+                            <p:commandButton id="delButton" value="Delete" action="#{feiertageBean.removeEvent}" onsuccess="PF('myschedule').update();PF('eventDialog').hide();" />
                             <p:commandButton type="reset" value="Reset" />
                         </f:facet>
                     </h:panelGrid>

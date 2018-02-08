@@ -41,6 +41,7 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
     public static final String PASSWORD_COL = "PASSWORD";
     public static final String WEEKTIME_COL = "WEEKTIME";
     public static final String DISABLED_COL = "DISABLED";
+    public static final String ISPARTTIMER = "ISPARTTIMER";
 
     public static final String REL_USERNR_COL = USERNR_COL;
     public static final String REL_APPROVER_COL = "APPROVERNR";
@@ -49,7 +50,7 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
     public static final String RELATION_TABLE_NAME = "ApproverUser";
     public static final String PRIMARY_KEY = USERNR_COL;
     private static final String[] ALL_COLUMNS = {USERNR_COL, ACCESSLEVELID_COL, PERSNAME_COL, VACATIONLEFT_COL, OVERTIMELEFT_COL, USERNAME_COL, EMAIL_COL,
-        HIREDATE_COL, PASSWORD_COL, WEEKTIME_COL, DISABLED_COL};
+        HIREDATE_COL, PASSWORD_COL, WEEKTIME_COL, DISABLED_COL, ISPARTTIMER};
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -216,6 +217,7 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
         resMap.put(PASSWORD_COL, entity.getPass());
         resMap.put(WEEKTIME_COL, entity.getWeekTime());
         resMap.put(DISABLED_COL, entity.isDisabled());
+        resMap.put(ISPARTTIMER, entity.isParttimer());
 
         return resMap;
     }
@@ -236,6 +238,7 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
             u.setPass(rs.getString(PASSWORD_COL));
             u.setWeekTime(rs.getDouble(WEEKTIME_COL));
             u.setDisabled(rs.getBoolean(DISABLED_COL));
+            u.setParttimer(rs.getBoolean(ISPARTTIMER));
 
         } catch (SQLException ex) {
             Logger.getLogger(Base_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -278,6 +281,23 @@ public class User_JDBCDAO extends Base_JDBCDAO<User> implements User_DAO {
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+
+    @Override
+    public List<User> getUserByParttimer(Boolean parttimer) {
+        List<User> userL = new ArrayList<>();
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                Statement stmt = con.getConn().createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ISPARTTIMER + " IS " + parttimer + " " + SQL_ORDER_BY_LINE)) {
+
+            while (rs.next()) {
+                userL.add(getEntityFromResultSet(rs));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return userL;
     }
 
 }

@@ -30,4 +30,6 @@ public interface User_DAO extends Base_DAO<User> {
     public abstract void updateApproverOfUser(User user);
 
     public abstract void removeApprover(User approver);
+    
+    public abstract List<User> getUserByParttimer(Boolean parttimer);
 }

@@ -28,8 +28,13 @@ public class EmailService {
 
     private static final DateTimeFormatter DAY_FORMATTER;
     private static final DateTimeFormatter DAY_TIME_FORMATTER;
+    
+    private static final String CURRENTZESLINK = "zes.sviss.at:8080/SVISS_ZES/";
+    private static final String CURRENTVPNZESLINK = "http://192.168.14.106:8080/SVISS_ZES/";
 
     private static final String SERVER_EMAILADDRESS = "zes@sviss.co.at";
+    
+    private static final String CURRENT_CC_EMAILADDRESS = "einsatzleitung@sviss.at";
 
     static {
         DAY_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -82,7 +87,64 @@ public class EmailService {
 
                 // Now set the actual message
                 message.setText(body, "utf-8", "html");
+                
+                // Send message
+                Transport.send(message);
+            } catch (MessagingException mex) {
+                throw new RuntimeException(mex);
+            }
+        }
+    }
+    
+    private static void sendEmailWithCC(String subject, String body, User from, List<User> to, String ccEmailAddress) {
+        String host = "smtp.world4you.com";
+//        String host = "localhost";
 
+        // Get system properties
+        Properties properties = System.getProperties();
+
+        // Setup mail server
+        properties.setProperty("mail.smtp.host", host);
+        properties.setProperty("mail.smtp.port", "25");
+        properties.setProperty("mail.smtp.auth", "true");
+        properties.setProperty("mail.smtp.starttls.enable", "true");
+
+        if (!to.isEmpty()) {
+
+            // Get the default Session object.
+            Session session = Session.getDefaultInstance(properties, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(SERVER_EMAILADDRESS, "wLichanda=");
+                }
+            });
+
+            try {
+                // Create a default MimeMessage object.
+                MimeMessage message = new MimeMessage(session);
+
+                // Set From: header field of the header.
+                if (from != null) {
+                    message.setFrom(new InternetAddress(from.getEmail()));
+                } else {
+                    message.setFrom(new InternetAddress(SERVER_EMAILADDRESS));
+                }
+
+                // Set To: header field of the header.
+                for (User u : to) {
+                    if (!u.getEmail().isEmpty()) {
+                        message.addRecipient(Message.RecipientType.TO, new InternetAddress(u.getEmail()));
+                    }
+                }
+
+                // Set Subject: header field
+                message.setSubject(subject, "utf-8");
+
+                // Now set the actual message
+                message.setText(body, "utf-8", "html");
+                
+                message.addRecipient(Message.RecipientType.CC, new InternetAddress(ccEmailAddress));
+                
                 // Send message
                 Transport.send(message);
             } catch (MessagingException mex) {
@@ -162,7 +224,7 @@ public class EmailService {
         List<User> senderL = new ArrayList<>();
         senderL.add(sender);
 
-        sendEmail(subject, bodyApprover, null, otherApprover);
+        sendEmailWithCC(subject, bodyApprover, null, otherApprover, CURRENT_CC_EMAILADDRESS);
         sendEmail(subject, bodySender, null, senderL);
     }
 
@@ -247,7 +309,9 @@ public class EmailService {
         String body;
 
         subject = "Passwort wurde zurückgesetzt";
-        body = "Das neue Passwort für den User " + user.getUsername() + " lautet: " + newPassword;
+        body = "Das neue Passwort für den User " + user.getUsername() + " lautet: " + newPassword +
+                "<br>Der Link für das ZES ist derzeit: " + CURRENTZESLINK +
+                "<br>Der Link für VPN-User ist derzeit: " + CURRENTVPNZESLINK;
 
         List<User> userL = new ArrayList<>();
         userL.add(user);

@@ -8,11 +8,16 @@ package at.htlpinkafeld.beans;
 import at.htlpinkafeld.service.AbsenceCleaningTask;
 import at.htlpinkafeld.service.HolidaySynchronisationTask;
 import at.htlpinkafeld.service.OvertimeSynchronisationTask;
+import at.htlpinkafeld.service.ParttimerWeektimeDeductionTask;
 import at.htlpinkafeld.service.UpdateUserHistoryTask;
+import java.time.DayOfWeek;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +28,7 @@ import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import org.primefaces.context.RequestContext;
 
 /**
  *
@@ -66,7 +72,6 @@ public class ScheduledTaskManagementBean implements ServletContextListener {
 //    public void destroyThreads() {
 //        scheduler.shutdown();
 //    }
-
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         LocalDateTime localNow = LocalDateTime.now();
@@ -84,12 +89,23 @@ public class ScheduledTaskManagementBean implements ServletContextListener {
         zonedNext0 = zonedNext0.withHour(10);
         duration = Duration.between(zonedNow, zonedNext0);
         long initalDelayEmail = duration.getSeconds();
+
+        ZonedDateTime zonedSunday = ZonedDateTime.of(localNow.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)), currentZone);
+        zonedSunday = zonedSunday.withHour(22);
+        Duration timeToNextSunday = Duration.between(zonedNow, zonedSunday);
+        long timeToNextSundayLong = timeToNextSunday.getSeconds();
+
         try {
             scheduler = Executors.newSingleThreadScheduledExecutor();
             scheduler.scheduleAtFixedRate(new HolidaySynchronisationTask(), initalDelayOvertime, 24 * 60 * 60, TimeUnit.SECONDS);
             scheduler.scheduleAtFixedRate(new OvertimeSynchronisationTask(), initalDelayOvertime, 24 * 60 * 60, TimeUnit.SECONDS);
             scheduler.scheduleAtFixedRate(new AbsenceCleaningTask(), initalDelayEmail, 24 * 60 * 60, TimeUnit.SECONDS);
             scheduler.scheduleAtFixedRate(new UpdateUserHistoryTask(), initalDelayOvertime, 24 * 60 * 60, TimeUnit.SECONDS);
+
+            //Parttimer Weektime Deduction
+            //RequestContext.getCurrentInstance().execute("PrimeFaces.info('TimeToNextSunday: " + timeToNextSundayLong +"');");
+            Logger.getLogger(ScheduledTaskManagementBean.class.getName()).log(Level.INFO, "TimeToNextSunday: " + timeToNextSundayLong);
+            scheduler.scheduleAtFixedRate(new ParttimerWeektimeDeductionTask(), timeToNextSundayLong, 7 * 24 * 60 * 60, TimeUnit.SECONDS);
         } catch (Exception e) {
             Logger.getLogger(ScheduledTaskManagementBean.class.getName()).log(Level.SEVERE, null, e);
 

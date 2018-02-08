@@ -17,6 +17,7 @@ and open the template in the editor.
     <ui:define name="auswertung">
         <h:form>
 
+            <!--<p:log></p:log>--> 
 
 
             <p:growl autoUpdate="true"/>
@@ -71,7 +72,7 @@ and open the template in the editor.
                     <p:outputLabel value="#{entry.workTime}"/>
 
                     <f:facet name="footer">
-                        <p:outputLabel value="Saldo: #{userDetailsBean.saldo}"/>
+                        <p:outputLabel value="Saldo: #{userDetailsBean.saldo}" rendered="#{!userDetailsBean.loadCurrentMonthBoolean}"/>
                     </f:facet>
                 </p:column>
 
@@ -79,7 +80,7 @@ and open the template in the editor.
                     <p:outputLabel value="#{entry.overTime19plus}"/>
 
                     <f:facet name="footer">
-                        <p:outputLabel value="Gesamt: #{userDetailsBean.überstundenNach19}"/>
+                        <p:outputLabel value="Gesamt: #{userDetailsBean.überstundenNach19}" rendered="#{!userDetailsBean.loadCurrentMonthBoolean}"/>
                     </f:facet>
                 </p:column>
 
@@ -87,7 +88,7 @@ and open the template in the editor.
                     <p:outputLabel value="#{entry.reason}"/>
 
                     <f:facet name="footer">
-                        <p:outputLabel value="Verbleibender Urlaub am Ende des Monats: #{userDetailsBean.urlaubsanspruch} Tage"/>
+                        <p:outputLabel value="Verbleibender Urlaub am Ende des Monats: #{userDetailsBean.urlaubsanspruch} Tage" rendered="#{!userDetailsBean.loadCurrentMonthBoolean}"/>
                     </f:facet>
                 </p:column>
 

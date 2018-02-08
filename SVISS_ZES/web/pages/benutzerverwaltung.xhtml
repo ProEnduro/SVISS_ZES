@@ -66,6 +66,10 @@ and open the template in the editor.
                     <p:column headerText="Enabled"  sortBy="#{user.disabled}" width="7%">
                         <h:outputText value="#{user.disabledString}"/>
                     </p:column>
+                    
+                    <p:column headerText="Zeitmodel"  sortBy="#{user.parttimer}" width="7%">
+                        <h:outputText value="#{user.parttimerOutputString}"/>
+                    </p:column>
 
                     <p:column headerText="Freigeber ändern" width="8%">
                         <p:commandButton id="editApproverBut" value="edit" actionListener="#{benutzerverwaltungsBean.editApprover}" update=":approverForm" oncomplete="PF('approverDialog').show();">
@@ -147,7 +151,8 @@ and open the template in the editor.
                     </p:row>
 
                     <p:row>
-                        <p:column colspan="2"><p:selectBooleanButton value="#{benutzerverwaltungsBean.selectedUser.disabled}"  onLabel="Disabled" offLabel="Enabled"/></p:column>
+                        <p:column><div style="text-align: center;"><p:selectBooleanButton value="#{benutzerverwaltungsBean.selectedUser.disabled}"  onLabel="Disabled" offLabel="Enabled"/></div></p:column>
+                        <p:column><div style="text-align: center;"><p:selectBooleanButton value="#{benutzerverwaltungsBean.selectedUser.parttimer}" onLabel="Teilzeit" offLabel="Vollzeit"/></div></p:column>
                     </p:row>
 
                     <f:facet name="footer">

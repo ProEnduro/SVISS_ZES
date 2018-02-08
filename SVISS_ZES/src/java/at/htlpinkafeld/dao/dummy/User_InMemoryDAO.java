@@ -131,4 +131,9 @@ public class User_InMemoryDAO extends Base_InMemoryDAO<User> implements User_DAO
         return null;
     }
 
+    @Override
+    public List<User> getUserByParttimer(Boolean parttimer) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

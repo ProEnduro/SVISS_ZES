@@ -37,11 +37,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+//import org.glassfish.hk2.utilities.reflection.Logger;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
@@ -268,8 +271,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
         WorkTime wt = null;
 
-        List<WorkTime> workTimes = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(currentUser, TimeConverterService.convertLocalDateTimeToDate(startDT.with(LocalTime.MIN)), TimeConverterService.convertLocalDateTimeToDate(startDT.with(LocalTime.MIN).plusDays(1)));
-
+        //List<WorkTime> workTimes = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(currentUser, TimeConverterService.convertLocalDateTimeToDate(startDT.with(LocalTime.MIN)), TimeConverterService.convertLocalDateTimeToDate(startDT.with(LocalTime.MIN).plusDays(1)));
         if (event.getStartDate().after(event.getEndDate())) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Endzeitpunkt ist vor Startzeitpunkt!"));
             FacesContext.getCurrentInstance().validationFailed();
@@ -341,6 +343,18 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                         diff += wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
                     }
                 }
+
+//                if(wt.getStartTime().until(wt.getEndTime(), ChronoUnit.HOURS) >= 6){
+//                    diff-= wt.getBreakTime();
+//                }
+                if (wt.getStartTime() != null && (wt.getStartTime().until(wt.getEndTime(), ChronoUnit.HOURS) > 6)) {
+                    if (wt.getSollStartTime().until(wt.getSollEndTime(), ChronoUnit.HOURS) > 6) {
+                        diff += 30;
+                    }
+                }
+
+                diff -= wt.getBreakTime();
+
                 wt.getUser().setOverTimeLeft(wt.getUser().getOverTimeLeft() + diff);
                 BenutzerverwaltungService.updateUser(wt.getUser());
             }
@@ -434,6 +448,15 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                         diff -= wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
                     }
                 }
+
+                if (wt.getStartTime() != null) {
+                    if (wt.getSollStartTime().until(wt.getSollEndTime(), ChronoUnit.HOURS) > 6) {
+                        diff -= 30;
+                    }
+                }
+
+                diff += wt.getBreakTime();
+
                 wt.getUser().setOverTimeLeft(wt.getUser().getOverTimeLeft() + diff);
                 BenutzerverwaltungService.updateUser(wt.getUser());
 
@@ -668,14 +691,20 @@ public class ScheduleView implements Serializable, DAODML_Observer {
      *
      */
     private void setHolidayAndIstZeiten(Absence a) {
-        User u = a.getUser();
+        User u = BenutzerverwaltungService.getUser(a.getUser().getUserNr());
         SollZeit sollZeit = SollZeitenService.getSollZeitenByUser_Current(u);
         int days;
         if (a.getAbsenceType().equals(AbsenceTypeNew.HOLIDAY) && a.isAcknowledged()) {
             days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
 
+            //Logger.getLogger(ScheduleView.class.getName()).log(Level.INFO, "Days: " + days);
+            Logger.getLogger(ScheduleView.class.getName()).log(Level.INFO, "Before: " + u.getVacationLeft());
+
             u.setVacationLeft(u.getVacationLeft() - days);
+            Logger.getLogger(ScheduleView.class.getName()).log(Level.INFO, "After: " + u.getVacationLeft());
             BenutzerverwaltungService.updateUser(u);
+
+            Logger.getLogger(ScheduleView.class.getName()).log(Level.INFO, "From Database: " + BenutzerverwaltungService.getUser(u.getUserNr()).getVacationLeft());
 
             LocalDateTime day = a.getStartTime();
             for (int i = 0; i < days; i++, day = day.plusDays(1)) {
@@ -929,7 +958,8 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         if (!AccessRightsService.checkPermission(currentUser.getAccessLevel(), "ALL")) {
             LocalDateTime start = LocalDateTime.now();
 
-            start = start.withHour(0).withMinute(0).withSecond(0).minusWeeks(1);
+            // 22.01.2018 -> Zeit zur Ist-Zeit-Eintragrung von 1ner Woche auf 5Wochen erhöht
+            start = start.withHour(0).withMinute(0).withSecond(0).minusWeeks(5);
 
             return TimeConverterService.convertLocalDateTimeToDate(start);
         } else {

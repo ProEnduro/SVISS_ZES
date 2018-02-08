@@ -34,6 +34,7 @@ public class User implements Serializable {
     //in hours
     private Double weekTime;
     private boolean disabled = false;
+    private boolean parttimer = false;
 
     private List<User> approver;
 
@@ -42,6 +43,14 @@ public class User implements Serializable {
         vacationLeft = 25;
         overTimeLeft = 0;
         weekTime = 0.0;
+    }
+
+    public boolean isParttimer() {
+        return parttimer;
+    }
+
+    public void setParttimer(boolean parttimer) {
+        this.parttimer = parttimer;
     }
 
     public User(User u) {
@@ -56,6 +65,7 @@ public class User implements Serializable {
         this.pass = u.getPass();
         this.weekTime = u.getWeekTime();
         this.disabled = u.isDisabled();
+        this.parttimer = u.isParttimer();
         if (u.areApproverInitialized()) {
             this.approver = u.getApprover();
         }
@@ -99,7 +109,11 @@ public class User implements Serializable {
         this.pass = pass;
         this.weekTime = weekTime;
     }
-
+    
+    public String getParttimerOutputString() {
+        return this.parttimer ? "Teilzeit" : "Vollzeit";
+    }
+    
     public Integer getUserNr() {
         return userNr;
     }

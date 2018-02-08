@@ -56,6 +56,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.primefaces.context.RequestContext;
 
 /**
  *
@@ -85,6 +86,7 @@ public class UserDetailsBean {
     User currentUser;
 
     boolean loadCurrentMonthBoolean = false;
+    boolean pressedOnLoadCurrentMonth = false;
 
     public List<TimeRowDisplay> getTimerowlist() {
         return timerowlist;
@@ -198,11 +200,28 @@ public class UserDetailsBean {
     }
 
     public void loadCurrentMonth(ActionEvent e) {
-        loadCurrentMonthBoolean = true;
+        pressedOnLoadCurrentMonth = true;
         loadMonthOverview(null);
     }
 
+    public boolean isLoadCurrentMonthBoolean() {
+        return loadCurrentMonthBoolean;
+    }
+
+    public void setLoadCurrentMonthBoolean(boolean loadCurrentMonthBoolean) {
+        this.loadCurrentMonthBoolean = loadCurrentMonthBoolean;
+    }
+
     public void loadMonthOverview(ActionEvent e) {
+
+        //RequestContext.getCurrentInstance().execute("PrimeFaces.info('Loading Month...');");
+
+        if (pressedOnLoadCurrentMonth) {
+            loadCurrentMonthBoolean = true;
+        } else {
+            loadCurrentMonthBoolean = false;
+        }
+
         this.timerowlist = new ArrayList<>();
 
         TimeRowDisplay trd;
@@ -244,6 +263,7 @@ public class UserDetailsBean {
                     Double sollzeit = trd.getSollZeit();
 
                     saldotemp = worktime - sollzeit;
+                    //RequestContext.getCurrentInstance().execute("PrimeFaces.info('saldotemp w-s: "+ (i+1) + " " + worktime+ "-" + sollzeit + "');");
 
                     überstundenNach19 += trd.getOverTime19plus();
 
@@ -290,9 +310,11 @@ public class UserDetailsBean {
                                     s = a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
 
                                     if (s > smax) {
+                                        //RequestContext.getCurrentInstance().execute("PrimeFaces.info('Saldo smax: " + i + " " + smax / 60.0 + "');");
                                         saldo += smax / 60.0;
 //                                        saldo += smax;
                                     } else {
+                                        //RequestContext.getCurrentInstance().execute("PrimeFaces.info('Saldo s: " + i + " " + s / 60.0 + "');");
                                         saldo += s / 60.0;
 //                                        saldo += s;
                                     }
@@ -313,12 +335,12 @@ public class UserDetailsBean {
                         if (loadCurrentMonthBoolean) {
                             if (temp.isBefore(LocalDate.now())) {
                                 DayOfWeek dow = temp.getDayOfWeek();
-                                saldotemp = (double) -(sollzeit.getSollTimeInHour(dow)) * 5;
+                                saldotemp = (double) -(sollzeit.getSollTimeInHour(dow));
                                 trd = new TimeRowDisplay(new Holiday(temp, "nicht erschienen!"));
                             }
                         } else {
                             DayOfWeek dow = temp.getDayOfWeek();
-                            saldotemp = (double) -(sollzeit.getSollTimeInHour(dow)) * 5;
+                            saldotemp = (double) -(sollzeit.getSollTimeInHour(dow));
                             trd = new TimeRowDisplay(new Holiday(temp, "nicht erschienen!"));
                         }
                     }
@@ -334,7 +356,7 @@ public class UserDetailsBean {
                         //skip++;
                     }
                 }
-
+                //RequestContext.getCurrentInstance().execute("PrimeFaces.info('saldotemp: "+ (i+1) + " " + saldotemp + "');");
                 saldo += saldotemp;
                 temp = temp.plus(1, ChronoUnit.DAYS);
             }
@@ -342,9 +364,12 @@ public class UserDetailsBean {
 
         if (loadCurrentMonthBoolean == true) {
             selectedDate = oldSelectedDate;
-            loadCurrentMonthBoolean = false;
+            //loadCurrentMonthBoolean = false;
+            pressedOnLoadCurrentMonth = false;
+            saldo = 0;
+            urlaubsanspruch = currentUser.getVacationLeft();
         }
-        saldo = saldo / 5;
+        //saldo = saldo / 5;
     }
 
     public double getSaldo() {
