@@ -42,8 +42,8 @@ and open the template in the editor.
                 </p:selectOneMenu>
 
 
-                <p:commandButton value="load" actionListener="#{userDetailsBean.loadMonthOverview}" update="timeDataTable"/>
-                <p:commandButton value="Load Current Month" actionListener="#{userDetailsBean.loadCurrentMonth}" update="timeDataTable"/>
+                <p:commandButton value="load" actionListener="#{userDetailsBean.loadMonthOverview}" update="timeDataTable xlsExport pdfExport"/>
+                <p:commandButton value="Load Current Month" actionListener="#{userDetailsBean.loadCurrentMonth}" update="timeDataTable xlsExport pdfExport"/>
             </p:panelGrid>
 
             <p:dataTable id="timeDataTable" value="#{userDetailsBean.timerowlist}" var="entry" resizableColumns="true" liveResize="true" style="text-align: center">
@@ -92,20 +92,15 @@ and open the template in the editor.
                     </f:facet>
                 </p:column>
 
-
-                <f:facet name="footer">
-                    <p:commandLink ajax="false" immediate="true">
-                        <p:graphicImage name="/images/excel-icon.png" style="width: 3%"/>
-                        <p:dataExporter   type="XLS" target="timeDataTable" fileName="Monatszeiten" encoding="iso-8859-1" postProcessor="#{userDetailsBean.postProcessXLS}"/>
-
-                    </p:commandLink >
-                    <p:commandLink ajax="false" action="#{userDetailsBean.createPDF}" immediate="true">
-                        <p:graphicImage name="/images/pdf-icon.png" style="width: 3%"/>
-
-                    </p:commandLink>
-                </f:facet>
-
             </p:dataTable>
+            
+            <p:commandLink id="xlsExport" ajax="false" immediate="true" disabled="#{userDetailsBean.exportDisabled}">
+                <p:graphicImage name="/images/excel-icon.png" style="width: 3%"/>
+                <p:dataExporter   type="XLS" target="timeDataTable" fileName="Monatszeiten" encoding="iso-8859-1" postProcessor="#{userDetailsBean.postProcessXLS}"/>
+            </p:commandLink >
+            <p:commandLink id="pdfExport" ajax="false" action="#{userDetailsBean.createPDF}" immediate="true" disabled="#{userDetailsBean.exportDisabled}">
+                <p:graphicImage name="/images/pdf-icon.png" style="width: 3%"/>
+            </p:commandLink>
 
 
             <p:remoteCommand update="selectUser selectedYear selectedDate timeDataTable" action="#{userDetailsBean.reloadUsers}" autoRun="true"/>

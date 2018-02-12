@@ -117,6 +117,13 @@ public class UserDetailsBean {
         selectedUser = "Select a User";
     }
 
+    public boolean isExportDisabled() {
+        if (selectedUser.equals("Select a User")) {
+            return true;
+        }
+        return false;
+    }
+
     public void reloadUsers() {
         userAsStringList = new ArrayList<>();
 
@@ -214,7 +221,7 @@ public class UserDetailsBean {
 
     public void loadMonthOverview(ActionEvent e) {
 
-        //RequestContext.getCurrentInstance().execute("PrimeFaces.info('Loading Month...');");
+        RequestContext.getCurrentInstance().execute("PrimeFaces.info('Loading Month...');");
 
         if (pressedOnLoadCurrentMonth) {
             loadCurrentMonthBoolean = true;
@@ -263,7 +270,7 @@ public class UserDetailsBean {
                     Double sollzeit = trd.getSollZeit();
 
                     saldotemp = worktime - sollzeit;
-                    //RequestContext.getCurrentInstance().execute("PrimeFaces.info('saldotemp w-s: "+ (i+1) + " " + worktime+ "-" + sollzeit + "');");
+                    RequestContext.getCurrentInstance().execute("PrimeFaces.info('saldotemp w-s: " + (i + 1) + " " + worktime + "-" + sollzeit + "');");
 
                     überstundenNach19 += trd.getOverTime19plus();
 
@@ -282,6 +289,10 @@ public class UserDetailsBean {
                     for (Absence a : absencelist) {
                         if (a.getAbsenceType().equals(AbsenceTypeNew.HOLIDAY) && a.isAcknowledged()) {
                             break;
+                        }
+
+                        if (a.getAbsenceType().equals(AbsenceTypeNew.MEDICAL_LEAVE)) {
+                            saldotemp = 0.0;
                         }
                         trd.setReason(trd.getReason() + a.getAbsenceType() + " " + a.getReason() + " ");
 
@@ -310,11 +321,11 @@ public class UserDetailsBean {
                                     s = a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
 
                                     if (s > smax) {
-                                        //RequestContext.getCurrentInstance().execute("PrimeFaces.info('Saldo smax: " + i + " " + smax / 60.0 + "');");
+                                        RequestContext.getCurrentInstance().execute("PrimeFaces.info('Saldo smax: " + i + " " + smax / 60.0 + "');");
                                         saldo += smax / 60.0;
 //                                        saldo += smax;
                                     } else {
-                                        //RequestContext.getCurrentInstance().execute("PrimeFaces.info('Saldo s: " + i + " " + s / 60.0 + "');");
+                                        RequestContext.getCurrentInstance().execute("PrimeFaces.info('Saldo s: " + i + " " + s / 60.0 + "');");
                                         saldo += s / 60.0;
 //                                        saldo += s;
                                     }
@@ -356,7 +367,7 @@ public class UserDetailsBean {
                         //skip++;
                     }
                 }
-                //RequestContext.getCurrentInstance().execute("PrimeFaces.info('saldotemp: "+ (i+1) + " " + saldotemp + "');");
+                RequestContext.getCurrentInstance().execute("PrimeFaces.info('saldotemp: " + (i + 1) + " " + saldotemp + "');");
                 saldo += saldotemp;
                 temp = temp.plus(1, ChronoUnit.DAYS);
             }

@@ -90,6 +90,13 @@ public class JahresuebersichtBean {
         }
 
     }
+    
+    public boolean isExportDisabled(){
+        if(selectedUser == null) {
+            return true;
+        }
+        return false;
+    }
 
     public List<SelectItem> getUsers() {
         return users;

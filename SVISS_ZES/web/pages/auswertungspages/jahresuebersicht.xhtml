@@ -29,7 +29,7 @@ and open the template in the editor.
                         <f:selectItem itemLabel="Select a year" itemValue=""/>
                         <f:selectItems value="#{jahresuebersichtBean.years}" var="year" itemLabel="#{year.label}" itemValue="#{year.value}"/>
                     </p:selectOneMenu>
-                    <p:commandButton value="load" action="#{jahresuebersichtBean.loadData}" update="data"/>
+                    <p:commandButton value="load" action="#{jahresuebersichtBean.loadData}" update="data xlsExport pdfExport"/>
                 </p:panelGrid>
 
                 <p:dataTable id="data" value="#{jahresuebersichtBean.months}" var="month"  style="width: 60%">
@@ -55,11 +55,11 @@ and open the template in the editor.
                         </f:facet>
                     </p:column>
                 </p:dataTable>
-                <p:commandLink ajax="false">
+                <p:commandLink id="xlsExport" ajax="false" disabled="#{jahresuebersichtBean.exportDisabled}">
                     <p:graphicImage name="/images/excel-icon.png" style="width: 4%; float: left"/>
                     <p:dataExporter type="xls" target="data" fileName="Jahresuebersicht" encoding="iso-8859-1" postProcessor="#{jahresuebersichtBean.postProcessXLS}"/>
                 </p:commandLink>
-                <p:commandLink ajax="false">
+                <p:commandLink id="pdfExport" ajax="false" disabled="#{jahresuebersichtBean.exportDisabled}">
                     <p:graphicImage name="/images/pdf-icon.png" style="width: 4%; float: left"/>
                     <p:dataExporter type="pdf" target="data" fileName="Jahresuebersicht" encoding="iso-8859-1" preProcessor="#{jahresuebersichtBean.preProcessPDF}" postProcessor="#{jahresuebersichtBean.postProcessPDF}"/>
                 </p:commandLink>
