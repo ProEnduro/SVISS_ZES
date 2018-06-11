@@ -17,6 +17,8 @@ and open the template in the editor.
         <ui:param name="currentIndex" value="0" />
 
         <ui:define name="content">
+            <!--            <p:log/>-->
+
             <p:growl id="growl" showDetail="true"/>
             <h:form id="scheduleForm">
                 <h1 align="center">Ist-Zeiten</h1>
@@ -122,6 +124,7 @@ and open the template in the editor.
             </style>
             <h:form id="istZeitForm">
                 <p:dialog id="evDialog" widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip" closeOnEscape="true" modal="true">
+                    <p:ajax event="close" listener="#{scheduleView.handleClose}" />
                     <h:panelGrid id="eventDetails" columns="2" style="vertical-align:middle">
                         <p:outputLabel for="title" value="Titles:" />
                         <p:inputText id="title" value="#{scheduleView.event.title}" disabled="true"/>
@@ -139,7 +142,7 @@ and open the template in the editor.
                         <p:calendar id="to" value="#{scheduleView.event.endDate}"  pattern="dd.MM.yyyy HH:mm" showOn="button" mask="true"
                                     mindate="#{scheduleView.allowedStartDateToday}" maxdate="#{scheduleView.allowedEndDateToday}" >
 
-                            <p:ajax event="dateSelect" process="to" update="breaktime" partialSubmit="true"/>
+                            <p:ajax event="dateSelect" process="to" update="breaktime" partialSubmit="true" listener="#{scheduleView.dateSelected}"/>
                             <p:ajax event="valueChange" process="to" update="breaktime" partialSubmit="true"/>
                         </p:calendar>
 

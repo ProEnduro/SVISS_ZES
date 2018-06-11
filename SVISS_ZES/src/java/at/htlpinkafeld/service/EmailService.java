@@ -28,12 +28,12 @@ public class EmailService {
 
     private static final DateTimeFormatter DAY_FORMATTER;
     private static final DateTimeFormatter DAY_TIME_FORMATTER;
-    
-    private static final String CURRENTZESLINK = "zes.sviss.at:8080/SVISS_ZES/";
+
+    private static final String CURRENTZESLINK = "http://zes.sviss.at:8080/SVISS_ZES/";
     private static final String CURRENTVPNZESLINK = "http://192.168.14.106:8080/SVISS_ZES/";
 
     private static final String SERVER_EMAILADDRESS = "zes@sviss.co.at";
-    
+
     private static final String CURRENT_CC_EMAILADDRESS = "einsatzleitung@sviss.at";
 
     static {
@@ -87,7 +87,7 @@ public class EmailService {
 
                 // Now set the actual message
                 message.setText(body, "utf-8", "html");
-                
+
                 // Send message
                 Transport.send(message);
             } catch (MessagingException mex) {
@@ -95,7 +95,7 @@ public class EmailService {
             }
         }
     }
-    
+
     private static void sendEmailWithCC(String subject, String body, User from, List<User> to, String ccEmailAddress) {
         String host = "smtp.world4you.com";
 //        String host = "localhost";
@@ -142,9 +142,9 @@ public class EmailService {
 
                 // Now set the actual message
                 message.setText(body, "utf-8", "html");
-                
+
                 message.addRecipient(Message.RecipientType.CC, new InternetAddress(ccEmailAddress));
-                
+
                 // Send message
                 Transport.send(message);
             } catch (MessagingException mex) {
@@ -309,9 +309,9 @@ public class EmailService {
         String body;
 
         subject = "Passwort wurde zurückgesetzt";
-        body = "Das neue Passwort für den User " + user.getUsername() + " lautet: " + newPassword +
-                "<br>Der Link für das ZES ist derzeit: " + CURRENTZESLINK +
-                "<br>Der Link für VPN-User ist derzeit: " + CURRENTVPNZESLINK;
+        body = "Das neue Passwort für den User " + user.getUsername() + " lautet: " + newPassword
+                + "<br>Der Link für das ZES ist derzeit: " + CURRENTZESLINK
+                + "<br>Der Link für VPN-User ist derzeit: " + CURRENTVPNZESLINK;
 
         List<User> userL = new ArrayList<>();
         userL.add(user);
@@ -371,6 +371,23 @@ public class EmailService {
                 break;
         }
         sendEmail(subject, body, null, approver);
+    }
+
+    public static void sendIstZeitReminderEmail(User u) {
+        String subject;
+        String body;
+
+        subject = "ZES Ist-Zeiten Erinnerung";
+        body = "Bitte tragen Sie Ihre Zeiten für dieses Monat korrekt im ZES ein!"
+                + "<br>Es ist nur möglich Ist-Zeiten im aktuellen Monat einzugeben!"
+                + "<br>"
+                + "<br>Der Link für das ZES ist derzeit: " + CURRENTZESLINK
+                + "<br>Der Link für VPN-User ist derzeit: " + CURRENTVPNZESLINK;
+
+        List<User> userL = new ArrayList<>();
+        userL.add(u);
+
+        sendEmail(subject, body, null, userL);
     }
 
 }

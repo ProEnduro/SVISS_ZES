@@ -7,9 +7,13 @@ package at.htlpinkafeld.beans.util.LazyScheduleModels;
 
 import at.htlpinkafeld.beans.util.AbsenceEvent;
 import at.htlpinkafeld.pojo.Absence;
+import at.htlpinkafeld.pojo.Holiday;
 import at.htlpinkafeld.service.AbsenceService;
 import at.htlpinkafeld.service.BenutzerverwaltungService;
+import at.htlpinkafeld.service.HolidayService;
 import at.htlpinkafeld.service.TimeConverterService;
+import java.util.Iterator;
+import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.DefaultScheduleModel;
 import org.primefaces.model.LazyScheduleModel;
 import org.primefaces.model.ScheduleEvent;
@@ -48,8 +52,15 @@ public class AcknowledgeLazyScheduleModel extends DefaultScheduleModel {
     }
 
     public void removeAllEvents() {
-        for (ScheduleEvent e : this.getEvents()) {
-            this.deleteEvent(e);
+        // Throws ConcurrentModificationException
+//        for (ScheduleEvent e : this.getEvents()) {
+//            this.deleteEvent(e);
+//        }
+
+        Iterator<ScheduleEvent> iter = this.getEvents().iterator();
+        while (iter.hasNext()) {
+            ScheduleEvent se = iter.next();
+            iter.remove();
         }
     }
 
@@ -109,6 +120,16 @@ public class AcknowledgeLazyScheduleModel extends DefaultScheduleModel {
 
                 this.addEvent(e);
             }
+        }
+
+        DefaultScheduleEvent holidayevent;
+
+        for (Holiday h : HolidayService.getList()) {
+            holidayevent = new DefaultScheduleEvent(h.getHolidayComment(), TimeConverterService.convertLocalDateToDate(h.getHolidayDate()), TimeConverterService.convertLocalDateToDate(h.getHolidayDate()));
+            holidayevent.setAllDay(true);
+            holidayevent.setStyleClass("feiertag");
+
+            this.addEvent(holidayevent);
         }
     }
 

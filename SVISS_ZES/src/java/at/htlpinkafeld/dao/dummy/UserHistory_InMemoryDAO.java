@@ -63,4 +63,9 @@ class UserHistory_InMemoryDAO extends Base_InMemoryDAO<UserHistoryEntry> impleme
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public List<UserHistoryEntry> getUserHistoryEntriesBetweenDates(LocalDate start, LocalDate end) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

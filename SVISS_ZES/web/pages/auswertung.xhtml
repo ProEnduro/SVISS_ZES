@@ -24,6 +24,8 @@ and open the template in the editor.
                 <p:menuitem value="Alle Abwesenheiten" action="#{auswertungsBean.redirectToAlleAbwesenheiten}"/>
                 <p:menuitem value="Monatsabschlüsse verwalten" action="#{auswertungsBean.redirectToMonatsabschlussVerwaltung}" 
                             rendered="#{auswertungsBean.canCurrentUserAccessMonatsabschlussVerwaltung}"/>
+                <p:menuitem value="Überstunden Übersicht" action="#{auswertungsBean.redirectToUeberstundenUebersicht}"
+                            rendered="#{auswertungsBean.canCurrentUserAccessUeberstundenUebersicht}"/>
             </p:tabMenu>
         </h:form>
 

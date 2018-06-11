@@ -7,6 +7,7 @@ package at.htlpinkafeld.beans;
 
 import at.htlpinkafeld.service.AbsenceCleaningTask;
 import at.htlpinkafeld.service.HolidaySynchronisationTask;
+import at.htlpinkafeld.service.IstZeitEmailReminderService;
 import at.htlpinkafeld.service.OvertimeSynchronisationTask;
 import at.htlpinkafeld.service.ParttimerWeektimeDeductionTask;
 import at.htlpinkafeld.service.UpdateUserHistoryTask;
@@ -106,6 +107,8 @@ public class ScheduledTaskManagementBean implements ServletContextListener {
             //RequestContext.getCurrentInstance().execute("PrimeFaces.info('TimeToNextSunday: " + timeToNextSundayLong +"');");
             Logger.getLogger(ScheduledTaskManagementBean.class.getName()).log(Level.INFO, "TimeToNextSunday: " + timeToNextSundayLong);
             scheduler.scheduleAtFixedRate(new ParttimerWeektimeDeductionTask(), timeToNextSundayLong, 7 * 24 * 60 * 60, TimeUnit.SECONDS);
+
+            scheduler.scheduleAtFixedRate(new IstZeitEmailReminderService(), initalDelayEmail, 7 * 24 * 60 * 60, TimeUnit.SECONDS);
         } catch (Exception e) {
             Logger.getLogger(ScheduledTaskManagementBean.class.getName()).log(Level.SEVERE, null, e);
 

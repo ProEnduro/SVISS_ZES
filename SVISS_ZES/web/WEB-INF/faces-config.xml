@@ -147,4 +147,9 @@
         <managed-bean-class>at.htlpinkafeld.beans.MonatsabschlussVerwaltungsBean</managed-bean-class>
         <managed-bean-scope>view</managed-bean-scope>
     </managed-bean>
+    <managed-bean>
+        <managed-bean-name>ueberstundenUebersichtBean</managed-bean-name>
+        <managed-bean-class>at.htlpinkafeld.beans.UeberstundenUebersichtBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
 </faces-config>

@@ -43,4 +43,8 @@ public class UserHistoryService {
     public static void insertUserHistoryEntry(UserHistoryEntry uhe) {
         userHistoryDAO.insert(uhe);
     }
+    
+    public static List<UserHistoryEntry> getUserHistoryEntriesBetweenDates(LocalDate start, LocalDate end) {
+        return userHistoryDAO.getUserHistoryEntriesBetweenDates(start, end);
+    }
 }

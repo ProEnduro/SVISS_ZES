@@ -22,6 +22,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Automatically adds a WorkTime for the last Day, if nothing was entered
@@ -57,7 +59,11 @@ public class OvertimeSynchronisationTask implements Runnable {
         noHoliday = HOLIDAY_DAO.getHolidayBetweenDates(startDate, nextDate).isEmpty();
         if (noHoliday) {
             users.forEach((u) -> {
-                addDefaultTimeAndUpdateOvertime(u, startDate, nextDate);
+                if (!u.isDisableDefaultTimeInsert()) {
+                    addDefaultTimeAndUpdateOvertime(u, startDate, nextDate);
+                } else {
+                    deductSolltime(u, startDate, nextDate);
+                }
             });
         }
     }
@@ -88,7 +94,7 @@ public class OvertimeSynchronisationTask implements Runnable {
                 if (!isUserHoliday) {
                     int diff = 0;
                     for (Absence a : absences) {
-                        if (a.getAbsenceType().equals(AbsenceTypeNew.MEDICAL_LEAVE) || a.getAbsenceType().equals(AbsenceTypeNew.TIME_COMPENSATION)) {
+                        if (a.getAbsenceType().equals(AbsenceTypeNew.MEDICAL_LEAVE)) {
                             if (a.getStartTime().toLocalTime().isAfter(sz.getSollStartTime(currentDay)) && a.getEndTime().toLocalTime().isBefore(sz.getSollEndTime(currentDay))) {
                                 diff += (int) a.getStartTime().until(a.getEndTime(), ChronoUnit.MINUTES);
                             } else if (a.getEndTime().toLocalTime().isBefore(sz.getSollStartTime(currentDay)) || a.getStartTime().toLocalTime().isAfter(sz.getSollEndTime(currentDay))) {
@@ -106,6 +112,49 @@ public class OvertimeSynchronisationTask implements Runnable {
                     USER_DAO.update(u);
                 }
             }
+        }
+    }
+
+    public void deductSolltime(User u, Date startDate, Date nextDate) {
+        SollZeit sz = SOLL_ZEITEN_DAO.getSollZeitenByUser_Current(u);
+        List<WorkTime> worktimes = WORK_TIME_DAO.getWorkTimesFromUserBetweenDates(u, startDate, nextDate);
+        LocalDate startLd = TimeConverterService.convertDateToLocalDate(startDate);
+        DayOfWeek currentDay = startLd.getDayOfWeek();
+
+        List<Absence> absencelist = ABSENCE_DAO.getAbsencesByUser_BetweenDates(u, startDate, nextDate);
+
+        boolean isTime_CompensationOrNormalWorkTime = true;
+        for (Absence a : absencelist) {
+            switch (a.getAbsenceType()) {
+                case BUSINESSRELATED_ABSENCE:
+                    isTime_CompensationOrNormalWorkTime = false;
+                    break;
+                case MEDICAL_LEAVE:
+                    isTime_CompensationOrNormalWorkTime = false;
+                    break;
+                case HOLIDAY:
+                    isTime_CompensationOrNormalWorkTime = false;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (sz != null && worktimes.isEmpty() && sz.getSollStartTime(currentDay) != null && sz.getSollEndTime(currentDay) != null && isTime_CompensationOrNormalWorkTime) {
+
+            // startLd = startLd.plusDays(1);
+            long sollzeit = sz.getSollTimeInHour(currentDay);
+            Logger.getLogger(OvertimeSynchronisationTask.class.getName()).log(Level.INFO, "Deduct Solltime in hours: " + currentDay.toString() + " " + u.getPersName() + ": " + u.getOverTimeLeft() + " - " + sollzeit);
+            sollzeit = sz.getSollStartTime(currentDay).until(sz.getSollEndTime(currentDay), ChronoUnit.MINUTES);
+            Logger.getLogger(OvertimeSynchronisationTask.class.getName()).log(Level.INFO, "Deduct Solltime in minutes pre-break: " + currentDay.toString() + " " + u.getPersName() + ": " + u.getOverTimeLeft() + " - " + sollzeit);
+            if (sollzeit >= 360) {
+                sollzeit = sollzeit - 30;
+            }
+
+            Logger.getLogger(OvertimeSynchronisationTask.class.getName()).log(Level.INFO, "Deduct Solltime final: " + currentDay.toString() + " " + u.getPersName() + ": " + u.getOverTimeLeft() + " - " + sollzeit);
+
+            u.setOverTimeLeft(u.getOverTimeLeft() - (int) sollzeit);
+            USER_DAO.update(u);
         }
     }
 }

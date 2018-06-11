@@ -65,7 +65,10 @@ public class IstZeitService {
     }
 
     public static LocalDateTime convertDateToLocalDateTime(Date date) {
-        return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+        if (date != null) {
+            return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+        }
+        return LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault());
     }
 
     public static Date convertLocalDateTimeToDate(LocalDateTime dateTime) {

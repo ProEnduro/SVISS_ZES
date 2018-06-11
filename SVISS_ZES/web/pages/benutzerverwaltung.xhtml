@@ -142,7 +142,7 @@ and open the template in the editor.
 
                     <p:row>
                         <p:column><p:outputLabel for="overtime" value="Overtime Left: "/></p:column>
-                        <p:column><p:inputText id="overtime" type="number" value="#{benutzerverwaltungsBean.selectedUser.overTimeLeft}" converter="minuteHourConverter" required="true" autocomplete="false"/></p:column>
+                        <p:column><p:inputText id="overtime" type="number" value="#{benutzerverwaltungsBean.selectedUser.overTimeLeft}" required="true" autocomplete="false"/></p:column>
                     </p:row>
 
                     <p:row>
@@ -153,6 +153,10 @@ and open the template in the editor.
                     <p:row>
                         <p:column><div style="text-align: center;"><p:selectBooleanButton value="#{benutzerverwaltungsBean.selectedUser.disabled}"  onLabel="Disabled" offLabel="Enabled"/></div></p:column>
                         <p:column><div style="text-align: center;"><p:selectBooleanButton value="#{benutzerverwaltungsBean.selectedUser.parttimer}" onLabel="Teilzeit" offLabel="Vollzeit"/></div></p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column><div style="text-align: center;"><p:selectBooleanButton value="#{benutzerverwaltungsBean.selectedUser.disableDefaultTimeInsert}"  onLabel="Zeit wird NICHT automatisch eingetragen!" offLabel="Zeit wird automatisch eingetragen!"/></div></p:column>
                     </p:row>
 
                     <f:facet name="footer">

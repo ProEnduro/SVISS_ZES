@@ -11,6 +11,8 @@ import at.htlpinkafeld.beans.util.LazyScheduleModels.AllTimeLazyScheduleModel;
 import at.htlpinkafeld.beans.util.LazyScheduleModels.AlleAbwesenheitenLazyScheduleModel;
 import at.htlpinkafeld.beans.util.LazyScheduleModels.IstZeitLazyScheduleModel;
 import at.htlpinkafeld.beans.util.WorkTimeEvent;
+import at.htlpinkafeld.dao.factory.DAOFactory;
+import at.htlpinkafeld.dao.interf.SollZeiten_DAO;
 import at.htlpinkafeld.dao.util.DAODML_Observer;
 import at.htlpinkafeld.pojo.Absence;
 import at.htlpinkafeld.pojo.AbsenceTypeNew;
@@ -33,6 +35,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -46,6 +49,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 //import org.glassfish.hk2.utilities.reflection.Logger;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.CloseEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.ScheduleEvent;
@@ -86,12 +90,25 @@ public class ScheduleView implements Serializable, DAODML_Observer {
     private String reason;
 
     private int breaktime;
+    private boolean updateMode;
+    public boolean dateChanged;
+
+    Integer breaktimeOld;
+
+    boolean isAdminInputingOtherPeoplesAbsences = false;
+    String userWhoseAbsenceTheAdminInputsInStringFormat = null;
+    boolean oldWorktime;
 
     /**
      * Initializes various models for the multiple pages
      */
     @PostConstruct
     public void init() {
+        updateMode = false;
+        dateChanged = false;
+        breaktimeOld = null;
+        isAdminInputingOtherPeoplesAbsences = false;
+        oldWorktime = false;
 
         FacesContext context = FacesContext.getCurrentInstance();
         MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);
@@ -108,6 +125,8 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
             this.reloadAbwesenheiten();
         }
+
+        this.onLoad(null);
     }
 
     @PreDestroy
@@ -124,16 +143,58 @@ public class ScheduleView implements Serializable, DAODML_Observer {
      * @return Breaktime in Minutes
      */
     public int getBreaktime() {
-
-        if (event.getStartDate() != null && event.getEndDate() != null) {
-            if (IstZeitService.breakTimeBooleanCalc(event.getStartDate(), event.getEndDate())) {
-                return 30;
-            } else {
-                return 0;
+        if (event instanceof WorkTimeEvent) {
+            // Logger.getLogger(ScheduleView.class.getName()).log(Level.INFO, "This is a WorkTimeEvent!");
+        } else {
+            // Logger.getLogger(ScheduleView.class.getName()).log(Level.INFO, "This is NOT a WorkTimeEvent but it could be null!");
+            if (event.getStartDate() != null && event.getEndDate() != null) {
+                // Logger.getLogger(ScheduleView.class.getName()).log(Level.INFO, "This is NOT a WorkTimeEvent and it is not null!");
+                if (IstZeitService.breakTimeBooleanCalc(event.getStartDate(), event.getEndDate())) {
+                    return 30;
+                } else {
+                    return 0;
+                }
             }
         }
 
-        return breaktime;
+        // Logger.getLogger(ScheduleView.class.getName()).log(Level.INFO, this.newTimeSelected + "");
+        RequestContext.getCurrentInstance().execute("PrimeFaces.info('dateChanged (getBreaktime): " + this.dateChanged + "');");
+        if (this.newTimeSelected) {
+            if (event instanceof WorkTimeEvent) {
+                WorkTimeEvent wte = (WorkTimeEvent) event;
+                if (wte != null && wte.getWorktime() != null && wte.getWorktime().getBreakTime() != null) {
+                    if (wte.getWorktime().getBreakTime() != 0 || wte.getWorktime().getBreakTime() != 30) {
+                        RequestContext.getCurrentInstance().execute("PrimeFaces.info('Breaktime X: " + breaktime + "');");
+                        RequestContext.getCurrentInstance().execute("PrimeFaces.info('Breaktime X WTE: " + wte.getWorktime().getBreakTime() + "');");
+                        return wte.getWorktime().getBreakTime();
+                    }
+                }
+            }
+
+            if (IstZeitService.breakTimeBooleanCalc(event.getStartDate(), event.getEndDate())) {
+                RequestContext.getCurrentInstance().execute("PrimeFaces.info('Breaktime 30: " + 30 + "');");
+                return 30;
+            } else {
+                RequestContext.getCurrentInstance().execute("PrimeFaces.info('Breaktime 0: " + 0 + "');");
+                return 0;
+            }
+        } else {
+            if (dateChanged) {
+                if (IstZeitService.breakTimeBooleanCalc(event.getStartDate(), event.getEndDate())) {
+                    RequestContext.getCurrentInstance().execute("PrimeFaces.info('Breaktime 30: " + 30 + "');");
+                    return 30;
+                } else {
+                    RequestContext.getCurrentInstance().execute("PrimeFaces.info('Breaktime 0: " + 0 + "');");
+                    return 0;
+                }
+            } else {
+                RequestContext.getCurrentInstance().execute("PrimeFaces.info('Breaktime X: " + breaktime + "');");
+                return this.breaktime;
+            }
+        }
+//        RequestContext.getCurrentInstance().execute("PrimeFaces.info('Breaktime X: " + breaktime + "');");
+//        this.newTimeSelected = false;
+//        return breaktime;
     }
 
     public void setBreaktime(int breaktime) {
@@ -156,6 +217,20 @@ public class ScheduleView implements Serializable, DAODML_Observer {
         this.event = event;
     }
 
+    public void setIsAdminInputingOtherPeoplesAbsencesVariable(ActionEvent actionEvent) {
+        if (userWhoseAbsenceTheAdminInputsInStringFormat != null) {
+            if (!userWhoseAbsenceTheAdminInputsInStringFormat.equals("-")) {
+                this.isAdminInputingOtherPeoplesAbsences = true;
+                User u = BenutzerverwaltungService.getUser(userWhoseAbsenceTheAdminInputsInStringFormat);
+                FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_INFO, "INFO", "Sie können nun Abwesenheiten für den Benutzer " + u.getUsername() + ": " + u.getPersName() + " eintragen!"));
+            } else {
+                this.isAdminInputingOtherPeoplesAbsences = false;
+            }
+        } else {
+            this.isAdminInputingOtherPeoplesAbsences = false;
+        }
+    }
+
     /**
      * adds a new Absence or updates one if validation succeeds, used in
      * "absence.xhtml"
@@ -163,64 +238,117 @@ public class ScheduleView implements Serializable, DAODML_Observer {
      * @param actionEvent ActionEvent
      */
     public void addAbsenceEvent(ActionEvent actionEvent) {
+        if (isAdminInputingOtherPeoplesAbsences == false) {
 
-        LocalDateTime startDT = TimeConverterService.convertDateToLocalDateTime(event.getStartDate());
-        LocalDateTime endDT = TimeConverterService.convertDateToLocalDateTime(event.getEndDate());
+            LocalDateTime startDT = TimeConverterService.convertDateToLocalDateTime(event.getStartDate());
+            LocalDateTime endDT = TimeConverterService.convertDateToLocalDateTime(event.getEndDate());
 
-        if ((!startDT.toLocalDate().equals(endDT.toLocalDate()) && endDT.toLocalTime().equals(LocalTime.MIN)) || startDT.equals(endDT)) {
-            startDT = startDT.with(LocalTime.MIN);
-            endDT = endDT.with(LocalTime.of(23, 59, 59));
-        }
-        //Validation
-        if (event.getStartDate().after(event.getEndDate())) {
-            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Endzeitpunkt ist vor Startzeitpunkt!"));
-            FacesContext.getCurrentInstance().validationFailed();
-        } else if (!checkAvailableTime(TimeConverterService.convertLocalDateTimeToDate(startDT), TimeConverterService.convertLocalDateTimeToDate(endDT), true)) {
-            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Ein Eintrag für diese Urzeit ist bereits vorhanden!"));
-            FacesContext.getCurrentInstance().validationFailed();
-        } else if (!FacesContext.getCurrentInstance().isValidationFailed() && type.equals(AbsenceTypeNew.HOLIDAY)) {
-            int days = 0;
-            SollZeit currentSollZeit = SollZeitenService.getSollZeitenByUser_Current(currentUser);
-            if (currentSollZeit != null) {
-                for (LocalDate ld = startDT.toLocalDate(); ld.atStartOfDay().isBefore(endDT); ld = ld.plusDays(1)) {
+            if ((!startDT.toLocalDate().equals(endDT.toLocalDate()) && endDT.toLocalTime().equals(LocalTime.MIN)) || startDT.equals(endDT)) {
+                startDT = startDT.with(LocalTime.MIN);
+                endDT = endDT.with(LocalTime.of(23, 59, 59));
+            }
+            //Validation
+            if (event.getStartDate().after(event.getEndDate())) {
+                FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Endzeitpunkt ist vor Startzeitpunkt!"));
+                FacesContext.getCurrentInstance().validationFailed();
+            } else if (!checkAvailableTime(TimeConverterService.convertLocalDateTimeToDate(startDT), TimeConverterService.convertLocalDateTimeToDate(endDT), true)) {
+                FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Ein Eintrag für diese Uhrzeit ist bereits vorhanden!"));
+                FacesContext.getCurrentInstance().validationFailed();
+            } else if (!FacesContext.getCurrentInstance().isValidationFailed() && type.equals(AbsenceTypeNew.HOLIDAY)) {
+                int days = 0;
+                SollZeit currentSollZeit = SollZeitenService.getSollZeitenByUser_Current(currentUser);
+                if (currentSollZeit != null) {
+                    for (LocalDate ld = startDT.toLocalDate(); ld.atStartOfDay().isBefore(endDT); ld = ld.plusDays(1)) {
 
-                    if (currentSollZeit.getSollStartTimeMap().containsKey(ld.getDayOfWeek())) {
-                        days++;
+                        if (currentSollZeit.getSollStartTimeMap().containsKey(ld.getDayOfWeek())) {
+                            days++;
+                        }
+
                     }
-
+                }
+                if (days > currentUser.getVacationLeft()) {
+                    FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Sie haben nicht genug Urlaub übrig!"));
+                    FacesContext.getCurrentInstance().validationFailed();
                 }
             }
-            if (days > currentUser.getVacationLeft()) {
-                FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Sie haben nicht genug Urlaub übrig!"));
-                FacesContext.getCurrentInstance().validationFailed();
-            }
-        }
-        //Inserts or updates
+            //Inserts or updates
 
-        if (!FacesContext.getCurrentInstance().isValidationFailed() && event instanceof AbsenceEvent && event.getId() == null) {
+            if (!FacesContext.getCurrentInstance().isValidationFailed() && event instanceof AbsenceEvent && event.getId() == null) {
 
-            Absence a = ((AbsenceEvent) event).getAbsence();
-            a.setStartTime(startDT);
-            a.setEndTime(endDT);
-            a.setAbsenceType(type);
-            a.setReason(this.reason);
+                Absence a = ((AbsenceEvent) event).getAbsence();
+                a.setStartTime(startDT);
+                a.setEndTime(endDT);
+                a.setAbsenceType(type);
+                a.setReason(this.reason);
 
-            AbsenceService.insertAbsence(a);
-            List<User> approverlist = currentUser.getApprover();
-            if (!approverlist.isEmpty()) {
-                EmailService.sendUserEnteredAbsenceEmail(a, approverlist);
-            }
-        } else if (event instanceof WorkTimeEvent) {
+                AbsenceService.insertAbsence(a);
+                List<User> approverlist = currentUser.getApprover();
+                if (!approverlist.isEmpty()) {
+                    EmailService.sendUserEnteredAbsenceEmail(a, approverlist);
+                }
+            } else if (event instanceof WorkTimeEvent) {
 //            IstZeitService.update(((WorkTimeEvent) event).getWorktime());
-        } else if (event instanceof AbsenceEvent) {
-            Absence a = ((AbsenceEvent) event).getAbsence();
-            a.setReason(reason);
-            a.setStartTime(startDT);
-            a.setEndTime(endDT);
-            AbsenceService.updateAbsence(a);
-        }
+            } else if (event instanceof AbsenceEvent) {
+                Absence a = ((AbsenceEvent) event).getAbsence();
+                a.setReason(reason);
+                a.setStartTime(startDT);
+                a.setEndTime(endDT);
+                AbsenceService.updateAbsence(a);
+            }
 
-        event = new DefaultScheduleEvent();
+            event = new DefaultScheduleEvent();
+        } else {
+
+            User userWhoseAbsenceTheAdminInputs = BenutzerverwaltungService.getUser(userWhoseAbsenceTheAdminInputsInStringFormat);
+
+            LocalDateTime startDT = TimeConverterService.convertDateToLocalDateTime(event.getStartDate());
+            LocalDateTime endDT = TimeConverterService.convertDateToLocalDateTime(event.getEndDate());
+
+            if ((!startDT.toLocalDate().equals(endDT.toLocalDate()) && endDT.toLocalTime().equals(LocalTime.MIN)) || startDT.equals(endDT)) {
+                startDT = startDT.with(LocalTime.MIN);
+                endDT = endDT.with(LocalTime.of(23, 59, 59));
+            }
+            //Validation
+            if (event.getStartDate().after(event.getEndDate())) {
+                FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Endzeitpunkt ist vor Startzeitpunkt!"));
+                FacesContext.getCurrentInstance().validationFailed();
+            } else {
+                Absence a = ((AbsenceEvent) event).getAbsence();
+                a.setAbsenceType(type);
+                // FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_INFO, "INFO", a.getAbsenceType().getMyString()));
+                if (!a.getAbsenceType().equals(AbsenceTypeNew.MEDICAL_LEAVE)) {
+                    FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Derzeit können nur Krankenstände vom Admin eingetragen werden!"));
+                    FacesContext.getCurrentInstance().validationFailed();
+                }
+            }
+            if (!FacesContext.getCurrentInstance().isValidationFailed() && event instanceof AbsenceEvent && event.getId() == null) {
+
+                FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_INFO, "INFO", "Passed: " + ((AbsenceEvent) event).getAbsence().getAbsenceType().getMyString()));
+
+                Absence a = ((AbsenceEvent) event).getAbsence();
+                a.setStartTime(startDT);
+                a.setEndTime(endDT);
+                a.setReason(this.reason);
+                a.setUser(userWhoseAbsenceTheAdminInputs);
+
+                AbsenceService.insertAbsence(a);
+                List<User> approverlist = currentUser.getApprover();
+                if (!approverlist.isEmpty()) {
+                    EmailService.sendUserEnteredAbsenceEmail(a, approverlist);
+                }
+            } else if (event instanceof WorkTimeEvent) {
+//            IstZeitService.update(((WorkTimeEvent) event).getWorktime());
+            } else if (event instanceof AbsenceEvent) {
+                Absence a = ((AbsenceEvent) event).getAbsence();
+                a.setReason(reason);
+                a.setStartTime(startDT);
+                a.setEndTime(endDT);
+                a.setUser(userWhoseAbsenceTheAdminInputs);
+                AbsenceService.updateAbsence(a);
+            }
+
+            event = new DefaultScheduleEvent();
+        }
     }
 
     /**
@@ -271,6 +399,8 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
         WorkTime wt = null;
 
+        breaktimeOld = null;
+
         //List<WorkTime> workTimes = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(currentUser, TimeConverterService.convertLocalDateTimeToDate(startDT.with(LocalTime.MIN)), TimeConverterService.convertLocalDateTimeToDate(startDT.with(LocalTime.MIN).plusDays(1)));
         if (event.getStartDate().after(event.getEndDate())) {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Endzeitpunkt ist vor Startzeitpunkt!"));
@@ -283,7 +413,10 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Die eingebene Zeit ist nicht erlaubt!"));
             FacesContext.getCurrentInstance().validationFailed();
         } else if (!checkAvailableTime(event.getStartDate(), event.getEndDate(), false)) {
-            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Ein Eintrag für diese Urzeit ist bereits vorhanden!"));
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Ein Eintrag für diese Uhrzeit ist bereits vorhanden!"));
+            FacesContext.getCurrentInstance().validationFailed();
+        } else if (duplicateIstZeitEntries(event.getStartDate(), event.getEndDate())) {
+            FacesContext.getCurrentInstance().addMessage("", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Failed", "Mehrere Ist-Zeiten an einem Tag dürfen sich nicht überschneiden!"));
             FacesContext.getCurrentInstance().validationFailed();
         } else {
             if (!FacesContext.getCurrentInstance().isValidationFailed() && event.getId() == null) {
@@ -312,6 +445,9 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                     }
                 }
 
+                // Logger.getLogger(ScheduleView.class.getName()).log(Level.INFO, wt.getBreakTime() + "");
+                breaktimeOld = wt.getBreakTime();
+
                 wt.setBreakTime(breaktime);
                 wt.setStartComment(startcomment);
                 wt.setEndComment(endcomment);
@@ -319,6 +455,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                 wt.setEndTime(endDT);
 
                 IstZeitService.update(wt);
+                updateMode = true;
             } //else if (event instanceof AbsenceEvent) {
 
 //                AbsenceService.updateAbsence(((AbsenceEvent) event).getAbsence());
@@ -351,14 +488,31 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                     if (wt.getSollStartTime().until(wt.getSollEndTime(), ChronoUnit.HOURS) > 6) {
                         diff += 30;
                     }
+//                    diff += 30;
                 }
 
                 diff -= wt.getBreakTime();
+
+                if (breaktimeOld != null) {
+                    if (wt.getBreakTime() < breaktimeOld) {
+                        diff = diff + (breaktimeOld - wt.getBreakTime());
+                    }
+                }
+
+                if (!updateMode) {
+                    LocalDate now = LocalDate.now();
+                    if (wt.getStartTime().getDayOfMonth() < now.getDayOfMonth()) {
+                        diff = (int) wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
+                        diff = diff - wt.getBreakTime();
+                    }
+                }
 
                 wt.getUser().setOverTimeLeft(wt.getUser().getOverTimeLeft() + diff);
                 BenutzerverwaltungService.updateUser(wt.getUser());
             }
             event = new DefaultScheduleEvent();
+            updateMode = false;
+            oldWorktime = false;
         }
     }
 
@@ -416,6 +570,28 @@ public class ScheduleView implements Serializable, DAODML_Observer {
 
     }
 
+    public boolean duplicateIstZeitEntries(Date start, Date end) {
+        boolean retVal = false;
+
+        if (oldWorktime == false) {
+
+            LocalDateTime startDT = TimeConverterService.convertDateToLocalDateTime(start);
+            LocalDateTime endDT = TimeConverterService.convertDateToLocalDateTime(end);
+
+            List<WorkTime> worklist = IstZeitService.getWorkTimeForUserBetweenStartAndEndDate(currentUser, TimeConverterService.convertLocalDateTimeToDate(startDT.with(LocalTime.MIN)), TimeConverterService.convertLocalDateTimeToDate(endDT.plusDays(1).with(LocalTime.MIN)));
+
+            for (WorkTime wt : worklist) {
+                Date startWT = TimeConverterService.convertLocalDateTimeToDate(wt.getStartTime());
+                Date endWT = TimeConverterService.convertLocalDateTimeToDate(wt.getEndTime());
+                if (start.after(startWT) && start.before(endWT) || end.after(startWT) && end.before(endWT) || start.before(startWT) && end.after(endWT) || end.equals(endWT) || start.equals(startWT)) {
+                    retVal = true;
+                }
+            }
+        }
+
+        return retVal;
+    }
+
     /**
      * deletes a WorkTime from event, used in "istzeit.xhtml"
      *
@@ -431,31 +607,45 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                 int diff = 0;
                 WorkTime wt = workevent.getWorktime();
                 LocalTime plus19 = LocalTime.of(19, 0);
-                if (wt.getSollStartTime() != null) {
-                    diff -= wt.getStartTime().toLocalTime().until(wt.getSollStartTime(), ChronoUnit.MINUTES);
-                    if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
-                        diff -= wt.getOvertimeAfter19() * 1.5;
-                        diff -= wt.getSollEndTime().until(plus19, ChronoUnit.MINUTES);
-                    } else {
-                        diff -= wt.getSollEndTime().until(wt.getEndTime().toLocalTime(), ChronoUnit.MINUTES);
-                    }
-                } else {
-                    //detract all time (would be overtime)
+//                if (wt.getSollStartTime() != null) {
+//                    diff -= wt.getStartTime().toLocalTime().until(wt.getSollStartTime(), ChronoUnit.MINUTES);
+//                    if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
+//                        diff -= wt.getOvertimeAfter19() * 1.5;
+//                        diff -= wt.getSollEndTime().until(plus19, ChronoUnit.MINUTES);
+//                    } else {
+//                        diff -= wt.getSollEndTime().until(wt.getEndTime().toLocalTime(), ChronoUnit.MINUTES);
+//                    }
+//                } else {
+//                    //detract all time (would be overtime)
+//                    if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
+//                        diff -= wt.getOvertimeAfter19() * 1.5;
+//                        diff -= wt.getStartTime().toLocalTime().until(plus19, ChronoUnit.MINUTES);
+//                    } else {
+//                        diff -= wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
+//                    }
+//                }
+
+                //Test
+                LocalDate now = LocalDate.now();
+                SollZeiten_DAO SOLL_ZEITEN_DAO = DAOFactory.getDAOFactory().getSollZeitenDAO();
+                SollZeit sz = SOLL_ZEITEN_DAO.getSollZeitenByUser_Current(wt.getUser());
+
+                if (wt.getStartTime().getDayOfMonth() < now.getDayOfMonth() || sz == null) {
                     if (wt.getEndTime().toLocalTime().isAfter(plus19)) {
                         diff -= wt.getOvertimeAfter19() * 1.5;
                         diff -= wt.getStartTime().toLocalTime().until(plus19, ChronoUnit.MINUTES);
                     } else {
                         diff -= wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES);
                     }
-                }
-
-                if (wt.getStartTime() != null) {
-                    if (wt.getSollStartTime().until(wt.getSollEndTime(), ChronoUnit.HOURS) > 6) {
-                        diff -= 30;
+                    diff += wt.getBreakTime();
+                } else {
+                    int realworktime = (int) (wt.getStartTime().until(wt.getEndTime(), ChronoUnit.MINUTES) - wt.getBreakTime());
+                    int realsolltime = (int) wt.getSollStartTime().until(wt.getSollEndTime(), ChronoUnit.MINUTES);
+                    if (realsolltime >= 360) {
+                        realsolltime = realsolltime - 30;
                     }
+                    diff = realsolltime - realworktime;
                 }
-
-                diff += wt.getBreakTime();
 
                 wt.getUser().setOverTimeLeft(wt.getUser().getOverTimeLeft() + diff);
                 BenutzerverwaltungService.updateUser(wt.getUser());
@@ -485,6 +675,8 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             endcomment = ev.getWorktime().getEndComment();
             breaktime = ev.getWorktime().getBreakTime();
 
+            oldWorktime = true;
+
             RequestContext.getCurrentInstance().execute("PF('eventDialog').show();");
 
         }
@@ -497,6 +689,10 @@ public class ScheduleView implements Serializable, DAODML_Observer {
      * @param selectEvent SelectEvent
      */
     public void onEventInAbwesenheitenSelect(SelectEvent selectEvent) {
+        isAdminInputingOtherPeoplesAbsences = false;
+        this.onLoad(null);
+        this.userWhoseAbsenceTheAdminInputsInStringFormat = null;
+
         event = (ScheduleEvent) selectEvent.getObject();
 
         startcomment = "";
@@ -527,7 +723,10 @@ public class ScheduleView implements Serializable, DAODML_Observer {
      *
      * @param selectEvent SelectEvent
      */
+    boolean newTimeSelected = false;
+
     public void onIstZeitDateSelect(SelectEvent selectEvent) {
+        oldWorktime = false;
         Date sDate = (Date) selectEvent.getObject();
         if (!AccessRightsService.checkPermission(currentUser.getAccessLevel(), "ALL") && (sDate.before(getAllowedStartDateToday()) || sDate.after(getAllowedEndDateToday()))) {
             FacesContext.getCurrentInstance().validationFailed();
@@ -547,9 +746,16 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                 LocalDateTime edt = startDate.atTime(soll.getSollEndTime(dow));
 
                 event = new WorkTimeEvent("", TimeConverterService.convertLocalDateTimeToDate(sdt), TimeConverterService.convertLocalDateTimeToDate(edt), null);
+
+                if (sdt.until(edt, ChronoUnit.HOURS) >= 6) {
+                    this.breaktime = 30;
+                } else {
+                    this.breaktime = 0;
+                }
             } else {
                 event = new WorkTimeEvent("", sDate, sDate, null);
             }
+            this.newTimeSelected = true;
         }
     }
 
@@ -560,8 +766,18 @@ public class ScheduleView implements Serializable, DAODML_Observer {
      * @param selectEvent SelectEvent
      */
     public void onAbsenceDateSelect(SelectEvent selectEvent) {
+        isAdminInputingOtherPeoplesAbsences = false;
         Date sDate = (Date) selectEvent.getObject();
         event = new AbsenceEvent("", sDate, sDate, new Absence(this.currentUser, type, null, null));
+    }
+
+    public void onAbsenceOfOtherPeopleSelect(SelectEvent selectEvent) {
+        if (this.isAdminInputingOtherPeoplesAbsences) {
+            User userWhoseAbsenceTheAdminInputs = BenutzerverwaltungService.getUser(this.userWhoseAbsenceTheAdminInputsInStringFormat);
+            Date sDate = (Date) selectEvent.getObject();
+            event = new AbsenceEvent("", sDate, sDate, new Absence(userWhoseAbsenceTheAdminInputs, type, null, null));
+            RequestContext.getCurrentInstance().execute("PF('eventDialog').show();");
+        }
     }
 
     public AbsenceTypeNew getType() {
@@ -601,6 +817,8 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             AbsenceService.updateAbsence(absenceEvent.getAbsence());
             if (absenceEvent.getAbsence().getAbsenceType().equals(AbsenceTypeNew.HOLIDAY)) {
                 setHolidayAndIstZeiten(absenceEvent.getAbsence());
+            } else if (absenceEvent.getAbsence().getAbsenceType().equals(AbsenceTypeNew.TIME_COMPENSATION)) {
+                // Do nothing -> timecompensation will be deducted after the day finishes by the OvertimeSynchronisationTask
             } else {
                 int overtime = calcAbsenceOvertime(absenceEvent.getAbsence());
                 u.setOverTimeLeft(u.getOverTimeLeft() + overtime);
@@ -698,6 +916,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             days = (int) (a.getStartTime().until(a.getEndTime(), ChronoUnit.DAYS) + 1);
 
             //Logger.getLogger(ScheduleView.class.getName()).log(Level.INFO, "Days: " + days);
+            Logger.getLogger(ScheduleView.class.getName()).log(Level.INFO, "Before From Database: " + BenutzerverwaltungService.getUser(u.getUserNr()).getPersName() + " " + BenutzerverwaltungService.getUser(u.getUserNr()).getVacationLeft());
             Logger.getLogger(ScheduleView.class.getName()).log(Level.INFO, "Before: " + u.getVacationLeft());
 
             u.setVacationLeft(u.getVacationLeft() - days);
@@ -820,6 +1039,7 @@ public class ScheduleView implements Serializable, DAODML_Observer {
     }
 
     public void onAbsenceSelect(SelectEvent selectEvent) {
+        event = (ScheduleEvent) selectEvent.getObject();
         if (selectEvent.getObject() instanceof AbsenceEvent) {
             absenceEvent = (AbsenceEvent) selectEvent.getObject();
 
@@ -830,6 +1050,8 @@ public class ScheduleView implements Serializable, DAODML_Observer {
                 reason = absenceEvent.getAbsence().getReason();
                 RequestContext.getCurrentInstance().execute("PF('eventDialog').show();");
             }
+        } else {
+            RequestContext.getCurrentInstance().execute(("PF('feiertagDialog').show();"));
         }
     }
 
@@ -959,7 +1181,9 @@ public class ScheduleView implements Serializable, DAODML_Observer {
             LocalDateTime start = LocalDateTime.now();
 
             // 22.01.2018 -> Zeit zur Ist-Zeit-Eintragrung von 1ner Woche auf 5Wochen erhöht
-            start = start.withHour(0).withMinute(0).withSecond(0).minusWeeks(5);
+            // start = start.withHour(0).withMinute(0).withSecond(0).minusWeeks(30);
+            // 09.05.2018 Implementierung, dass Zeiten nur mehr im aktuellen Monat eingetragen werden können!
+            start = start.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
 
             return TimeConverterService.convertLocalDateTimeToDate(start);
         } else {
@@ -1047,5 +1271,56 @@ public class ScheduleView implements Serializable, DAODML_Observer {
     public void notifyObserver() {
         currentUser = BenutzerverwaltungService.getUser(currentUser.getUserNr());
         ((IstZeitLazyScheduleModel) istZeitEventModel).setCurrentUser(currentUser);
+    }
+
+    public void dateSelected(SelectEvent e) {
+        //RequestContext.getCurrentInstance().execute("PrimeFaces.info('dateSelected: " + this.dateChanged + "');");
+        this.dateChanged = true;
+    }
+
+    public void handleClose(CloseEvent event) {
+        this.dateChanged = false;
+    }
+
+    public boolean isIsAdminInputingOtherPeoplesAbsences() {
+        return isAdminInputingOtherPeoplesAbsences;
+    }
+
+    public void setIsAdminInputingOtherPeoplesAbsences(boolean isAdminInputingOtherPeoplesAbsences) {
+        this.isAdminInputingOtherPeoplesAbsences = isAdminInputingOtherPeoplesAbsences;
+    }
+
+    public String getUserWhoseAbsenceTheAdminInputsInStringFormat() {
+        return userWhoseAbsenceTheAdminInputsInStringFormat;
+    }
+
+    public void setUserWhoseAbsenceTheAdminInputsInStringFormat(String userWhoseAbsenceTheAdminInputsInStringFormat) {
+        this.userWhoseAbsenceTheAdminInputsInStringFormat = userWhoseAbsenceTheAdminInputsInStringFormat;
+    }
+
+    public boolean isUserAbleToInputOtherPeoplesAbsences() {
+        if (AccessRightsService.checkPermission(this.currentUser.getAccessLevel(), "ALL")) {
+            return true;
+        }
+        return false;
+    }
+
+    public void onLoad(ActionEvent ev) {
+        this.allUsers = new ArrayList<>();
+        this.allUsers.add("-");
+        BenutzerverwaltungService.getUserList().forEach((u) -> {
+            allUsers.add(u.getUsername());
+        });
+    }
+
+    public String getUserStringForUserWhoseAbsenceAdminInputs() {
+        if (userWhoseAbsenceTheAdminInputsInStringFormat != null) {
+            if (!userWhoseAbsenceTheAdminInputsInStringFormat.equals("-")) {
+                User u = BenutzerverwaltungService.getUser(this.userWhoseAbsenceTheAdminInputsInStringFormat);
+                return u.getUsername() + ": " + u.getPersName();
+            }
+        }
+        return "";
+
     }
 }

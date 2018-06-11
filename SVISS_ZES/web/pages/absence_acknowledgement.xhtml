@@ -33,7 +33,7 @@ and open the template in the editor.
 
                     <p:schedule draggable="false" resizable="false" firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.acknowlegementModel}" widgetVar="myschedule" timeZone="Europe/Vienna" locale="de" columnFormat="month:'ddd', week:'dd/MM', day:'dd/MM/yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
 
-                        <p:ajax event="eventSelect" listener="#{scheduleView.onAbsenceSelect}" update=":eventForm:eventDialog" />
+                        <p:ajax event="eventSelect" listener="#{scheduleView.onAbsenceSelect}" update=":eventForm:eventDialog :feiertagDialogForm:feiertagDialogID" />
 
                     </p:schedule>
                 </p:panel>
@@ -136,6 +136,21 @@ and open the template in the editor.
                     </h:panelGrid>
                 </p:dialog> 
 
+            </h:form>
+
+            <h:form id="feiertagDialogForm">
+
+                <p:dialog id="feiertagDialogID" widgetVar="feiertagDialog" header="Feiertag Details" showEffect="clip" hideEffect="clip" closeOnEscape="true">
+                    <h:panelGrid id="absenceDetails" columns="2">
+                        <p:outputLabel for="feiertagtitle" value="Titles:" />
+                        <p:inputText id="feiertagtitle" value="#{scheduleView.event.title}" readonly="true"/>
+
+                        <p:outputLabel for="feiertagfrom" value="Date:" />
+                        <p:calendar id="feiertagfrom" value="#{scheduleView.event.startDate}" pattern="dd.MM.yyyy" showOn="" mask="true" readonly="true"/>
+
+
+                    </h:panelGrid>
+                </p:dialog> 
             </h:form>
         </ui:define>
 

@@ -136,4 +136,9 @@ public class User_InMemoryDAO extends Base_InMemoryDAO<User> implements User_DAO
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public List<User> getUserByDisableDefaultTimeInsert(Boolean disableDefaultTimeInsert) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

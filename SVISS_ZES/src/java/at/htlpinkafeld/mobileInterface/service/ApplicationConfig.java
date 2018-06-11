@@ -38,6 +38,8 @@ public class ApplicationConfig extends Application {
         resources.add(at.htlpinkafeld.mobileInterface.service.UserholidayovertimehistoryFacadeREST.class);
         resources.add(at.htlpinkafeld.mobileInterface.service.WorktimeFacadeREST.class);
         resources.add(at.htlpinkafeld.mobileInterface.service.ZesaccessFacadeREST.class);
+        
+        resources.add(at.htlpinkafeld.proposalAPI.ProposalRestAPI.class);
     }
 
 }

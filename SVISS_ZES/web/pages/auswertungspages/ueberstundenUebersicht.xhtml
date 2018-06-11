@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<ui:composition template="/pages/auswertung.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="currentAuswertungsIndex" value="4" />
+
+    <ui:define name="auswertung">
+        <h:form>
+            <h1 align="center">Auswertung: Überstunden Übersicht</h1>
+
+            <p:panelGrid columns="4"> 
+                <p:selectOneMenu id="selectedYear" value="#{ueberstundenUebersichtBean.selectedYear}">
+                    <f:selectItem itemLabel="Select a Year" itemValue=""/>
+                    <f:selectItems value="#{ueberstundenUebersichtBean.years}"/>
+                    <p:ajax listener="#{ueberstundenUebersichtBean.loadMonths}" update="selectedDate"/>
+                </p:selectOneMenu>
+
+                <p:selectOneMenu id="selectedDate" value="#{ueberstundenUebersichtBean.selectedDate}" converter="localDateConverter">
+                    <f:selectItem itemLabel="Select a Month" itemValue=""/>
+                    <f:selectItems value="#{ueberstundenUebersichtBean.availableMonthLocalDates}" var="date" itemLabel="#{date.label}" itemValue="#{date.value}"/>
+                </p:selectOneMenu>
+                <p:commandButton value="load" actionListener="#{ueberstundenUebersichtBean.loadData}" update="timeDataTable"/>
+                <h:commandButton value="load" actionListener="#{ueberstundenUebersichtBean.loadData}">
+                    <p:ajax event="click" update="timeDataTable"/>
+                </h:commandButton>
+            </p:panelGrid>
+
+
+            <p:dataTable id="timeDataTable" value="#{ueberstundenUebersichtBean.rows}" var="row" resizableColumns="true" liveResize="true" style="text-align: center">
+
+                <p:column headerText="Mitarbeiter" footerText="" >
+                    <p:outputLabel value="#{row.mitarbeiter}"/>
+                </p:column>
+
+                <p:column headerText="Mehrstunden" footerText="">
+                    <p:outputLabel value="#{row.mehrstunden}"/>
+                </p:column>
+
+                <p:column headerText="Übertrag Vormonat" footerText="">
+                    <p:outputLabel value="#{row.vormonat}"/>
+                    <f:facet name="footer">
+                        <p:outputLabel value="Summe:"/>
+                    </f:facet>
+                </p:column>
+
+                <p:column headerText="Gesamt" footerText="">
+                    <p:outputLabel value="#{row.gesamt}"/>
+                    <f:facet name="footer">
+                        <p:outputLabel value="#{ueberstundenUebersichtBean.ueberstundengesamt}"/>
+                    </f:facet>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+
+
+
+</ui:composition>

@@ -26,7 +26,8 @@ and open the template in the editor.
 
                         <p:ajax event="dateSelect" listener="#{scheduleView.onAbsenceDateSelect}" update=":addAbsenceDlgForm:eventDetails" oncomplete="PF('eventDialog').show();" />
                         <p:ajax event="eventSelect" listener="#{scheduleView.onEventInAbwesenheitenSelect}" update=":addAbsenceDlgForm:eventDetails :absenceDialogForm:absenceDialogID :worktimeDialogForm:worktimeDialogID :feiertagDialogForm:feiertagDialogID" />
-
+                        
+                        
                     </p:schedule>
                 </h:form>
                 <script type="text/javascript">

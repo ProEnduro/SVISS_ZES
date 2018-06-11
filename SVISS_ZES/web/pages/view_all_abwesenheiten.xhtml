@@ -7,7 +7,8 @@ and open the template in the editor.
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:h="http://xmlns.jcp.org/jsf/html">
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
     <ui:composition template="/pages/mainSite.xhtml"
                     xmlns="http://www.w3.org/1999/xhtml"
                     xmlns:ui="http://java.sun.com/jsf/facelets">
@@ -17,14 +18,29 @@ and open the template in the editor.
         <ui:define name="content">
 
             <h1 align="center">Alle Abwesenheiten</h1>
-            <p:growl id="messages" showDetail="true"/>
+            <p:growl id="messages" showDetail="true" sticky="false"/>
+
+            <h:form id="selectUserForm">
+                <p:panelGrid columns="2" style="border-style: hidden" rendered="#{scheduleView.userAbleToInputOtherPeoplesAbsences}">
+                    <p:selectOneMenu value="#{scheduleView.userWhoseAbsenceTheAdminInputsInStringFormat}">
+                        <f:selectItems value="#{scheduleView.allUsers}"/>
+                    </p:selectOneMenu>
+
+                    <p:commandButton value="Set User" update=":messages" actionListener="#{scheduleView.setIsAdminInputingOtherPeoplesAbsencesVariable}"/>
+                </p:panelGrid>
+            </h:form>
+
+            <h:form>
+                <p:remoteCommand autoRun="true" name="onload" actionListener="#{scheduleView.onLoad}"/>
+            </h:form>
 
             <h:form id="absenceScheduleForm">
                 <p:panel>
 
                     <p:schedule draggable="false" resizable="false" firstHour="6" aspectRatio="3" id="schedule" value="#{scheduleView.alleAbwesenheitenModel}" widgetVar="myschedule" timeZone="Europe/Vienna" 
                                 locale="de" columnFormat="month:'ddd',  week:'dddd - dd.MM', day:'dd.MM.yyyy'}, titleFormat: {day: 'dddd, dd. MMMM yyyy'" timeFormat="HH:mm" axisFormat="HH:mm">
-                        <p:ajax event="eventSelect" listener="#{scheduleView.onEventInAbwesenheitenSelect}" update=":absenceDialogForm:absenceDialog :feiertagDialogForm:feiertagDialogID" />
+                        <p:ajax event="eventSelect" listener="#{scheduleView.onEventInAbwesenheitenSelect}" update=":absenceDialogForm:absenceDialog :feiertagDialogForm:feiertagDialogID :selectUserForm" />
+                        <p:ajax event="dateSelect" listener="#{scheduleView.onAbsenceOfOtherPeopleSelect}" update=":addAbsenceDlgForm"/>
                     </p:schedule>
 
                 </p:panel>
@@ -100,6 +116,31 @@ and open the template in the editor.
                     background-color: #33ffcc;
                 }
             </style>
+
+            <h:form id="addAbsenceDlgForm">
+                <p:dialog widgetVar="eventDialog" header="Abwesenheit eintragen für #{scheduleView.userStringForUserWhoseAbsenceAdminInputs}:" showEffect="clip" hideEffect="clip" modal="true" resizable="false">
+                    <h:panelGrid id="eventDetails" columns="2">
+                        <p:outputLabel for="from" value="From:" />
+                        <p:calendar id="from" value="#{scheduleView.event.startDate}" pattern="#{scheduleView.pattern}" showOn="button" mask="true"/>
+
+                        <p:outputLabel for="to" value="To:" />
+                        <p:calendar id="to" value="#{scheduleView.event.endDate}" pattern="#{scheduleView.pattern}" showOn="button" mask="true" />
+
+
+                        <p:outputLabel for="reason" value="Reason:"/>
+                        <p:inputTextarea id="reason" value="#{scheduleView.reason}"/>
+
+                        <p:commandButton type="reset" value="Reset" />
+                        <p:commandButton id="addButton" value="Save" update=":messages :absenceScheduleForm" actionListener="#{scheduleView.addAbsenceEvent}" oncomplete="PF('myschedule').update();if (args &amp;&amp; !args.validationFailed) PF('eventDialog').hide();" />
+
+                        <p:selectOneRadio id="type" value="#{scheduleView.type}" converter="absenceTypeConv">
+                            <f:selectItems var="t" itemLabel="#{t}" value="#{scheduleView.types}" itemValue="#{t}"/>
+                            <p:ajax update="eventDetails"/>
+                        </p:selectOneRadio>
+                    </h:panelGrid>
+                </p:dialog> 
+            </h:form>
+
             <h:form id="absenceDialogForm">
                 <p:dialog id="absenceDialog" widgetVar="absenceDialog" header="Absence Details" showEffect="clip" hideEffect="clip" closeOnEscape="true">
                     <h:panelGrid id="absenceDetails" columns="2">

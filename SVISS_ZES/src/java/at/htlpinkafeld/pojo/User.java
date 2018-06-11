@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
@@ -36,6 +38,8 @@ public class User implements Serializable {
     private boolean disabled = false;
     private boolean parttimer = false;
 
+    private boolean disableDefaultTimeInsert = false;
+
     private List<User> approver;
 
     public User() {
@@ -43,14 +47,6 @@ public class User implements Serializable {
         vacationLeft = 25;
         overTimeLeft = 0;
         weekTime = 0.0;
-    }
-
-    public boolean isParttimer() {
-        return parttimer;
-    }
-
-    public void setParttimer(boolean parttimer) {
-        this.parttimer = parttimer;
     }
 
     public User(User u) {
@@ -66,6 +62,7 @@ public class User implements Serializable {
         this.weekTime = u.getWeekTime();
         this.disabled = u.isDisabled();
         this.parttimer = u.isParttimer();
+        this.disableDefaultTimeInsert = u.isDisableDefaultTimeInsert();
         if (u.areApproverInitialized()) {
             this.approver = u.getApprover();
         }
@@ -109,11 +106,28 @@ public class User implements Serializable {
         this.pass = pass;
         this.weekTime = weekTime;
     }
-    
+
+    public boolean isParttimer() {
+        return parttimer;
+    }
+
+    public void setParttimer(boolean parttimer) {
+        this.parttimer = parttimer;
+    }
+
+    public boolean isDisableDefaultTimeInsert() {
+        Logger.getLogger(User.class.getName()).log(Level.INFO, this.username + " " + String.valueOf(this.disableDefaultTimeInsert));
+        return disableDefaultTimeInsert;
+    }
+
+    public void setDisableDefaultTimeInsert(boolean disableDefaultTimeInsert) {
+        this.disableDefaultTimeInsert = disableDefaultTimeInsert;
+    }
+
     public String getParttimerOutputString() {
         return this.parttimer ? "Teilzeit" : "Vollzeit";
     }
-    
+
     public Integer getUserNr() {
         return userNr;
     }

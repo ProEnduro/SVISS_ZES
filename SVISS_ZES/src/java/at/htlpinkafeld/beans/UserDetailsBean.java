@@ -478,10 +478,20 @@ public class UserDetailsBean {
         return cell;
     }
 
+    //only for this function, because lambda expression needs it like this...
+    int monthOvertime = 0;
     public void postProcessPDF(Object document) throws DocumentException {
         Document pdf = (Document) document;
 
         pdf.add(new Paragraph("\nStand: " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
+
+        User curr = BenutzerverwaltungService.getUserByUsername(selectedUser);
+
+        UserHistoryService.getUserHistoryEntriesForUserBetweenDates(curr, selectedDate, selectedDate.plusDays(1)).forEach((uhe) -> {
+            monthOvertime = uhe.getOvertime();
+        });
+
+        pdf.add(new Paragraph("\nÜberstunden gesamt: " + monthOvertime));
         pdf.close();
     }
 
@@ -606,7 +616,7 @@ public class UserDetailsBean {
 
         DecimalFormat df = new DecimalFormat("#.##");
         pdfTable.addCell(new Paragraph("Saldo: " + df.format(saldo), font));
-        pdfTable.addCell(new Paragraph("Gesamt: " + überstundenNach19, font));
+        pdfTable.addCell(new Paragraph("Nach 19 Uhr: " + überstundenNach19, font));
         pdfTable.addCell(new Paragraph("Verbleibender Urlaub am Ende des Monats: " + urlaubsanspruch + " Tage", font));
 
         return pdfTable;

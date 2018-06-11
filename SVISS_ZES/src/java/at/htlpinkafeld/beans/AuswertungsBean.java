@@ -78,8 +78,26 @@ public class AuswertungsBean {
         return false;
     }
 
+    public boolean getCanCurrentUserAccessUeberstundenUebersicht() {
+        try {
+            return AccessRightsService.checkPermission(currentUser.getAccessLevel(), "EVALUATE_ALL");
+        } catch (Exception ex) {
+            FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+            try {
+                FacesContext.getCurrentInstance().getExternalContext().redirect("/SVISS_ZES/");
+            } catch (IOException ex1) {
+                Logger.getLogger(AuswertungsBean.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+        }
+        return false;
+    }
+
     public String redirectToMonatsabschlussVerwaltung() {
         return "/pages/auswertungspages/monatsabschlussVerwaltung.xhtml?faces-redirect=true";
+    }
+
+    public String redirectToUeberstundenUebersicht() {
+        return "/pages/auswertungspages/ueberstundenUebersicht.xhtml?faces-redirect=true";
     }
 
 }

@@ -5,6 +5,8 @@
  */
 package at.htlpinkafeld.beans.util.Converter;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -25,7 +27,16 @@ public class MinuteHourConverter implements Converter {
 
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object o) {
-        return String.valueOf(Double.valueOf(o.toString()) / 60.0);
+//        if (o instanceof Integer) {
+//            return String.valueOf(Double.valueOf(o.toString()) / 60.0);
+//        } else {
+//            DecimalFormat df = new DecimalFormat("#.##");
+//            df.setRoundingMode(RoundingMode.DOWN);
+//            return df.format(Double.valueOf(o.toString()) / 60.0);
+//        }
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.DOWN);
+        return df.format(Double.valueOf(o.toString()) / 60.0);
     }
 
 }

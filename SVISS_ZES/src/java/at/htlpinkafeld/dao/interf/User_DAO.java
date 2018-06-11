@@ -32,4 +32,6 @@ public interface User_DAO extends Base_DAO<User> {
     public abstract void removeApprover(User approver);
     
     public abstract List<User> getUserByParttimer(Boolean parttimer);
+    
+    public List<User> getUserByDisableDefaultTimeInsert(Boolean disableDefaultTimeInsert);
 }

@@ -18,6 +18,7 @@ import java.util.Properties;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * The bean used for the login-page
@@ -86,7 +87,7 @@ public class LoginBean {
             context.addMessage(null, new FacesMessage("User is disabled!"));
         }
 
-        if (user.getPass().equals(this.pw) && user.getUsername().contentEquals(this.userString) && user.isDisabled() == false) {
+        if (user.getPass().equals(this.pw) && StringUtils.lowerCase(user.getUsername()).contentEquals(StringUtils.lowerCase(this.userString)) && user.isDisabled() == false) {
 
             FacesContext context = FacesContext.getCurrentInstance();
             MasterBean masterBean = (MasterBean) context.getApplication().evaluateExpressionGet(context, "#{masterBean}", MasterBean.class);

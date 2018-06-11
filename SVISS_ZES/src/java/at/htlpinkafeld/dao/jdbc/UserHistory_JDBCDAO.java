@@ -131,4 +131,34 @@ class UserHistory_JDBCDAO extends Base_JDBCDAO<UserHistoryEntry> implements User
             Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    @Override
+    public List<UserHistoryEntry> getUserHistoryEntriesBetweenDates(LocalDate start, LocalDate end) {
+        List<UserHistoryEntry> historyEntrys = new ArrayList<>();
+
+        Date startDate = new Date(TimeConverterService.convertLocalDateToDate(start).getTime());
+        Date endDate = new Date(TimeConverterService.convertLocalDateToDate(end).getTime());
+
+        try (WrappedConnection con = ConnectionManager.getInstance().getWrappedConnection();
+                PreparedStatement stmt = con.getConn().prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE " + "(" + MONTHTS_COL + " >= ? AND  " + MONTHTS_COL + " < ? )" + SQL_ORDER_BY_LINE)) {
+
+            //Logger.getLogger(UserHistory_JDBCDAO.class.getName()).log(Level.INFO, "SELECT * FROM " + TABLE_NAME + " WHERE " + "(" + MONTHTS_COL + " >= ? AND  " + MONTHTS_COL + " < ? )" + SQL_ORDER_BY_LINE);
+            Logger.getLogger(UserHistory_JDBCDAO.class.getName()).log(Level.INFO, startDate.toString() + " " + endDate.toString());
+
+            stmt.setDate(1, startDate);
+            stmt.setDate(2, endDate);
+            try (ResultSet rs = stmt.executeQuery()) {
+
+                while (rs.next()) {
+                    historyEntrys.add(getEntityFromResultSet(rs));
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(User_JDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        //Logger.getLogger(UserHistory_JDBCDAO.class.getName()).log(Level.INFO, historyEntrys.toString());
+        return historyEntrys;
+    }
 }
